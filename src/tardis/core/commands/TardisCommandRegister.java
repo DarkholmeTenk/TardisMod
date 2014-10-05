@@ -8,6 +8,7 @@ public class TardisCommandRegister
 	private static TardisSaveSchemaCommand saveCommand;
 	private static TardisLoadSchemaCommand loadCommand;
 	private static TardisGiveSchemaCommand giveCommand;
+	private static TardisRepairCoreCommand repCCommand;
 	
 	public static void registerCommands(FMLServerStartingEvent event)
 	{
@@ -19,5 +20,7 @@ public class TardisCommandRegister
 		event.registerServerCommand(loadCommand);
 		giveCommand = new TardisGiveSchemaCommand();
 		event.registerServerCommand(giveCommand);
+		repCCommand = new TardisRepairCoreCommand();
+		event.registerServerCommand(repCCommand);
 	}
 }
