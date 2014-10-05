@@ -80,27 +80,32 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(!inFlight)
 		{
 			World ext = Helper.getWorld(exteriorWorld);
-			if(ext.isRemote)
-				return;
-			int facing = ext.getBlockMetadata(exteriorX, exteriorY, exteriorZ);
-			int dx = 0;
-			int dz = 0;
-			switch(facing)
+			if(ext != null)
 			{
-				case 0:dz = -1; break;
-				case 1:dx =  1; break;
-				case 2:dz =  1; break;
-				case 3:dx = -1; break;
-			}
-			
-			if(ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz) && ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz))
-			{
-				Helper.teleportEntity(player, exteriorWorld, exteriorX+dx, exteriorY+1, exteriorZ+dz);
+				if(ext.isRemote)
+					return;
+				int facing = ext.getBlockMetadata(exteriorX, exteriorY, exteriorZ);
+				int dx = 0;
+				int dz = 0;
+				switch(facing)
+				{
+					case 0:dz = -1; break;
+					case 1:dx =  1; break;
+					case 2:dz =  1; break;
+					case 3:dx = -1; break;
+				}
+				
+				if(ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz) && ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz))
+				{
+					Helper.teleportEntity(player, exteriorWorld, exteriorX+dx, exteriorY+1, exteriorZ+dz);
+				}
+				else
+				{
+					player.addChatMessage("The door is obstructed");
+				}
 			}
 			else
-			{
-				player.addChatMessage("The door is obstructed");
-			}
+				player.addChatMessage("The door refuses to open");
 		}
 		else
 		{
@@ -180,22 +185,26 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			totalFlightTimer++;
 			inFlightTimer++;
 			int timeTillTakenOff = (20 * 11);
-			int timeTillLanding = timeTillTakenOff +  (int) ((12 - getSpeed()) * 69);
+			int timeTillLanding = timeTillTakenOff +  (int) ((14 - getSpeed()) * 69);
 			int timeTillLandingInt = timeTillLanding + (20 * 7);
 			int timeTillLanded  = timeTillLanding + (20 * 11);
 			if(inFlightTimer >= timeTillTakenOff)//Taken off
 			{
 				if(inFlightTimer == (20 * 22))// remove old tardis
 				{
-					World w = MinecraftServer.getServer().worldServerForDimension(exteriorWorld);
-					if(w.getBlockId(exteriorX,exteriorY,exteriorZ) == TardisMod.tardisBlock.blockID)
+					World w = Helper.getWorld(exteriorWorld);
+					if(w != null)
 					{
-						w.setBlockToAir(exteriorX, exteriorY, exteriorZ);
-						w.setBlockToAir(exteriorX, exteriorY+1, exteriorZ);
-						exteriorWorld = 10000;
-						exteriorX = 0;
-						exteriorY = 0;
-						exteriorZ = 0;
+						if(w.getBlockId(exteriorX,exteriorY,exteriorZ) == TardisMod.tardisBlock.blockID)
+						{
+							w.setBlockToAir(exteriorX, exteriorY, exteriorZ);
+							w.setBlockToAir(exteriorX, exteriorY+1, exteriorZ);
+							TardisOutput.print("TCTE", "Blanking exterior");
+							exteriorWorld = 10000;
+							exteriorX = 0;
+							exteriorY = 0;
+							exteriorZ = 0;
+						}
 					}
 				}
 				if(inFlightTimer < timeTillLanding)
@@ -272,11 +281,13 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		exteriorX = x;
 		exteriorY = y;
 		exteriorZ = z;
+		TardisOutput.print("TCTE", "Exterior placed @ " + x + ","+ y +","+z+","+exteriorWorld +","+worldObj.isRemote);
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 	
 	public TardisTileEntity getExterior()
 	{
-		World w = MinecraftServer.getServer().worldServerForDimension(exteriorWorld);
+		World w = Helper.getWorld(exteriorWorld);
 		if(w != null)
 		{
 			TileEntity te = w.getBlockTileEntity(exteriorX,exteriorY,exteriorZ);
@@ -355,6 +366,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public int getEnergy()
 	{
 		return energy;
+	}
+	
+	public boolean takeEnergy(int amount, boolean sim)
+	{
+		return true;
 	}
 	
 	public int getShields()
@@ -440,6 +456,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			totalFlightTimer = nbt.getInteger("totalFlightTimer");
 			inFlight = nbt.getBoolean("inFlight");
 			numRooms = nbt.getInteger("numRooms");
+			speed = nbt.getDouble("speed");
 			
 			shields  = nbt.getInteger("shields");
 			hull     = nbt.getInteger("hull");
@@ -465,6 +482,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			nbt.setInteger("totalFlightTimer", totalFlightTimer);
 			nbt.setInteger("inFlightTimer", inFlightTimer);
 			nbt.setInteger("numRooms", numRooms);
+			nbt.setDouble("speed", speed);
 			
 			nbt.setInteger("shields",shields);
 			nbt.setInteger("hull",hull);

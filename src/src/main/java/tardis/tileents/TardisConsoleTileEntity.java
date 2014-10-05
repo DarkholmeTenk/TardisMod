@@ -33,6 +33,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	private static String[] schemaList = null;
 	
 	private int schemaNum = 0;
+	private int screwMode = 0;
 	
 	public String schemaChooserString = "";
 	
@@ -198,7 +199,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		{
 			TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			if(hit.within(0,0.77,0.42,0.93,0.53)) // Screwdriver
+			if(hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
 			{
 				if(hasScrewdriver() && pl instanceof EntityPlayerMP)
 				{
@@ -206,6 +207,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 					ItemStack toGive = new ItemStack(TardisMod.screwItem,1,0);
 					toGive.stackTagCompound = new NBTTagCompound();
 					toGive.stackTagCompound.setString("schemaName", schemaChooserString);
+					toGive.stackTagCompound.setInteger("screwdriverMode", screwMode);
 					Helper.giveItemStack((EntityPlayerMP) pl, toGive);
 				}
 				else
@@ -218,11 +220,14 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 						{
 							InventoryPlayer inv = pl.inventory;
 							inv.mainInventory[inv.currentItem] = null;
+							screwMode = TardisMod.screwItem.getMode(held).ordinal();
 							hasScrewdriver = true;
 						}
 					}
 				}
 			}
+			else if(hit.within(0, 0.779, 0.431, 0.901, 0.525))
+				activateControl(pl,5);
 			else if(hit.within(0,1.645,0.238,1.88,0.38))//Gauge1
 			{
 				pl.addChatMessage("Gauge 0");
@@ -411,7 +416,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				return (regulated ? 1 : 0);
 			if(controlID == 42)
 				return core.inFlight() ? 1 : 0;
-			if(controlID == 50 || controlID == 51)
+			if(controlID == 50 || controlID == 51 || controlID == 5)
 				return lastButton == controlID ? 1 : 0;
 			return (((tickTimer + (controlID * 20)) % cycleLength) / cycleLength);
 		}
@@ -430,13 +435,19 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		TardisOutput.print("TConTE","Control:"+controlID,TardisOutput.Priority.DEBUG);
 		if(!core.inCoordinatedFlight())
 		{
-			
+			if(controlID == 5)
+			{
+				lastButton = 5;
+				lastButtonTT = tickTimer;
+				if(!hasScrewdriver && core.takeEnergy(core.getMaxEnergy()/10,false))
+					hasScrewdriver = true;
+			}
 			if((controlID >= 10 && controlID < 40) || controlID == 3)
 			{
 				primed = false;
 				regulated = false;
 				if(controlID == 3)
-					facing = Helper.cycle(facing+1, 0, 3);
+					facing = Helper.cycle(facing+(pl.isSneaking()?-1:1), 0, 3);
 				else if(controlID >= 10 && controlID < 14)
 				{
 					if(pl.isSneaking())
@@ -532,6 +543,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			schemaChooserString = nbt.getString("schemaChooserString");
 			lastButton = nbt.getInteger("lastButton");
 			lastButtonTT = nbt.getInteger("lastButtonTT");
+			screwMode = nbt.getInteger("screwMode");
 			clampControls();
 		}
 	}
@@ -550,6 +562,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		nbt.setIntArray("yControls", yControls);
 		nbt.setBoolean("landGroundControl", landGroundControl);
 		nbt.setString("schemaChooserString", schemaChooserString);
+		nbt.setInteger("screwMode", screwMode);
 		nbt.setInteger("lastButton",lastButton);
 		nbt.setInteger("lastButtonTT",lastButtonTT);
 	}

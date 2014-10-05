@@ -77,7 +77,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		GL11.glPushMatrix();
 		float scaleFactor = 0.5F;
 		GL11.glRotatef(180F, 0F, 1F, 0F);
-		GL11.glTranslatef(1F, -0.55F, 0.65F);
+		GL11.glTranslatef(1F, -0.55F, 0.45F);
 		GL11.glRotatef(45F, 0F, 0, 1F);
 		GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
 		GL11.glColor3d(1, 1, 1);
@@ -93,7 +93,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 			GL11.glPushMatrix();
 			float scaleFactor = 0.5F;
 			GL11.glRotatef(180F, 0F, 1F, 0F);
-			GL11.glTranslatef(1F, -0.55F, 0.65F);
+			GL11.glTranslatef(1F, -0.55F, 0.45F);
 			GL11.glRotatef(45F, 0F, 0, 1F);
 			GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
 			GL11.glColor3d(1, 1, 1);
@@ -346,6 +346,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		if(te != null && te instanceof TardisConsoleTileEntity)
 		{
 			TardisConsoleTileEntity tce = (TardisConsoleTileEntity)te;
+			renderButton(tess,tce,5, -1,-0.53,-0.64, 45,90,0, 0.5,0.5,0.5);
 			renderScrewdriverHolder(tess,tce,x,y,z);
 			renderScrewdriver(tess,tce,x,y,z);
 			renderGauge(tess, tce, 0, -0.68, -0.72, 0.15, 45, -90, 0, 0.75, 0.75, 0.75);
