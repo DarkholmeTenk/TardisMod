@@ -72,25 +72,19 @@ public class TardisConfigHandler
 			String[] files = assetSchemaFile.list();
 			for(String s:files)
 			{
-				if(s.endsWith(".schema"))
+				if(s.endsWith(".schema") && !s.startsWith("tardis"))
 					found.add(s.replace(".schema", ""));
 			}
 			files = tardisSchemaDir.list();
 			for(String s:files)
 			{
-				if(s.endsWith(".schema"))
+				if(s.endsWith(".schema") && !s.startsWith("tardis"))
 					found.add(s.replace(".schema", ""));
 			}		
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
-		}
-		for(String s: found)
-		{
-			if(s.startsWith("tardis"))
-				found.remove(s);
-			TardisOutput.print("TCH", "Schema:"+s,TardisOutput.Priority.DEBUG);
 		}
 		return found.toArray(fA);
 	}
