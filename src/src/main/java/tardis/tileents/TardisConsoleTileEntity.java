@@ -509,6 +509,11 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		regulated = false;
 	}
 	
+	public static void refreshSchemas()
+	{
+		schemaList = TardisMod.configHandler.getSchemas();
+	}
+	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
 	{
