@@ -27,6 +27,7 @@ public class TardisPacketHandler implements IPacketHandler
 		}
 		if(packet.channel.equals("TardisDR"))
 		{
+			TardisOutput.print("PAC", "Packet handler handling DR");
 			handleTardisDRPacket(packet);
 		}
 	}

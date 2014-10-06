@@ -15,20 +15,20 @@ public class TardisConnectionHandler implements IConnectionHandler
 	@Override
 	public void playerLoggedIn(Player player, NetHandler netHandler, INetworkManager manager)
 	{
-		Packet250CustomPayload p = TardisDimensionRegistry.getPacket();
-		manager.addToSendQueue(p);
 	}
 
 	@Override
 	public String connectionReceived(NetLoginHandler netHandler, INetworkManager manager)
 	{
+		TardisOutput.print("TCH", "Sending TDR packet");
+		Packet250CustomPayload p = TardisDimensionRegistry.getPacket();
+		manager.addToSendQueue(p);
 		return null;
 	}
 
 	@Override
 	public void connectionOpened(NetHandler netClientHandler, String server, int port, INetworkManager manager)
 	{
-
 	}
 
 	@Override
