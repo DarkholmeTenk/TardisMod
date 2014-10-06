@@ -9,8 +9,10 @@ import tardis.TardisMod;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
 
 public class TardisPacketHandler implements IPacketHandler
 {
@@ -33,12 +35,17 @@ public class TardisPacketHandler implements IPacketHandler
 	
 	public void handleTardisDRPacket(Packet250CustomPayload packet)
 	{
+		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
+			return;
 		DataInputStream inputStream = null;
 		try
 		{
 			inputStream = new DataInputStream(new ByteArrayInputStream(packet.data));
 			NBTTagCompound nbt = (NBTTagCompound) NBTTagCompound.readNamedTag(inputStream);
+			if(TardisMod.dimReg == null)
+				TardisMod.dimReg = TardisDimensionRegistry.load();
 			TardisMod.dimReg.readFromNBT(nbt);
+			TardisMod.dimReg.registerDims();
 		}
 		catch(Exception e)
 		{
