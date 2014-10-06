@@ -22,6 +22,7 @@ public class TardisConnectionHandler implements IConnectionHandler
 	{
 		TardisOutput.print("TCH", "Sending TDR packet");
 		Packet250CustomPayload p = TardisDimensionRegistry.getPacket();
+		netHandler.handleCustomPayload(p);
 		manager.addToSendQueue(p);
 		return null;
 	}
@@ -34,7 +35,6 @@ public class TardisConnectionHandler implements IConnectionHandler
 	@Override
 	public void connectionOpened(NetHandler netClientHandler, MinecraftServer server, INetworkManager manager)
 	{
-
 	}
 
 	@Override

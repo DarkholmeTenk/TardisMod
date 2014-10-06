@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import tardis.TardisMod;
 
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
