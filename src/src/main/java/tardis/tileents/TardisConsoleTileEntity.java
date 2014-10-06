@@ -203,7 +203,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		if(hit != null && core != null)
 		{
 			TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			if(hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
 			{
 				if(hasScrewdriver() && pl instanceof EntityPlayerMP)
@@ -302,6 +301,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				activateControl(pl,50);
 			else if(hit.within(2, 2.251, 0.646, 2.371, 0.730))
 				activateControl(pl,51);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			sendDataPacket();
 		}
 		return true;
 	}
