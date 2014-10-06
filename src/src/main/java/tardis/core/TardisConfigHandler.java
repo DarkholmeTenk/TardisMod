@@ -22,13 +22,13 @@ public class TardisConfigHandler
 	
 	public TardisConfigHandler(File baseConfigDir) throws IOException
 	{
-		tardisConfigDir = new File(baseConfigDir.toString() + "\\tardis\\");
+		tardisConfigDir = new File(baseConfigDir.toString() + "/tardis/");
 		if((!tardisConfigDir.exists()) || (!tardisConfigDir.isDirectory()))
 		{
 			if(!tardisConfigDir.mkdirs())
 				throw new IOException("Couldn't create " + tardisConfigDir.toString());
 		}
-		tardisSchemaDir = new File(tardisConfigDir.toString() + "\\schema\\");
+		tardisSchemaDir = new File(tardisConfigDir.toString() + "/schema/");
 		if((!tardisSchemaDir.exists()) || (!tardisSchemaDir.isDirectory()))
 		{
 			if(!tardisSchemaDir.mkdirs())
@@ -38,7 +38,7 @@ public class TardisConfigHandler
 	
 	public File getSchemaFile(String name)
 	{
-		File schema = new File(tardisSchemaDir.toString() + "\\" + name + ".schema");
+		File schema = new File(tardisSchemaDir.toString() + "/" + name + ".schema");
 		if(!schema.exists())
 		{
 			try
@@ -94,7 +94,7 @@ public class TardisConfigHandler
 		if(cachedConfigs.containsKey(name))
 			return cachedConfigs.get(name);
 		
-		TardisConfigFile tmp = new TardisConfigFile(new File(tardisConfigDir.toString() + "\\Tardis" + name + ".cfg"));
+		TardisConfigFile tmp = new TardisConfigFile(new File(tardisConfigDir.toString() + "//Tardis" + name + ".cfg"));
 		cachedConfigs.put(name, tmp);
 		return tmp;
 	}
