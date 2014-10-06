@@ -70,7 +70,7 @@ public class TardisConfigHandler
 		ArrayList<String> found = new ArrayList<String>();
 		try
 		{
-			InputStream is = TardisMod.class.getResourceAsStream("/assets/tardismod/schema/");
+			InputStream is = TardisMod.class.getResourceAsStream("assets/tardismod/schema");
 			BufferedReader r = new BufferedReader(new InputStreamReader(is));
 			String l;
 			while((l = r.readLine())!=null)
@@ -79,6 +79,7 @@ public class TardisConfigHandler
 				if(l.endsWith(".schema") && !l.startsWith("tardis"))
 					found.add(l.replace(".schema", ""));
 			}
+			TardisOutput.print("TCH","Read classpath");
 		}
 		catch(Exception e)
 		{
