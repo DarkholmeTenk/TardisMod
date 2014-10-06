@@ -2,8 +2,14 @@ package tardis;
 
 import java.io.IOException;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import tardis.blocks.TardisAbstractBlock;
 import tardis.blocks.TardisBlock;
@@ -26,6 +32,7 @@ import tardis.core.TardisCreativeTab;
 import tardis.core.TardisDimensionRegistry;
 import tardis.core.TardisOutput;
 import tardis.core.TardisPacketHandler;
+import tardis.core.TardisPlayerHandler;
 import tardis.core.TardisSoundHandler;
 import tardis.core.TardisTeleporter;
 import tardis.core.commands.TardisCommandRegister;
@@ -37,6 +44,7 @@ import tardis.tileents.TardisConsoleTileEntity;
 import tardis.tileents.TardisCoreTileEntity;
 import tardis.tileents.TardisSchemaCoreTileEntity;
 import tardis.tileents.TardisTileEntity;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -44,10 +52,13 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @Mod(modid="TardisMod",name="Tardis Mod",version="1.0",dependencies="required-after:FML")
-@NetworkMod(channels = { "TardisModChannel","TardisTrans" }, clientSideRequired = true, serverSideRequired = true, packetHandler = TardisPacketHandler.class)
+@NetworkMod(channels = { "TardisModChannel","TardisTrans","TardisDR" }, clientSideRequired = true, serverSideRequired = true, packetHandler = TardisPacketHandler.class)
 public class TardisMod
 {
 	
@@ -104,6 +115,8 @@ public class TardisMod
 		initItems();
 		
 		MinecraftForge.EVENT_BUS.register(new TardisSoundHandler());
+		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
+			MinecraftForge.EVENT_BUS.register(new TardisPlayerHandler());
 		
 		proxy.postAssignment();
 	}

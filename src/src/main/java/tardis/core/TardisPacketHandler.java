@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import tardis.TardisMod;
 
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import cpw.mods.fml.common.network.IPacketHandler;
@@ -22,6 +24,36 @@ public class TardisPacketHandler implements IPacketHandler
 		{
 			TardisOutput.print("PAC", "Packet handler handling trans");
 			handleTardisTransPacket(packet);
+		}
+		if(packet.channel.equals("TardisDR"))
+		{
+			handleTardisDRPacket(packet);
+		}
+	}
+	
+	public void handleTardisDRPacket(Packet250CustomPayload packet)
+	{
+		DataInputStream inputStream = null;
+		try
+		{
+			inputStream = new DataInputStream(new ByteArrayInputStream(packet.data));
+			NBTTagCompound nbt = (NBTTagCompound) NBTTagCompound.readNamedTag(inputStream);
+			TardisMod.dimReg.readFromNBT(nbt);
+		}
+		catch(IOException e)
+		{
+			TardisOutput.print("PAC", "TransPacketError:" + e.getMessage(),TardisOutput.Priority.ERROR);
+		}
+		finally
+		{
+			if(inputStream != null)
+			{
+				try
+				{
+					inputStream.close();
+				}
+				catch (IOException e) {	}
+			}
 		}
 	}
 	
