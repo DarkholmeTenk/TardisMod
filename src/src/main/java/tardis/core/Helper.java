@@ -18,7 +18,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.network.packet.DimensionRegisterPacket;
 
 public class Helper
 {
@@ -101,7 +100,7 @@ public class Helper
 		MinecraftServer serv = MinecraftServer.getServer();
 		if(serv != null)
 			return serv.worldServerForDimension(dimensionID);
-		return DimensionManager.getWorld(dimensionID);
+		return TardisMod.proxy.getWorld(dimensionID);
 		//return null;
 	}
 	

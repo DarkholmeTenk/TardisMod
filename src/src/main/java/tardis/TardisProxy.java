@@ -1,5 +1,8 @@
 package tardis;
 
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+
 public class TardisProxy
 {
 
@@ -16,5 +19,10 @@ public class TardisProxy
 	public void postAssignment()
 	{
 		
+	}
+	
+	public World getWorld(int id)
+	{
+		return DimensionManager.getWorld(id);
 	}
 }

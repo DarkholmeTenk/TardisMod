@@ -1,6 +1,7 @@
 package tardis.client;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
@@ -16,7 +17,7 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 
 public class TardisClientProxy extends TardisProxy
 {
-
+	public static World cWorld = null;
 	public TardisClientProxy()
 	{
 		ClientRegistry.bindTileEntitySpecialRenderer(TardisTileEntity.class, new TardisRenderer());
@@ -35,5 +36,13 @@ public class TardisClientProxy extends TardisProxy
 	public void postAssignment()
 	{
 		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem.itemID, new TardisSonicScrewdriverRenderer());
+	}
+	
+	@Override
+	public World getWorld(int id)
+	{
+		if(id == cWorld.provider.dimensionId)
+			return cWorld;
+		return super.getWorld(id);
 	}
 }

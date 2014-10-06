@@ -5,6 +5,8 @@ import java.util.Random;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 
+import tardis.TardisMod;
+import tardis.client.TardisClientProxy;
 import tardis.core.TardisOutput;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
@@ -46,6 +48,8 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	@Override
 	public void onDataPacket(INetworkManager net, Packet132TileEntityData packet)
 	{
+		if(TardisMod.proxy instanceof TardisClientProxy)
+			((TardisClientProxy)TardisMod.proxy).cWorld = worldObj;
 		TardisOutput.print("TATE","Receiving description packet",TardisOutput.Priority.DEBUG);
 		readFromNBT(packet.data);
 		super.onDataPacket(net, packet);
