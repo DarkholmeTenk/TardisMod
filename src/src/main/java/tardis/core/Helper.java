@@ -1,5 +1,7 @@
 package tardis.core;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 import tardis.TardisMod;
 import tardis.core.schema.TardisPartBlueprint;
 import tardis.dimension.TardisWorldProvider;
@@ -11,10 +13,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.network.packet.DimensionRegisterPacket;
 
 public class Helper
 {
@@ -67,6 +71,12 @@ public class Helper
 		MinecraftServer serv = MinecraftServer.getServer();
 		if(ent instanceof EntityPlayerMP)
 		{
+			World nW = Helper.getWorld(worldID);
+			if(nW.provider instanceof TardisWorldProvider && FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
+			{
+				Packet dP = TardisDimensionRegistry.getPacket();
+				MinecraftServer.getServer().getConfigurationManager().sendToAllNear(ent.posX, ent.posY, ent.posZ, 100, ent.worldObj.provider.dimensionId, dP);
+			}
 			serv.getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) ent, worldID, TardisMod.teleporter);
 			((EntityPlayerMP) ent).setPositionAndUpdate(x, y, z);
 		}
