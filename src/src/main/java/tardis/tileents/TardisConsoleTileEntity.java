@@ -109,8 +109,13 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			if(schemaList == null)
 			{
 				schemaList = TardisMod.configHandler.getSchemas();
-				schemaNum = 0;
-				schemaChooserString = schemaList[schemaNum];
+				if(schemaList!= null && schemaList.length >0)
+				{
+					schemaNum = 0;
+					schemaChooserString = schemaList[schemaNum];
+				}
+				else
+					schemaList = null;
 			}
 				
 			if(tickTimer % 10 == 0)
