@@ -112,6 +112,8 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 	@Override
     public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer pl, int s, float t, float j, float k)
     {
+		if(w.isRemote)
+			return true;
     	int meta = w.getBlockMetadata(x, y, z);
     	if(meta == 2)
     	{

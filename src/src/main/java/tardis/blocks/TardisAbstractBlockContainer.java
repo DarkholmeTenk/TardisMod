@@ -56,13 +56,18 @@ public abstract class TardisAbstractBlockContainer extends TardisAbstractBlock i
 			if(held != null)
 			{
 				Item heldBase = held.getItem();
-				if(heldBase instanceof TardisSonicScrewdriverItem)
+				if(heldBase instanceof TardisSonicScrewdriverItem && !w.isRemote)
 					answer = answer || ((IScrewable)te).screw(((TardisSonicScrewdriverItem)heldBase).getMode(held), pl);
+				else if(heldBase instanceof TardisSonicScrewdriverItem && w.isRemote)
+					answer = true;
 			}
     	}
     	if(te != null && te instanceof IActivatable)
     	{
-    		answer = answer || ((IActivatable)te).activate(pl,s);
+    		if(w.isRemote)
+    			answer = true;
+    		else
+    			answer = answer || ((IActivatable)te).activate(pl,s);
     	}
         return answer;
     }

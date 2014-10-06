@@ -94,7 +94,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 			{
 				Item base = held.getItem();
 				NBTTagCompound tag = held.stackTagCompound;
-				if(base != null && tag != null)
+				if(base != null && tag != null && !w.isRemote)
 				{
 					boolean schemaCarrier = (base instanceof TardisSchemaItem);
 					if(base instanceof TardisSonicScrewdriverItem)
@@ -147,6 +147,8 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 						player.addChatMessage("You do not own this TARDIS");
 					}
 				}
+				else if(w.isRemote)
+					return true;
 			}
 		}
 		return false;
