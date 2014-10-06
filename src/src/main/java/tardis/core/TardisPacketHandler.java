@@ -40,9 +40,9 @@ public class TardisPacketHandler implements IPacketHandler
 			NBTTagCompound nbt = (NBTTagCompound) NBTTagCompound.readNamedTag(inputStream);
 			TardisMod.dimReg.readFromNBT(nbt);
 		}
-		catch(IOException e)
+		catch(Exception e)
 		{
-			TardisOutput.print("PAC", "TransPacketError:" + e.getMessage(),TardisOutput.Priority.ERROR);
+			e.printStackTrace();
 		}
 		finally
 		{
