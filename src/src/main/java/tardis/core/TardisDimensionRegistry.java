@@ -1,10 +1,14 @@
 package tardis.core;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
 
 import tardis.TardisMod;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.DimensionManager;
@@ -83,5 +87,26 @@ public class TardisDimensionRegistry extends WorldSavedData
 			i++;
 		}
 		nbt.setIntArray("registeredDimensions", dims);
+	}
+	
+	public static Packet250CustomPayload getPacket()
+	{
+		Packet250CustomPayload p = new Packet250CustomPayload();
+		p.channel = "TardisDR";
+		try
+		{
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream stream = new DataOutputStream(bos);
+			NBTTagCompound t = new NBTTagCompound();
+			TardisMod.dimReg.writeToNBT(t);
+			NBTTagCompound.writeNamedTag(t, stream);
+			p.data = bos.toByteArray();
+			p.length = p.data.length;
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		return p;
 	}
 }
