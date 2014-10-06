@@ -5,6 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+
 import tardis.TardisMod;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -48,10 +51,13 @@ public class TardisDimensionRegistry extends WorldSavedData
 
 	public static void save()
 	{
-		TardisOutput.print("TDR", "Saving",TardisOutput.Priority.DEBUG);
-		if(TardisMod.dimReg == null)
-			TardisMod.dimReg = new TardisDimensionRegistry("TModDimReg");
-		MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.setData("TModDimReg", TardisMod.dimReg);
+		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
+		{
+			TardisOutput.print("TDR", "Saving",TardisOutput.Priority.DEBUG);
+			if(TardisMod.dimReg == null)
+				TardisMod.dimReg = new TardisDimensionRegistry("TModDimReg");
+			MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.setData("TModDimReg", TardisMod.dimReg);
+		}
 	}
 	
 	public void registerDims()
