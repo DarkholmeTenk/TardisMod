@@ -4,7 +4,7 @@ import tardis.TardisMod;
 
 public class TardisOutput
 {
-	public enum Priority { NONE, ERROR, WARNING, INFO, DEBUG }
+	public enum Priority { NONE, ERROR, WARNING, INFO, DEBUG, OLDDEBUG }
 	public static Priority defaultPriority = Priority.INFO;
 	
 	public static void print(String descriptor,String message,Priority prio)

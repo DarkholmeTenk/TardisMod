@@ -22,7 +22,7 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	@Override
 	public Packet getDescriptionPacket()
 	{
-		TardisOutput.print("TATE","Compiling description packet",TardisOutput.Priority.DEBUG);
+		TardisOutput.print("TATE","Compiling description packet",TardisOutput.Priority.OLDDEBUG);
 		NBTTagCompound tag = new NBTTagCompound();
 		writeToNBT(tag);
 		Packet p = new Packet132TileEntityData(xCoord,yCoord,zCoord,3,tag);
@@ -33,7 +33,7 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	{
 		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
 		{
-			TardisOutput.print("TATE","Called sendDataPacket",TardisOutput.Priority.DEBUG);
+			TardisOutput.print("TATE","Called sendDataPacket",TardisOutput.Priority.OLDDEBUG);
 			Packet p = getDescriptionPacket();
 			MinecraftServer serv = MinecraftServer.getServer();
 			if(serv == null)
@@ -50,7 +50,7 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	{
 		if(TardisMod.proxy instanceof TardisClientProxy)
 			((TardisClientProxy)TardisMod.proxy).cWorld = worldObj;
-		TardisOutput.print("TATE","Receiving description packet",TardisOutput.Priority.DEBUG);
+		TardisOutput.print("TATE","Receiving description packet",TardisOutput.Priority.OLDDEBUG);
 		readFromNBT(packet.data);
 		super.onDataPacket(net, packet);
 	}

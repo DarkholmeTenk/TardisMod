@@ -232,7 +232,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		}
 		
 		if(!worldObj.isRemote)
-			if(tickCount % 10 == 0)
+			if(tickCount % 80 == 0)
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 	
