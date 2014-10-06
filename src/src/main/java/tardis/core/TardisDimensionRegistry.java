@@ -103,7 +103,7 @@ public class TardisDimensionRegistry extends WorldSavedData
 			p.data = bos.toByteArray();
 			p.length = p.data.length;
 		}
-		catch(IOException e)
+		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
