@@ -33,9 +33,16 @@ public class TardisDimensionRegistry extends WorldSavedData
 	public static TardisDimensionRegistry load()
 	{
 		TardisOutput.print("TDR","Attempting to load tardis dimension registry");
-		WorldSavedData data = MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.loadData(TardisDimensionRegistry.class, "TModDimReg");
-		if(data instanceof TardisDimensionRegistry)
-			return (TardisDimensionRegistry)data;
+		try
+		{
+			WorldSavedData data = MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.loadData(TardisDimensionRegistry.class, "TModDimReg");
+			if(data instanceof TardisDimensionRegistry)
+				return (TardisDimensionRegistry)data;
+		}
+		catch(Exception e)
+		{
+			
+		}
 		return new TardisDimensionRegistry("TModDimReg");
 	}
 
