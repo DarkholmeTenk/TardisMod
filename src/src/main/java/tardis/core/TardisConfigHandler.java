@@ -74,20 +74,23 @@ public class TardisConfigHandler
 			BufferedReader r = new BufferedReader(new InputStreamReader(is));
 			String l;
 			while((l = r.readLine())!=null)
+			{
+				TardisOutput.print("TCH", "TCHSS:"+l);
 				if(l.endsWith(".schema") && !l.startsWith("tardis"))
 					found.add(l.replace(".schema", ""));
-			
-			String[] files = tardisSchemaDir.list();
-			for(String s:files)
-			{
-				if(s.endsWith(".schema") && !s.startsWith("tardis"))
-					found.add(s.replace(".schema", ""));
-			}		
+			}
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
+		String[] files = tardisSchemaDir.list();
+		for(String s:files)
+		{
+			TardisOutput.print("TCH", "TCHSS:"+s);
+			if(s.endsWith(".schema") && !s.startsWith("tardis"))
+				found.add(s.replace(".schema", ""));
+		}	
 		return found.toArray(fA);
 	}
 	
