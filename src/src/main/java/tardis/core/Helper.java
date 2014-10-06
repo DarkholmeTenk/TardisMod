@@ -101,7 +101,8 @@ public class Helper
 		MinecraftServer serv = MinecraftServer.getServer();
 		if(serv != null)
 			return serv.worldServerForDimension(dimensionID);
-		return null;
+		return DimensionManager.getWorld(dimensionID);
+		//return null;
 	}
 	
 	public static void giveItemStack(EntityPlayerMP pl, ItemStack is)
