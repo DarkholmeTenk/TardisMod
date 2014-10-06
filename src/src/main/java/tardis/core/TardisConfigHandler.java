@@ -70,7 +70,7 @@ public class TardisConfigHandler
 		ArrayList<String> found = new ArrayList<String>();
 		try
 		{
-			InputStream is = TardisMod.class.getResourceAsStream("assets/tardismod/schema");
+			InputStream is = TardisMod.class.getResourceAsStream("/assets/tardismod/schema/schemaList");
 			BufferedReader r = new BufferedReader(new InputStreamReader(is));
 			String l;
 			while((l = r.readLine())!=null)
