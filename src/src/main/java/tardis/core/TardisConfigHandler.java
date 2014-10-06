@@ -2,6 +2,7 @@ package tardis.core;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,13 +45,16 @@ public class TardisConfigHandler
 			try
 			{
 				InputStream fis = TardisMod.class.getResourceAsStream("/assets/tardismod/schema/"+name+".schema");
-				BufferedReader read = new BufferedReader(new InputStreamReader(fis));
-				FileWriter os = new FileWriter(schema);
-				PrintWriter print = new PrintWriter(os);
-				String line;
-				while((line = read.readLine()) != null)
-					print.println(line);
-				print.close();
+				FileOutputStream os = new FileOutputStream(schema);
+				
+				byte[] buffer = new byte[1024];
+				int len;
+				while ((len = fis.read(buffer)) != -1)
+				{
+				    os.write(buffer, 0, len);
+				}
+				fis.close();
+				os.close();
 			}
 			catch(IOException e)
 			{
