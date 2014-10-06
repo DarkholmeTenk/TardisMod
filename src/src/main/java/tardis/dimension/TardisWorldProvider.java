@@ -19,7 +19,7 @@ public class TardisWorldProvider extends WorldProvider
     @Override
 	public String getSaveFolder()
     {
-        return (dimensionId == 0 ? null : "tardis\\DIM" + dimensionId);
+        return (dimensionId == 0 ? null : "tardis/DIM" + dimensionId);
     }
     
     @Override
