@@ -131,6 +131,8 @@ public class Helper
 	
 	public static int generateTardisInterior(EntityPlayer player,TardisTileEntity exterior)
 	{
+		if(player.worldObj.isRemote)
+			return 0;
 		int dimID = DimensionManager.getNextFreeDimId();
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
 		TardisMod.dimReg.addDimension(dimID);
