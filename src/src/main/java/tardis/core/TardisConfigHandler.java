@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -70,16 +70,14 @@ public class TardisConfigHandler
 		ArrayList<String> found = new ArrayList<String>();
 		try
 		{
-			URI assetSchemaURI = TardisMod.class.getResource("/assets/tardismod/schema/").toURI();
-			File assetSchemaFile = new File(assetSchemaURI);
-			TardisOutput.print("TCH", "Scanning" + assetSchemaFile.toString(),TardisOutput.Priority.DEBUG);
-			String[] files = assetSchemaFile.list();
-			for(String s:files)
-			{
-				if(s.endsWith(".schema") && !s.startsWith("tardis"))
-					found.add(s.replace(".schema", ""));
-			}
-			files = tardisSchemaDir.list();
+			InputStream is = TardisMod.class.getResourceAsStream("/assets/tardismod/schema/");
+			BufferedReader r = new BufferedReader(new InputStreamReader(is));
+			String l;
+			while((l = r.readLine())!=null)
+				if(l.endsWith(".schema") && !l.startsWith("tardis"))
+					found.add(l.replace(".schema", ""));
+			
+			String[] files = tardisSchemaDir.list();
 			for(String s:files)
 			{
 				if(s.endsWith(".schema") && !s.startsWith("tardis"))
