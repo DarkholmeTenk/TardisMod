@@ -98,7 +98,10 @@ public class Helper
 	
 	public static World getWorld(int dimensionID)
 	{
-		return MinecraftServer.getServer().worldServerForDimension(dimensionID);
+		MinecraftServer serv = MinecraftServer.getServer();
+		if(serv != null)
+			return serv.worldServerForDimension(dimensionID);
+		return null;
 	}
 	
 	public static void giveItemStack(EntityPlayerMP pl, ItemStack is)
@@ -123,11 +126,11 @@ public class Helper
 	
 	public static TardisCoreTileEntity getTardisCore(int dimensionID)
 	{
-		World tardisWorld = MinecraftServer.getServer().worldServerForDimension(dimensionID);
+		World tardisWorld = Helper.getWorld(dimensionID);
 		if(tardisWorld != null)
 		{
 			TileEntity te = tardisWorld.getBlockTileEntity(tardisCoreX, tardisCoreY, tardisCoreZ);
-			if(te instanceof TardisCoreTileEntity)
+			if(te != null && te instanceof TardisCoreTileEntity)
 			{
 				return (TardisCoreTileEntity)te;
 			}
@@ -147,7 +150,7 @@ public class Helper
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
 		TardisMod.dimReg.addDimension(dimID);
 		TardisDimensionRegistry.save();
-		World tardisWorld = MinecraftServer.getServer().worldServerForDimension(dimID);
+		World tardisWorld = Helper.getWorld(dimID);
 		try
 		{
 			loadSchema("tardisConsoleMain",tardisWorld,tardisCoreX,tardisCoreY-10,tardisCoreZ,0);
