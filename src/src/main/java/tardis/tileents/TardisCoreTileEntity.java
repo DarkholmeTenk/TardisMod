@@ -419,7 +419,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(!sim)
 			energy += amount;
-		Helper.clamp(energy,0,getMaxEnergy());
+		energy = Helper.clamp(energy,0,getMaxEnergy());
 		return true;
 	}
 	
@@ -431,7 +431,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				energy -= amount;
 			return true;
 		}
-		Helper.clamp(energy,0,getMaxEnergy());
+		energy = Helper.clamp(energy,0,getMaxEnergy());
 		return false;
 	}
 	
