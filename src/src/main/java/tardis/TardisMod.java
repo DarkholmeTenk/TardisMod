@@ -17,6 +17,7 @@ import tardis.blocks.TardisSchemaBlock;
 import tardis.blocks.TardisSchemaComponentBlock;
 import tardis.blocks.TardisSchemaComponentItemBlock;
 import tardis.blocks.TardisSchemaCoreBlock;
+import tardis.blocks.TardisStairBlock;
 import tardis.blocks.TardisTopBlock;
 import tardis.core.Helper;
 import tardis.core.TardisConfigFile;
@@ -76,6 +77,7 @@ public class TardisMod
 	public static TardisAbstractBlock schemaCoreBlock;
 	public static TardisAbstractBlock schemaComponentBlock;
 	public static TardisAbstractBlock debugBlock;
+	public static TardisStairBlock	  stairBlock;
 	
 	public static TardisAbstractItem schemaItem;
 	public static TardisSonicScrewdriverItem screwItem;
@@ -129,6 +131,9 @@ public class TardisMod
 		
 		decoBlock = new TardisDecoBlock(blockConfig.getInt("decoBlockID", 640));
 		GameRegistry.registerBlock(decoBlock, TardisDecoItemBlock.class, decoBlock.getUnlocalizedName());
+		
+		stairBlock = new TardisStairBlock(blockConfig.getInt("stairBlockID",649));
+		GameRegistry.registerBlock(stairBlock,stairBlock.getUnlocalizedName());
 		
 		debugBlock = new TardisDebugBlock(blockConfig.getInt("debugBlockID", 641));
 		GameRegistry.registerBlock(debugBlock, debugBlock.getUnlocalizedName());

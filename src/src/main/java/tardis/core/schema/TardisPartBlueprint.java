@@ -13,6 +13,7 @@ import tardis.blocks.TardisInternalDoorBlock;
 import tardis.core.TardisOutput;
 import tardis.tileents.TardisSchemaCoreTileEntity;
 
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -325,16 +326,18 @@ public class TardisPartBlueprint
 		{
 			TardisSchemaStore st = storage.get(key);
 			TardisCoordStore modKey = key;
+			int newMeta = TardisSchemaRotationHandler.getNewMetadata(st.getBlockID(), st.getBlockMeta(), primaryDoorFace, facing);
 			if(facing != primaryDoorFace)
 				modKey = rotate(key,primaryDoorFace,facing);
-			
-			st.loadToWorld(w, x+modKey.x, y+modKey.y, z+modKey.z);
+			st.loadToWorld(w, newMeta, x+modKey.x, y+modKey.y, z+modKey.z);
 			if(st.getBlockID() == TardisMod.schemaCoreBlock.blockID)
 			{
 				TileEntity te = w.getBlockTileEntity(x+modKey.x, y+modKey.y, z+modKey.z);
 				if(te != null && te instanceof TardisSchemaCoreTileEntity)
 					((TardisSchemaCoreTileEntity)te).setData(myName,moddedBounds(facing),facing);
 			}
+			else if(st.getBlockID() == Block.chest.blockID)
+				w.setBlockMetadataWithNotify(x+modKey.x, y+modKey.y, z+modKey.z, newMeta, 3);
 		}
 		getDoor(w,x,y,z,facing);
 	}

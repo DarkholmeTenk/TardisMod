@@ -16,16 +16,29 @@ public class TardisWorldProvider extends WorldProvider
 		return "Tardis Interior";
 	}
 	
-    @Override
+	@Override
 	public String getSaveFolder()
+	{
+		return (dimensionId == 0 ? null : "tardis/DIM" + dimensionId);
+	}
+	
+	@Override
+	public IChunkProvider createChunkGenerator()
+	{
+		return new TardisChunkProvider(worldObj);
+	}	
+	
+	@Override
+	public void updateWeather()
+	{
+		if(worldObj.isRaining())
+			worldObj.toggleRain();
+	}
+	
+	@Override
+	public long getWorldTime()
     {
-        return (dimensionId == 0 ? null : "tardis/DIM" + dimensionId);
-    }
-    
-    @Override
-    public IChunkProvider createChunkGenerator()
-    {
-        return new TardisChunkProvider(worldObj);
+		return 6000;
     }
 
 }

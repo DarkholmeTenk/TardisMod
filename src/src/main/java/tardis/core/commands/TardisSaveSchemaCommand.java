@@ -66,6 +66,7 @@ public class TardisSaveSchemaCommand implements ICommand
 		catch(Exception e)
 		{
 			TardisOutput.print("TSSC", "ERROR:" + e.getMessage(),TardisOutput.Priority.ERROR);
+			e.printStackTrace();
 		}
 		return false;
 	}

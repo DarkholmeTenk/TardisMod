@@ -20,6 +20,9 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 	private boolean takingOff = false;
 	private boolean landing   = false;
 	
+	private boolean takingOffSoundPlayed = false;
+	private boolean landingSoundPlayed = false;
+	
 	Integer linkedDimension = null;
 	TardisCoreTileEntity linkedCore = null;
 	
@@ -55,6 +58,16 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 		
 		if(inFlight())
 		{
+			if(isLanding() && !landingSoundPlayed)
+			{
+				worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:landing", 0.75F, 1, true);
+				landingSoundPlayed = true;
+			}
+			else if(isTakingOff() && !takingOffSoundPlayed)
+			{
+				worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:takeoff", 0.75F, 1, true);
+				takingOffSoundPlayed = true;
+			}
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			if(++fadeTimer >( isLanding() ? 22 * 20 : 11 * 20))
 			{
@@ -95,6 +108,8 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 		fadeTimer = 0;
 		takingOff = true;
 		worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:takeoff", 0.75F, 1, true);
+		takingOffSoundPlayed = true;
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 	
 	public void forceLand()
@@ -108,7 +123,9 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 		fadeTimer = 0;
 		landing = true;
 		worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:landing", 0.75F, 1, true);
+		landingSoundPlayed = true;
 		TardisOutput.print("TTE", "LANDING!!!! " + (worldObj.isRemote?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 	
 	public void linkToDimension(int dimID)

@@ -43,8 +43,8 @@ public class TardisDecoBlock extends TardisAbstractBlock {
 			case 4: x++;break;
 			case 5: x--;break;
 		}
-        if(w.getBlockId(mX, mY, mZ) == blockID && w.getBlockMetadata(mX, mY, mZ) == 6 && w.getBlockMetadata(x, y, z) != 6)
-        	return true;
+        if(w.getBlockId(mX, mY, mZ) == blockID && w.getBlockMetadata(mX, mY, mZ) == 6 && w.getBlockMetadata(x, y, z) == 6)
+        	return false;
         return super.shouldSideBeRendered(w, s, mX, mY, mZ);
     }
 

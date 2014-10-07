@@ -3,14 +3,11 @@ package tardis.core;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import tardis.TardisMod;
 
@@ -67,7 +64,7 @@ public class TardisConfigHandler
 	public String[] getSchemas()
 	{
 		String[] fA = new String[0];
-		ArrayList<String> found = new ArrayList<String>();
+		HashSet<String> found = new HashSet<String>();
 		try
 		{
 			InputStream is = TardisMod.class.getResourceAsStream("/assets/tardismod/schema/schemaList");

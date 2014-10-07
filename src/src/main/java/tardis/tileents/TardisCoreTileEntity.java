@@ -97,7 +97,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				
 				if(ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz) && ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz))
 				{
-					Helper.teleportEntity(player, exteriorWorld, exteriorX+dx, exteriorY+1, exteriorZ+dz);
+					Helper.teleportEntity(player, exteriorWorld, exteriorX+(dx*1.5), exteriorY+1, exteriorZ+(dz*1.5));
 				}
 				else
 				{
@@ -410,14 +410,20 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			{
 				int instability = 20;
 				desDim = dD;
+				String[] send = new String[4];
+				if(desStrs!= null && desStrs.length == 4)
+					send = desStrs;
+				
+				send[0] = "The TARDIS will materialize in dimension " + dD + " near:";
+				if(dX != desX || send[1] == null)
+					send[1] = "x = " + (dX + (rand.nextInt(2 * instability) - instability));
+				if(dY != desY || send[2] == null)
+					send[2] = "y = " + (dY + (rand.nextInt(2 * instability) - instability)); 
+				if(dZ != desZ || send[3] == null)
+				send[3] = "z = " + (dZ + (rand.nextInt(2 * instability) - instability)); 
 				desX = dX;
 				desY = dY;
 				desZ = dZ;
-				String[] send = new String[4];
-				send[0] = "The TARDIS will materialize in dimension " + dD + " near:";
-				send[1] = "x = " + (dX + (rand.nextInt(2 * instability) - instability)); 
-				send[2] = "y = " + (dY + (rand.nextInt(2 * instability) - instability)); 
-				send[3] = "z = " + (dZ + (rand.nextInt(2 * instability) - instability)); 
 				desStrs = send;
 				for(String s:desStrs)
 					pl.addChatMessage(s);

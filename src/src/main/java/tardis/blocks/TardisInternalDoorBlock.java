@@ -221,7 +221,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 			w.setBlockMetadataWithNotify(x, y, z, 8+w.getBlockMetadata(x, y, z), 3);
 		else if(w.getBlockMetadata(x, y, z) >= 8 && !connected)
 			w.setBlockMetadataWithNotify(x, y, z, w.getBlockMetadata(x, y, z)-8, 3);
-		TardisOutput.print("TIDB", "Connected:" + connected);
+		//TardisOutput.print("TIDB", "Connected:" + connected);
 		int mY=0;
 		int MY=0;
 		int mD=0;
@@ -237,7 +237,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 			MY=i;
 		for(int i=1;TardisSchemaComponentBlock.isDoorConnector(w, x, y-i, z);i++)
 			mY=i;
-		TardisOutput.print("TIDB", "ConnHandle:" + dX + "," + dZ + ":-" + mD + "to" + MD + ":-"+mY+"to"+MY);
+		//TardisOutput.print("TIDB", "ConnHandle:" + dX + "," + dZ + ":-" + mD + "to" + MD + ":-"+mY+"to"+MY);
 		for(int d=-mD;d<=MD;d++)
 		{
 			for(int cY=-mY;cY<=MY;cY++)

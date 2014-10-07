@@ -41,7 +41,12 @@ public class TardisSchemaStore
 	
 	public void loadToWorld(World w,int x, int y, int z)
 	{
-		w.setBlock(x, y, z, blockID, blockMeta, 3);
+		loadToWorld(w,blockMeta,x,y,z);
+	}
+	
+	public void loadToWorld(World w,int meta, int x, int y, int z)
+	{
+		w.setBlock(x, y, z, blockID, meta, 3);
 		if(nbtStore != null)
 		{
 			nbtStore.setInteger("x", x);
@@ -112,6 +117,8 @@ public class TardisSchemaStore
 			return "tardisTopBlock";
 		if(id == TardisMod.tardisConsoleBlock.blockID)
 			return "consoleBlock";
+		if(id == TardisMod.stairBlock.blockID)
+			return "stairBlock";
 		
 		return null;
 	}
@@ -136,6 +143,8 @@ public class TardisSchemaStore
 			return TardisMod.tardisTopBlock.blockID;
 		if(name.equals("consoleBlock"))
 			return TardisMod.tardisConsoleBlock.blockID;
+		if(name.equals("stairBlock"))
+			return TardisMod.stairBlock.blockID;
 		return null;
 	}
 
