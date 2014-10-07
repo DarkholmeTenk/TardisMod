@@ -76,7 +76,8 @@ public class Helper
 				Packet dP = TardisDimensionRegistry.getPacket();
 				MinecraftServer.getServer().getConfigurationManager().sendToAllNear(ent.posX, ent.posY, ent.posZ, 100, ent.worldObj.provider.dimensionId, dP);
 			}
-			serv.getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) ent, worldID, TardisMod.teleporter);
+			if(ent.worldObj.provider.dimensionId != worldID)
+				serv.getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) ent, worldID, TardisMod.teleporter);
 			((EntityPlayerMP) ent).setPositionAndUpdate(x, y, z);
 		}
 	}
