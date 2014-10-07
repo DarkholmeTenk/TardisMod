@@ -260,6 +260,11 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		GL11.glColor3d(1, 1, 1);
 	}
 	
+	private void renderDimControls(Tessellator tess, TardisConsoleTileEntity tce)
+	{
+		renderLever(tess,tce,60, 1.3,-0.23,-0.45, -45, 90, 0, 0.4,0.6,0.6);
+	}
+	
 	private void renderXControls(Tessellator tess, TardisConsoleTileEntity tce)
 	{
 		renderLever(tess, tce, 10, -0.4, -0.28, -1.23, -45, 180, 0, 0.6,0.6,0.6);	//x1
@@ -354,6 +359,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 			renderGauge(tess, tce, 2, -0.68, -0.72, -0.4, 45, -90, 0, 0.75, 0.75, 0.75);
 			renderWheel(tess, tce, 3, -1.25, -0.3, -0.4, 45, 90, -0, 0.5, 0.5, 0.5); //Facing
 			renderLever(tess, tce, 4, -1.23, -0.28, 0.4, -45, -90, 0, 0.6,0.6,0.6); //Speed
+			renderDimControls(tess,tce);
 			renderXControls(tess,tce);
 			renderYControls(tess,tce);
 			renderZControls(tess,tce);

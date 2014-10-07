@@ -19,6 +19,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	private boolean hasScrewdriver = true;
 	
 	private int   facing    = 0;
+	private int   dimControl = 0;
 	private int[] xControls = new int[6];
 	private int[] zControls = new int[6];
 	private int[] yControls = new int[4];
@@ -233,17 +234,11 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			else if(hit.within(0, 0.779, 0.431, 0.901, 0.525))
 				activateControl(pl,5);
 			else if(hit.within(0,1.645,0.238,1.88,0.38))//Gauge1
-			{
-				pl.addChatMessage("Gauge 0");
-			}
+				pl.addChatMessage("Energy: " + core.getEnergy() + "/" + core.getMaxEnergy());
 			else if(hit.within(0,1.375,0.238,1.615,0.38))
-			{
 				pl.addChatMessage("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms());
-			}
 			else if(hit.within(0,1.10,0.238,1.335,0.38))
-			{
-				pl.addChatMessage("Gauge 2");
-			}
+				pl.addChatMessage("Speed: " + core.getSpeed() + "/" + core.getMaxSpeed());
 			else if(hit.within(0,0.865,0.55,1.327,0.868))
 				activateControl(pl,3);
 			else if(hit.within(0, 1.725, 0.585,  2.05,  0.846))
@@ -301,6 +296,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				activateControl(pl,50);
 			else if(hit.within(2, 2.251, 0.646, 2.371, 0.730))
 				activateControl(pl,51);
+			else if(hit.within(2, 0.971, 0.598, 1.138, 0.941))
+				activateControl(pl, 60);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			sendDataPacket();
 		}
@@ -317,7 +314,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	
 	public int getDimFromControls()
 	{
-		return 0;
+		return dimControl;
 	}
 	
 	public int getZFromControls()
@@ -424,6 +421,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				return core.inFlight() ? 1 : 0;
 			if(controlID == 50 || controlID == 51 || controlID == 5)
 				return lastButton == controlID ? 1 : 0;
+			if(controlID == 60)
+				return (dimControl+1) / 2.0;
 			return (((tickTimer + (controlID * 20)) % cycleLength) / cycleLength);
 		}
 		return 0;
@@ -445,10 +444,12 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			{
 				lastButton = 5;
 				lastButtonTT = tickTimer;
-				if(!hasScrewdriver && core.takeEnergy(core.getMaxEnergy()/10,false))
+				if(!hasScrewdriver && core.takeEnergy(core.getMaxEnergy()/2,false))
 					hasScrewdriver = true;
+				else if(hasScrewdriver && core.addEnergy(core.getMaxEnergy()/2, false))
+					hasScrewdriver = false;
 			}
-			if((controlID >= 10 && controlID < 40) || controlID == 3)
+			if((controlID >= 10 && controlID < 40) || controlID == 3 || controlID == 60)
 			{
 				primed = false;
 				regulated = false;
@@ -496,6 +497,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				}
 				else if(controlID == 34)
 					landGroundControl = !landGroundControl;
+				else if(controlID == 60)
+					dimControl = Helper.cycle(dimControl + (pl.isSneaking()?-1:1), -1, 1);
 			}
 			else if(controlID == 40)
 				primed = true;
@@ -540,6 +543,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		if(nbt.hasKey("xControls"))
 		{
 			facing    = nbt.getInteger("facing");
+			dimControl = nbt.getInteger("dimControl");
 			xControls = nbt.getIntArray("xControls");
 			zControls = nbt.getIntArray("zControls");
 			yControls = nbt.getIntArray("yControls");
@@ -563,6 +567,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		nbt.setBoolean("primed", primed);
 		nbt.setBoolean("regulated", regulated);
 		nbt.setInteger("facing", facing);
+		nbt.setInteger("dimControl",dimControl);
 		nbt.setIntArray("xControls", xControls);
 		nbt.setIntArray("zControls", zControls);
 		nbt.setIntArray("yControls", yControls);
