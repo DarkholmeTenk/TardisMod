@@ -2,7 +2,7 @@ package tardis.client.renderer;
 
 import org.lwjgl.opengl.GL11;
 
-import tardis.blocks.TardisAbstractBlock;
+import tardis.common.blocks.TardisAbstractBlock;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import tardis.TardisMod;
-import tardis.blocks.TardisAbstractBlock;
 import tardis.client.renderer.model.TardisConsoleModel;
 import tardis.client.renderer.model.TardisSonicScrewdriverModel;
 import tardis.client.renderer.model.console.GaugeDisplayModel;
@@ -21,7 +20,8 @@ import tardis.client.renderer.model.console.ScreenModel;
 import tardis.client.renderer.model.console.SonicScrewdriverHolderModel;
 import tardis.client.renderer.model.console.SpecialLeverModel;
 import tardis.client.renderer.model.console.ValveWheelModel;
-import tardis.tileents.TardisConsoleTileEntity;
+import tardis.common.blocks.TardisAbstractBlock;
+import tardis.common.tileents.TardisConsoleTileEntity;
 
 public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 {

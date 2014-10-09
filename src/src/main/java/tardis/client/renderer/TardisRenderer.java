@@ -3,9 +3,9 @@ package tardis.client.renderer;
 import org.lwjgl.opengl.GL11;
 
 import tardis.TardisMod;
-import tardis.blocks.TardisAbstractBlock;
 import tardis.client.renderer.model.TardisModel;
-import tardis.tileents.TardisTileEntity;
+import tardis.common.blocks.TardisAbstractBlock;
+import tardis.common.tileents.TardisTileEntity;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;

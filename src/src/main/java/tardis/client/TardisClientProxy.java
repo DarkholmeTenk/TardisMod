@@ -5,14 +5,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
-import tardis.TardisProxy;
 import tardis.client.renderer.TardisConsoleRenderer;
 import tardis.client.renderer.TardisCoreRenderer;
 import tardis.client.renderer.TardisRenderer;
 import tardis.client.renderer.TardisSonicScrewdriverRenderer;
-import tardis.tileents.TardisConsoleTileEntity;
-import tardis.tileents.TardisCoreTileEntity;
-import tardis.tileents.TardisTileEntity;
+import tardis.common.TardisProxy;
+import tardis.common.tileents.TardisConsoleTileEntity;
+import tardis.common.tileents.TardisCoreTileEntity;
+import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.client.registry.ClientRegistry;
 
 public class TardisClientProxy extends TardisProxy

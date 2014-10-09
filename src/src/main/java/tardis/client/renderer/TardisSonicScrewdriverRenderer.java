@@ -3,7 +3,7 @@ package tardis.client.renderer;
 import org.lwjgl.opengl.GL11;
 
 import tardis.client.renderer.model.TardisSonicScrewdriverModel;
-import tardis.core.TardisOutput;
+import tardis.common.core.TardisOutput;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
