@@ -52,7 +52,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class TardisMod
 {
 	
-	@SidedProxy(clientSide="tardis.client.TardisClientProxy", serverSide="tardis.TardisProxy")
+	@SidedProxy(clientSide="tardis.client.TardisClientProxy", serverSide="tardis.common.TardisProxy")
 	public static TardisProxy proxy;
 	
 	private TardisConfigFile modConfig;
