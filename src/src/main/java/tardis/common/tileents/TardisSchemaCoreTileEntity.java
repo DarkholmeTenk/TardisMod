@@ -93,7 +93,7 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 		{
 			if(mode.equals(TardisScrewdriverMode.Dismantle))
 			{
-				if(core.addRoom(true))
+				if(core!= null && core.addRoom(true))
 				{
 					remove();
 					return true;
