@@ -69,7 +69,7 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 	@Override
 	public void updateEntity()
 	{
-		if(!addedToCore)
+		if(Helper.isServer() && !addedToCore)
 		{
 			TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 			if(core != null && !name.startsWith("tardis"))
