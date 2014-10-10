@@ -230,12 +230,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		totalFlightTimer++;
 		inFlightTimer++;
 		int timeTillTakenOff = (20 * 11);
-		int timeTillLanding = timeTillTakenOff +  (int) ((14 - getSpeed()) * 69);
-		int timeTillLandingInt = timeTillLanding + (20 * 5);
+		int timeTillLanding = timeTillTakenOff +  (int) ((10 - getSpeed()) * 69);
+		int timeTillLandingInt = timeTillLanding + (20 * 6);
 		int timeTillLanded  = timeTillLanding + (20 * 11);
 		if(inFlightTimer >= timeTillTakenOff)//Taken off
 		{
-			if(inFlightTimer == (20 * 22))// remove old tardis
+			if(inFlightTimer == timeTillTakenOff)// remove old tardis
 			{
 				World w = Helper.getWorld(exteriorWorld);
 				if(w != null)
@@ -428,6 +428,21 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(Helper.isServer() && te != null)
 			return roomSet.add(new SimpleCoordStore(te));
 		return false;
+	}
+	
+	private void removeAllRooms()
+	{
+		for(SimpleCoordStore coord : roomSet)
+		{
+			TileEntity te = worldObj.getBlockTileEntity(coord.x, coord.y, coord.z);
+			if(te != null && te instanceof TardisSchemaCoreTileEntity)
+			{
+				TardisSchemaCoreTileEntity schemaCore = (TardisSchemaCoreTileEntity)te;
+				schemaCore.remove();
+			}
+		}
+		roomSet.clear();
+		numRooms = 0;
 	}
 	
 	public int getMaxEnergy()

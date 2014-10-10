@@ -72,7 +72,7 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 		if(!addedToCore)
 		{
 			TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
-			if(core != null)
+			if(core != null && !name.startsWith("tardis"))
 				core.addRoom(this);
 			addedToCore = true;
 		}

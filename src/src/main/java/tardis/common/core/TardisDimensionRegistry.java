@@ -2,7 +2,6 @@ package tardis.common.core;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.HashSet;
 
 import cpw.mods.fml.common.FMLCommonHandler;
