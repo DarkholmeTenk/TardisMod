@@ -130,6 +130,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				inFlight = true;
 				inFlightTimer = 0;
 				flightTimer = 0;
+				TardisTileEntity te = getExterior();
+				if(te != null)
+					te.takeoff();
 				sendUpdate();
 				return true;
 			}
@@ -241,7 +244,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 						exteriorX = 0;
 						exteriorY = 0;
 						exteriorZ = 0;
-					}
+					} 	
 				}
 			}
 			if(inFlightTimer < timeTillLanding)
