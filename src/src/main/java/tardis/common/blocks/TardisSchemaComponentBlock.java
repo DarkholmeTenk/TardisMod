@@ -128,7 +128,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
     	}
     	if(meta == 3 || meta == 6)
     	{
-    		TardisCoreTileEntity te = Helper.getTardisCore(w.provider.dimensionId);
+    		TardisCoreTileEntity te = Helper.getTardisCore(w);
     		if(te != null)
     		{
     			TardisConsoleTileEntity console = te.getConsole();
@@ -138,7 +138,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
     	}
     	if(meta == 4 || meta == 5)
     	{
-    		TardisCoreTileEntity te = Helper.getTardisCore(w.provider.dimensionId);
+    		TardisCoreTileEntity te = Helper.getTardisCore(w);
     		if(te != null)
     			te.leaveTardis(pl);
     	}

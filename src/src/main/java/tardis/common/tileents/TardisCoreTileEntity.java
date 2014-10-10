@@ -1,8 +1,11 @@
 package tardis.common.tileents;
 
+import java.util.HashSet;
+
 import tardis.TardisMod;
 import tardis.api.IActivatable;
 import tardis.common.core.Helper;
+import tardis.common.core.SimpleCoordStore;
 import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,6 +49,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private int desY = 0;
 	private int desZ = 0;
 	private String[] desStrs = null;
+	
+	private HashSet<SimpleCoordStore> roomSet = new HashSet<SimpleCoordStore>();
 	
 	private String ownerName;
 	
@@ -226,7 +231,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		inFlightTimer++;
 		int timeTillTakenOff = (20 * 11);
 		int timeTillLanding = timeTillTakenOff +  (int) ((14 - getSpeed()) * 69);
-		int timeTillLandingInt = timeTillLanding + (20 * 7);
+		int timeTillLandingInt = timeTillLanding + (20 * 5);
 		int timeTillLanded  = timeTillLanding + (20 * 11);
 		if(inFlightTimer >= timeTillTakenOff)//Taken off
 		{
@@ -348,6 +353,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return null;
 	}
 	
+	public boolean canModify(EntityPlayer player)
+	{
+		return player.username.equals(ownerName);
+	}
+	
 	public String getOwner()
 	{
 		return ownerName;
@@ -392,20 +402,31 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return maxNumRooms;
 	}
 	
-	public boolean addRoom(boolean sub)
+	public boolean addRoom(boolean sub, TardisSchemaCoreTileEntity te)
 	{
 		if(sub && numRooms > 0)
 		{
+			if(Helper.isServer() && te != null)
+				roomSet.remove(new SimpleCoordStore(te));
 			numRooms --;
 			return true;
 		}
 		
 		if(!sub && numRooms < maxNumRooms)
 		{
+			if(Helper.isServer() && te != null)
+				roomSet.add(new SimpleCoordStore(te));
 			numRooms++;
 			return true;
 		}
 		
+		return false;
+	}
+	
+	public boolean addRoom(TardisSchemaCoreTileEntity te)
+	{
+		if(Helper.isServer() && te != null)
+			return roomSet.add(new SimpleCoordStore(te));
 		return false;
 	}
 	

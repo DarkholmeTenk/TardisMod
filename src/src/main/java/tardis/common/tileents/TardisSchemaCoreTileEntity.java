@@ -18,6 +18,8 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 	private String name = null;
 	private int[] bounds; 
 	private int facing;
+	
+	private boolean addedToCore = false;
 
 	public TardisSchemaCoreTileEntity()
 	{
@@ -64,6 +66,18 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 		return returnList;
 	}
 	
+	@Override
+	public void updateEntity()
+	{
+		if(!addedToCore)
+		{
+			TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
+			if(core != null)
+				core.addRoom(this);
+			addedToCore = true;
+		}
+	}
+	
 	public void remove()
 	{
 		if(name != null)
@@ -81,6 +95,10 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 					}
 			worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 		}
+		else
+		{
+			TardisOutput.print("TSCTE", "No name, can't remove?");
+		}
 	}
 
 	@Override
@@ -88,12 +106,12 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 	{
 		if(worldObj.isRemote)
 			return true;
-		TardisCoreTileEntity core = Helper.getTardisCore(worldObj.provider.dimensionId);
-		if(core == null || core.getOwner().equals(player.username))
+		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
+		if(core == null || core.canModify(player))
 		{
 			if(mode.equals(TardisScrewdriverMode.Dismantle))
 			{
-				if(core!= null && core.addRoom(true))
+				if(core== null || core.addRoom(true,this))
 				{
 					remove();
 					return true;

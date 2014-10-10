@@ -100,11 +100,10 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 					if(base instanceof TardisSonicScrewdriverItem)
 						schemaCarrier = TardisMod.screwItem.getMode(held).equals(TardisScrewdriverMode.Schematic);
 					
-					TardisCoreTileEntity te = Helper.getTardisCore(w.provider.dimensionId);
-					if(te == null || (te.getOwner().equals(player.username)))
+					TardisCoreTileEntity te = Helper.getTardisCore(w);
+					if(te == null || (te.canModify(player)))
 					{
-						
-						if(tag.hasKey("schemaName"))
+						if(schemaCarrier && tag.hasKey("schemaName"))
 						{
 							String name = tag.getString("schemaName");
 							File schemaFile = TardisMod.configHandler.getSchemaFile(name);
@@ -117,7 +116,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 							TardisOutput.print("TIDB","OBA"+door.x+","+door.y+","+door.z);
 							if((!w.isRemote) && pb.roomFor(w, nX, nY, nZ, opposingFace(facing)))
 							{
-								if(te == null || te.addRoom(false))
+								if(te == null || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
 								{
 									pb.reconstitute(w, nX, nY, nZ, opposingFace(facing));
 									manageConnected(w,x,y,z,facing);

@@ -203,7 +203,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	
 	public boolean activate(EntityPlayer pl, int blockX,int blockY,int blockZ, float i, float j, float k)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(worldObj.provider.dimensionId);
+		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 		HitPosition hit = null;
 		for(int cnt=0;cnt<4&&hit==null;cnt++)
 			hit = activateSide(pl,blockX, blockY, blockZ, i, j, k, cnt);
@@ -396,7 +396,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	
 	public double getControlState(int controlID)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(worldObj.provider.dimensionId);
+		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 		if(core != null)
 		{
 			if(controlID == 0)
@@ -442,7 +442,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	
 	private void activateControl(EntityPlayer pl,int controlID)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(worldObj.provider.dimensionId);
+		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 		TardisOutput.print("TConTE","Control:"+controlID,TardisOutput.Priority.DEBUG);
 		if(!core.inCoordinatedFlight())
 		{

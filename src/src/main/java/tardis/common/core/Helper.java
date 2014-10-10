@@ -25,6 +25,8 @@ public class Helper
 	public static final int tardisCoreY = 30;
 	public static final int tardisCoreZ = 0;
 	
+	private static Boolean isServer = null;
+	
 	public static int cycle(int val, int min, int max)
 	{
 		if(val < min)
@@ -44,6 +46,13 @@ public class Helper
 		return Math.min(max, Math.max(min,val));
 	}
 	
+	public static boolean isServer()
+	{
+		if(isServer == null)
+			return (isServer=FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER));
+		return isServer;
+	}
+	
 	///////////////////////////////////////////////////
 	///////////////TELEPORT STUFF//////////////////////
 	///////////////////////////////////////////////////
@@ -54,7 +63,7 @@ public class Helper
 		{
 			if(ent instanceof EntityPlayer)
 			{
-				TardisCoreTileEntity core = getTardisCore(ent.worldObj.provider.dimensionId);
+				TardisCoreTileEntity core = getTardisCore(ent.worldObj);
 				if(core != null)
 					core.enterTardis((EntityPlayer) ent);
 				else
@@ -125,6 +134,15 @@ public class Helper
 	{
 		World tardisWorld = Helper.getWorld(dimensionID);
 		if(tardisWorld != null)
+			return getTardisCore(tardisWorld);
+		else
+			TardisOutput.print("TH","No world passed",TardisOutput.Priority.DEBUG);
+		return null;
+	}
+	
+	public static TardisCoreTileEntity getTardisCore(World tardisWorld)
+	{
+		if(tardisWorld != null)
 		{
 			TileEntity te = tardisWorld.getBlockTileEntity(tardisCoreX, tardisCoreY, tardisCoreZ);
 			if(te != null && te instanceof TardisCoreTileEntity)
@@ -134,7 +152,7 @@ public class Helper
 		}
 		else
 		{
-			TardisOutput.print("TH","No world for dimID:" + dimensionID,TardisOutput.Priority.DEBUG);
+			TardisOutput.print("TH","No world passed",TardisOutput.Priority.DEBUG);
 		}
 		return null;
 	}
