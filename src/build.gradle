@@ -13,8 +13,8 @@ buildscript {
 
 apply plugin: 'forge'
 
-ENV = System.getenv()
-version = "1.6.4-0.05-" + ENV.BUILD_NUMBER
+buildnum = System.getenv('BUILD_NUMBER')
+version = "1.6.4-0.05-"+buildnum
 group= "tardis" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "tardismod"
 
