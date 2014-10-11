@@ -1,6 +1,7 @@
 package tardis.common.tileents;
 
 import java.util.HashSet;
+import java.util.List;
 
 import tardis.TardisMod;
 import tardis.api.IActivatable;
@@ -223,6 +224,20 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		}
 	}
 	
+	private void safetyTick()
+	{
+		List<Object> players = worldObj.playerEntities;
+		for(Object o : players)
+		{
+			if(o instanceof EntityPlayer)
+			{
+				EntityPlayer pl = (EntityPlayer)o;
+				if(pl.posY < -5 && !pl.capabilities.isFlying)
+					Helper.teleportEntityToSafety(pl);
+			}
+		}
+	}
+	
 	private void flightTick()
 	{
 		if(inFlightTimer == 0)
@@ -282,7 +297,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		tickCount++;
 		
 		if(tickCount % 20 == 0)
+		{
 			addEnergy(energyPerSecond,false);
+			safetyTick();
+		}
 		
 		if(inFlight)
 			flightTick();
