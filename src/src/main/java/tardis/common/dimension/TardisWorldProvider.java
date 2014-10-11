@@ -33,6 +33,9 @@ public class TardisWorldProvider extends WorldProvider
 	@Override
 	public void updateWeather()
 	{
+		worldObj.rainingStrength = 0;
+		worldObj.thunderingStrength = 0;
+		worldObj.updateWeatherBody();
 		if(worldObj.isRaining())
 			worldObj.toggleRain();
 	}
@@ -54,5 +57,4 @@ public class TardisWorldProvider extends WorldProvider
     {
 		return 6000;
     }
-
 }
