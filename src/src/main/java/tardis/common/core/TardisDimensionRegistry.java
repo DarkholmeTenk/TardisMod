@@ -26,10 +26,11 @@ public class TardisDimensionRegistry extends WorldSavedData
 	
 	public void addDimension(int id)
 	{
-		TardisOutput.print("TDR", "Adding dimension:" + id,TardisOutput.Priority.DEBUG);
 		if(dimensionIDs.add(id))
+		{
+			TardisOutput.print("TDR", "Adding dimension:" + id,TardisOutput.Priority.DEBUG);
 			markDirty();
-			
+		}
 	}
 	
 	public static TardisDimensionRegistry load()
@@ -67,9 +68,11 @@ public class TardisDimensionRegistry extends WorldSavedData
 	
 	private void registerDim(int id)
 	{
-		TardisOutput.print("TDR", "Registering dim " + id,TardisOutput.Priority.DEBUG);
 		if(!DimensionManager.isDimensionRegistered(id))
+		{
+			TardisOutput.print("TDR", "Registering dim " + id,TardisOutput.Priority.DEBUG);
 			DimensionManager.registerDimension(id, TardisMod.providerID);
+		}
 	}
 
 	@Override
