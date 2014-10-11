@@ -87,6 +87,7 @@ public class Helper
 			}
 			if(ent.worldObj.provider.dimensionId != worldID)
 				serv.getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) ent, worldID, TardisMod.teleporter);
+			((EntityPlayerMP) ent).fallDistance = 0;
 			((EntityPlayerMP) ent).setPositionAndUpdate(x, y, z);
 		}
 	}
