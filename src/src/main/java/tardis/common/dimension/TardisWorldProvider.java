@@ -7,6 +7,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 
 public class TardisWorldProvider extends WorldProvider
 {
+	public final ChunkCoordinates spawnPoint = new ChunkCoordinates(9,28,0);
 
 	public TardisWorldProvider()
 	{
@@ -43,7 +44,13 @@ public class TardisWorldProvider extends WorldProvider
 	@Override
 	public ChunkCoordinates getSpawnPoint()
     {
-		return new ChunkCoordinates(9,28,0);
+		return spawnPoint;
+    }
+	
+	@Override
+	public ChunkCoordinates getRandomizedSpawnPoint()
+    {
+		return getSpawnPoint();
     }
 	
 	@Override
