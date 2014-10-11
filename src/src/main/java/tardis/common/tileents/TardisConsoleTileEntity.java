@@ -1,7 +1,5 @@
 package tardis.common.tileents;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
@@ -107,7 +105,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		}
 			
 		
-		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
+		if(Helper.isServer())
 		{
 			if(schemaList == null)
 			{
@@ -124,8 +122,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			if(tickTimer % 80 == 0)
 			{
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-				if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
-					TardisOutput.print("TConTE", "ServschemaCS:"+schemaNum+","+schemaChooserString);
 			}
 		}
 	}
@@ -592,7 +588,5 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		nbt.setString("schemaChooserString", schemaChooserString);
 		nbt.setInteger("lastButton",lastButton);
 		nbt.setInteger("lastButtonTT",lastButtonTT);
-		//if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
-		//	TardisOutput.print("TConTE", "ServschemaCS:"+schemaNum+","+schemaChooserString);
 	}
 }
