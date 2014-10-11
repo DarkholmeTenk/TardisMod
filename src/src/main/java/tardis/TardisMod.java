@@ -47,7 +47,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid="TardisMod",name="Tardis Mod",version="1.0",dependencies="required-after:FML")
+@Mod(modid="TardisMod",name="Tardis Mod",version="0.06",dependencies="required-after:FML")
 @NetworkMod(channels = { "TardisModChannel","TardisTrans","TardisDR" }, clientSideRequired = true, serverSideRequired = true, packetHandler = TardisPacketHandler.class, connectionHandler=TardisConnectionHandler.class)
 public class TardisMod
 {
