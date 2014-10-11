@@ -36,6 +36,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	private int schemaNum = 0;
 	private int screwMode = 0;
 	
+	private int unstableControl = -1;
+	private boolean unstablePressed = false;
+	
 	public String schemaChooserString = "";
 	
 	{
@@ -137,10 +140,10 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		return (float) (xP - (delta * (xP - xH)));
 	}
 	
-	private float activatedY(float yH, float yP, float delta)
+/*	private float activatedY(float yH, float yP, float delta)
 	{
 		return (float) (yP - (delta * (yP - yH)));
-	}
+	}*/
 	
 	private float activatedZ(float zH, float zP, float delta)
 	{
@@ -190,7 +193,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		
 		float delta = activatedDelta(hitAway,j,distanceAway,pl.eyeHeight);
 		float hitX = activatedX(hitAway,distanceAway,delta);
-		float hitY = activatedY(j,pl.eyeHeight,delta);
+//		float hitY = activatedY(j,pl.eyeHeight,delta);
 		float hitZ = activatedZ(hitSide,distanceSide, delta);
 		if((hitZ < 1 && (1-hitX) >= hitZ) || (hitZ > 2 && (1-hitX) > (3-hitZ)))
 			return null;
@@ -410,7 +413,19 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	public double getControlHighlight(int controlID)
 	{
 		double highlightAmount = Math.abs((tickTimer % 40) - 20) / 40.0 + 0.5;
+		if(controlID == unstableControl && !unstablePressed)
+			return highlightAmount;
 		return -1;
+	}
+	
+	public void randomUnstableControl()
+	{
+		unstablePressed = false;
+	}
+	
+	public boolean unstableControlPressed()
+	{
+		return unstablePressed;
 	}
 	
 	private void activateControl(EntityPlayer pl,int controlID)
@@ -475,7 +490,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			else if(controlID == 41 && primed)
 				regulated = true;
 			else if(controlID == 42 && primed && regulated)
-				core.takeOff();
+				core.takeOff(pl);
 		}
 		
 		if(controlID == 5)
@@ -523,6 +538,11 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			schemaNum += (controlID == 50 ? 1 : -1);
 			schemaNum = Helper.cycle(schemaNum,0,schemaList.length-1);
 			schemaChooserString = schemaList[schemaNum];
+		}
+		else if(controlID > 1000) //Flight instabilitiers
+		{
+			if(unstableControl == controlID)
+				unstablePressed = true;
 		}
 	}
 	

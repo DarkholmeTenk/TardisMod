@@ -119,7 +119,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		}
 	}
 	
-	public boolean takeOff()
+	public boolean takeOff(EntityPlayer pl)
 	{
 		if(!inFlight)
 		{
@@ -142,6 +142,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				sendUpdate();
 				return true;
 			}
+			else
+				pl.addChatMessage("Not enough energy");
 		}
 		return false;
 	}
@@ -448,7 +450,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return false;
 	}
 	
-	private void removeAllRooms()
+	public void removeAllRooms()
 	{
 		for(SimpleCoordStore coord : roomSet)
 		{

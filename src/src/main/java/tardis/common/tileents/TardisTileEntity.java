@@ -1,19 +1,13 @@
 package tardis.common.tileents;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
 public class TardisTileEntity extends TardisAbstractTileEntity
 {
-	private int tickTimer = 0;
 	private int fadeTimer = 0;
 	
 	private boolean landed = false;
@@ -26,7 +20,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 	Integer linkedDimension = null;
 	TardisCoreTileEntity linkedCore = null;
 	
-	private void sendTransPacket()
+/*	private void sendTransPacket()
 	{
 		if(worldObj.isRemote)
 			return;
@@ -51,7 +45,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 			TardisOutput.print("TTE", "PacketError:" + e.getMessage(),TardisOutput.Priority.ERROR);
 		}
 		
-	}
+	}*/
 	
 	public void updateEntity()
 	{

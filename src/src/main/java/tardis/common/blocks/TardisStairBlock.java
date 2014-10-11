@@ -1,14 +1,10 @@
 package tardis.common.blocks;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import tardis.TardisMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
-import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
 public class TardisStairBlock extends BlockStairs
