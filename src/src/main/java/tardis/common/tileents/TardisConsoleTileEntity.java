@@ -1,8 +1,11 @@
 package tardis.common.tileents;
 
+import java.util.HashMap;
+
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.store.ControlStateStore;
 import tardis.common.items.TardisSonicScrewdriverItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -24,6 +27,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	private int[] zControls = new int[6];
 	private int[] yControls = new int[4];
 	private boolean landGroundControl = false;
+	
+	private boolean saveCoords = false;
+	private HashMap<Integer,ControlStateStore> states = new HashMap<Integer,ControlStateStore>();
 	
 	private boolean primed = false;
 	private boolean regulated = false;
@@ -208,6 +214,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			hit = activateSide(pl,blockX, blockY, blockZ, i, j, k, cnt);
 		if(hit != null && core != null)
 		{
+			boolean update = true;
 			TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
 			if(hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
 				activateControl(pl,6);
@@ -230,49 +237,49 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 					d = -1;
 				core.addSpeed(d);
 			}
-			else if(hit.within(3,2.156, 0.654,  2.540,  0.924))
+			else if(hit.within(3,2.156, 0.654,  2.540, 0.924))
 				core.sendDestinationStrings(pl);
-			else if(hit.within(3,1.727,0.626,2.019,0.826))
+			else if(hit.within(3, 1.727, 0.626, 2.019, 0.826))
 				activateControl(pl,10);
-			else if(hit.within(3,1.361,0.626,1.634,0.826))
+			else if(hit.within(3, 1.361, 0.626, 1.634, 0.826))
 				activateControl(pl,11);
-			else if(hit.within(3,0.981,0.626,1.210,0.826))
+			else if(hit.within(3, 0.981, 0.626, 1.210, 0.826))
 				activateControl(pl,12);
-			else if(hit.within(3,1.361,0.268,1.634,0.431))
+			else if(hit.within(3, 1.361, 0.268, 1.634, 0.431))
 				activateControl(pl,13);
-			else if(hit.within(3,1.694,0.227,1.951,0.408))
+			else if(hit.within(3, 1.694, 0.227, 1.951, 0.408))
 				activateControl(pl,14);
-			else if(hit.within(3,1.039,0.257,1.238,0.417))
+			else if(hit.within(3, 1.039, 0.257, 1.238, 0.417))
 				activateControl(pl,15);
-			else if(hit.within(1,1.145,0.207,1.259,0.443))
+			else if(hit.within(1, 1.145, 0.207, 1.259, 0.443))
 				activateControl(pl,20);
-			else if(hit.within(1,1.333,0.207,1.465,0.443))
+			else if(hit.within(1, 1.333, 0.207, 1.465, 0.443))
 				activateControl(pl,21);
-			else if(hit.within(1,1.531,0.207,1.648,0.443))
+			else if(hit.within(1, 1.531, 0.207, 1.648, 0.443))
 				activateControl(pl,22);
-			else if(hit.within(1,1.730,0.207,1.856,0.443))
+			else if(hit.within(1, 1.730, 0.207, 1.856, 0.443))
 				activateControl(pl,23);
-			else if(hit.within(1,0.958,0.601,1.250,0.841))
+			else if(hit.within(1, 0.650, 0.664, 0.943, 0.856))	//Z Wheel 1
 				activateControl(pl,24);
-			else if(hit.within(1,1.761,0.601,2.048,0.841))
+			else if(hit.within(1, 1.264, 0.664, 1.545, 0.856))	//Z Wheel 2
 				activateControl(pl,25);
-			else if(hit.within(2,1.730,0.147,1.859,0.470))
+			else if(hit.within(2, 1.730, 0.147, 1.859, 0.470))
 				activateControl(pl,30);
-			else if(hit.within(2,1.581,0.147,1.710,0.470))
+			else if(hit.within(2, 1.581, 0.147, 1.710, 0.470))
 				activateControl(pl,31);
-			else if(hit.within(2,1.430,0.147,1.558,0.470))
+			else if(hit.within(2, 1.430, 0.147, 1.558, 0.470))
 				activateControl(pl,32);
-			else if(hit.within(2,1.284,0.147,1.415,0.470))
+			else if(hit.within(2, 1.284, 0.147, 1.415, 0.470))
 				activateControl(pl,33);
 			else if(hit.within(2, 1.129, 0.283, 1.241, 0.384))
 				activateControl(pl,34);
-			else if(hit.within(2, 1.408, 0.677, 1.660, 0.855))
-				activateControl(pl,35);
-			else if(hit.within(1, 1.394, 0.678, 1.658, 0.858))
+//			else if(hit.within(2, 1.408, 0.677, 1.660, 0.855))
+//				activateControl(pl,35);
+			else if(hit.within(1, 0.985, 0.664, 1.230, 0.856))	//Flight Primer
 				activateControl(pl, 40);
-			else if(hit.within(2, 0.553, 0.629, 0.838, 0.924))
+			else if(hit.within(2, 0.553, 0.629, 0.838, 0.924))	//Flight Regulator
 				activateControl(pl,41);
-			else if(hit.within(0, 2.110, 0.562, 2.441, 0.872))
+			else if(hit.within(0, 2.110, 0.562, 2.441, 0.872))	//Flight Takeoff
 				activateControl(pl,42);
 			else if(hit.within(2, 2.251, 0.519, 2.371, 0.600))
 				activateControl(pl,50);
@@ -280,8 +287,26 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				activateControl(pl,51);
 			else if(hit.within(2, 0.971, 0.598, 1.138, 0.941))
 				activateControl(pl, 60);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			sendDataPacket();
+			else if(hit.within(1, 2.369, 0.801, 2.491, 0.894))	//Load/Save Switch
+				activateControl(pl, 900);
+			else if(hit.within(1, 1.700, 0.513, 2.355, 0.898))
+			{
+				int jx = (int)(5*(hit.posZ - 1.700) / (2.355 - 1.700));
+				int ix = (int)(4*(hit.posY - 0.513) / (0.898 - 0.513));
+				int control = 1000 + (5 * ix) + jx;
+				activateControl(pl, control);
+			}
+			else if(hit.within(2, 1.187, 0.768, 1.603, 0.947))
+				activateControl(pl, 1020);
+			else if(hit.within(2, 1.677, 0.768, 2.103, 0.947))
+				activateControl(pl, 1021);
+			else if(hit.within(2, 2.189, 0.768, 2.592, 0.947))
+				activateControl(pl, 1022);
+			else
+				update = false;
+			if(update)
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			//sendDataPacket();
 		}
 		return true;
 	}
@@ -327,6 +352,37 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	public int getFacingFromControls()
 	{
 		return facing;
+	}
+	
+	private void loadControls(int num)
+	{
+		if(states.containsKey(num))
+			loadControls(states.get(num));
+	}
+	
+	public void loadControls(ControlStateStore state)
+	{
+		if(state.isValid())
+		{
+			TardisOutput.print("TConTE", "Loading state");
+			facing = state.facing;
+			dimControl = state.dimControl;
+			xControls = state.xControls;
+			yControls = state.yControls;
+			zControls = state.zControls;
+			landGroundControl = state.landGroundControl;
+			clampControls();
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+	}
+	
+	public void saveControls(int stateNum)
+	{
+		TardisOutput.print("TConTE", "Saving state to num:"+stateNum);
+		ControlStateStore s = new ControlStateStore(facing,dimControl,xControls,yControls,zControls,landGroundControl);
+		if(states.containsKey(stateNum))
+			states.remove(stateNum);
+		states.put(stateNum, s);
 	}
 	
 	private void clampControls()
@@ -405,6 +461,10 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				return lastButton == controlID ? 1 : 0;
 			if(controlID == 60)
 				return (dimControl+1) / 2.0;
+			if(controlID == 900)
+				return saveCoords ? 1 : 0;
+			if(controlID >= 1000 && controlID < 1023)
+				return lastButton == controlID ? 1 : 0;
 			return (((tickTimer + (controlID * 20)) % cycleLength) / cycleLength);
 		}
 		return 0;
@@ -416,16 +476,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		if(controlID == unstableControl && !unstablePressed)
 			return highlightAmount;
 		return -1;
-	}
-	
-	public void randomUnstableControl()
-	{
-		unstablePressed = false;
-	}
-	
-	public boolean unstableControlPressed()
-	{
-		return unstablePressed;
 	}
 	
 	private void activateControl(EntityPlayer pl,int controlID)
@@ -539,11 +589,57 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			schemaNum = Helper.cycle(schemaNum,0,schemaList.length-1);
 			schemaChooserString = schemaList[schemaNum];
 		}
-		else if(controlID > 1000) //Flight instabilitiers
+		else if(controlID == 900)
+			saveCoords = !saveCoords;
+		else if(controlID >= 1000) //Flight instabilitiers
 		{
-			if(unstableControl == controlID)
+			if(controlID >= 1000 && controlID < 1023)
+			{
+				lastButton = controlID;
+				lastButtonTT = tickTimer;
+			}
+			if(!core.inFlight() && controlID >= 1000 && controlID < 1020)
+			{
+				int num = controlID - 1000;
+				if(saveCoords)
+				{
+					saveControls(num);
+				}
+				else
+				{
+					loadControls(num);
+				}
+				primed = false;
+				regulated = false;
+			}
+			else if(unstableControl == controlID)
+			{
+				unstableControl = -1;
 				unstablePressed = true;
+			}
 		}
+	}
+	
+	public boolean unstableFlight()
+	{
+		return true;
+	}
+	
+	public void randomUnstableControl()
+	{
+		int min = 1000;
+		int max = 1020;
+		int ran = 0;
+		if(min != max)
+			ran = rand.nextInt(1 + max - min);
+		unstableControl = min+ran;
+		unstablePressed = false;
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+	
+	public boolean unstableControlPressed()
+	{
+		return unstablePressed;
 	}
 	
 	public void setScrewdriver(int slot, boolean bool)
@@ -578,6 +674,11 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		super.readFromNBT(nbt);
 		schemaNum = nbt.getInteger("schemaNum");
 		screwMode = nbt.getInteger("screwMode");
+		for(int i = 0;i<20;i++)
+		{
+			if(nbt.hasKey("css"+i))
+				states.put(i, ControlStateStore.readFromNBT(nbt.getCompoundTag("css"+i)));
+		}
 		clampControls();
 	}
 	
@@ -587,6 +688,15 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		super.writeToNBT(nbt);
 		nbt.setInteger("schemaNum", schemaNum);
 		nbt.setInteger("screwMode", screwMode);
+		for(int i = 0;i<20;i++)
+		{
+			if(states.containsKey(i))
+			{
+				NBTTagCompound state = new NBTTagCompound();
+				states.get(i).writeToNBT(state);
+				nbt.setCompoundTag("css"+i, state);
+			}
+		}
 	}
 
 	@Override
@@ -601,6 +711,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		yControls = nbt.getIntArray("yControls");
 		primed    = nbt.getBoolean("primed");
 		regulated = nbt.getBoolean("regulated");
+		saveCoords = nbt.getBoolean("saveCoords");
 		landGroundControl = nbt.getBoolean("landGroundControl");
 		schemaChooserString = nbt.getString("schemaChooserString");
 		lastButton = nbt.getInteger("lastButton");
@@ -619,6 +730,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		nbt.setIntArray("xControls", xControls);
 		nbt.setIntArray("zControls", zControls);
 		nbt.setIntArray("yControls", yControls);
+		nbt.setBoolean("saveCoords",saveCoords);
 		nbt.setBoolean("landGroundControl", landGroundControl);
 		nbt.setString("schemaChooserString", schemaChooserString);
 		nbt.setInteger("lastButton",lastButton);

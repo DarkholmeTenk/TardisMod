@@ -1,5 +1,6 @@
-package tardis.common.core;
+package tardis.common.core.store;
 
+import tardis.common.core.Helper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 

@@ -42,8 +42,8 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		compRender.renderLever(tess, tce, 21, 0.1, -0.65, 0.78,   -45, 0, 0, 0.3,0.6,0.6);
 		compRender.renderLever(tess, tce, 22, -0.1, -0.65, 0.78,  -45, 0, 0, 0.3,0.6,0.6);
 		compRender.renderLever(tess, tce, 23, -0.3, -0.65, 0.78,  -45, 0, 0, 0.3,0.6,0.6);
-		compRender.renderWheel(tess, tce, 24, 0.40, -0.28, 1.25,  -45, 0, 0, 0.3,0.3,0.3);
-		compRender.renderWheel(tess, tce, 25, -0.40, -0.28, 1.25, -45, 0, 0, 0.3,0.3,0.3);
+		compRender.renderWheel(tess, tce, 24, 0.70, -0.28, 1.25,  -45, 0, 0, 0.35,0.3,0.35);
+		compRender.renderWheel(tess, tce, 25, 0.10, -0.28, 1.25, -45, 0, 0,  0.35,0.3,0.35);
 	}
 	
 	private void renderYControls(Tessellator tess, TardisConsoleTileEntity tce)
@@ -57,8 +57,8 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 	
 	private void renderFlightControls(Tessellator tess, TardisConsoleTileEntity tce)
 	{
-		compRender.renderButton(tess,tce, 40, 0,-0.23,1.3, 45,180,0, 1,1,1);
-		compRender.renderLever(tess,tce,  41, 1.3,-0.23,-0.8, -45,90,0, 0.8,0.6,0.6);
+		compRender.renderButton(tess,tce, 40,       0.425,-0.23,1.3, 45,180,0, 1,1,1);
+		compRender.renderLever(tess,tce,  41,       1.3,-0.23,-0.8, -45,90,0, 0.8,0.6,0.6);
 		compRender.renderSpecialLever(tess,tce, 42, -1.16,-0.35,0.8, 0,180,-45, 0.8,0.8,0.8);
 	}
 	
@@ -92,6 +92,14 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 	private void renderLeftPanel(Tessellator tess, TardisConsoleTileEntity tce)
 	{
 		renderZControls(tess,tce);																	//ID 20-26 Z Controls
+		for(int i=0;i<4;i++)
+		{
+			for(int j=0;j<5;j++)
+			{
+				compRender.renderButton(tess, tce, 1019-(5*i) - (4-j), -0.30-(0.125*j), -0.2-(0.08*i), 1.35-(0.1*i), -39, 0, 0, 0.6,0.6,0.6);
+			}
+		}
+		compRender.renderPushSwitch(tess, tce, 900, -0.95, -0.2, 1.37, -39, 0, 0, 0.5, 0.5, 0.5);				//ID 900 save/load switch
 	}
 	
 	private void renderBackPanel(Tessellator tess, TardisConsoleTileEntity tce)
@@ -101,6 +109,9 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		renderYControls(tess,tce);
 		compRender.renderScrewdriverHolder(tess, tce,1.13,-0.38,-0.225, 0,0,45, 0.5,0.5,0.5);
 		compRender.renderScrewdriver(tess, tce, 1, 1.13,-0.38,-0.225, 0, 0, 45, 0.5, 0.5, 0.5);
+		compRender.renderLever(tess, tce, 1020, 1.36, -0.15, -0.1, 0, 0, 45, 0.5, 0.5, 0.5);
+		compRender.renderLever(tess, tce, 1021, 1.36, -0.15, 0.4, 0, 0, 45, 0.5, 0.5, 0.5);
+		compRender.renderLever(tess, tce, 1022, 1.36, -0.15, 0.9, 0, 0, 45, 0.5, 0.5, 0.5);
 	}
 	
 	@Override

@@ -6,9 +6,9 @@ import java.util.List;
 import tardis.TardisMod;
 import tardis.api.IActivatable;
 import tardis.common.core.Helper;
-import tardis.common.core.SimpleCoordStore;
 import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.store.SimpleCoordStore;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -272,7 +272,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			if(inFlightTimer < timeTillLanding)
 			{
 				if(flightTimer % 69 == 0 && inFlight)
+				{
+					TardisConsoleTileEntity con = getConsole();
+					if(Helper.isServer() && con != null && con.unstableFlight())
+						con.randomUnstableControl();
 					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engines", 0.75F, 1, true);
+				}
 				flightTimer++;
 			}
 			else
