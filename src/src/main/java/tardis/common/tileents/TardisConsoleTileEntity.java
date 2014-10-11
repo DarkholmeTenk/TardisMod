@@ -16,7 +16,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	public static final float cycleLength = 80;
 	private int tickTimer;
 	
-	private boolean hasScrewdriver = true;
+	private int hasScrewdriver = 1;
 	
 	private int   facing    = 0;
 	private int   dimControl = 0;
@@ -207,32 +207,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		{
 			TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
 			if(hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
-			{
-				if(hasScrewdriver() && pl instanceof EntityPlayerMP)
-				{
-					hasScrewdriver = false;
-					ItemStack toGive = new ItemStack(TardisMod.screwItem,1,0);
-					toGive.stackTagCompound = new NBTTagCompound();
-					toGive.stackTagCompound.setString("schemaName", schemaChooserString);
-					toGive.stackTagCompound.setInteger("screwdriverMode", screwMode);
-					Helper.giveItemStack((EntityPlayerMP) pl, toGive);
-				}
-				else
-				{
-					ItemStack held = pl.getHeldItem();
-					if(held != null)
-					{
-						Item item = held.getItem();
-						if(item instanceof TardisSonicScrewdriverItem)
-						{
-							InventoryPlayer inv = pl.inventory;
-							inv.mainInventory[inv.currentItem] = null;
-							screwMode = TardisMod.screwItem.getMode(held).ordinal();
-							hasScrewdriver = true;
-						}
-					}
-				}
-			}
+				activateControl(pl,6);
+			else if(hit.within(2, 1.214, 0.581, 1.338, 0.669))
+				activateControl(pl,7);
 			else if(hit.within(0, 0.779, 0.431, 0.901, 0.525))
 				activateControl(pl,5);
 			else if(hit.within(0,1.645,0.238,1.88,0.38))//Gauge1
@@ -442,15 +419,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		TardisOutput.print("TConTE","Control:"+controlID,TardisOutput.Priority.DEBUG);
 		if(!core.inCoordinatedFlight())
 		{
-			if(controlID == 5)
-			{
-				lastButton = 5;
-				lastButtonTT = tickTimer;
-				if(!hasScrewdriver && core.takeEnergy(core.getMaxEnergy()/2,false))
-					hasScrewdriver = true;
-				else if(hasScrewdriver && core.addEnergy(core.getMaxEnergy()/2, false))
-					hasScrewdriver = false;
-			}
 			if((controlID >= 10 && controlID < 40) || controlID == 3 || controlID == 60)
 			{
 				primed = false;
@@ -510,7 +478,44 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				core.takeOff();
 		}
 		
-		if(controlID == 50 || controlID == 51) // Schema change
+		if(controlID == 5)
+		{
+			lastButton = 5;
+			lastButtonTT = tickTimer;
+			if(!hasScrewdriver(0) && core.takeEnergy(core.getMaxEnergy()/2,false))
+				setScrewdriver(0,true);
+			else if(hasScrewdriver(0) && core.addEnergy(core.getMaxEnergy()/2, false))
+				setScrewdriver(0,false);
+		}
+		else if(controlID == 6 || controlID == 7) // Screwdriver slot 0/1
+		{
+			int slot = controlID == 6 ? 0 : 1;
+			if(hasScrewdriver(slot) && pl instanceof EntityPlayerMP)
+			{
+				setScrewdriver(slot,false);
+				ItemStack toGive = new ItemStack(TardisMod.screwItem,1,0);
+				toGive.stackTagCompound = new NBTTagCompound();
+				toGive.stackTagCompound.setString("schemaName", schemaChooserString);
+				toGive.stackTagCompound.setInteger("screwdriverMode", screwMode);
+				Helper.giveItemStack((EntityPlayerMP) pl, toGive);
+			}
+			else
+			{
+				ItemStack held = pl.getHeldItem();
+				if(held != null)
+				{
+					Item item = held.getItem();
+					if(item instanceof TardisSonicScrewdriverItem)
+					{
+						InventoryPlayer inv = pl.inventory;
+						inv.mainInventory[inv.currentItem] = null;
+						screwMode = TardisMod.screwItem.getMode(held).ordinal();
+						setScrewdriver(slot,true);
+					}
+				}
+			}
+		}
+		else if(controlID == 50 || controlID == 51) // Schema change
 		{
 			TardisOutput.print("TConTE", "Cycling schema");
 			lastButton = controlID;
@@ -521,9 +526,19 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		}
 	}
 	
-	public boolean hasScrewdriver()
+	public void setScrewdriver(int slot, boolean bool)
 	{
-		return hasScrewdriver;
+		int bit = (int)Math.pow(2, slot);
+		if((hasScrewdriver & bit) == 0 && bool)
+			hasScrewdriver += bit;
+		else if((hasScrewdriver & bit) == bit && !bool)
+			hasScrewdriver -= bit;
+	}
+	
+	public boolean hasScrewdriver(int slot)
+	{
+		int bit = (int)Math.pow(2, slot);
+		return (hasScrewdriver & bit) == bit;
 	}
 	
 	public void land()
@@ -558,7 +573,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	public void readTransmittable(NBTTagCompound nbt)
 	{
 		tickTimer = nbt.getInteger("tickTimer");
-		hasScrewdriver = nbt.getBoolean("hasScrewdriver");
+		hasScrewdriver = nbt.getInteger("hasScrewdriver");
 		facing    = nbt.getInteger("facing");
 		dimControl = nbt.getInteger("dimControl");
 		xControls = nbt.getIntArray("xControls");
@@ -576,7 +591,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
 		nbt.setInteger("tickTimer", tickTimer);
-		nbt.setBoolean("hasScrewdriver", hasScrewdriver);
+		nbt.setInteger("hasScrewdriver", hasScrewdriver);
 		nbt.setBoolean("primed", primed);
 		nbt.setBoolean("regulated", regulated);
 		nbt.setInteger("facing", facing);
