@@ -1,14 +1,17 @@
 package tardis.common.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
 import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.TardisCoreTileEntity;
 
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
@@ -21,7 +24,9 @@ public class TardisRepairCoreCommand implements ICommand
 	{
 		if(comSen instanceof EntityPlayerMP)
 		{
-			if(!MinecraftServer.getServer().getConfigurationManager().getOps().contains(comSen.getCommandSenderName()))
+			if(((EntityPlayerMP)comSen).capabilities.isCreativeMode)
+				return true;
+			if(MinecraftServer.getServer().getConfigurationManager().getOps().contains(((EntityPlayerMP)comSen).username))
 				return true;
 			return false;
 		}
@@ -49,7 +54,9 @@ public class TardisRepairCoreCommand implements ICommand
 	@Override
 	public List getCommandAliases()
 	{
-		return null;
+		ArrayList<String> aliases = new ArrayList<String>();
+		aliases.add("trep");
+		return aliases;
 	}
 
 	@Override
@@ -60,10 +67,11 @@ public class TardisRepairCoreCommand implements ICommand
 		int numRooms = 0;
 		int energy = 0;
 		
-		if(comSen instanceof EntityPlayerMP)
+		if(comSen instanceof EntityPlayer)
 		{
-			worldID  = ((EntityPlayerMP) comSen).worldObj.provider.dimensionId;
-			newOwner = ((EntityPlayerMP) comSen).username;
+			TardisOutput.print("TRCC", "WOrld?"+((EntityPlayerMP)comSen).worldObj.isRemote);
+			worldID  = ((EntityPlayer) comSen).worldObj.provider.dimensionId;
+			newOwner = ((EntityPlayer) comSen).username;
 		}
 		
 		int o = 0;
@@ -90,15 +98,15 @@ public class TardisRepairCoreCommand implements ICommand
 		
 		if(newOwner != null)
 		{
-			World world = MinecraftServer.getServer().worldServerForDimension(worldID);
-			if(world.provider instanceof TardisWorldProvider)
-			{
-				TardisCoreTileEntity tce = Helper.getTardisCore(worldID);
-				if(tce == null)
-					world.setBlock(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
-				tce = Helper.getTardisCore(worldID);
+			TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner);
+			World world = Helper.getWorld(worldID);
+			TardisCoreTileEntity tce = Helper.getTardisCore(worldID);
+			if(tce == null && world.provider instanceof TardisWorldProvider)
+				world.setBlock(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
+			tce = Helper.getTardisCore(worldID);
+			TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);
+			if(tce != null)
 				tce.repair(newOwner, numRooms, energy);
-			}
 		}
 	}
 

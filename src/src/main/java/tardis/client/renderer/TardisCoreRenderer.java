@@ -32,7 +32,7 @@ public class TardisCoreRenderer extends TardisAbstractBlockRenderer
 		//This line actually rotates the renderer.
 		GL11.glTranslatef(0.5F, 0, 0.5F);
 		GL11.glRotatef(180F, 0F, 0, 1F);
-		GL11.glTranslatef(0F, -0.5F, 0F);
+		GL11.glTranslatef(0F, -0.7F, 0F);
 		bindTexture(new ResourceLocation("tardismod","textures/models/TardisRotorA.png"));
 		float proximity = 0.0f;
 		if(te instanceof TardisCoreTileEntity)

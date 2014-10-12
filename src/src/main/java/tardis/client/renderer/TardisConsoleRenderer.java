@@ -87,6 +87,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 	{
 		renderXControls(tess,tce);																	//ID 10-16 X Controls
 		compRender.renderScreen(tess,tce, 100, "main", -0.7, -0.325, -1.20, -45,180,0,0.6,0.6,0.6);	//ID 100 Coord guesser
+		compRender.renderButton(tess, tce, 901, -1.1, -0.175, -1.35, -45, 180, 0, 0.5, 0.5, 0.5);	//ID 901 RemButton
 	}
 	
 	private void renderLeftPanel(Tessellator tess, TardisConsoleTileEntity tce)

@@ -13,6 +13,8 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.EnumChatFormatting;
 
 public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 {
@@ -31,6 +33,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	private boolean saveCoords = false;
 	private HashMap<Integer,ControlStateStore> states = new HashMap<Integer,ControlStateStore>();
 	
+	private int rdpCounter = 0;
+	private boolean roomDeletePrepare = false;
 	private boolean primed = false;
 	private boolean regulated = false;
 	
@@ -114,8 +118,14 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		}
 			
 		
-		if(Helper.isServer())
+		if(Helper.isServer() && !worldObj.isRemote)
 		{
+			if(rdpCounter > 0)
+				rdpCounter--;
+			
+			if(roomDeletePrepare && rdpCounter <= 0)
+				roomDeletePrepare = false;
+			
 			if(schemaList == null)
 			{
 				TardisOutput.print("TConTE", "Getting schemas");
@@ -227,7 +237,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			else if(hit.within(0,1.375,0.238,1.615,0.38))
 				pl.addChatMessage("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms());
 			else if(hit.within(0,1.10,0.238,1.335,0.38))
-				pl.addChatMessage("Speed: " + core.getSpeed() + "/" + core.getMaxSpeed());
+				pl.addChatMessage(String.format("Speed: %.1f/%.1f", core.getSpeed(true),core.getMaxSpeed()));
+				//pl.addChatMessage("Speed: " + core.getSpeed(true) + "/" + core.getMaxSpeed());
 			else if(hit.within(0,0.865,0.55,1.327,0.868))
 				activateControl(pl,3);
 			else if(hit.within(0, 1.725, 0.585,  2.05,  0.846))
@@ -287,6 +298,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				activateControl(pl,51);
 			else if(hit.within(2, 0.971, 0.598, 1.138, 0.941))
 				activateControl(pl, 60);
+			else if(hit.within(3, 2.557, 0.806, 2.683, 0.896))	//Delete rooms button
+				activateControl(pl, 901);
 			else if(hit.within(1, 2.369, 0.801, 2.491, 0.894))	//Load/Save Switch
 				activateControl(pl, 900);
 			else if(hit.within(1, 1.700, 0.513, 2.355, 0.898))
@@ -304,6 +317,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				activateControl(pl, 1022);
 			else
 				update = false;
+			
 			if(update)
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			//sendDataPacket();
@@ -436,7 +450,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			if(controlID == 1)
 				return ((double) core.getNumRooms() / core.getMaxNumRooms());
 			if(controlID == 2 || controlID == 4)
-				return (core.getSpeed() / core.getMaxSpeed());
+				return (core.getSpeed(controlID == 2) / core.getMaxSpeed());
 			if(controlID == 3)
 				return facing/4.0;
 			if(controlID >= 10 && controlID < 14)
@@ -463,6 +477,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				return (dimControl+1) / 2.0;
 			if(controlID == 900)
 				return saveCoords ? 1 : 0;
+			if(controlID == 901)
+				return roomDeletePrepare ? 1 : 0;
 			if(controlID >= 1000 && controlID < 1023)
 				return lastButton == controlID ? 1 : 0;
 			return (((tickTimer + (controlID * 20)) % cycleLength) / cycleLength);
@@ -472,8 +488,12 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	
 	public double getControlHighlight(int controlID)
 	{
+		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 		double highlightAmount = Math.abs((tickTimer % 40) - 20) / 40.0 + 0.5;
-		if(controlID == unstableControl && !unstablePressed)
+		if(controlID == unstableControl && !unstablePressed && core != null && core.inFlight())
+			return highlightAmount;
+		
+		if(controlID == 901 && roomDeletePrepare)
 			return highlightAmount;
 		return -1;
 	}
@@ -612,12 +632,50 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 				primed = false;
 				regulated = false;
 			}
-			else if(unstableControl == controlID)
+			if(core.inFlight())
 			{
-				unstableControl = -1;
-				unstablePressed = true;
+				if(unstableControl == controlID)
+					pressedUnstable();
+				else
+					TardisOutput.print("TConTE","Stable button pressed:" +controlID + ":"+unstableControl);
 			}
 		}
+		
+		if(controlID == 901 && core.canModify(pl))
+		{
+			if(!roomDeletePrepare)
+			{
+				if(!pl.isSneaking())
+				{
+					ChatMessageComponent c = new ChatMessageComponent();
+					c.setColor(EnumChatFormatting.DARK_RED);
+					c.addText("[TARDIS]Sneak-right click this button again to activate deletion protocol");
+					pl.sendChatToPlayer(c);
+					rdpCounter = 40;
+					roomDeletePrepare = true;
+				}
+			}
+			else
+			{
+				if(pl.isSneaking())
+					core.removeAllRooms();
+				roomDeletePrepare = false;
+			}
+		}
+		else
+		{
+			if(!core.canModify(pl))
+				pl.addChatMessage("[TARDIS]You don't have permission to modify this TARDIS");
+			if(roomDeletePrepare)
+				roomDeletePrepare = false;
+		}
+	}
+	
+	private void pressedUnstable()
+	{
+		TardisOutput.print("TConTE", "Unstable button pressed");
+		unstableControl = -1;
+		unstablePressed = true;
 	}
 	
 	public boolean unstableFlight()
@@ -628,13 +686,18 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	public void randomUnstableControl()
 	{
 		int min = 1000;
-		int max = 1020;
+		int max = 1022;
 		int ran = 0;
 		if(min != max)
 			ran = rand.nextInt(1 + max - min);
 		unstableControl = min+ran;
 		unstablePressed = false;
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+	
+	public void clearUnstableControl()
+	{
+		unstableControl = -1;
 	}
 	
 	public boolean unstableControlPressed()
@@ -702,6 +765,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	@Override
 	public void readTransmittable(NBTTagCompound nbt)
 	{
+		roomDeletePrepare = nbt.getBoolean("rdp");
 		tickTimer = nbt.getInteger("tickTimer");
 		hasScrewdriver = nbt.getInteger("hasScrewdriver");
 		facing    = nbt.getInteger("facing");
@@ -713,6 +777,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		regulated = nbt.getBoolean("regulated");
 		saveCoords = nbt.getBoolean("saveCoords");
 		landGroundControl = nbt.getBoolean("landGroundControl");
+		unstableControl = nbt.getInteger("unstableControl");
 		schemaChooserString = nbt.getString("schemaChooserString");
 		lastButton = nbt.getInteger("lastButton");
 		lastButtonTT = nbt.getInteger("lastButtonTT");
@@ -721,6 +786,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	@Override
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
+		nbt.setBoolean("rdp",roomDeletePrepare);
 		nbt.setInteger("tickTimer", tickTimer);
 		nbt.setInteger("hasScrewdriver", hasScrewdriver);
 		nbt.setBoolean("primed", primed);
@@ -732,6 +798,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		nbt.setIntArray("yControls", yControls);
 		nbt.setBoolean("saveCoords",saveCoords);
 		nbt.setBoolean("landGroundControl", landGroundControl);
+		nbt.setInteger("unstableControl",unstableControl);
 		nbt.setString("schemaChooserString", schemaChooserString);
 		nbt.setInteger("lastButton",lastButton);
 		nbt.setInteger("lastButtonTT",lastButtonTT);
