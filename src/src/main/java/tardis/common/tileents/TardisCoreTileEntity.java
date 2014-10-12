@@ -86,7 +86,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public void enterTardis(EntityPlayer player)
 	{
-		Helper.teleportEntity(player, worldObj.provider.dimensionId, 9, 29, 0);
+		Helper.teleportEntity(player, worldObj.provider.dimensionId, 13.5, 28.5, 0, 90);
 	}
 	
 	public void leaveTardis(EntityPlayer player)
@@ -101,17 +101,18 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				int facing = ext.getBlockMetadata(exteriorX, exteriorY, exteriorZ);
 				int dx = 0;
 				int dz = 0;
+				double rot = 0;
 				switch(facing)
 				{
-					case 0:dz = -1; break;
-					case 1:dx =  1; break;
-					case 2:dz =  1; break;
-					case 3:dx = -1; break;
+					case 0:dz = -1;rot=180; break;
+					case 1:dx =  1;rot=-90; break;
+					case 2:dz =  1;rot=  0; break;
+					case 3:dx = -1;rot= 90; break;
 				}
 				
 				if(ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz) && ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz))
 				{
-					Helper.teleportEntity(player, exteriorWorld, exteriorX+(dx*1.5), exteriorY+1, exteriorZ+(dz*1.5));
+					Helper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx*1.3), exteriorY+1, exteriorZ+0.5+(dz*1.3),rot);
 				}
 				else
 				{
@@ -472,7 +473,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(!modified)
 			return speed;
 		double mod = ((double)getNumRooms()) / getMaxNumRooms();
-		return speed * (mod / 2.0);
+		return speed * (1-(mod / 2.0));
 	}
 	
 	public double addSpeed(double a)

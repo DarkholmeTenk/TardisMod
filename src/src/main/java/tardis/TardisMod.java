@@ -18,6 +18,8 @@ import tardis.common.blocks.TardisSchemaBlock;
 import tardis.common.blocks.TardisSchemaComponentBlock;
 import tardis.common.blocks.TardisSchemaComponentItemBlock;
 import tardis.common.blocks.TardisSchemaCoreBlock;
+import tardis.common.blocks.TardisSlabBlock;
+import tardis.common.blocks.TardisSlabItemBlock;
 import tardis.common.blocks.TardisStairBlock;
 import tardis.common.blocks.TardisTopBlock;
 import tardis.common.command.TardisCommandRegister;
@@ -79,6 +81,7 @@ public class TardisMod
 	public static TardisAbstractBlock schemaComponentBlock;
 	public static TardisAbstractBlock debugBlock;
 	public static TardisStairBlock	  stairBlock;
+	public static TardisSlabBlock	  slabBlock;
 	
 	public static TardisAbstractItem schemaItem;
 	public static TardisSonicScrewdriverItem screwItem;
@@ -148,6 +151,9 @@ public class TardisMod
 		
 		schemaComponentBlock = new TardisSchemaComponentBlock(blockConfig.getInt("schemaComponentBlockID", 643));
 		GameRegistry.registerBlock(schemaComponentBlock, TardisSchemaComponentItemBlock.class, schemaComponentBlock.getUnlocalizedName());
+		
+		slabBlock = new TardisSlabBlock(blockConfig.getInt("slabBlockID", 650));
+		GameRegistry.registerBlock(slabBlock,TardisSlabItemBlock.class,slabBlock.getUnlocalizedName());
 	}
 	
 	private void initItems()

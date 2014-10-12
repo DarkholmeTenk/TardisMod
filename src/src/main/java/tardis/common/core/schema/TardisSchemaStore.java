@@ -119,6 +119,8 @@ public class TardisSchemaStore
 			return "consoleBlock";
 		if(id == TardisMod.stairBlock.blockID)
 			return "stairBlock";
+		if(id == TardisMod.slabBlock.blockID)
+			return "slabBlock";
 		
 		return null;
 	}
@@ -145,6 +147,8 @@ public class TardisSchemaStore
 			return TardisMod.tardisConsoleBlock.blockID;
 		if(name.equals("stairBlock"))
 			return TardisMod.stairBlock.blockID;
+		if(name.equals("slabBlock"))
+			return TardisMod.slabBlock.blockID;
 		return null;
 	}
 

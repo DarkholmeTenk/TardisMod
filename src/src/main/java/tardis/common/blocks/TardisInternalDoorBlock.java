@@ -14,6 +14,7 @@ import tardis.common.items.TardisSonicScrewdriverItem;
 import tardis.common.tileents.TardisCoreTileEntity;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -166,7 +167,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	}
 	
 	@Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World w, int x, int y, int z)
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World w, int x, int y, int z)
 	{
 		if(w.getBlockMetadata(x, y, z) >= 8)
 		{
@@ -178,19 +179,19 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	
 	@Override
 	public boolean isBlockNormalCube(World w, int x, int y, int z)
-    {
-        return w.getBlockMetadata(x,y,z) < 8;
-    }
+	{
+		return w.getBlockMetadata(x,y,z) < 8;
+	}
 	
 	@Override
 	public boolean isBlockSolid(IBlockAccess w, int x, int y, int z, int s)
-    {
-        return shouldSideBeRendered(w,x,y,z,s);
-    }
+	{
+		return shouldSideBeRendered(w,x,y,z,s);
+	}
 	
 	@Override
-    public boolean shouldSideBeRendered(IBlockAccess w, int x, int y, int z, int s)
-    {
+	public boolean shouldSideBeRendered(IBlockAccess w, int x, int y, int z, int s)
+	{
 		switch(s)
 		{
 			case 0: y++;break;
@@ -203,7 +204,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 		if(w.getBlockMetadata(x, y, z) >= 8)
 			return false;
 		return true;
-    }
+	}
 	
 	@Override
 	public void onNeighborBlockChange(World w, int x, int y, int z, int bID)
@@ -263,23 +264,38 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	
 	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess w, int x, int y, int z)
-    {
-        if(w.getBlockMetadata(x, y, z) >= 8)
-        	this.setBlockBounds(0, 0, 0, 0, 0, 0);
-        else
-        	this.setBlockBounds(0, 0, 0, 1, 1, 1);
-    }
+	{
+		if(w.getBlockMetadata(x, y, z) >= 8)
+			this.setBlockBounds(0, 0, 0, 0, 0, 0);
+		else
+			this.setBlockBounds(0, 0, 0, 1, 1, 1);
+	}
 	
 	@Override
 	public void setBlockBoundsForItemRender()
-    {
+	{
 		setBlockBounds(0,0,0,1,1,1);
-    }
+	}
 	
 	@Override
 	public Icon getIcon(int s, int d)
 	{
-		return super.getIcon(s, (d % 8) >= 4 ? 1 : 0);
+		int iconMeta = (d % 8) >= 4 ? 1 : 0;
+		//TardisOutput.print("TIDB", "Meta"+d+"->"+iconMeta);
+		return super.getIcon(s, iconMeta);
 	}
+	
+	@Override
+	public int getDamageValue(World par1World, int par2, int par3, int par4)
+    {
+        return super.getDamageValue(par1World, par2, par3, par4) & 7;
+    }
+	
+	@Override
+	public void addCollisionBoxesToList(World par1World, int par2, int par3, int par4, AxisAlignedBB par5AxisAlignedBB, List par6List, Entity par7Entity)
+    {
+        this.setBlockBoundsBasedOnState(par1World, par2, par3, par4);
+        super.addCollisionBoxesToList(par1World, par2, par3, par4, par5AxisAlignedBB, par6List, par7Entity);
+    }
 
 }

@@ -2,8 +2,11 @@ package tardis.common.blocks;
 
 import net.minecraft.world.IBlockAccess;
 
-public class TardisDecoBlock extends TardisAbstractBlock {
+public class TardisDecoBlock extends TardisAbstractBlock
+{
 
+	private static final String[] subs = {"Floor","Wall","Roundel","Corridor","CorridorRoundel","CorridorFloor","Glass", "WallPlain"};
+	
 	public TardisDecoBlock(int blockID)
 	{
 		super(blockID);
@@ -13,7 +16,7 @@ public class TardisDecoBlock extends TardisAbstractBlock {
 	public void initData()
 	{
 		setUnlocalizedName("DecoBlock");
-		setSubNames("Floor","Wall","Roundel","Corridor","CorridorRoundel","CorridorFloor","Glass");
+		setSubNames(subs);
 		setLightValue(1F);
 	}
 	
@@ -29,23 +32,11 @@ public class TardisDecoBlock extends TardisAbstractBlock {
 	}
 	
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess w, int x, int y, int z, int s)
-    {
-        int mX = x;
-        int mY = y;
-        int mZ = z;
-        switch(s)
-		{
-			case 0: y++;break;
-			case 1: y--;break;
-			case 2: z++;break;
-			case 3: z--;break;
-			case 4: x++;break;
-			case 5: x--;break;
-		}
-        if(w.getBlockId(mX, mY, mZ) == blockID && w.getBlockMetadata(mX, mY, mZ) == 6 && w.getBlockMetadata(x, y, z) == 6)
+	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x, int y, int z, int mX, int mY, int mZ)
+	{
+		if(w.getBlockId(mX, mY, mZ) == blockID && w.getBlockMetadata(mX, mY, mZ) == 7 && w.getBlockMetadata(x, y, z) == 7)
         	return false;
-        return super.shouldSideBeRendered(w, s, mX, mY, mZ);
-    }
+        return super.shouldSideBeRendered(w, s, x,y,z,mX, mY, mZ);
+	}
 
 }

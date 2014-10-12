@@ -52,6 +52,12 @@ public class TardisStairBlock extends BlockStairs
 	}
 	
 	@Override
+	public boolean renderAsNormalBlock()
+    {
+		return false;
+    }
+	
+	@Override
 	public boolean isOpaqueCube()
 	{
 		return false;

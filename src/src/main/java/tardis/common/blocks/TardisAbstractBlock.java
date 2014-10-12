@@ -7,6 +7,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import tardis.TardisMod;
 import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -15,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public abstract class TardisAbstractBlock extends Block
@@ -44,7 +46,26 @@ public abstract class TardisAbstractBlock extends Block
 		if(subnames.length == 0)
 			subNames = null;
 		subNames = subnames;
-		subIcons = new Icon[subNames.length];
+		setIconArray(subNames.length);
+	}
+	
+	private void setIconArray(int length)
+	{
+		String[] suffixes = getIconSuffix();
+		if(suffixes == null)
+			subIcons = new Icon[length];
+		else
+			subIcons = new Icon[length * suffixes.length];
+	}
+	
+	public void setIconArray(int names, int suffixes)
+	{
+		subIcons = new Icon[names * suffixes];
+	}
+	
+	public String[] getIconSuffix()
+	{
+		return null;
 	}
 	
 	@Override
@@ -129,13 +150,53 @@ public abstract class TardisAbstractBlock extends Block
 	{
 		if(subIcons != null)
 		{
+			String[] suffixes = getIconSuffix();
 			for(int i = 0; i < subNames.length; i++)
-				subIcons[i] = register.registerIcon("tardismod:" + unlocalizedFragment + "." + getSubName(i));
+			{
+				if(suffixes == null)
+				{
+					TardisOutput.print("TAB", "Registering icon " + i + ":" + "tardismod:" + unlocalizedFragment + "." + subNames[i]);
+					subIcons[i] = register.registerIcon("tardismod:" + unlocalizedFragment + "." + subNames[i]);
+				}
+				else
+				{
+					for(int j = 0;j<suffixes.length;j++)
+					{
+						String iconToReg = "tardismod:" + unlocalizedFragment + "." + subNames[i] +"."+ suffixes[j];
+						TardisOutput.print("TAB", "Registering icon " + i + ":" + iconToReg);
+						subIcons[(i*suffixes.length) + j] = register.registerIcon(iconToReg);
+					}
+				}
+			}
 		}
 		else
 		{
+			TardisOutput.print("TAB", "Registering icon:" + "tardismod:" + unlocalizedFragment);
 			iconBuffer = register.registerIcon("tardismod:" + unlocalizedFragment);
 		}
+	}
+	
+	@Override
+	public boolean shouldSideBeRendered(IBlockAccess w, int x, int y, int z, int s)
+    {
+        int mX = x;
+        int mY = y;
+        int mZ = z;
+        switch(s)
+		{
+			case 0: y++;break;
+			case 1: y--;break;
+			case 2: z++;break;
+			case 3: z--;break;
+			case 4: x++;break;
+			case 5: x--;break;
+		}
+        return shouldSideBeRendered(w, s, x,y,z, mX, mY, mZ);
+    }
+	
+	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x,int y, int z, int ox, int oy, int oz)
+	{
+		return super.shouldSideBeRendered(w, ox, oy, oz, s);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -144,9 +205,28 @@ public abstract class TardisAbstractBlock extends Block
     {
 		if(subIcons != null)
 		{
-			if(metadata >= 0 && metadata < subIcons.length)
-				return subIcons[metadata];
-			return subIcons[0];
+			String[] suffixes = getIconSuffix();
+			if(suffixes == null)
+			{
+				if(metadata >= 0 && metadata < subIcons.length)
+					return subIcons[metadata];
+				return subIcons[0];
+			}
+			else
+			{
+				int metaBase = metadata * suffixes.length;
+				int metaAdd  = 0;
+				for(int j = 0;j<suffixes.length;j++)
+				{
+					if(suffixes[j].contains("top") && side == 0)
+						metaAdd = j;
+					else if(suffixes[j].contains("bottom") && side == 1)
+						metaAdd = j;
+					else if(suffixes[j].contains("side") && side > 1)
+						metaAdd = j;
+				}
+				return subIcons[metaBase + metaAdd];
+			}
 		}
 		else
 		{

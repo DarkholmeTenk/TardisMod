@@ -76,6 +76,11 @@ public class Helper
 	
 	public static void teleportEntity(Entity ent, int worldID, double x, double y, double z)
 	{
+		teleportEntity(ent,worldID,x,y,z,0);
+	}
+	
+	public static void teleportEntity(Entity ent, int worldID, double x, double y, double z, double rot)
+	{
 		MinecraftServer serv = MinecraftServer.getServer();
 		if(ent instanceof EntityPlayerMP)
 		{
@@ -88,6 +93,7 @@ public class Helper
 			if(ent.worldObj.provider.dimensionId != worldID)
 				serv.getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) ent, worldID, TardisMod.teleporter);
 			((EntityPlayerMP) ent).fallDistance = 0;
+			((EntityPlayerMP) ent).setPositionAndRotation(x, y, z, (float) rot, 0F);
 			((EntityPlayerMP) ent).setPositionAndUpdate(x, y, z);
 		}
 	}
