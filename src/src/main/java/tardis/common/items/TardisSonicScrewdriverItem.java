@@ -49,9 +49,8 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 		return "";
 	}
 	
-	public void addInformation(ItemStack is, EntityPlayer player, List infoList, boolean par4)
+	private void addInfo(ItemStack is, EntityPlayer player, List infoList)
 	{
-		super.addInformation(is, player, infoList, par4);
 		if(is != null)
 		{
 			TardisScrewdriverMode mode = getMode(is);
@@ -67,6 +66,12 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 		}
 	}
 	
+	public void addInformation(ItemStack is, EntityPlayer player, List infoList, boolean par4)
+	{
+		super.addInformation(is, player, infoList, par4);
+		addInfo(is,player,infoList);
+	}
+	
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
     {
@@ -77,7 +82,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 			is.stackTagCompound.setInteger("screwdriverMode", newValue);
 			getMode(is);
 			ArrayList<Object> list = new ArrayList<Object>();
-			addInformation(is,player,list,false);
+			addInfo(is,player,list);
 			for(Object o: list)
 			{
 				if(o instanceof String)
