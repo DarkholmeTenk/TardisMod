@@ -370,6 +370,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	
 	private void loadControls(int num)
 	{
+		TardisOutput.print("TConTE","Attempting to load state " + num);
 		if(states.containsKey(num))
 			loadControls(states.get(num));
 	}
@@ -381,9 +382,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 			TardisOutput.print("TConTE", "Loading state");
 			facing = state.facing;
 			dimControl = state.dimControl;
-			xControls = state.xControls;
-			yControls = state.yControls;
-			zControls = state.zControls;
+			xControls = state.xControls.clone();
+			yControls = state.yControls.clone();
+			zControls = state.zControls.clone();
 			landGroundControl = state.landGroundControl;
 			clampControls();
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -394,8 +395,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 	{
 		TardisOutput.print("TConTE", "Saving state to num:"+stateNum);
 		ControlStateStore s = new ControlStateStore(facing,dimControl,xControls,yControls,zControls,landGroundControl);
-		if(states.containsKey(stateNum))
-			states.remove(stateNum);
 		states.put(stateNum, s);
 	}
 	
