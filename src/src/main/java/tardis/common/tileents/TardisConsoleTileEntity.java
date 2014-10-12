@@ -664,7 +664,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		}
 		else
 		{
-			if(!core.canModify(pl))
+			if(controlID == 901 && !core.canModify(pl))
 				pl.addChatMessage("[TARDIS]You don't have permission to modify this TARDIS");
 			if(roomDeletePrepare)
 				roomDeletePrepare = false;
