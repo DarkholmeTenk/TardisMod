@@ -49,7 +49,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private int hull;
 	private int maxHull;
 	
-	private boolean deletingRooms = true;
+	private boolean deletingRooms = false;
 	private boolean explode = false;
 	
 	private int instability = 0;
