@@ -353,6 +353,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		
 		if(!worldObj.isRemote)
 		{
+			if(tickCount % 100 == 0 && TardisMod.plReg != null)
+			{
+				if(!TardisMod.plReg.hasTardis(ownerName))
+					TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
+			}
+			
 			if(deletingRooms)
 			{
 				Iterator<SimpleCoordStore> i = roomSet.iterator();
@@ -413,12 +419,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		}
 	}
 	
-	public void setOwner(String name)
-	{
-		TardisOutput.print("TCTE", "Setting owner to " + name+"#"+worldObj.isRemote, TardisOutput.Priority.DEBUG);
-		ownerName = name;
-	}
-	
 	public void setExterior(World w, int x, int y, int z)
 	{
 		exteriorWorld = w.provider.dimensionId;
@@ -452,6 +452,14 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return ownerName;
 	}
 	
+	public void setOwner(String name)
+	{
+		TardisOutput.print("TCTE", "Setting owner to " + name+"#"+worldObj.isRemote, TardisOutput.Priority.DEBUG);
+		ownerName = name;
+		if(!worldObj.isRemote && TardisMod.plReg != null && !TardisMod.plReg.hasTardis(ownerName))
+			TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
+	}
+
 	public TardisConsoleTileEntity getConsole()
 	{
 		TileEntity te = worldObj.getBlockTileEntity(xCoord, yCoord - 2, zCoord);

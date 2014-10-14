@@ -7,6 +7,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import tardis.api.IControlMatrix;
 import tardis.client.renderer.model.TardisSonicScrewdriverModel;
 import tardis.client.renderer.model.console.GaugeDisplayModel;
 import tardis.client.renderer.model.console.GaugeNeedleModel;
@@ -19,9 +20,8 @@ import tardis.client.renderer.model.console.ScreenModel;
 import tardis.client.renderer.model.console.SonicScrewdriverHolderModel;
 import tardis.client.renderer.model.console.SpecialLeverModel;
 import tardis.client.renderer.model.console.ValveWheelModel;
-import tardis.common.tileents.TardisConsoleTileEntity;
 
-public class TardisConsoleComponentRenderer
+public class TardisComponentRenderer
 {
 	private static TardisSonicScrewdriverModel screw = new TardisSonicScrewdriverModel();
 	private static SonicScrewdriverHolderModel holder = new SonicScrewdriverHolderModel();
@@ -39,7 +39,7 @@ public class TardisConsoleComponentRenderer
 	private FontRenderer fontRenderer;
 	private TextureManager textureManager;
 	
-	public TardisConsoleComponentRenderer(FontRenderer fr, TextureManager tm)
+	public TardisComponentRenderer(FontRenderer fr, TextureManager tm)
 	{
 		fontRenderer = fr;
 		textureManager = tm;
@@ -60,7 +60,7 @@ public class TardisConsoleComponentRenderer
 		GL11.glScaled(sX, sY, sZ);
 	}
 	
-	private void setHighlight(TardisConsoleTileEntity te, int controlID)
+	private void setHighlight(IControlMatrix te, int controlID)
 	{
 		if(te.getControlHighlight(controlID) >= 0)
 			GL11.glColor3d(0.2*te.getControlHighlight(controlID), 0.5 * te.getControlHighlight(controlID), te.getControlHighlight(controlID));
@@ -68,7 +68,7 @@ public class TardisConsoleComponentRenderer
 			GL11.glColor3d(1, 1, 1);
 	}
 	
-	public void renderSchematicSelector(Tessellator tess, TardisConsoleTileEntity tce,String s, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
+	public void renderSchematicSelector(Tessellator tess, IControlMatrix tce,String s, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
@@ -87,7 +87,7 @@ public class TardisConsoleComponentRenderer
 		GL11.glColor3d(1, 1, 1);
 	}
 	
-	public void renderScrewdriverHolder(Tessellator tess, TardisConsoleTileEntity te, double x, double y, double z, double rX,double rY, double rZ,double sX, double sY, double sZ)
+	public void renderScrewdriverHolder(Tessellator tess, IControlMatrix te, double x, double y, double z, double rX,double rY, double rZ,double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
@@ -97,7 +97,7 @@ public class TardisConsoleComponentRenderer
 		GL11.glPopMatrix();
 	}
 	
-	public void renderScrewdriver(Tessellator tess, TardisConsoleTileEntity te, int slot, double x, double y, double z, double rX,double rY, double rZ,double sX, double sY, double sZ)
+	public void renderScrewdriver(Tessellator tess, IControlMatrix te, int slot, double x, double y, double z, double rX,double rY, double rZ,double sX, double sY, double sZ)
 	{
 		if(te.hasScrewdriver(slot))
 		{
@@ -110,7 +110,7 @@ public class TardisConsoleComponentRenderer
 		}
 	}
 	
-	public void renderGauge(Tessellator tess, TardisConsoleTileEntity te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
+	public void renderGauge(Tessellator tess, IControlMatrix te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
@@ -129,7 +129,7 @@ public class TardisConsoleComponentRenderer
 		GL11.glPopMatrix();
 	}
 	
-	public void renderWheel(Tessellator tess, TardisConsoleTileEntity te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
+	public void renderWheel(Tessellator tess, IControlMatrix te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
@@ -141,7 +141,7 @@ public class TardisConsoleComponentRenderer
 		GL11.glPopMatrix();
 	}
 	
-	public void renderLever(Tessellator tess, TardisConsoleTileEntity te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
+	public void renderLever(Tessellator tess, IControlMatrix te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
@@ -159,7 +159,7 @@ public class TardisConsoleComponentRenderer
 		GL11.glPopMatrix();
 	}
 	
-	public void renderSpecialLever(Tessellator tess, TardisConsoleTileEntity te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
+	public void renderSpecialLever(Tessellator tess, IControlMatrix te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
@@ -179,7 +179,7 @@ public class TardisConsoleComponentRenderer
 		GL11.glPopMatrix();
 	}
 	
-	public void renderScreen(Tessellator tess, TardisConsoleTileEntity te, int id, String texture, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
+	public void renderScreen(Tessellator tess, IControlMatrix te, int id, String texture, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
@@ -197,7 +197,7 @@ public class TardisConsoleComponentRenderer
 		GL11.glColor3d(1, 1, 1);
 	}
 	
-	public void renderPushSwitch(Tessellator tess, TardisConsoleTileEntity tce, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
+	public void renderPushSwitch(Tessellator tess, IControlMatrix tce, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
@@ -219,7 +219,7 @@ public class TardisConsoleComponentRenderer
 	
 
 	
-	public void renderButton(Tessellator tess, TardisConsoleTileEntity tce, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
+	public void renderButton(Tessellator tess, IControlMatrix tce, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);

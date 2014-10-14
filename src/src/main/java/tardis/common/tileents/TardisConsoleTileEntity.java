@@ -3,6 +3,7 @@ package tardis.common.tileents;
 import java.util.HashMap;
 
 import tardis.TardisMod;
+import tardis.api.IControlMatrix;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.ControlStateStore;
@@ -16,7 +17,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.EnumChatFormatting;
 
-public class TardisConsoleTileEntity extends TardisAbstractTileEntity
+public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements IControlMatrix
 {
 	public static final float cycleLength = 80;
 	private int tickTimer;
@@ -425,6 +426,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		}
 	}
 	
+	@Override
 	public double getControlState(int controlID,boolean wobble)
 	{
 		double maxWobble = 0.025;
@@ -439,6 +441,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		return getControlState(controlID) + wobbleAmount;
 	}
 	
+	@Override
 	public double getControlState(int controlID)
 	{
 		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
@@ -485,6 +488,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity
 		return 0;
 	}
 	
+	@Override
 	public double getControlHighlight(int controlID)
 	{
 		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);

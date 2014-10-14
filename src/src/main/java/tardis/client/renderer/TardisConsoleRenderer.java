@@ -13,7 +13,7 @@ import tardis.common.tileents.TardisConsoleTileEntity;
 public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 {
 	TardisConsoleModel model = new TardisConsoleModel();
-	TardisConsoleComponentRenderer compRender;
+	TardisComponentRenderer compRender;
 	
 	@Override
 	public TardisAbstractBlock getBlock()
@@ -119,7 +119,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
 	{
 		if(compRender == null)
-			compRender = new TardisConsoleComponentRenderer(getFontRenderer(),tileEntityRenderer.renderEngine);
+			compRender = new TardisComponentRenderer(getFontRenderer(),tileEntityRenderer.renderEngine);
 		
 		GL11.glPushMatrix();
 		//This line actually rotates the renderer.

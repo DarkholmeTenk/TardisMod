@@ -34,7 +34,7 @@ public class TardisDecoBlock extends TardisAbstractBlock
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x, int y, int z, int mX, int mY, int mZ)
 	{
-		if(w.getBlockId(mX, mY, mZ) == blockID && w.getBlockMetadata(mX, mY, mZ) == 7 && w.getBlockMetadata(x, y, z) == 7)
+		if(w.getBlockId(mX, mY, mZ) == blockID && w.getBlockMetadata(mX, mY, mZ) == w.getBlockMetadata(x, y, z))
         	return false;
         return super.shouldSideBeRendered(w, s, x,y,z,mX, mY, mZ);
 	}

@@ -31,6 +31,7 @@ import tardis.common.core.TardisCreativeTab;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisPacketHandler;
+import tardis.common.core.TardisPlayerRegistry;
 import tardis.common.core.TardisSoundHandler;
 import tardis.common.core.TardisTeleporter;
 import tardis.common.dimension.TardisWorldProvider;
@@ -64,6 +65,7 @@ public class TardisMod
 	public static TardisTeleporter teleporter = null;
 	public static TardisConfigHandler configHandler;
 	public static TardisDimensionRegistry dimReg;
+	public static TardisPlayerRegistry plReg;
 	public static TardisCreativeTab tab = null;
 	
 	public static TardisOutput.Priority priorityLevel = TardisOutput.Priority.INFO;
@@ -170,6 +172,7 @@ public class TardisMod
 	{
 		dimReg = TardisDimensionRegistry.load();
 		dimReg.registerDims();
+		plReg  = TardisPlayerRegistry.load();
 		teleporter = new TardisTeleporter(event.getServer().worldServerForDimension(0));
 		TardisCommandRegister.registerCommands(event);
 	}

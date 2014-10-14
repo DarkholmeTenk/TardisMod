@@ -99,12 +99,14 @@ public class TardisRepairCoreCommand implements ICommand
 		if(newOwner != null)
 		{
 			TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner);
-			World world = Helper.getWorld(worldID);
-			TardisCoreTileEntity tce = Helper.getTardisCore(worldID);
+			World world = Helper.getWorldServer(worldID);
+			TardisCoreTileEntity tce = Helper.getTardisCore(world);
 			if(tce == null && world.provider instanceof TardisWorldProvider)
+			{
 				world.setBlock(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
-			tce = Helper.getTardisCore(worldID);
-			TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);
+				tce = Helper.getTardisCore(world);
+			}
+			//TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);
 			if(tce != null)
 				tce.repair(newOwner, numRooms, energy);
 		}

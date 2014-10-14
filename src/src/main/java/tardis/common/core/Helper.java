@@ -17,6 +17,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
 public class Helper
@@ -48,9 +49,9 @@ public class Helper
 	
 	public static boolean isServer()
 	{
-		if(isServer == null)
+		//if(isServer == null)
 			return (isServer=FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER));
-		return isServer;
+		//return isServer;
 	}
 	
 	///////////////////////////////////////////////////
@@ -82,19 +83,21 @@ public class Helper
 	public static void teleportEntity(Entity ent, int worldID, double x, double y, double z, double rot)
 	{
 		MinecraftServer serv = MinecraftServer.getServer();
-		if(ent instanceof EntityPlayerMP)
+		if(Helper.isServer() && serv != null && ent instanceof EntityPlayer)
 		{
-			World nW = Helper.getWorld(worldID);
+			WorldServer nW = Helper.getWorldServer(worldID);
+			WorldServer oW = Helper.getWorldServer(ent.worldObj.provider.dimensionId);
 			if(nW.provider instanceof TardisWorldProvider && FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
 			{
 				Packet dP = TardisDimensionRegistry.getPacket();
 				MinecraftServer.getServer().getConfigurationManager().sendToAllNear(ent.posX, ent.posY, ent.posZ, 100, ent.worldObj.provider.dimensionId, dP);
 			}
+			
 			if(ent.worldObj.provider.dimensionId != worldID)
 				serv.getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) ent, worldID, TardisMod.teleporter);
-			((EntityPlayerMP) ent).fallDistance = 0;
-			((EntityPlayerMP) ent).setPositionAndRotation(x, y, z, (float) rot, 0F);
-			((EntityPlayerMP) ent).setPositionAndUpdate(x, y, z);
+			((EntityPlayer) ent).fallDistance = 0;
+			((EntityPlayer) ent).setPositionAndRotation(x, y, z, (float) rot, 0F);
+			((EntityPlayer) ent).setPositionAndUpdate(x, y, z);
 		}
 	}
 	
@@ -115,6 +118,16 @@ public class Helper
 	public static World getWorld(int dimensionID)
 	{
 		return TardisMod.proxy.getWorld(dimensionID);
+	}
+	
+	public static WorldServer getWorldServer(int d)
+	{
+		return MinecraftServer.getServer().worldServerForDimension(d);
+	}
+	
+	public static EntityPlayerMP getPlayer(String username)
+	{
+		return MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
 	}
 	
 	public static void giveItemStack(EntityPlayerMP pl, ItemStack is)

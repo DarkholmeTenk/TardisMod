@@ -1,5 +1,6 @@
 package tardis.common.tileents;
 
+import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +17,8 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 	
 	private boolean takingOffSoundPlayed = false;
 	private boolean landingSoundPlayed = false;
+	
+	private String owner;
 	
 	Integer linkedDimension = null;
 	TardisCoreTileEntity linkedCore = null;
@@ -165,7 +168,10 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 		{
 			if(linkedDimension == null)
 			{
-				linkedDimension = Helper.generateTardisInterior(player,this);
+				if(!TardisMod.plReg.hasTardis(player.username))
+					linkedDimension = Helper.generateTardisInterior(player,this);
+				else if(Helper.isServer())
+					player.addChatMessage("You already own a TARDIS");
 			}
 			else
 			{
@@ -197,6 +203,8 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 		tag.setInteger("fadeTimer", fadeTimer);
 		if(linkedDimension != null)
 			tag.setInteger("linkedDimension", linkedDimension);
+		if(owner != null)
+			tag.setString("owner", owner);
 	}
 
 	@Override
@@ -208,6 +216,8 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 		fadeTimer = tag.getInteger("fadeTimer");
 		if(tag.hasKey("linkedDimension"))
 			linkedDimension = tag.getInteger("linkedDimension");
+		if(tag.hasKey("owner"))
+			owner = tag.getString("owner");
 	}
 
 }
