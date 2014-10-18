@@ -132,7 +132,10 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
     	{
     		TardisCoreTileEntity te = Helper.getTardisCore(w);
     		if(te != null)
-    			te.leaveTardis(pl);
+    		{
+				if(!te.changeLock(pl,true))
+					te.leaveTardis(pl,false);
+    		}
     	}
         return false;
     }

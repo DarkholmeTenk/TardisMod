@@ -47,12 +47,16 @@ public class Helper
 		return Math.min(max, Math.max(min,val));
 	}
 	
-	public static boolean isServer()
+	public static int toInt(String str, int def)
 	{
-		//if(isServer == null)
-			return (isServer=FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER));
-		//return isServer;
+		try
+		{
+			return Integer.parseInt(str);
+		} catch(NumberFormatException e){}
+		return def;
 	}
+
+	
 	
 	///////////////////////////////////////////////////
 	///////////////TELEPORT STUFF//////////////////////
@@ -66,7 +70,7 @@ public class Helper
 			{
 				TardisCoreTileEntity core = getTardisCore(ent.worldObj);
 				if(core != null)
-					core.enterTardis((EntityPlayer) ent);
+					core.enterTardis((EntityPlayer) ent,true);
 				else
 					teleportEntity(ent, 0, ent.posX, ent.posY, ent.posZ);
 			}
@@ -106,30 +110,6 @@ public class Helper
 		teleportEntity(ent,worldID,ent.posX,ent.posY,ent.posZ);
 	}
 	
-	public static int toInt(String str, int def)
-	{
-		try
-		{
-			return Integer.parseInt(str);
-		} catch(NumberFormatException e){}
-		return def;
-	}
-	
-	public static World getWorld(int dimensionID)
-	{
-		return TardisMod.proxy.getWorld(dimensionID);
-	}
-	
-	public static WorldServer getWorldServer(int d)
-	{
-		return MinecraftServer.getServer().worldServerForDimension(d);
-	}
-	
-	public static EntityPlayerMP getPlayer(String username)
-	{
-		return MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
-	}
-	
 	public static void giveItemStack(EntityPlayerMP pl, ItemStack is)
 	{
 		InventoryPlayer inv = pl.inventory;
@@ -142,39 +122,6 @@ public class Helper
 		{
 			inv.onInventoryChanged();
 		}
-	}
-	
-	public static void loadSchema(String name,World w, int x, int y, int z, int facing)
-	{
-		TardisPartBlueprint bp = new TardisPartBlueprint(TardisMod.configHandler.getSchemaFile(name));
-		bp.reconstitute(w, x, y, z, facing);
-	}
-	
-	public static TardisCoreTileEntity getTardisCore(int dimensionID)
-	{
-		World tardisWorld = Helper.getWorld(dimensionID);
-		if(tardisWorld != null)
-			return getTardisCore(tardisWorld);
-		else
-			TardisOutput.print("TH","No world passed",TardisOutput.Priority.DEBUG);
-		return null;
-	}
-	
-	public static TardisCoreTileEntity getTardisCore(World tardisWorld)
-	{
-		if(tardisWorld != null)
-		{
-			TileEntity te = tardisWorld.getBlockTileEntity(tardisCoreX, tardisCoreY, tardisCoreZ);
-			if(te != null && te instanceof TardisCoreTileEntity)
-			{
-				return (TardisCoreTileEntity)te;
-			}
-		}
-		else
-		{
-			TardisOutput.print("TH","No world passed",TardisOutput.Priority.DEBUG);
-		}
-		return null;
 	}
 	
 	public static int generateTardisInterior(EntityPlayer player,TardisTileEntity exterior)
@@ -200,9 +147,69 @@ public class Helper
 		if(te != null)
 		{
 			te.setOwner(player.username);
-			te.enterTardis(player);
+			te.enterTardis(player,true);
 			te.setExterior(exterior.worldObj, exterior.xCoord, exterior.yCoord, exterior.zCoord);
 		}
 		return dimID;
+	}
+	
+	public static void summonTardis(EntityPlayer player)
+	{
+		
+	}
+
+	public static void loadSchema(String name,World w, int x, int y, int z, int facing)
+	{
+		TardisPartBlueprint bp = new TardisPartBlueprint(TardisMod.configHandler.getSchemaFile(name));
+		bp.reconstitute(w, x, y, z, facing);
+	}
+	
+	public static boolean isServer()
+	{
+		//if(isServer == null)
+			return (isServer=FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER));
+		//return isServer;
+	}
+
+	public static World getWorld(int dimensionID)
+	{
+		return TardisMod.proxy.getWorld(dimensionID);
+	}
+
+	public static WorldServer getWorldServer(int d)
+	{
+		return MinecraftServer.getServer().worldServerForDimension(d);
+	}
+
+	public static EntityPlayerMP getPlayer(String username)
+	{
+		return MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+	}
+
+	public static TardisCoreTileEntity getTardisCore(int dimensionID)
+	{
+		World tardisWorld = Helper.getWorld(dimensionID);
+		if(tardisWorld != null)
+			return getTardisCore(tardisWorld);
+		else
+			TardisOutput.print("TH","No world passed",TardisOutput.Priority.DEBUG);
+		return null;
+	}
+	
+	public static TardisCoreTileEntity getTardisCore(World tardisWorld)
+	{
+		if(tardisWorld != null)
+		{
+			TileEntity te = tardisWorld.getBlockTileEntity(tardisCoreX, tardisCoreY, tardisCoreZ);
+			if(te != null && te instanceof TardisCoreTileEntity)
+			{
+				return (TardisCoreTileEntity)te;
+			}
+		}
+		else
+		{
+			TardisOutput.print("TH","No world passed",TardisOutput.Priority.DEBUG);
+		}
+		return null;
 	}
 }

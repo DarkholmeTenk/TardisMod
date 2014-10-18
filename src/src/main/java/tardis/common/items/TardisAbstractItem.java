@@ -1,9 +1,13 @@
 package tardis.common.items;
 
+import java.util.List;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.TardisMod;
+import tardis.common.core.TardisOutput;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -43,7 +47,8 @@ public class TardisAbstractItem extends Item
     @Override
     public void registerIcons(IconRegister ir)
     {
-    	ir.registerIcon("tardismod:" + unlocalizedFragment);
+    	TardisOutput.print("TAI", "Registering icon " + unlocalizedFragment);
+    	iconBuffer = ir.registerIcon("tardismod:" + unlocalizedFragment);
     }
     
     @SideOnly(Side.CLIENT)
@@ -52,5 +57,15 @@ public class TardisAbstractItem extends Item
     {
     	return iconBuffer;
     }
+    
+    public void addInfo(ItemStack is, EntityPlayer player, List infoList){}
+    
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void addInformation(ItemStack is, EntityPlayer player, List infoList, boolean par4)
+	{
+		super.addInformation(is, player, infoList, par4);
+		addInfo(is,player,infoList);
+	}
 
 }

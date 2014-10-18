@@ -36,6 +36,7 @@ import tardis.common.core.TardisSoundHandler;
 import tardis.common.core.TardisTeleporter;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.items.TardisAbstractItem;
+import tardis.common.items.TardisKeyItem;
 import tardis.common.items.TardisSchemaItem;
 import tardis.common.items.TardisSonicScrewdriverItem;
 import tardis.common.tileents.TardisConsoleTileEntity;
@@ -71,6 +72,7 @@ public class TardisMod
 	public static TardisOutput.Priority priorityLevel = TardisOutput.Priority.INFO;
 	public static int providerID = 54;
 	public static boolean tardisLoaded = true;
+	public static boolean keyInHand = true;
 	
 	public static TardisAbstractBlock tardisBlock;
 	public static TardisAbstractBlock tardisTopBlock;
@@ -86,6 +88,7 @@ public class TardisMod
 	public static TardisSlabBlock	  slabBlock;
 	
 	public static TardisAbstractItem schemaItem;
+	public static TardisKeyItem keyItem;
 	public static TardisSonicScrewdriverItem screwItem;
 	
 	@EventHandler
@@ -102,6 +105,7 @@ public class TardisMod
 		
 		providerID    = modConfig.getInt("Dimension Provider ID", 54);
 		tardisLoaded  = modConfig.getBoolean("Dimension always loaded", true);
+		keyInHand	  = modConfig.getBoolean("Key needs to be in hand", true);
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
 		
 		blockConfig = configHandler.getConfigFile("Blocks");
@@ -165,6 +169,9 @@ public class TardisMod
 		
 		screwItem = new TardisSonicScrewdriverItem(itemConfig.getInt("Screwdriver Item ID",1731));
 		GameRegistry.registerItem(screwItem, screwItem.getUnlocalizedName());
+		
+		keyItem = new TardisKeyItem(itemConfig.getInt("TARDIS Key Item ID", 1732));
+		GameRegistry.registerItem(keyItem, keyItem.getUnlocalizedName());
 	}
 	
 	@EventHandler

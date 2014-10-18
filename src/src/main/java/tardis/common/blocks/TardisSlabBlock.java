@@ -139,5 +139,11 @@ public class TardisSlabBlock extends TardisAbstractBlock
 		}
 		return super.shouldSideBeRendered(w, s,x,y,z,ox, oy, oz);
 	}
+	
+	@Override
+	public boolean renderAsNormalBlock()
+    {
+		return false;
+    }
 
 }

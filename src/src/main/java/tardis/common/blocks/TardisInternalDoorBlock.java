@@ -137,7 +137,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 								}
 							}
 						}
-						else
+						else if(schemaCarrier)
 						{
 							player.addChatMessage("No schematic loaded");
 						}

@@ -10,7 +10,10 @@ import tardis.common.core.Helper;
 import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
+import tardis.common.items.TardisKeyItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -59,6 +62,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private int desZ = 0;
 	private String[] desStrs = null;
 	
+	private enum LockState{Open,OwnerOnly,KeyOnly,Locked};
+	private LockState lockState = LockState.Open; 
+	
 	private HashSet<SimpleCoordStore> roomSet = new HashSet<SimpleCoordStore>();
 	
 	private String ownerName;
@@ -79,53 +85,140 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public boolean activate(EntityPlayer player, int side)
 	{
-		if(ownerName != null)
-			leaveTardis(player);
+		/*if(ownerName != null)
+			leaveTardis(player,false);*/
 		return true;
 	}
 	
-	public void enterTardis(EntityPlayer player)
+	public boolean hasKey(EntityPlayer player,boolean inHand)
 	{
-		Helper.teleportEntity(player, worldObj.provider.dimensionId, 13.5, 28.5, 0, 90);
-	}
-	
-	public void leaveTardis(EntityPlayer player)
-	{
-		if(!inFlight)
+		if(inHand)
 		{
-			World ext = Helper.getWorld(exteriorWorld);
-			if(ext != null)
-			{
-				if(ext.isRemote)
-					return;
-				int facing = ext.getBlockMetadata(exteriorX, exteriorY, exteriorZ);
-				int dx = 0;
-				int dz = 0;
-				double rot = 0;
-				switch(facing)
-				{
-					case 0:dz = -1;rot=180; break;
-					case 1:dx =  1;rot=-90; break;
-					case 2:dz =  1;rot=  0; break;
-					case 3:dx = -1;rot= 90; break;
-				}
-				
-				if(ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz) && ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz))
-				{
-					Helper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx*1.3), exteriorY+1, exteriorZ+0.5+(dz*1.3),rot);
-				}
-				else
-				{
-					player.addChatMessage("The door is obstructed");
-				}
-			}
+			ItemStack held = player.getHeldItem();
+			String on = TardisKeyItem.getOwnerName(held);
+			if(on != null)
+				TardisOutput.print("TCTE","Key owner = " + on);
 			else
-				player.addChatMessage("The door refuses to open");
+				TardisOutput.print("TCTE","Key owner = null");
+			if(on != null && on.equals(ownerName))
+				return true;
 		}
 		else
 		{
-			player.addChatMessage("The TARDIS is in flight");
+			InventoryPlayer inv = player.inventory;
+			if(inv == null)
+				return false;
+			for(ItemStack is: inv.mainInventory)
+			{
+				String on = TardisKeyItem.getOwnerName(is);
+				if(on != null && on.equals(ownerName))
+					return true;
+			}
 		}
+		return false;
+	}
+	
+	public boolean canOpenLock(EntityPlayer player, boolean isInside)
+	{
+		if(isInside && !lockState.equals(LockState.Locked))
+			return true;
+		else if(isInside)
+			return false;
+		
+		if(player == null)
+			return false;
+		
+		if(lockState.equals(LockState.Open))
+			return true;
+		else if(lockState.equals(LockState.Locked))
+			return false;
+		else if(lockState.equals(LockState.OwnerOnly))
+			return player.username.equals(ownerName);
+		else if(lockState.equals(LockState.KeyOnly))
+			return hasKey(player,false);
+		return false;
+	}
+	
+	public void enterTardis(EntityPlayer player, boolean ignoreLock)
+	{
+		if(player.worldObj.isRemote)
+			return;
+		if(ignoreLock || canOpenLock(player,false))
+			Helper.teleportEntity(player, worldObj.provider.dimensionId, 13.5, 28.5, 0, 90);
+		else
+			player.addChatMessage("[TARDIS]The door is locked");
+	}
+	
+	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
+	{
+		if(!inFlight)
+		{
+			if(ignoreLock || canOpenLock(player,true))
+			{
+				World ext = Helper.getWorld(exteriorWorld);
+				if(ext != null)
+				{
+					if(ext.isRemote)
+						return;
+					int facing = ext.getBlockMetadata(exteriorX, exteriorY, exteriorZ);
+					int dx = 0;
+					int dz = 0;
+					double rot = 0;
+					switch(facing)
+					{
+						case 0:dz = -1;rot=180; break;
+						case 1:dx =  1;rot=-90; break;
+						case 2:dz =  1;rot=  0; break;
+						case 3:dx = -1;rot= 90; break;
+					}
+					
+					if(ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz) && ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz))
+					{
+						Helper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx*1.3), exteriorY+1, exteriorZ+0.5+(dz*1.3),rot);
+					}
+					else
+						player.addChatMessage("[TARDIS]The door is obstructed");
+				}
+				else
+					player.addChatMessage("[TARDIS]The door refuses to open");
+			}
+			else
+				player.addChatMessage("[TARDIS]The door is locked");
+		}
+		else
+			player.addChatMessage("[TARDIS]The door won't open in flight");
+	}
+	
+	public boolean changeLock(EntityPlayer pl,boolean inside)
+	{
+		if(pl.worldObj.isRemote)
+			return false;
+		
+		TardisOutput.print("TCTE", "Changing lock");
+		if(!hasKey(pl,true))
+			return false;
+		
+		if(lockState.equals(LockState.Locked) && !inside)
+			return false;
+		
+		int num = LockState.values().length;
+		lockState = LockState.values()[((lockState.ordinal() + 1)%num)];
+		if((!inside) && lockState.equals(LockState.Locked))
+		{
+			TardisOutput.print("TCTE", "Changing from locked because outside");
+			lockState = LockState.values()[((lockState.ordinal() + 1)%num)];
+		}
+			
+		TardisOutput.print("TTE", "Lockstate:"+lockState.toString());
+		if(lockState.equals(LockState.KeyOnly))
+			pl.addChatMessage("[TARDIS]The door will only open with the key");
+		else if(lockState.equals(LockState.Locked))
+			pl.addChatMessage("[TARDIS]The door will not open");
+		else if(lockState.equals(LockState.Open))
+			pl.addChatMessage("[TARDIS]The door will open for all");
+		else if(lockState.equals(LockState.OwnerOnly))
+			pl.addChatMessage("[TARDIS]The door will only open for its owner");
+		return true;
 	}
 	
 	public boolean takeOff(EntityPlayer pl)
@@ -668,6 +761,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		super.readFromNBT(nbt);
 		tardisXP  = nbt.getDouble("tardisXP");
+		lockState = LockState.values()[nbt.getInteger("lockState")];
 	}
 	
 	@Override
@@ -675,6 +769,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		super.writeToNBT(nbt);
 		nbt.setDouble("tardisXP", tardisXP);
+		nbt.setInteger("lockState", lockState.ordinal());
 	}
 
 	@Override
