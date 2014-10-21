@@ -2,8 +2,6 @@ package tardis.common.items;
 
 import java.util.List;
 
-import appeng.api.Items;
-
 import cpw.mods.fml.common.registry.GameRegistry;
 
 import tardis.TardisMod;
@@ -13,7 +11,6 @@ import tardis.common.tileents.TardisCoreTileEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
