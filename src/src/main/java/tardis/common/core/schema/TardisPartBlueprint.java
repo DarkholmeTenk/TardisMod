@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import tardis.TardisMod;
 import tardis.common.blocks.TardisInternalDoorBlock;
+import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
@@ -292,7 +293,8 @@ public class TardisPartBlueprint
 		for(int i = minX;i<=maxX;i++)
 			for(int j = minY;j<=maxY;j++)
 				for(int k = minZ;k<=maxZ;k++)
-					w.setBlockToAir(i, j,k);
+					if(!w.isAirBlock(i, j, k) && Helper.isBlockRemovable(w.getBlockId(i, j, k)))
+						w.setBlockToAir(i, j,k);
 	}
 	
 	public int[] moddedBounds(int facing)

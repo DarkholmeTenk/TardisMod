@@ -683,20 +683,30 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return false;
 	}
 	
+	public void removeAllRooms(boolean force)
+	{
+		if(!force)
+			removeAllRooms();
+		else
+		{
+			for(SimpleCoordStore coord : roomSet)
+			{
+				TileEntity te = worldObj.getBlockTileEntity(coord.x, coord.y, coord.z);
+				if(te != null && te instanceof TardisSchemaCoreTileEntity)
+				{
+					TardisOutput.print("TCTE", "Removing room @ " + coord);
+					TardisSchemaCoreTileEntity schemaCore = (TardisSchemaCoreTileEntity)te;
+					schemaCore.remove();
+				}
+			}
+			roomSet.clear();
+			numRooms = 0;
+		}
+	}
+	
 	public void removeAllRooms()
 	{
-		/*for(SimpleCoordStore coord : roomSet)
-		{
-			TileEntity te = worldObj.getBlockTileEntity(coord.x, coord.y, coord.z);
-			if(te != null && te instanceof TardisSchemaCoreTileEntity)
-			{
-				TardisOutput.print("TCTE", "Removing room @ " + coord);
-				TardisSchemaCoreTileEntity schemaCore = (TardisSchemaCoreTileEntity)te;
-				schemaCore.remove();
-			}
-		}
-		roomSet.clear();
-		numRooms = 0;*/
+		
 		deletingRooms = true;
 	}
 	

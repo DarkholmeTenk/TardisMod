@@ -62,6 +62,8 @@ public class TardisRepairCoreCommand implements ICommand
 	@Override
 	public void processCommand(ICommandSender comSen, String[] astring)
 	{
+		if(!Helper.isServer())
+			return;
 		String newOwner = null;
 		int worldID = 0;
 		int numRooms = 0;
@@ -74,12 +76,17 @@ public class TardisRepairCoreCommand implements ICommand
 			newOwner = ((EntityPlayer) comSen).username;
 		}
 		
+		boolean total = false;
 		int o = 0;
-		if(astring.length == 4)
+		if(astring.length > 0)
+			if(astring[0].equals("total"))
+				total = true;
+		
+		if(astring.length >= 4)
 		{
-			worldID = Helper.toInt(astring[0], 0);
-			newOwner = astring[1];
-			o = 2;
+			worldID = Helper.toInt(astring[total ? 1 : 0], 0);
+			newOwner = astring[total ? 2 : 1];
+			o = total ? 3 : 2;
 		}
 		if(astring.length >= 2)
 		{
@@ -108,7 +115,16 @@ public class TardisRepairCoreCommand implements ICommand
 			}
 			//TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);
 			if(tce != null)
+			{
+				if(total)
+				{
+					tce.removeAllRooms(true);
+					Helper.generateTardisInterior(worldID, newOwner, tce.getExterior());
+				}
 				tce.repair(newOwner, numRooms, energy);
+			}
+			else if(total)
+					Helper.generateTardisInterior(worldID, newOwner, null);
 		}
 	}
 

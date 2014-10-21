@@ -11,6 +11,7 @@ public class TardisCommandRegister
 	private static TardisRepairCoreCommand		repCCommand;
 	private static TardisReloadSchemaCommand	refCommand;
 	private static TardisRemoveSchemaCommand	remCommand;
+	private static TardisKeyCommand				keyCommand;
 	
 	public static void registerCommands(FMLServerStartingEvent event)
 	{
@@ -21,6 +22,7 @@ public class TardisCommandRegister
 		repCCommand = new TardisRepairCoreCommand();
 		refCommand  = new TardisReloadSchemaCommand();
 		remCommand  = new TardisRemoveSchemaCommand();
+		keyCommand  = new TardisKeyCommand();
 		event.registerServerCommand(teleportCommand);
 		event.registerServerCommand(saveCommand);
 		event.registerServerCommand(loadCommand);
@@ -28,5 +30,6 @@ public class TardisCommandRegister
 		event.registerServerCommand(repCCommand);
 		event.registerServerCommand(refCommand);
 		event.registerServerCommand(remCommand);
+		event.registerServerCommand(keyCommand);
 	}
 }

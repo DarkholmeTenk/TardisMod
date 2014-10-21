@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import tardis.common.core.Helper;
@@ -46,13 +47,55 @@ public class TardisTeleport implements ICommand
 			EntityPlayerMP pl = (EntityPlayerMP) comSen;
 			if(astring.length >= 1)
 			{
-				try
+				boolean nonPlayerFound = false;
+				int offset = 0;
+				ArrayList<EntityPlayerMP> pls = new ArrayList<EntityPlayerMP>();
+				for(int i = 0;i<astring.length&&!nonPlayerFound;i++)
 				{
-					Helper.teleportEntity(pl, Helper.toInt(astring[0], 0), Integer.parseInt(astring[1]),Integer.parseInt(astring[2]),Integer.parseInt(astring[3]));
+					EntityPlayerMP plx = Helper.getPlayer(astring[i]);
+					if(plx != null)
+					{
+						pls.add(plx);
+						offset++;
+					}
+					else
+						nonPlayerFound = true;
 				}
-				catch(Exception e)
+				if(offset < astring.length)
 				{
-					Helper.teleportEntity(pl, Helper.toInt(astring[0], 0));
+					if(pls.size() == 0)
+						pls.add(pl);
+					
+					try
+					{
+						int w = Integer.parseInt(astring[0+offset]);
+						int x = Integer.parseInt(astring[1+offset]);
+						int y = Integer.parseInt(astring[2+offset]);
+						int z = Integer.parseInt(astring[3+offset]);
+						for(EntityPlayerMP plx : pls)
+							Helper.teleportEntity(plx,w,x,y,z);
+					}
+					catch(Exception e)
+					{
+						for(EntityPlayerMP plx : pls)
+							Helper.teleportEntity(plx,Helper.toInt(astring[0], 0));
+					}
+				}
+				else if(pls.size() > 0)
+				{
+					EntityPlayerMP dest = pls.get(pls.size()-1);
+					if(pls.size() == 1)
+						pls.add(pl);
+					
+					for(EntityPlayerMP plx : pls)
+					{
+						if(plx != dest)
+							Helper.teleportEntity(plx, dest.worldObj.provider.dimensionId,dest.posX,dest.posY,dest.posZ);
+					}
+				}
+				else
+				{
+					pl.addChatMessage(getCommandUsage(comSen));
 				}
 			}
 			else
@@ -83,7 +126,7 @@ public class TardisTeleport implements ICommand
 	@Override
 	public boolean isUsernameIndex(String[] astring, int i)
 	{
-		return false;
+		return true;
 	}
 
 }

@@ -123,15 +123,9 @@ public class Helper
 		}
 	}
 	
-	public static int generateTardisInterior(String ownerName,TardisTileEntity exterior)
+	public static void generateTardisInterior(int dimID, String ownerName, TardisTileEntity exterior)
 	{
-		if(exterior.worldObj.isRemote)
-			return 0;
-		int dimID = DimensionManager.getNextFreeDimId();
-		DimensionManager.registerDimension(dimID, TardisMod.providerID);
-		TardisMod.dimReg.addDimension(dimID);
-		TardisDimensionRegistry.save();
-		World tardisWorld = Helper.getWorld(dimID);
+		World tardisWorld = Helper.getWorldServer(dimID);
 		try
 		{
 			loadSchema("tardisConsoleMain",tardisWorld,tardisCoreX,tardisCoreY-10,tardisCoreZ,0);
@@ -141,13 +135,26 @@ public class Helper
 			TardisOutput.print("TH", "Generating tardis error: " + e.getMessage());
 			e.printStackTrace();
 		}
-		tardisWorld.setBlock(tardisCoreX, tardisCoreY, tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
+		if(tardisWorld.getBlockId(tardisCoreX, tardisCoreY, tardisCoreZ) != TardisMod.tardisCoreBlock.blockID)
+			tardisWorld.setBlock(tardisCoreX, tardisCoreY, tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
 		TardisCoreTileEntity te = getTardisCore(dimID);
 		if(te != null)
 		{
 			te.setOwner(ownerName);
-			te.setExterior(exterior.worldObj, exterior.xCoord, exterior.yCoord, exterior.zCoord);
+			if(exterior != null)
+				te.setExterior(exterior.worldObj, exterior.xCoord, exterior.yCoord, exterior.zCoord);
 		}
+	}
+	
+	public static int generateTardisInterior(String ownerName,TardisTileEntity exterior)
+	{
+		if(exterior.worldObj.isRemote)
+			return 0;
+		int dimID = DimensionManager.getNextFreeDimId();
+		DimensionManager.registerDimension(dimID, TardisMod.providerID);
+		TardisMod.dimReg.addDimension(dimID);
+		TardisDimensionRegistry.save();
+		generateTardisInterior(dimID,ownerName,exterior);
 		return dimID;
 	}
 	
@@ -259,6 +266,15 @@ public class Helper
 		}
 		return null;
 	}
+	
+	public static boolean isBlockRemovable(int blockID)
+	{
+		if(blockID == TardisMod.tardisCoreBlock.blockID)
+			return false;
+		else if(blockID == TardisMod.tardisConsoleBlock.blockID)
+			return false;
+		return true;
+	}
 
 	public static void loadSchema(String name,World w, int x, int y, int z, int facing)
 	{
@@ -273,7 +289,10 @@ public class Helper
 
 	public static World getWorld(int dimensionID)
 	{
-		return TardisMod.proxy.getWorld(dimensionID);
+		if(!Helper.isServer())
+			return TardisMod.proxy.getWorld(dimensionID);
+		else
+			return getWorldServer(dimensionID);
 	}
 
 	public static WorldServer getWorldServer(int d)
