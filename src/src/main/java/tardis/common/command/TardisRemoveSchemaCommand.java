@@ -1,6 +1,7 @@
 package tardis.common.command;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
@@ -25,7 +26,7 @@ public class TardisRemoveSchemaCommand implements ICommand
 	@Override
 	public String getCommandName()
 	{
-		return "tardisreload";
+		return "tardisremove";
 	}
 
 	@Override
@@ -37,7 +38,10 @@ public class TardisRemoveSchemaCommand implements ICommand
 	@Override
 	public List getCommandAliases()
 	{
-		return null;
+		ArrayList<String> aliases = new ArrayList<String>();
+		aliases.add("trem");
+		aliases.add("tremove");
+		return aliases;
 	}
 
 	@Override

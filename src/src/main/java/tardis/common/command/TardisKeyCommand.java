@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
@@ -50,7 +51,9 @@ public class TardisKeyCommand implements ICommand
 	@Override
 	public List getCommandAliases()
 	{
-		return null;
+		ArrayList<String> aliases = new ArrayList<String>();
+		aliases.add("tkey");
+		return aliases;
 	}
 
 	@Override

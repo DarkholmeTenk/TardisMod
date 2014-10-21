@@ -36,7 +36,9 @@ public class TardisTeleport implements ICommand
 	@Override
 	public List getCommandAliases()
 	{
-		return null;
+		ArrayList<String> aliases = new ArrayList<String>();
+		aliases.add("tardistp");
+		return aliases;
 	}
 
 	@Override

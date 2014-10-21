@@ -1,6 +1,7 @@
 package tardis.common.command;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
@@ -52,7 +53,9 @@ public class TardisSaveSchemaCommand implements ICommand
 	@Override
 	public List getCommandAliases()
 	{
-		return null;
+		ArrayList<String> aliases = new ArrayList<String>();
+		aliases.add("tsave");
+		return aliases;
 	}
 	
 	private boolean save(String name, EntityPlayerMP pl, World w, int x, int y, int z)

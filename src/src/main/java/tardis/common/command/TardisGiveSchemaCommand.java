@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
@@ -47,7 +48,10 @@ public class TardisGiveSchemaCommand implements ICommand
 	@Override
 	public List getCommandAliases()
 	{
-		return null;
+		ArrayList<String> aliases = new ArrayList<String>();
+		aliases.add("tschema");
+		aliases.add("tschem");
+		return aliases;
 	}
 
 	@Override

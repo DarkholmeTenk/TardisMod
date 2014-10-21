@@ -56,6 +56,7 @@ public class TardisRepairCoreCommand implements ICommand
 	{
 		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("trep");
+		aliases.add("trepair");
 		return aliases;
 	}
 

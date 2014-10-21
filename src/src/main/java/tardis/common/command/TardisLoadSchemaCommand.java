@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import tardis.common.core.Helper;
@@ -45,7 +46,9 @@ public class TardisLoadSchemaCommand implements ICommand
 	@Override
 	public List getCommandAliases()
 	{
-		return null;
+		ArrayList<String> aliases = new ArrayList<String>();
+		aliases.add("tload");
+		return aliases;
 	}
 
 	@Override
