@@ -2,13 +2,21 @@ package tardis.common.items;
 
 import java.util.List;
 
+import appeng.api.Items;
+
+import cpw.mods.fml.common.registry.GameRegistry;
+
 import tardis.TardisMod;
 import tardis.common.core.Helper;
+import tardis.common.tileents.TardisCoreTileEntity;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class TardisKeyItem extends TardisAbstractItem
 {
@@ -65,9 +73,29 @@ public class TardisKeyItem extends TardisAbstractItem
 		
 		if(Helper.isServer() && !TardisMod.plReg.hasTardis(player.username))
 		{
-			Helper.summonTardis(player);
+			Helper.summonNewTardis(player);
+			player.addChatMessage("[TARDIS KEY]The key feels warm");
+		}
+		else if(Helper.isServer())
+		{
+			TardisCoreTileEntity te = TardisMod.plReg.getCore(player);
+			if(te != null)
+			{
+				if(!te.hasValidExterior())
+				{
+					Helper.summonOldTardis(player);
+					player.addChatMessage("[TARDIS KEY]The key feels warm");
+				}
+			}
 		}
 		return is;
     }
+
+	@Override
+	public void initRecipes()
+	{
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem,1),true, " i "," i "," ii",
+				'i', Item.ingotIron));
+	}
 
 }

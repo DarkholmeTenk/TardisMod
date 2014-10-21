@@ -51,7 +51,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid="TardisMod",name="Tardis Mod",version="0.09",dependencies="required-after:FML")
+@Mod(modid="TardisMod",name="Tardis Mod",version="0.10",dependencies="required-after:FML")
 @NetworkMod(channels = { "TardisModChannel","TardisTrans","TardisDR" }, clientSideRequired = true, serverSideRequired = true, packetHandler = TardisPacketHandler.class, connectionHandler=TardisConnectionHandler.class)
 public class TardisMod
 {
@@ -172,6 +172,7 @@ public class TardisMod
 		
 		keyItem = new TardisKeyItem(itemConfig.getInt("TARDIS Key Item ID", 1732));
 		GameRegistry.registerItem(keyItem, keyItem.getUnlocalizedName());
+		keyItem.initRecipes();
 	}
 	
 	@EventHandler

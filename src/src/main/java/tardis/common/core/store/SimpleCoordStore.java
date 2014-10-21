@@ -6,6 +6,7 @@ import net.minecraft.world.World;
 
 public class SimpleCoordStore
 {
+	private final World worldObj;
 	public final int world;
 	public final int x;
 	public final int y;
@@ -14,6 +15,7 @@ public class SimpleCoordStore
 	public SimpleCoordStore(TileEntity te)
 	{
 		world = te.worldObj.provider.dimensionId;
+		worldObj = te.worldObj;
 		x = te.xCoord;
 		y = te.yCoord;
 		z = te.zCoord;
@@ -25,11 +27,21 @@ public class SimpleCoordStore
 		x = xin;
 		y = yin;
 		z = zin;
+		worldObj = Helper.getWorld(world);
+	}
+	
+	public SimpleCoordStore(World w, int xin, int yin, int zin)
+	{
+		world = w.provider.dimensionId;
+		worldObj = w;
+		x = xin;
+		y = yin;
+		z = zin;
 	}
 	
 	public World getWorldObj()
 	{
-		return Helper.getWorld(world);
+		return worldObj;
 	}
 	
 	@Override

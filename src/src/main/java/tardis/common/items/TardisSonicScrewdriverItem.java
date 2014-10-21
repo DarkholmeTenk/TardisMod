@@ -135,4 +135,11 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
         return is;
     }
 
+	@Override
+	public void initRecipes()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import tardis.TardisMod;
+import tardis.common.tileents.TardisCoreTileEntity;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayer;
@@ -85,6 +86,16 @@ public class TardisPlayerRegistry extends WorldSavedData
 	public Integer getDimension(EntityPlayer player)
 	{
 		return getDimension(player.username);
+	}
+	
+	public TardisCoreTileEntity getCore(EntityPlayer player)
+	{
+		Integer dimID = getDimension(player);
+		if(dimID != null)
+		{
+			return Helper.getTardisCore(dimID);
+		}
+		return null;
 	}
 	
 	public EntityPlayerMP getPlayer(int dimension)

@@ -4,6 +4,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import tardis.TardisMod;
 import tardis.common.core.schema.TardisPartBlueprint;
+import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
@@ -25,8 +26,6 @@ public class Helper
 	public static final int tardisCoreX = 0;
 	public static final int tardisCoreY = 30;
 	public static final int tardisCoreZ = 0;
-	
-	private static Boolean isServer = null;
 	
 	public static int cycle(int val, int min, int max)
 	{
@@ -124,8 +123,42 @@ public class Helper
 		}
 	}
 	
+	public static int generateTardisInterior(String ownerName,TardisTileEntity exterior)
+	{
+		if(exterior.worldObj.isRemote)
+			return 0;
+		int dimID = DimensionManager.getNextFreeDimId();
+		DimensionManager.registerDimension(dimID, TardisMod.providerID);
+		TardisMod.dimReg.addDimension(dimID);
+		TardisDimensionRegistry.save();
+		World tardisWorld = Helper.getWorld(dimID);
+		try
+		{
+			loadSchema("tardisConsoleMain",tardisWorld,tardisCoreX,tardisCoreY-10,tardisCoreZ,0);
+		}
+		catch(Exception e)
+		{
+			TardisOutput.print("TH", "Generating tardis error: " + e.getMessage());
+			e.printStackTrace();
+		}
+		tardisWorld.setBlock(tardisCoreX, tardisCoreY, tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
+		TardisCoreTileEntity te = getTardisCore(dimID);
+		if(te != null)
+		{
+			te.setOwner(ownerName);
+			te.setExterior(exterior.worldObj, exterior.xCoord, exterior.yCoord, exterior.zCoord);
+		}
+		return dimID;
+	}
+	
 	public static int generateTardisInterior(EntityPlayer player,TardisTileEntity exterior)
 	{
+		int dimID = generateTardisInterior(player.username,exterior);
+		TardisCoreTileEntity te = getTardisCore(dimID);
+		if(te != null)
+			te.enterTardis(player, true);
+		return dimID;
+		/*
 		if(player.worldObj.isRemote)
 			return 0;
 		int dimID = DimensionManager.getNextFreeDimId();
@@ -151,11 +184,80 @@ public class Helper
 			te.setExterior(exterior.worldObj, exterior.xCoord, exterior.yCoord, exterior.zCoord);
 		}
 		return dimID;
+		*/
 	}
 	
-	public static void summonTardis(EntityPlayer player)
+	public static void summonNewTardis(EntityPlayer player)
 	{
+		if(TardisMod.plReg.hasTardis(player.username))
+			return;
 		
+		TardisTileEntity te = summonTardis(player);
+		if(te != null)
+		{
+			int dimID = generateTardisInterior(player.username,te);
+			te.linkToDimension(dimID);
+		}
+	}
+	
+	public static void summonOldTardis(EntityPlayer player)
+	{
+		Integer dim = TardisMod.plReg.getDimension(player);
+		if(dim == null)
+			return;
+		
+		TardisTileEntity te = summonTardis(player);
+		if(te != null)
+			te.linkToDimension(dim);
+		else
+			TardisOutput.print("Helper", "No exterior :(");
+	}
+	
+	private static TardisTileEntity summonTardis(EntityPlayer player)
+	{
+		World w = player.worldObj;
+		if(w.isRemote)
+			return null;
+		
+		int x = (int) Math.floor(player.posX);
+		int y = (int) Math.floor(player.posY);
+		int z = (int) Math.floor(player.posZ);
+		int[] validSpotRanges = {0, -1, 1, -2, 2, -3, 3};
+		
+		SimpleCoordStore place = null;
+		for(int yO = -3;yO<3;yO++)
+		{
+			if(place != null)
+				break;
+			
+			for(int xO : validSpotRanges)
+			{
+				if(place != null)
+					break;
+				
+				for(int zO : validSpotRanges)
+				{
+					if(y > 1 && y < 253)
+					{
+						if(w.isAirBlock(x+xO, y+yO, z+zO) && w.isAirBlock(x+xO, y+yO+1, z+zO))
+						{
+							place = new SimpleCoordStore(w,x+xO,y+yO,z+zO);
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		if(place != null)
+		{
+			w.setBlock(place.x, place.y, place.z, TardisMod.tardisBlock.blockID, 0, 3);
+			w.setBlock(place.x, place.y+1,place.z, TardisMod.tardisTopBlock.blockID, 0, 3);
+			TileEntity te = w.getBlockTileEntity(place.x,place.y,place.z);
+			if(te instanceof TardisTileEntity)
+				return (TardisTileEntity)te;
+		}
+		return null;
 	}
 
 	public static void loadSchema(String name,World w, int x, int y, int z, int facing)
@@ -166,9 +268,7 @@ public class Helper
 	
 	public static boolean isServer()
 	{
-		//if(isServer == null)
-			return (isServer=FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER));
-		//return isServer;
+		return FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER);
 	}
 
 	public static World getWorld(int dimensionID)

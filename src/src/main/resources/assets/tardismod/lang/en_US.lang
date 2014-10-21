@@ -3,6 +3,7 @@ tile.TardisMod.Tardis.name=TARDIS
 
 tile.TardisMod.DecoBlock.Floor.name=Floor
 tile.TardisMod.DecoBlock.Wall.name=Wall
+tile.TardisMod.DecoBlock.WallPlain.name=Wall
 tile.TardisMod.DecoBlock.Roundel.name=Roundel
 tile.TardisMod.DecoBlock.Corridor.name=White Wall
 tile.TardisMod.DecoBlock.CorridorRoundel.name=White Roundel
@@ -18,6 +19,12 @@ tile.TardisMod.SchemaComponent.ConsoleBlock.name=Console
 tile.TardisMod.SchemaComponent.TardisDoorBottom.name=Door
 tile.TardisMod.SchemaComponent.TardisDoorTop.name=Door
 tile.TardisMod.SchemaComponent.ConsoleTop.name=Console
+tile.TardisMod.SchemaCore.name=Schema Core
+
+tile.TardisMod.Slab.Console.name=Console Slab
+tile.TardisMod.Slab.Glass.name=Glass Slab
+tile.TardisMod.Slab.Walkway.name=Walkway
+tile.TardisMod.slab.Corridor.name=Corridor Slab
 
 tile.TardisMod.TardisTop.name=TARDIS
 tile.TardisMod.InternalDoor.InternalDoor.name=Door
@@ -27,3 +34,4 @@ tile.TardisMod.TardisCore.name=Time Rotor
 tile.TardisMod.StairBlock.name=Stair
 
 item.TardisMod.SonicScrewdriver.name=Sonic Screwdriver
+item.TardisMod.TardisKey.name=TARDIS Key

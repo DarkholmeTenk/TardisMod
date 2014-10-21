@@ -12,7 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 
-public class TardisAbstractItem extends Item
+public abstract class TardisAbstractItem extends Item
 {
 	private Icon iconBuffer;
 	private String unlocalizedFragment;
@@ -22,6 +22,8 @@ public class TardisAbstractItem extends Item
 		super(par1);
 		setCreativeTab(TardisMod.tab);
 	}
+	
+	public abstract void initRecipes();
 	
 	@Override
 	public Item setUnlocalizedName(String unlocal)

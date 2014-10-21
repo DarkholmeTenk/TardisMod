@@ -29,4 +29,11 @@ public class TardisSchemaItem extends TardisAbstractItem
 		}
 	}
 
+	@Override
+	public void initRecipes()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
