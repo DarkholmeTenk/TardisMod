@@ -13,6 +13,7 @@ import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.items.TardisKeyItem;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -853,7 +854,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(w.isAirBlock(x, y, z) && w.isAirBlock(x, y+1, z))
 		{
 			data[0] = true;
-			if(w.isAirBlock(x, y-1, z))
+			int id = w.getBlockId(x, y-1, z);
+			if(w.isAirBlock(x, y-1, z) || id == Block.lavaMoving.blockID || id == Block.lavaStill.blockID || id == Block.waterMoving.blockID || id == Block.waterStill.blockID)
 				data[1] = true;
 		}
 		return data;
