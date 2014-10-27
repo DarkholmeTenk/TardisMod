@@ -30,6 +30,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	private int[] zControls = new int[6];
 	private int[] yControls = new int[4];
 	private boolean landGroundControl = false;
+	private boolean dayNightControl   = false;
 	
 	private boolean saveCoords = false;
 	private HashMap<Integer,ControlStateStore> states = new HashMap<Integer,ControlStateStore>();
@@ -572,7 +573,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			lastButtonTT = tickTimer;
 			if(!hasScrewdriver(0) && core.takeEnergy(core.getMaxEnergy()/2,false))
 				setScrewdriver(0,true);
-			else if(hasScrewdriver(0) && core.addEnergy(core.getMaxEnergy()/2, false))
+			else if(hasScrewdriver(0) && core.addEnergy(2*core.getMaxEnergy()/5, false))
 				setScrewdriver(0,false);
 		}
 		else if(controlID == 6 || controlID == 7) // Screwdriver slot 0/1
