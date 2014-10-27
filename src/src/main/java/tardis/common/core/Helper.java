@@ -399,7 +399,10 @@ public class Helper
 	
 	public static TardisConsoleTileEntity getTardisConsole(int dimID)
 	{
-		return getTardisConsole(getWorldServer(dimID));
+		World w = getWorldServer(dimID);
+		if(w != null)
+			return getTardisConsole(w);
+		return null;
 	}
 	
 	public static TardisConsoleTileEntity getTardisConsole(World tardisWorld)

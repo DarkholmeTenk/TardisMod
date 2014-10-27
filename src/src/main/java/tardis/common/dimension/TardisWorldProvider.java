@@ -72,7 +72,7 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		if(dimensionId != 0)
 		{
-			TardisConsoleTileEntity con = Helper.getTardisConsole(dimensionId);
+			TardisConsoleTileEntity con = Helper.getTardisConsole(worldObj);
 			if(con != null)
 				return con.getDaytimeSetting();
 		}
