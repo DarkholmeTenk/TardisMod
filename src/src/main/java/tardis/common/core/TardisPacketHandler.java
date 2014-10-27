@@ -61,7 +61,7 @@ public class TardisPacketHandler implements IPacketHandler
 					w.playSound(x+0.5, y+0.5, z+0.5, sound, vol, 1, true);
 			}
 		}
-		catch(IOException e)
+		catch(Exception e)
 		{
 			TardisOutput.print("PAC", "TransPacketError:" + e.getMessage(),TardisOutput.Priority.ERROR);
 		}
