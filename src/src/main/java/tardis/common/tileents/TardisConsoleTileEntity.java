@@ -195,10 +195,13 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				else if(hit.within(0, 1.375, 0.271, 1.615, 0.400))
 					pl.addChatMessage("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms());
 				else if(hit.within(0, 1.517, 0.138, 1.750, 0.265))
+				{
 					pl.addChatMessage("XP: " + core.getXP() + "/" + core.getXPNeeded());
+					pl.addChatMessage("Level:" + core.getLevel());
+				}
 				else if(hit.within(0, 1.10 , 0.271, 1.335, 0.400))
 					pl.addChatMessage(String.format("Speed: %.1f/%.1f", core.getSpeed(true),core.getMaxSpeed()));
-					//pl.addChatMessage("Speed: " + core.getSpeed(true) + "/" + core.getMaxSpeed());
+					//pl.addChatMessage("Speed: " + core.getSpeed(true) + "/" + core.getMaxSpeed())
 				else if(hit.within(0,0.865,0.55,1.327,0.868))
 					activateControl(pl,3);
 				else if(hit.within(0, 1.725, 0.585,  2.05,  0.846))
