@@ -128,6 +128,11 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 	public void linkToDimension(int dimID)
 	{
 		linkedDimension = dimID;
+		TardisCoreTileEntity te = Helper.getTardisCore(dimID);
+		if(te != null)
+		{
+			te.linkToExterior(this);
+		}
 	}
 	
 	public float getTransparency()

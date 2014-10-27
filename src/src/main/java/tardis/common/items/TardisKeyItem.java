@@ -68,12 +68,12 @@ public class TardisKeyItem extends TardisAbstractItem
 		if(is!= null && getOwnerName(is) == null)
 			setOwnerName(is,player.username);
 		
-		if(Helper.isServer() && !TardisMod.plReg.hasTardis(player.username))
+		if(Helper.isServer() && !TardisMod.plReg.hasTardis(getOwnerName(is)) && player.username == getOwnerName(is))
 		{
 			Helper.summonNewTardis(player);
 			player.addChatMessage("[TARDIS KEY]The key feels warm");
 		}
-		else if(Helper.isServer())
+		else if(Helper.isServer() && player.username == getOwnerName(is))
 		{
 			TardisCoreTileEntity te = TardisMod.plReg.getCore(player);
 			if(te != null)

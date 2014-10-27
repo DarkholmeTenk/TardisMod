@@ -89,7 +89,7 @@ public class Helper
 		if(Helper.isServer() && serv != null && ent instanceof EntityPlayer)
 		{
 			WorldServer nW = Helper.getWorldServer(worldID);
-			WorldServer oW = Helper.getWorldServer(ent.worldObj.provider.dimensionId);
+//			WorldServer oW = Helper.getWorldServer(ent.worldObj.provider.dimensionId);
 			if(nW.provider instanceof TardisWorldProvider && FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
 			{
 				Packet dP = TardisDimensionRegistry.getPacket();
@@ -232,11 +232,12 @@ public class Helper
 		int[] validSpotRanges = {0, -1, 1, -2, 2, -3, 3};
 		
 		SimpleCoordStore place = null;
-		for(int yO = -3;yO<3;yO++)
+		for(int yOf = 0;yOf<7;yOf++)
 		{
 			if(place != null)
 				break;
 			
+			int yO = yOf > 3?3-yOf:yOf;
 			for(int xO : validSpotRanges)
 			{
 				if(place != null)
