@@ -1,27 +1,16 @@
 package tardis.common.command;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
 import tardis.common.tileents.TardisConsoleTileEntity;
 
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayerMP;
-
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatMessageComponent;
 
-public class TardisRemoveSchemaCommand implements ICommand
+public class TardisRemoveSchemaCommand extends TardisAbstractCommand
 {
-
-	@Override
-	public int compareTo(Object arg0)
-	{
-		return 0;
-	}
 
 	@Override
 	public String getCommandName()
@@ -36,16 +25,14 @@ public class TardisRemoveSchemaCommand implements ICommand
 	}
 
 	@Override
-	public List getCommandAliases()
+	public void addAliases(List<String> aliases)
 	{
-		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("trem");
 		aliases.add("tremove");
-		return aliases;
 	}
 
 	@Override
-	public void processCommand(ICommandSender icommandsender, String[] astring)
+	public void commandBody(ICommandSender icommandsender, String[] astring)
 	{
 		if(astring.length == 1)
 		{
@@ -66,29 +53,4 @@ public class TardisRemoveSchemaCommand implements ICommand
 			}
 		}
 	}
-
-	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender comSen)
-	{
-		if(comSen instanceof EntityPlayerMP)
-		{
-			if(!MinecraftServer.getServer().getConfigurationManager().getOps().contains(comSen.getCommandSenderName()))
-				return true;
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public List addTabCompletionOptions(ICommandSender icommandsender, String[] astring)
-	{
-		return null;
-	}
-
-	@Override
-	public boolean isUsernameIndex(String[] astring, int i)
-	{
-		return false;
-	}
-
 }

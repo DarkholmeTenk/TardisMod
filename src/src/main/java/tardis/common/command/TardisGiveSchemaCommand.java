@@ -1,38 +1,17 @@
 package tardis.common.command;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
 import tardis.common.core.Helper;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 
-public class TardisGiveSchemaCommand implements ICommand
+public class TardisGiveSchemaCommand extends TardisAbstractCommand
 {
-
-	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender comSen)
-	{
-		if(comSen instanceof EntityPlayerMP)
-		{
-			if(!MinecraftServer.getServer().getConfigurationManager().getOps().contains(comSen.getCommandSenderName()))
-				return true;
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public int compareTo(Object arg0)
-	{
-		return 0;
-	}
-
+	
 	@Override
 	public String getCommandName()
 	{
@@ -46,16 +25,14 @@ public class TardisGiveSchemaCommand implements ICommand
 	}
 
 	@Override
-	public List getCommandAliases()
+	public void addAliases(List<String> aliases)
 	{
-		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("tschema");
 		aliases.add("tschem");
-		return aliases;
 	}
 
 	@Override
-	public void processCommand(ICommandSender comSen, String[] astring)
+	public void commandBody(ICommandSender comSen, String[] astring)
 	{
 		if(comSen instanceof EntityPlayerMP)
 		{
@@ -78,19 +55,4 @@ public class TardisGiveSchemaCommand implements ICommand
 			}
 		}
 	}
-
-	@Override
-	public List addTabCompletionOptions(ICommandSender icommandsender, String[] astring)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isUsernameIndex(String[] astring, int i)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

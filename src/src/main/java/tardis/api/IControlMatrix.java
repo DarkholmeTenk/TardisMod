@@ -9,4 +9,6 @@ public interface IControlMatrix
 	public double getControlHighlight(int controlID);
 	
 	public boolean hasScrewdriver(int slot);
+	
+	public TardisScrewdriverMode getScrewMode(int slot);
 }

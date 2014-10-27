@@ -1,11 +1,15 @@
 package tardis.common.core;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import tardis.TardisMod;
 import tardis.common.core.schema.TardisPartBlueprint;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import net.minecraft.entity.Entity;
@@ -14,7 +18,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -54,8 +60,15 @@ public class Helper
 		} catch(NumberFormatException e){}
 		return def;
 	}
-
 	
+	public static double toDouble(String str, double def)
+	{
+		try
+		{
+			return Double.parseDouble(str);
+		} catch(NumberFormatException e){}
+		return def;
+	}
 	
 	///////////////////////////////////////////////////
 	///////////////TELEPORT STUFF//////////////////////
@@ -107,6 +120,25 @@ public class Helper
 	public static void teleportEntity(Entity ent, int worldID)
 	{
 		teleportEntity(ent,worldID,ent.posX,ent.posY,ent.posZ);
+	}
+	
+	public static Packet250CustomPayload nbtPacket(String channel,NBTTagCompound nbt)
+	{
+		Packet250CustomPayload p = new Packet250CustomPayload();
+		p.channel = channel;
+		try
+		{
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream stream = new DataOutputStream(bos);
+			NBTTagCompound.writeNamedTag(nbt, stream);
+			p.data = bos.toByteArray();
+			p.length = p.data.length;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return p;
 	}
 	
 	public static void giveItemStack(EntityPlayerMP pl, ItemStack is)
@@ -204,6 +236,9 @@ public class Helper
 		{
 			int dimID = generateTardisInterior(player.username,te);
 			te.linkToDimension(dimID);
+			TardisConsoleTileEntity con = getTardisConsole(dimID);
+			if(con != null)
+				con.setControls(te, true);
 		}
 	}
 	
@@ -215,7 +250,12 @@ public class Helper
 		
 		TardisTileEntity te = summonTardis(player);
 		if(te != null)
+		{
 			te.linkToDimension(dim);
+			TardisConsoleTileEntity con = getTardisConsole(dim);
+			if(con != null)
+				con.setControls(te, true);
+		}
 		else
 			TardisOutput.print("Helper", "No exterior :(");
 	}
@@ -287,6 +327,25 @@ public class Helper
 	{
 		return FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER);
 	}
+	
+	public static void playSound(World w, int x, int y, int z, String sound, float vol)
+	{
+		int dim = getWorldID(w);
+		playSound(dim,x,y,z,sound,vol);
+	}
+	
+	public static void playSound(int dim, int x, int y, int z, String sound, float vol)
+	{
+		NBTTagCompound data = new NBTTagCompound();
+		data.setString("sound", sound);
+		data.setInteger("world", dim);
+		data.setInteger("x",x);
+		data.setInteger("y",y);
+		data.setInteger("z",z);
+		data.setFloat("vol",vol);
+		Packet250CustomPayload packet = nbtPacket("TardisSn",data);
+		MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayersInDimension(packet, dim);
+	}
 
 	public static World getWorld(int dimensionID)
 	{
@@ -299,6 +358,11 @@ public class Helper
 	public static WorldServer getWorldServer(int d)
 	{
 		return MinecraftServer.getServer().worldServerForDimension(d);
+	}
+	
+	public static int getWorldID(World w)
+	{
+		return w.provider.dimensionId;
 	}
 
 	public static EntityPlayerMP getPlayer(String username)
@@ -330,6 +394,19 @@ public class Helper
 		{
 			TardisOutput.print("TH","No world passed",TardisOutput.Priority.DEBUG);
 		}
+		return null;
+	}
+	
+	public static TardisConsoleTileEntity getTardisConsole(int dimID)
+	{
+		return getTardisConsole(getWorldServer(dimID));
+	}
+	
+	public static TardisConsoleTileEntity getTardisConsole(World tardisWorld)
+	{
+		TardisCoreTileEntity core = getTardisCore(tardisWorld);
+		if(core != null)
+			return core.getConsole();
 		return null;
 	}
 }

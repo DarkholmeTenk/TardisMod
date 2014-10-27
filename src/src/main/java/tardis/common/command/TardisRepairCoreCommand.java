@@ -1,6 +1,5 @@
 package tardis.common.command;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
@@ -9,36 +8,13 @@ import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.TardisCoreTileEntity;
 
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
-public class TardisRepairCoreCommand implements ICommand
+public class TardisRepairCoreCommand extends TardisAbstractCommand
 {
-
-	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender comSen)
-	{
-		if(comSen instanceof EntityPlayerMP)
-		{
-			if(((EntityPlayerMP)comSen).capabilities.isCreativeMode)
-				return true;
-			if(MinecraftServer.getServer().getConfigurationManager().getOps().contains(((EntityPlayerMP)comSen).username))
-				return true;
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public int compareTo(Object arg0)
-	{
-		return 0;
-	}
-
 	@Override
 	public String getCommandName()
 	{
@@ -52,16 +28,14 @@ public class TardisRepairCoreCommand implements ICommand
 	}
 
 	@Override
-	public List getCommandAliases()
+	public void addAliases(List<String> aliases)
 	{
-		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("trep");
 		aliases.add("trepair");
-		return aliases;
 	}
 
 	@Override
-	public void processCommand(ICommandSender comSen, String[] astring)
+	public void commandBody(ICommandSender comSen, String[] astring)
 	{
 		if(!Helper.isServer())
 			return;

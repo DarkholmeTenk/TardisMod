@@ -4,11 +4,6 @@
 // Keep in mind that you still need to fill in some blanks
 // - ZeuX
 
-
-
-
-
-
 package tardis.client.renderer.model;
 
 import net.minecraft.client.model.ModelBase;
@@ -46,12 +41,12 @@ public class TardisSonicScrewdriverModel extends ModelBase
       Shape3.setTextureSize(32, 32);
       Shape3.mirror = true;
       setRotation(Shape3, 0F, 0F, 0F);
-      Shape4 = new ModelRenderer(this, 12, 0);
+      /*Shape4 = new ModelRenderer(this, 12, 0);
       Shape4.addBox(-0.5F, -0.5F, -0.5F, 1, 1, 1);
       Shape4.setRotationPoint(0F, -7F, 0F);
       Shape4.setTextureSize(32, 32);
       Shape4.mirror = true;
-      setRotation(Shape4, 0F, 0F, 0F);
+      setRotation(Shape4, 0F, 0F, 0F);*/
   }
   
   public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
@@ -61,7 +56,7 @@ public class TardisSonicScrewdriverModel extends ModelBase
     Shape1.render(f5);
     Shape2.render(f5);
     Shape3.render(f5);
-    Shape4.render(f5);
+    //Shape4.render(f5);
   }
   
   private void setRotation(ModelRenderer model, float x, float y, float z)

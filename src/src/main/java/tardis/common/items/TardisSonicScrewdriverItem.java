@@ -3,7 +3,6 @@ package tardis.common.items;
 import java.util.ArrayList;
 import java.util.List;
 
-import tardis.TardisMod;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
 import tardis.common.tileents.TardisCoreTileEntity;
@@ -26,7 +25,15 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 		setMaxStackSize(1);
 	}
 	
-	public TardisScrewdriverMode getMode(ItemStack is)
+	public static TardisScrewdriverMode getMode(int i)
+	{
+		TardisScrewdriverMode[] modes = TardisScrewdriverMode.values();
+		if(i < 0 || i >= modes.length)
+			return modes[0];
+		return modes[i];
+	}
+	
+	public static TardisScrewdriverMode getMode(ItemStack is)
 	{
 		if(is == null)
 			return TardisScrewdriverMode.Dismantle;
@@ -38,11 +45,10 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 			isTag.setInteger("screwdriverMode", 0);
 		}
 		
-		TardisScrewdriverMode mode = TardisScrewdriverMode.values()[isTag.getInteger("screwdriverMode") % TardisScrewdriverMode.values().length];
-		return mode;
+		return getMode(isTag.getInteger("screwdriverMode"));
 	}
 	
-	public String getSchema(ItemStack is)
+	public static String getSchema(ItemStack is)
 	{
 		if(is == null)
 			return "";
@@ -51,6 +57,33 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 		if(isTag != null)
 			return isTag.getString("schemaName");
 		return "";
+	}
+	
+	public static TardisCoreTileEntity getLinkedCore(ItemStack is)
+	{
+		if(is.stackTagCompound != null)
+		{
+			int dim = is.stackTagCompound.getInteger("linkedTardis");
+			return Helper.getTardisCore(dim);
+		}
+		return null;
+	}
+	
+	public static double[] getColors(TardisScrewdriverMode m)
+	{
+		double[] colors = new double[3];
+		colors[0] = 0;
+		colors[1] = 0;
+		colors[2] = 1;
+		if(m != null)
+			return m.c;
+		return colors;
+	}
+	
+	public static double[] getColors(ItemStack is)
+	{
+		TardisScrewdriverMode mode = getMode(is);
+		return getColors(mode);
 	}
 	
 	@Override
@@ -94,7 +127,23 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 		TardisScrewdriverMode mode = getMode(is);
 		if(!world.isRemote && player.isSneaking())
 		{
-			int newValue = (mode.ordinal() + 1) % TardisScrewdriverMode.values().length;
+			boolean valid = false;
+			int newValue = mode.ordinal();
+			while(!valid)
+			{
+				newValue = (newValue + 1) % TardisScrewdriverMode.values().length;
+				TardisScrewdriverMode m = getMode(newValue);
+				if(m.requiredFunction != null)
+				{
+					TardisCoreTileEntity te = getLinkedCore(is);
+					if(te != null && te.hasFunction(m.requiredFunction))
+						valid = true;
+				}
+				else
+				{
+					valid = true;
+				}
+			}
 			is.stackTagCompound.setInteger("screwdriverMode", newValue);
 			notifyMode(is,player);
 		}
@@ -102,34 +151,30 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 		{
 			if(mode.equals(TardisScrewdriverMode.Locate))
 			{
-				boolean found = false;
-				Integer dim = TardisMod.plReg.getDimension(player);
-				if(dim != null)
+				TardisCoreTileEntity core = getLinkedCore(is);
+				if(core != null)
 				{
-					if(dim == player.worldObj.provider.dimensionId)
+					if(Helper.getWorldID(core.worldObj) == Helper.getWorldID(player.worldObj))
 					{
-						found = true;
-						player.addChatMessage("[Sonic Screwdriver]You are in your TARDIS");
+						player.addChatMessage("[Sonic Screwdriver]You are in the TARDIS");
 					}
 					else
 					{
-						TardisCoreTileEntity core = Helper.getTardisCore(dim);
 						if(core != null)
 						{
 							TardisTileEntity ext = core.getExterior();
 							if(ext != null)
 							{
-								found = true;
 								if(ext.worldObj.provider.dimensionId != player.worldObj.provider.dimensionId)
-									player.addChatMessage("[Sonic Screwdriver]Your TARDIS does not appear to be in this dimension");
+									player.addChatMessage("[Sonic Screwdriver]The TARDIS does not appear to be in this dimension");
 								else
-									player.addChatMessage("[Sonic Screwdriver]Your TARDIS is at ["+ext.xCoord+","+ext.yCoord+","+ext.zCoord+"]");
+									player.addChatMessage("[Sonic Screwdriver]The TARDIS is at ["+ext.xCoord+","+ext.yCoord+","+ext.zCoord+"]");
 							}
 						}
 					}
 				}
-				if(!found)
-					player.addChatMessage("[Sonic Screwdriver]Your TARDIS could not be located");
+				else
+					player.addChatMessage("[Sonic Screwdriver]The TARDIS could not be located");
 			}
 		}
         return is;

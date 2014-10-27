@@ -1,11 +1,13 @@
 package tardis.common.tileents;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import tardis.TardisMod;
 import tardis.api.IActivatable;
+import tardis.api.TardisFunction;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
@@ -16,6 +18,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 
 public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable
@@ -25,6 +28,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private int exteriorX;
 	private int exteriorY;
 	private int exteriorZ;
+	private float lastProximity = 0;
 	
 	private int tickCount = 0;
 	
@@ -41,6 +45,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private int inFlightTimer = 0;
 	private int totalFlightTimer = 0;
 	private int buttonTime = 80;
+	
+	private int timeTillTakenOff;
+	private int timeTillLanding;
+	private int timeTillLandingInt;
+	private int timeTillLanded;
+	private int numButtons;
 	
 	private int numRooms = 0;
 	private int maxNumRooms = 30;
@@ -89,6 +99,155 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		energyPerSecond = config.getInt("energy per second",1);
 	}
 	
+	private void flightTick()
+	{
+		if(inFlightTimer == 0)
+			worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:takeoff", 0.75F, 1, true);
+		totalFlightTimer++;
+		
+		if(inCoordinatedFlight())
+			inFlightTimer++;
+		if(inFlightTimer >= timeTillTakenOff)//Taken off
+		{
+			TardisConsoleTileEntity con = getConsole();
+			int takenTime = inFlightTimer - timeTillTakenOff;
+			int takenTimeTwo = flightTimer - timeTillTakenOff;
+			if(!worldObj.isRemote && !con.isStable() && takenTimeTwo % buttonTime == 0 && (getButtonTime() * numButtons) >= takenTime)
+			{
+				if(takenTimeTwo > 0)
+				{
+					TardisOutput.print("TCTE", "Working out what to do!");
+					if(con.unstableControlPressed())
+					{
+						instability -= 0.5;
+						addXP(1);
+					}
+					else
+					{
+						instability++;
+						if(shouldExplode())
+							explode = true;
+						worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+					}
+					instability = Helper.clamp(instability, 0, 10);
+				}
+				if(con != null && con.unstableFlight() && (buttonTime * numButtons) >= takenTime)
+					con.randomUnstableControl();
+				else if((buttonTime * numButtons) == takenTime)
+					con.clearUnstableControl();
+			}
+			if(takenTime == 0)// remove old tardis
+			{
+				World w = Helper.getWorld(exteriorWorld);
+				if(w != null)
+				{
+					if(w.getBlockId(exteriorX,exteriorY,exteriorZ) == TardisMod.tardisBlock.blockID)
+					{
+						w.setBlockToAir(exteriorX, exteriorY, exteriorZ);
+						w.setBlockToAir(exteriorX, exteriorY+1, exteriorZ);
+						TardisOutput.print("TCTE", "Blanking exterior");
+						exteriorWorld = 10000;
+						exteriorX = 0;
+						exteriorY = 0;
+						exteriorZ = 0;
+					} 	
+				}
+			}
+			if(inFlightTimer < timeTillLanding)
+			{
+				if(flightTimer % 69 == 0 && inFlight)
+					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engines", 0.75F, 1, true);
+				flightTimer++;
+			}
+			else
+			{
+				if(flightTimer % 69 == 0 && inFlightTimer < timeTillLandingInt)
+					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engines", 0.75F, 1, true);
+				flightTimer++;
+				
+				if(inFlightTimer == timeTillLanding)
+					placeBox();
+				
+				if(inFlightTimer == timeTillLandingInt)
+					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:landingInt", 0.75F, 1, true);
+				
+				if(inFlightTimer >= timeTillLanded)
+					land();
+			}
+		}
+	}
+
+	private void safetyTick()
+	{
+		List<Object> players = worldObj.playerEntities;
+		for(Object o : players)
+		{
+			if(o instanceof EntityPlayer)
+			{
+				EntityPlayer pl = (EntityPlayer)o;
+				if(pl.posY < -5 && !pl.capabilities.isFlying)
+					Helper.teleportEntityToSafety(pl);
+			}
+		}
+	}
+
+	@Override
+	public void updateEntity()
+	{
+		tickCount++;
+		
+		if(explode)
+		{
+			double xO = (rand.nextDouble()*3) - 1.5;
+			double zO = (rand.nextDouble()*3) - 1.5;
+			worldObj.playSound(xCoord, yCoord, zCoord, "random.explosion", 0.5F, 1, true);
+			worldObj.createExplosion(null, xCoord+0.5+xO, yCoord-0.5, zCoord+0.5+zO, 1F, true);
+			explode = false;
+		}
+		
+		if(tickCount % 20 == 0)
+		{
+			addEnergy(energyPerSecond,false);
+			safetyTick();
+		}
+		
+		if(inFlight)
+			flightTick();
+		
+		if(!worldObj.isRemote)
+		{
+			if(tickCount % 100 == 0 && TardisMod.plReg != null)
+			{
+				if(!TardisMod.plReg.hasTardis(ownerName))
+					TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
+			}
+			
+			if(deletingRooms)
+			{
+				Iterator<SimpleCoordStore> i = roomSet.iterator();
+				if(i.hasNext())
+				{
+					SimpleCoordStore coord = i.next();
+					TileEntity te = worldObj.getBlockTileEntity(coord.x, coord.y, coord.z);
+					if(te != null && te instanceof TardisSchemaCoreTileEntity)
+					{
+						TardisOutput.print("TCTE", "Removing room @ " + coord);
+						TardisSchemaCoreTileEntity schemaCore = (TardisSchemaCoreTileEntity)te;
+						schemaCore.remove();
+					}
+					i.remove();
+				}
+				else
+				{
+					deletingRooms = false;
+					numRooms = 0;
+				}
+			}
+			if(tickCount % 80 == 0)
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+	}
+
 	public boolean activate(EntityPlayer player, int side)
 	{
 		/*if(ownerName != null)
@@ -252,9 +411,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		{
 			TardisConsoleTileEntity con = getConsole();
 			int dDim = con.getDimFromControls();
-			int dX = con.getXFromControls();
-			int dY = con.getYFromControls();
-			int dZ = con.getZFromControls();
+			int dX = con.getXFromControls(exteriorX);
+			int dY = con.getYFromControls(exteriorY);
+			int dZ = con.getZFromControls(exteriorZ);
 			
 			int distance = Math.abs(dX - exteriorX) + Math.abs(dY - exteriorY) + Math.abs(dZ - exteriorZ) + (dDim != exteriorWorld ? 300 : 0);
 			int enCost = (int) Helper.clamp(distance, 1, 500);
@@ -265,6 +424,13 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				inFlightTimer = 0;
 				flightTimer = 0;
 				TardisTileEntity te = getExterior();
+				
+				timeTillTakenOff = (20 * 11);
+				timeTillLanding = timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
+				timeTillLandingInt = timeTillLanding + (20 * 6);
+				timeTillLanded  = timeTillLanding + (20 * 11);
+				numButtons = (timeTillLanding - timeTillTakenOff) / getButtonTime();
+				
 				if(te != null)
 					te.takeoff();
 				sendUpdate();
@@ -287,9 +453,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			return;
 		
 		TardisConsoleTileEntity con = getConsole();
-		int dX = con.getXFromControls();
-		int dY = con.getYFromControls();
-		int dZ = con.getZFromControls();
+		int dX = con.getXFromControls(exteriorX);
+		int dY = con.getYFromControls(exteriorY);
+		int dZ = con.getZFromControls(exteriorZ);
 		int facing = con.getFacingFromControls();
 		World w = Helper.getWorld(con.getDimFromControls());
 		if(!(isValidPos(w,dX,dY,dZ)))
@@ -342,6 +508,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(inFlight)
 		{
+			addXP(30);
 			inFlight = false;
 			sendUpdate();
 			worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engineDrum", 0.75F, 1, true);
@@ -351,20 +518,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			TardisConsoleTileEntity con = getConsole();
 			if(con != null)
 				con.land();
-		}
-	}
-	
-	private void safetyTick()
-	{
-		List<Object> players = worldObj.playerEntities;
-		for(Object o : players)
-		{
-			if(o instanceof EntityPlayer)
-			{
-				EntityPlayer pl = (EntityPlayer)o;
-				if(pl.posY < -5 && !pl.capabilities.isFlying)
-					Helper.teleportEntityToSafety(pl);
-			}
 		}
 	}
 	
@@ -382,149 +535,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	private boolean shouldExplode()
 	{
-		return rand.nextDouble() > explodeChance;
-	}
-	
-	private void flightTick()
-	{
-		if(inFlightTimer == 0)
-			worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:takeoff", 0.75F, 1, true);
-		totalFlightTimer++;
-		inFlightTimer++;
-		
-		int timeTillTakenOff = (20 * 11);
-		int timeTillLanding = timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
-		int timeTillLandingInt = timeTillLanding + (20 * 6);
-		int timeTillLanded  = timeTillLanding + (20 * 11);
-		int numButtons = (timeTillLanding - timeTillTakenOff) / getButtonTime();
-		if(inFlightTimer >= timeTillTakenOff)//Taken off
-		{
-			int takenTime = inFlightTimer - timeTillTakenOff;
-			if(!worldObj.isRemote && takenTime % buttonTime == 0 && (getButtonTime() * numButtons) >= takenTime)
-			{
-				TardisConsoleTileEntity con = getConsole();
-				if(takenTime > 0)
-				{
-					if(con.unstableControlPressed())
-					{
-						instability -= 0.5;
-						addXP(1);
-					}
-					else
-					{
-						instability++;
-						if(shouldExplode())
-							explode = true;
-						worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-					}
-					instability = Helper.clamp(instability, 0, 10);
-				}
-				if(con != null && con.unstableFlight() && (buttonTime * numButtons) >= takenTime)
-					con.randomUnstableControl();
-				else if((buttonTime * numButtons) == takenTime)
-					con.clearUnstableControl();
-			}
-			if(takenTime == 0)// remove old tardis
-			{
-				World w = Helper.getWorld(exteriorWorld);
-				if(w != null)
-				{
-					if(w.getBlockId(exteriorX,exteriorY,exteriorZ) == TardisMod.tardisBlock.blockID)
-					{
-						w.setBlockToAir(exteriorX, exteriorY, exteriorZ);
-						w.setBlockToAir(exteriorX, exteriorY+1, exteriorZ);
-						TardisOutput.print("TCTE", "Blanking exterior");
-						exteriorWorld = 10000;
-						exteriorX = 0;
-						exteriorY = 0;
-						exteriorZ = 0;
-					} 	
-				}
-			}
-			if(inFlightTimer < timeTillLanding)
-			{
-				if(flightTimer % 69 == 0 && inFlight)
-					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engines", 0.75F, 1, true);
-				flightTimer++;
-			}
-			else
-			{
-				if(flightTimer % 69 == 0 && inFlightTimer < timeTillLandingInt)
-					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engines", 0.75F, 1, true);
-				flightTimer++;
-				
-				if(inFlightTimer == timeTillLanding)
-					placeBox();
-				
-				if(inFlightTimer == timeTillLandingInt)
-					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:landingInt", 0.75F, 1, true);
-				
-				if(inFlightTimer >= timeTillLanded)
-					land();
-			}
-		}
-	}
-	
-	@Override
-	public void updateEntity()
-	{
-		tickCount++;
-		
-		if(explode)
-		{
-			double xO = (rand.nextDouble()*3) - 1.5;
-			double zO = (rand.nextDouble()*3) - 1.5;
-			worldObj.playSound(xCoord, yCoord, zCoord, "random.explosion", 0.5F, 1, true);
-			worldObj.createExplosion(null, xCoord+0.5+xO, yCoord-0.5, zCoord+0.5+zO, 1F, true);
-			explode = false;
-		}
-		
-		if(tickCount % 20 == 0)
-		{
-			addEnergy(energyPerSecond,false);
-			safetyTick();
-		}
-		
-		if(inFlight)
-			flightTick();
-		
-		if(!worldObj.isRemote)
-		{
-			if(tickCount % 100 == 0 && TardisMod.plReg != null)
-			{
-				if(!TardisMod.plReg.hasTardis(ownerName))
-					TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
-			}
-			
-			if(deletingRooms)
-			{
-				Iterator<SimpleCoordStore> i = roomSet.iterator();
-				if(i.hasNext())
-				{
-					SimpleCoordStore coord = i.next();
-					TileEntity te = worldObj.getBlockTileEntity(coord.x, coord.y, coord.z);
-					if(te != null && te instanceof TardisSchemaCoreTileEntity)
-					{
-						TardisOutput.print("TCTE", "Removing room @ " + coord);
-						TardisSchemaCoreTileEntity schemaCore = (TardisSchemaCoreTileEntity)te;
-						schemaCore.remove();
-					}
-					i.remove();
-				}
-				else
-				{
-					deletingRooms = false;
-					numRooms = 0;
-				}
-			}
-			if(tickCount % 80 == 0)
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		}
-	}
-	
-	private void sendUpdate()
-	{
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		double eC = explodeChance * ((getSpeed(false) + 1) / 3.0);
+		eC *= Helper.clamp(3.0 / tardisLevel, 0.2, 1);
+		return rand.nextDouble() < eC;
 	}
 	
 	////////////////////////////////////////////////
@@ -533,7 +546,14 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public boolean inCoordinatedFlight()
 	{
-		return inFlight;
+		if(inFlight)
+		{
+			TardisConsoleTileEntity con = getConsole();
+			if(con == null)
+				return true;
+			return (inFlightTimer <= timeTillTakenOff) || con.shouldLand();
+		}
+		return false;
 	}
 	
 	public boolean inFlight()
@@ -548,8 +568,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			int rate = 40;
 			double val = Math.abs((tickCount % rate) - (rate / 2));
 			double max = 0.4;
-			return (float) (max * 2 * (val / rate));
+			lastProximity = (float) (max * 2 * (val / rate));
+			return lastProximity;
 		}
+		else if(lastProximity > 0)
+			return (lastProximity = lastProximity - (1/20.0F));
 		else
 		{
 			return 0;
@@ -608,6 +631,17 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return null;
 	}
 	
+	public boolean hasFunction(TardisFunction fun)
+	{
+		switch(fun)
+		{
+		case LOCATE:	return tardisLevel > 3;
+		case SENSORS:	return tardisLevel > 5;
+		case STABILISE:	return tardisLevel > 7;
+		default:		return false;
+		}
+	}
+	
 	public double getMaxSpeed()
 	{
 		return maxSpeed;
@@ -640,9 +674,22 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return tardisXP;
 	}
 	
+	public double getXPNeeded()
+	{
+		return 100 * Math.max(1, tardisLevel);
+	}
+	
 	public double addXP(double a)
 	{
-		return (tardisXP += Math.abs(a));
+		tardisXP += Math.abs(a);
+		if(tardisXP >= getXPNeeded())
+		{
+			tardisXP -= getXPNeeded();
+			tardisLevel++;
+			Helper.playSound(worldObj, xCoord, yCoord, zCoord, "tardismod:levelup", 1);
+		}
+		sendUpdate();
+		return tardisXP;
 	}
 	
 	public int getNumRooms()
@@ -766,16 +813,16 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(console != null)
 		{
 			int dD = console.getDimFromControls();
-			int dX = console.getXFromControls();
-			int dY = console.getYFromControls();
-			int dZ = console.getZFromControls();
+			int dX = console.getXFromControls(exteriorX);
+			int dY = console.getYFromControls(exteriorY);
+			int dZ = console.getZFromControls(exteriorZ);
 			TardisOutput.print("TCTE","Dest:" + dD +","+dX+","+dY+","+dZ);
 			if(dD==desDim&&dX==desX&&dY==desY&&dZ==desZ&&desStrs!=null)
 				for(String s:desStrs)
 					pl.addChatMessage(s);
 			else
 			{
-				int instability = 20;
+				int instability = Helper.clamp(20 - (2 * tardisLevel),3,20);
 				desDim = dD;
 				String[] send = new String[4];
 				if(desStrs!= null && desStrs.length == 4)
@@ -798,6 +845,58 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		}
 	}
 	
+	private boolean[] getObstructData(World w, int x, int y, int z)
+	{
+		boolean[] data = new boolean[2];
+		data[0] = data[1] = false;
+		TardisOutput.print("TCTE", "Checking for air @ " + x + "," + y + "," + z,TardisOutput.Priority.DEBUG);
+		if(w.isAirBlock(x, y, z) && w.isAirBlock(x, y+1, z))
+		{
+			data[0] = true;
+			if(w.isAirBlock(x, y-1, z))
+				data[1] = true;
+		}
+		return data;
+	}
+	
+	public void sendScannerStrings(EntityPlayer pl)
+	{
+		if(inFlight())
+		{
+			pl.sendChatToPlayer(new ChatMessageComponent().addText("Cannot use temporal scanners while in flight"));
+			return;
+		}
+		List<String> string = new ArrayList<String>();
+		TardisTileEntity ext = getExterior();
+		World w = ext.worldObj;
+		int dx = 0;
+		int dz = 0;
+		string.add("Current position: Dimension " + exteriorWorld + " : " + exteriorX+","+exteriorY+","+exteriorZ);
+		int facing = w.getBlockMetadata(exteriorX, exteriorY, exteriorZ);
+		for(int i=0;i<4;i++)
+		{
+			switch(i)
+			{
+				case 0:dz = -1; dx = 0; break;
+				case 1:dx =  1; dz = 0; break;
+				case 2:dz =  1; dx = 0; break;
+				case 3:dx = -1; dz = 0; break;
+			}
+			String s = (i == facing ? "Current facing " : "Facing ");
+			boolean[] data = getObstructData(w,exteriorX+dx,exteriorY,exteriorZ+dz);
+			if(!data[0])
+				s += "obstructed";
+			else if(!data[1])
+				s += "safe";
+			else
+				s += "unsafe drop";
+			string.add(s);
+		}
+		
+		for(String s:string)
+			pl.addChatMessage(s);
+	}
+	
 	//////////////////////////////
 	//////NBT DATA////////////////
 	//////////////////////////////
@@ -814,7 +913,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		super.readFromNBT(nbt);
-		tardisXP  = nbt.getDouble("tardisXP");
 		lockState = LockState.values()[nbt.getInteger("lockState")];
 	}
 	
@@ -822,7 +920,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
-		nbt.setDouble("tardisXP", tardisXP);
+		
 		nbt.setInteger("lockState", lockState.ordinal());
 	}
 
@@ -831,6 +929,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(ownerName != null)
 		{
+			nbt.setDouble("tardisXP", tardisXP);
 			nbt.setBoolean("explode",explode);
 			nbt.setInteger("tardisLevel", tardisLevel);
 			nbt.setString("ownerName", ownerName);
@@ -850,6 +949,13 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			
 			nbt.setInteger("shields",shields);
 			nbt.setInteger("hull",hull);
+			if(inFlight())
+			{
+				nbt.setInteger("ttTO", timeTillTakenOff);
+				nbt.setInteger("ttL" , timeTillLanding);
+				nbt.setInteger("ttLI", timeTillLandingInt);
+				nbt.setInteger("ttLa", timeTillLanded);
+			}
 		}
 	}
 
@@ -858,6 +964,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(nbt.hasKey("ownerName"))
 		{
+			tardisXP  = nbt.getDouble("tardisXP");
 			explode = nbt.getBoolean("explode");
 			tardisLevel = nbt.getInteger("tardisLevel");
 			ownerName = nbt.getString("ownerName");
@@ -877,6 +984,14 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			
 			shields  = nbt.getInteger("shields");
 			hull     = nbt.getInteger("hull");
+			
+			if(nbt.hasKey("ttTO"))
+			{
+				timeTillTakenOff	= nbt.getInteger("ttTO");
+				timeTillLanding		= nbt.getInteger("ttL");
+				timeTillLandingInt	= nbt.getInteger("ttLI");
+				timeTillLanded		= nbt.getInteger("ttLa");
+			}
 		}
 	}
 

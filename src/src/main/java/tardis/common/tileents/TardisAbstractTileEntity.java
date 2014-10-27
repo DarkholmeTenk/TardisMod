@@ -29,6 +29,11 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 		return p;
 	}
 	
+	public void sendUpdate()
+	{
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+	
 	public void sendDataPacket()
 	{
 		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))

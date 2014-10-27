@@ -3,6 +3,8 @@ package tardis.client.renderer;
 import org.lwjgl.opengl.GL11;
 
 import tardis.client.renderer.model.TardisSonicScrewdriverModel;
+import tardis.client.renderer.model.TardisSonicScrewdriverLightModel;
+import tardis.common.items.TardisSonicScrewdriverItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -11,9 +13,11 @@ import net.minecraftforge.client.IItemRenderer;
 public class TardisSonicScrewdriverRenderer implements IItemRenderer
 {
 	TardisSonicScrewdriverModel model;
+	TardisSonicScrewdriverLightModel light;
 	
 	{
 		model = new TardisSonicScrewdriverModel();
+		light = new  TardisSonicScrewdriverLightModel();
 	}
 
 	@Override
@@ -49,6 +53,13 @@ public class TardisSonicScrewdriverRenderer implements IItemRenderer
 		}
 		Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriver.png"));
 		model.render(null, 0.0F, 0.0F, -0.0F, 0.0F, 0.0F, 0.0625F);
+		double[] color = TardisSonicScrewdriverItem.getColors(item);
+		if(color != null && color.length >= 3)
+		{
+			GL11.glColor3d(color[0], color[1], color[2]);
+			light.render(null, 0.0F, 0.0F, -0.0F, 0.0F, 0.0F, 0.0625F);
+			GL11.glColor3d(1, 1, 1);
+		}
 		GL11.glPopMatrix();
 	}
 

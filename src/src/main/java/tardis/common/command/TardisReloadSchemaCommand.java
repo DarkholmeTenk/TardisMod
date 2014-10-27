@@ -1,24 +1,13 @@
 package tardis.common.command;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import tardis.common.tileents.TardisConsoleTileEntity;
 
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 
-public class TardisReloadSchemaCommand implements ICommand
+public class TardisReloadSchemaCommand extends TardisAbstractCommand
 {
-
-	@Override
-	public int compareTo(Object arg0)
-	{
-		return 0;
-	}
-
 	@Override
 	public String getCommandName()
 	{
@@ -32,45 +21,18 @@ public class TardisReloadSchemaCommand implements ICommand
 	}
 
 	@Override
-	public List getCommandAliases()
+	public void addAliases(List<String> aliases)
 	{
-		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("tardisrefresh");
 		aliases.add("treload");
 		aliases.add("trefresh");
 		aliases.add("trel");
 		aliases.add("tref");
-		return aliases;
 	}
 
 	@Override
-	public void processCommand(ICommandSender icommandsender, String[] astring)
+	public void commandBody(ICommandSender icommandsender, String[] astring)
 	{
 		TardisConsoleTileEntity.refreshSchemas();
 	}
-
-	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender comSen)
-	{
-		if(comSen instanceof EntityPlayerMP)
-		{
-			if(!MinecraftServer.getServer().getConfigurationManager().getOps().contains(comSen.getCommandSenderName()))
-				return true;
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public List addTabCompletionOptions(ICommandSender icommandsender, String[] astring)
-	{
-		return null;
-	}
-
-	@Override
-	public boolean isUsernameIndex(String[] astring, int i)
-	{
-		return false;
-	}
-
 }

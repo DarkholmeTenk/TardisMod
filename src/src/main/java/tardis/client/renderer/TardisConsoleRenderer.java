@@ -6,9 +6,12 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import tardis.TardisMod;
+import tardis.api.TardisFunction;
 import tardis.client.renderer.model.TardisConsoleModel;
 import tardis.common.blocks.TardisAbstractBlock;
+import tardis.common.core.Helper;
 import tardis.common.tileents.TardisConsoleTileEntity;
+import tardis.common.tileents.TardisCoreTileEntity;
 
 public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 {
@@ -62,8 +65,6 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		compRender.renderSpecialLever(tess,tce, 42, -1.16,-0.35,0.8, 0,180,-45, 0.8,0.8,0.8);
 	}
 	
-	
-	
 	private void renderSchemaChooser(Tessellator tess, TardisConsoleTileEntity tce)
 	{
 		compRender.renderSchematicSelector(tess,tce,tce.schemaChooserString,52, 1.1,-0.4,-0.1, -45,-90,0, 0.4,0.4,0.2);
@@ -76,22 +77,29 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		compRender.renderButton(tess,tce,5, -1,-0.53,-0.64, 45,90,0, 0.5,0.5,0.5);					//ID 5 Screwdriver generator
 		compRender.renderScrewdriverHolder(tess,tce,-1,-0.55,-0.45, 0,0,-45, 0.5,0.5,0.5);			//ID 6 Screwdriver holder
 		compRender.renderScrewdriver(tess,tce,0, -1,-0.55,-0.45, 0,0,-45, 0.5,0.5,0.5);				//ID 6 Screwdriver
-		compRender.renderGauge(tess, tce, 0, -0.68, -0.72, 0.15, 45, -90, 0, 0.75, 0.75, 0.75);		//ID 0 Energy gauge
-		compRender.renderGauge(tess, tce, 1, -0.68, -0.72, -0.125, 45, -90, 0, 0.75, 0.75, 0.75);	//ID 1 Rooms gauge
-		compRender.renderGauge(tess, tce, 2, -0.68, -0.72, -0.4, 45, -90, 0, 0.75, 0.75, 0.75);		//ID 2 Speed gauge
-		compRender.renderWheel(tess, tce, 3, -1.25, -0.3, -0.4, 45, 90, -0, 0.5, 0.5, 0.5);			//ID 3 Facing wheel
-		compRender.renderLever(tess, tce, 4, -1.23, -0.28, 0.4, -45, -90, 0, 0.6,0.6,0.6);			//ID 4 Speed lever
+		compRender.renderGauge (tess, tce, 0, -0.70, -0.68, 0.15, 45, -90, 0, 0.75, 0.75, 0.75);		//ID 0 Energy gauge
+		compRender.renderGauge (tess, tce, 1, -0.70, -0.68, -0.125, 45, -90, 0, 0.75, 0.75, 0.75);	//ID 1 Rooms gauge
+		compRender.renderGauge (tess, tce, 2, -0.70, -0.68, -0.4,   45, -90, 0, 0.75, 0.75, 0.75);	//ID 2 Speed gauge
+		compRender.renderGauge (tess, tce, 8, -0.56, -0.82 , 0.015, 45, -90, 0, 0.75, 0.75, 0.75);	//ID 8 XP gauge
+		compRender.renderPushSwitch(tess, tce, 53,-0.7, -0.78 , 0.36,45, 90, 0, 0.6 , 0.6 , 0.6 );
+		compRender.renderWheel (tess, tce, 3, -1.25, -0.3, -0.4, 45, 90, -0, 0.5, 0.5, 0.5);			//ID 3 Facing wheel
+		compRender.renderLever (tess, tce, 4, -1.23, -0.28, 0.4, -45, -90, 0, 0.6,0.6,0.6);			//ID 4 Speed lever
 	}
 	
 	private void renderRightPanel(Tessellator tess, TardisConsoleTileEntity tce)
 	{
+		TardisCoreTileEntity core = Helper.getTardisCore(tce.worldObj);
 		renderXControls(tess,tce);																	//ID 10-16 X Controls
 		compRender.renderScreen(tess,tce, 100, "main", -0.7, -0.325, -1.20, -45,180,0,0.6,0.6,0.6);	//ID 100 Coord guesser
 		compRender.renderButton(tess, tce, 901, -1.1, -0.175, -1.35, -45, 180, 0, 0.5, 0.5, 0.5);	//ID 901 RemButton
+		compRender.renderPushSwitch(tess, tce, 55, 0.75, -0.28, -1.25, -45, 180, 0, 0.5, 0.5, 0.5);
+		if(core != null && core.hasFunction(TardisFunction.STABILISE))
+			compRender.renderPushSwitch(tess, tce, 56, 0.75, -0.18, -1.36 , -45, 180, 0, 0.5, 0.5, 0.5);
 	}
 	
 	private void renderLeftPanel(Tessellator tess, TardisConsoleTileEntity tce)
 	{
+		TardisCoreTileEntity core = Helper.getTardisCore(tce.worldObj);
 		renderZControls(tess,tce);																	//ID 20-26 Z Controls
 		for(int i=0;i<4;i++)
 		{
@@ -101,6 +109,8 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 			}
 		}
 		compRender.renderPushSwitch(tess, tce, 900, -0.95, -0.2, 1.37, -39, 0, 0, 0.5, 0.5, 0.5);				//ID 900 save/load switch
+		if(core!=null && core.hasFunction(TardisFunction.SENSORS))
+			compRender.renderScreen(tess, tce, 54, "scanner", 0.47, -0.38, 1.1, 43, 180, 0, 0.3, 0.3, 0.3);
 	}
 	
 	private void renderBackPanel(Tessellator tess, TardisConsoleTileEntity tce)
@@ -113,6 +123,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		compRender.renderLever(tess, tce, 1020, 1.36, -0.15, -0.1, 0, 0, 45, 0.5, 0.5, 0.5);
 		compRender.renderLever(tess, tce, 1021, 1.36, -0.15, 0.4, 0, 0, 45, 0.5, 0.5, 0.5);
 		compRender.renderLever(tess, tce, 1022, 1.36, -0.15, 0.9, 0, 0, 45, 0.5, 0.5, 0.5);
+		compRender.renderButton(tess, tce, 52, 1.36, -0.15, -1.15, 0, 0, 45, 0.6, 0.6, 0.6);
 	}
 	
 	@Override

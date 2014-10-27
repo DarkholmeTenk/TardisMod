@@ -1,7 +1,5 @@
 package tardis.common.core;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.util.HashSet;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -106,22 +104,8 @@ public class TardisDimensionRegistry extends WorldSavedData
 	
 	public static Packet250CustomPayload getPacket()
 	{
-		Packet250CustomPayload p = new Packet250CustomPayload();
-		p.channel = "TardisDR";
-		try
-		{
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream(bos);
-			NBTTagCompound t = new NBTTagCompound();
-			TardisMod.dimReg.writeToNBT(t);
-			NBTTagCompound.writeNamedTag(t, stream);
-			p.data = bos.toByteArray();
-			p.length = p.data.length;
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return p;
+		NBTTagCompound t = new NBTTagCompound();
+		TardisMod.dimReg.writeToNBT(t);
+		return Helper.nbtPacket("TardisDR", t);
 	}
 }

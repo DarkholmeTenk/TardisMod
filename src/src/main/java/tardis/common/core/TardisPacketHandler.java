@@ -9,6 +9,7 @@ import tardis.TardisMod;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
@@ -26,10 +27,54 @@ public class TardisPacketHandler implements IPacketHandler
 			TardisOutput.print("PAC", "Packet handler handling trans");
 			handleTardisTransPacket(packet);
 		}
-		if(packet.channel.equals("TardisDR"))
+		else if(packet.channel.equals("TardisSn"))
+		{
+			TardisOutput.print("PAC", "Packet handler handling sound");
+			handleTardisSoundPacket(packet);
+		}
+		else if(packet.channel.equals("TardisDR"))
 		{
 			TardisOutput.print("PAC", "Packet handler handling DR");
 			handleTardisDRPacket(packet);
+		}
+	}
+	
+	public void handleTardisSoundPacket(Packet250CustomPayload packet)
+	{
+		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
+			return;
+		
+		DataInputStream inputStream = null;
+		try
+		{
+			inputStream = new DataInputStream(new ByteArrayInputStream(packet.data));
+			NBTTagCompound nbt = (NBTTagCompound) NBTTagCompound.readNamedTag(inputStream);
+			String sound = nbt.getString("sound");
+			World w = Helper.getWorld(nbt.getInteger("world"));
+			float vol = nbt.getFloat("vol");
+			if(nbt.hasKey("x"))
+			{
+				int x = nbt.getInteger("x");
+				int y = nbt.getInteger("y");
+				int z = nbt.getInteger("z");
+				if(w != null)
+					w.playSound(x+0.5, y+0.5, z+0.5, sound, vol, 1, true);
+			}
+		}
+		catch(IOException e)
+		{
+			TardisOutput.print("PAC", "TransPacketError:" + e.getMessage(),TardisOutput.Priority.ERROR);
+		}
+		finally
+		{
+			if(inputStream != null)
+			{
+				try
+				{
+					inputStream.close();
+				}
+				catch (IOException e) {	}
+			}
 		}
 	}
 	

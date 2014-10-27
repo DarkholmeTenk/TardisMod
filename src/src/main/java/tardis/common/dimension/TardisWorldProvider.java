@@ -1,5 +1,7 @@
 package tardis.common.dimension;
 
+import tardis.common.core.Helper;
+import tardis.common.tileents.TardisConsoleTileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -26,10 +28,16 @@ public class TardisWorldProvider extends WorldProvider
 	}
 	
 	@Override
+	public boolean canRespawnHere()
+	{
+		return true;
+	}
+	
+	@Override
 	public IChunkProvider createChunkGenerator()
 	{
 		return new TardisChunkProvider(worldObj);
-	}	
+	}
 	
 	@Override
 	public void updateWeather()
@@ -60,8 +68,20 @@ public class TardisWorldProvider extends WorldProvider
     }
 	
 	@Override
+	public boolean isDaytime()
+	{
+		if(dimensionId != 0)
+		{
+			TardisConsoleTileEntity con = Helper.getTardisConsole(dimensionId);
+			if(con != null)
+				return con.getDaytimeSetting();
+		}
+		return true;
+	}
+	
+	@Override
 	public long getWorldTime()
     {
-		return 6000;
+		return isDaytime() ? 6000 : 18000;
     }
 }

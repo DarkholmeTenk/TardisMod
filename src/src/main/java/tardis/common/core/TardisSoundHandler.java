@@ -18,6 +18,7 @@ public class TardisSoundHandler
 			event.manager.addSound("tardismod:landingInt.wav");
 			event.manager.addSound("tardismod:engines.wav");
 			event.manager.addSound("tardismod:engineDrum.wav");
+			event.manager.addSound("tardismod:levelup.wav");
 		}
 		catch(Exception e)
 		{

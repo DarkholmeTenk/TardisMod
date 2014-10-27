@@ -4,14 +4,15 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 public class TardisCommandRegister
 {
-	private static TardisTeleport teleportCommand;
-	private static TardisSaveSchemaCommand		saveCommand;
-	private static TardisLoadSchemaCommand		loadCommand;
-	private static TardisGiveSchemaCommand		giveCommand;
-	private static TardisRepairCoreCommand		repCCommand;
-	private static TardisReloadSchemaCommand	refCommand;
-	private static TardisRemoveSchemaCommand	remCommand;
-	private static TardisKeyCommand				keyCommand;
+	private static TardisAbstractCommand teleportCommand;
+	private static TardisAbstractCommand saveCommand;
+	private static TardisAbstractCommand loadCommand;
+	private static TardisAbstractCommand giveCommand;
+	private static TardisAbstractCommand repCCommand;
+	private static TardisAbstractCommand refCommand;
+	private static TardisAbstractCommand remCommand;
+	private static TardisAbstractCommand keyCommand;
+	private static TardisAbstractCommand xpCommand;
 	
 	public static void registerCommands(FMLServerStartingEvent event)
 	{
@@ -23,6 +24,7 @@ public class TardisCommandRegister
 		refCommand  = new TardisReloadSchemaCommand();
 		remCommand  = new TardisRemoveSchemaCommand();
 		keyCommand  = new TardisKeyCommand();
+		xpCommand	= new TardisXpCommand();
 		event.registerServerCommand(teleportCommand);
 		event.registerServerCommand(saveCommand);
 		event.registerServerCommand(loadCommand);
@@ -31,5 +33,6 @@ public class TardisCommandRegister
 		event.registerServerCommand(refCommand);
 		event.registerServerCommand(remCommand);
 		event.registerServerCommand(keyCommand);
+		event.registerServerCommand(xpCommand);
 	}
 }

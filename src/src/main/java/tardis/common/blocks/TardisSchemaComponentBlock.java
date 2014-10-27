@@ -120,13 +120,9 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
     	}
     	if(meta == 3 || meta == 6)
     	{
-    		TardisCoreTileEntity te = Helper.getTardisCore(w);
-    		if(te != null)
-    		{
-    			TardisConsoleTileEntity console = te.getConsole();
-    			if(console != null)
-    				return console.activate(pl, x, y, z, t, j, k);
-    		}
+    		TardisConsoleTileEntity console = Helper.getTardisConsole(w);
+			if(console != null)
+				return console.activate(pl, x, y, z, t, j, k);
     	}
     	if(meta == 4 || meta == 5)
     	{

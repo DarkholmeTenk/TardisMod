@@ -1,7 +1,6 @@
 package tardis.common.command;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
@@ -11,33 +10,12 @@ import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
 import tardis.common.core.schema.TardisPartBlueprint;
 import tardis.common.tileents.TardisConsoleTileEntity;
 
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
-public class TardisSaveSchemaCommand implements ICommand
+public class TardisSaveSchemaCommand extends TardisAbstractCommand
 {
-	
-	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender comSen)
-	{
-		if(comSen instanceof EntityPlayerMP)
-		{
-			if(!MinecraftServer.getServer().getConfigurationManager().getOps().contains(comSen.getCommandSenderName()))
-				return true;
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public int compareTo(Object arg0)
-	{
-		return 0;
-	}
-
 	@Override
 	public String getCommandName()
 	{
@@ -51,11 +29,9 @@ public class TardisSaveSchemaCommand implements ICommand
 	}
 
 	@Override
-	public List getCommandAliases()
+	public void addAliases(List<String> aliases)
 	{
-		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("tsave");
-		return aliases;
 	}
 	
 	private boolean save(String name, EntityPlayerMP pl, World w, int x, int y, int z)
@@ -89,7 +65,7 @@ public class TardisSaveSchemaCommand implements ICommand
 	}
 
 	@Override
-	public void processCommand(ICommandSender comSen, String[] astring)
+	public void commandBody(ICommandSender comSen, String[] astring)
 	{
 		if(comSen instanceof EntityPlayerMP)
 		{
@@ -137,17 +113,4 @@ public class TardisSaveSchemaCommand implements ICommand
 			}
 		}
 	}
-
-	@Override
-	public List addTabCompletionOptions(ICommandSender icommandsender,String[] astring)
-	{
-		return null;
-	}
-
-	@Override
-	public boolean isUsernameIndex(String[] astring, int i)
-	{
-		return false;
-	}
-
 }

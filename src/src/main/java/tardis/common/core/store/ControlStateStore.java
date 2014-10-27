@@ -10,8 +10,9 @@ public class ControlStateStore
 	public final int[] yControls;
 	public final int[] zControls;
 	public final boolean landGroundControl;
+	public final boolean relative;
 	
-	public ControlStateStore(int facing, int dimControl, int[] xControls, int[] yControls, int[] zControls, boolean landGroundControl)
+	public ControlStateStore(int facing, int dimControl, int[] xControls, int[] yControls, int[] zControls, boolean landGroundControl,boolean rel)
 	{
 		this.facing = facing;
 		this.dimControl= dimControl;
@@ -19,6 +20,7 @@ public class ControlStateStore
 		this.yControls = yControls.clone();
 		this.zControls = zControls.clone();
 		this.landGroundControl = landGroundControl;
+		this.relative = rel;
 	}
 	
 	public boolean isValid()
@@ -37,6 +39,7 @@ public class ControlStateStore
 		tag.setIntArray("xControls", xControls);
 		tag.setIntArray("yControls", yControls);
 		tag.setIntArray("zControls", zControls);
+		tag.setBoolean("relativeCoords", relative);
 		tag.setBoolean("landGroundControl", landGroundControl);
 	}
 	
@@ -47,7 +50,8 @@ public class ControlStateStore
 		int[] x = tag.getIntArray("xControls");
 		int[] y = tag.getIntArray("yControls");
 		int[] z = tag.getIntArray("zControls");
+		boolean rel = tag.getBoolean("relativeCoords");
 		boolean lgc = tag.getBoolean("landGroundControl");
-		return new ControlStateStore(facing,dim,x,y,z,lgc);
+		return new ControlStateStore(facing,dim,x,y,z,lgc,rel);
 	}
 }

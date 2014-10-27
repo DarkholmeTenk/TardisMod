@@ -5,22 +5,11 @@ import java.util.List;
 
 import tardis.common.core.Helper;
 
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 
-public class TardisTeleport implements ICommand
+public class TardisTeleport extends TardisAbstractCommand
 {
-
-	@Override
-	public int compareTo(Object obj)
-	{
-		if(obj instanceof TardisTeleport)
-			return 0;
-		return 1;
-	}
-
 	@Override
 	public String getCommandName()
 	{
@@ -34,15 +23,13 @@ public class TardisTeleport implements ICommand
 	}
 
 	@Override
-	public List getCommandAliases()
+	public void addAliases(List<String> aliases)
 	{
-		ArrayList<String> aliases = new ArrayList<String>();
 		aliases.add("tardistp");
-		return aliases;
 	}
 
 	@Override
-	public void processCommand(ICommandSender comSen, String[] astring)
+	public void commandBody(ICommandSender comSen, String[] astring)
 	{
 		if(comSen instanceof EntityPlayerMP)
 		{
@@ -106,29 +93,4 @@ public class TardisTeleport implements ICommand
 			}
 		}
 	}
-
-	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender comSen)
-	{
-		if(comSen instanceof EntityPlayerMP)
-		{
-			if(!MinecraftServer.getServer().getConfigurationManager().getOps().contains(comSen.getCommandSenderName()))
-				return true;
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public List addTabCompletionOptions(ICommandSender comSen, String[] astring)
-	{
-		return null;
-	}
-
-	@Override
-	public boolean isUsernameIndex(String[] astring, int i)
-	{
-		return true;
-	}
-
 }

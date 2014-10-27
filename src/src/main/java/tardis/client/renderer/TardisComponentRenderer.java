@@ -8,6 +8,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import tardis.api.IControlMatrix;
+import tardis.client.renderer.model.TardisSonicScrewdriverLightModel;
 import tardis.client.renderer.model.TardisSonicScrewdriverModel;
 import tardis.client.renderer.model.console.GaugeDisplayModel;
 import tardis.client.renderer.model.console.GaugeNeedleModel;
@@ -20,10 +21,12 @@ import tardis.client.renderer.model.console.ScreenModel;
 import tardis.client.renderer.model.console.SonicScrewdriverHolderModel;
 import tardis.client.renderer.model.console.SpecialLeverModel;
 import tardis.client.renderer.model.console.ValveWheelModel;
+import tardis.common.items.TardisSonicScrewdriverItem;
 
 public class TardisComponentRenderer
 {
 	private static TardisSonicScrewdriverModel screw = new TardisSonicScrewdriverModel();
+	private static TardisSonicScrewdriverLightModel screwLight = new TardisSonicScrewdriverLightModel();
 	private static SonicScrewdriverHolderModel holder = new SonicScrewdriverHolderModel();
 	private static GaugeDisplayModel gaugeDisplay = new GaugeDisplayModel();
 	private static GaugeNeedleModel gaugeNeedle = new GaugeNeedleModel();
@@ -106,6 +109,10 @@ public class TardisComponentRenderer
 			GL11.glColor3d(1, 1, 1);
 			bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriver.png"));
 			screw.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+			double[] colors = TardisSonicScrewdriverItem.getColors(te.getScrewMode(slot));
+			GL11.glColor3d(colors[0], colors[1], colors[2]);
+			screwLight.render(null,0F,0F,0F,0F,0F,0.0625F);
+			GL11.glColor3d(1,1,1);
 			GL11.glPopMatrix();
 		}
 	}
