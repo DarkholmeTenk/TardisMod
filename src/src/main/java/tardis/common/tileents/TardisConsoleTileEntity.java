@@ -17,6 +17,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -920,6 +921,14 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	public boolean isStable()
 	{
 		return stable;
+	}
+	
+	public TardisCoreTileEntity getCore()
+	{
+		TileEntity core = worldObj.getBlockTileEntity(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ);
+		if(core != null && core instanceof TardisCoreTileEntity)
+			return (TardisCoreTileEntity)core;
+		return null;
 	}
 	
 	@Override

@@ -9,7 +9,7 @@ import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.client.renderer.model.TardisConsoleModel;
 import tardis.common.blocks.TardisAbstractBlock;
-import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 
@@ -72,7 +72,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		compRender.renderButton(tess,tce,51, 1.19,-0.29,0.8, 45,-90,0,0.5,0.5,0.5);
 	}
 	
-	private void renderFrontPanel(Tessellator tess, TardisConsoleTileEntity tce)
+	private void renderFrontPanel(Tessellator tess, TardisConsoleTileEntity tce, TardisCoreTileEntity core)
 	{
 		compRender.renderButton(tess,tce,5, -1,-0.53,-0.64, 45,90,0, 0.5,0.5,0.5);					//ID 5 Screwdriver generator
 		compRender.renderScrewdriverHolder(tess,tce,-1,-0.55,-0.45, 0,0,-45, 0.5,0.5,0.5);			//ID 6 Screwdriver holder
@@ -86,9 +86,8 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		compRender.renderLever (tess, tce, 4, -1.23, -0.28, 0.4, -45, -90, 0, 0.6,0.6,0.6);			//ID 4 Speed lever
 	}
 	
-	private void renderRightPanel(Tessellator tess, TardisConsoleTileEntity tce)
+	private void renderRightPanel(Tessellator tess, TardisConsoleTileEntity tce, TardisCoreTileEntity core)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(tce.worldObj);
 		renderXControls(tess,tce);																	//ID 10-16 X Controls
 		compRender.renderScreen(tess,tce, 100, "main", -0.7, -0.325, -1.20, -45,180,0,0.6,0.6,0.6);	//ID 100 Coord guesser
 		compRender.renderButton(tess, tce, 901, -1.1, -0.175, -1.35, -45, 180, 0, 0.5, 0.5, 0.5);	//ID 901 RemButton
@@ -97,9 +96,8 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 			compRender.renderPushSwitch(tess, tce, 56, 0.75, -0.18, -1.36 , -45, 180, 0, 0.5, 0.5, 0.5);
 	}
 	
-	private void renderLeftPanel(Tessellator tess, TardisConsoleTileEntity tce)
+	private void renderLeftPanel(Tessellator tess, TardisConsoleTileEntity tce, TardisCoreTileEntity core)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(tce.worldObj);
 		renderZControls(tess,tce);																	//ID 20-26 Z Controls
 		for(int i=0;i<4;i++)
 		{
@@ -113,7 +111,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 			compRender.renderScreen(tess, tce, 54, "scanner", 0.47, -0.38, 1.1, 43, 180, 0, 0.3, 0.3, 0.3);
 	}
 	
-	private void renderBackPanel(Tessellator tess, TardisConsoleTileEntity tce)
+	private void renderBackPanel(Tessellator tess, TardisConsoleTileEntity tce, TardisCoreTileEntity core)
 	{
 		renderSchemaChooser(tess,tce);
 		renderDimControls(tess,tce);
@@ -146,10 +144,13 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		if(te != null && te instanceof TardisConsoleTileEntity)
 		{
 			TardisConsoleTileEntity tce = (TardisConsoleTileEntity)te;
-			renderFrontPanel(tess,tce);
-			renderRightPanel(tess,tce);
-			renderBackPanel( tess,tce);
-			renderLeftPanel( tess,tce);
+			TardisCoreTileEntity core = tce.getCore();
+			if(core == null)
+				TardisOutput.print("TConR", "No core?");
+			renderFrontPanel(tess,tce,core);
+			renderRightPanel(tess,tce,core);
+			renderBackPanel( tess,tce,core);
+			renderLeftPanel( tess,tce,core);
 			renderFlightControls(tess,tce);
 		}
 		GL11.glPopMatrix();
