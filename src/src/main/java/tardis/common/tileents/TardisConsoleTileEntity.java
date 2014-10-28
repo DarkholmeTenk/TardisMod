@@ -175,128 +175,128 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	}
 	
 	public boolean activate(EntityPlayer pl, int blockX,int blockY,int blockZ, float i, float j, float k)
+	{
+		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
+		HitPosition hit = null;
+		for(int cnt=0;cnt<4&&hit==null;cnt++)
+			hit = activateSide(pl,blockX, blockY, blockZ, i, j, k, cnt);
+		if(hit != null && core != null)
 		{
-			TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
-			HitPosition hit = null;
-			for(int cnt=0;cnt<4&&hit==null;cnt++)
-				hit = activateSide(pl,blockX, blockY, blockZ, i, j, k, cnt);
-			if(hit != null && core != null)
+			boolean update = true;
+			TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
+			if(hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
+				activateControl(pl,6);
+			else if(hit.within(2, 1.214, 0.581, 1.338, 0.669))
+				activateControl(pl,7);
+			else if(hit.within(0, 0.779, 0.431, 0.901, 0.525))
+				activateControl(pl,5);
+			else if(hit.within(0, 1.651, 0.271, 1.883, 0.400))//Gauge1
+				pl.addChatMessage("Energy: " + core.getEnergy() + "/" + core.getMaxEnergy());
+			else if(hit.within(0, 1.375, 0.271, 1.615, 0.400))
+				pl.addChatMessage("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms());
+			else if(hit.within(0, 1.517, 0.138, 1.750, 0.265))
 			{
-				boolean update = true;
-				TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
-				if(hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
-					activateControl(pl,6);
-				else if(hit.within(2, 1.214, 0.581, 1.338, 0.669))
-					activateControl(pl,7);
-				else if(hit.within(0, 0.779, 0.431, 0.901, 0.525))
-					activateControl(pl,5);
-				else if(hit.within(0, 1.651, 0.271, 1.883, 0.400))//Gauge1
-					pl.addChatMessage("Energy: " + core.getEnergy() + "/" + core.getMaxEnergy());
-				else if(hit.within(0, 1.375, 0.271, 1.615, 0.400))
-					pl.addChatMessage("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms());
-				else if(hit.within(0, 1.517, 0.138, 1.750, 0.265))
-				{
-					pl.addChatMessage("XP: " + core.getXP() + "/" + core.getXPNeeded());
-					pl.addChatMessage("Level:" + core.getLevel());
-				}
-				else if(hit.within(0, 1.10 , 0.271, 1.335, 0.400))
-					pl.addChatMessage(String.format("Speed: %.1f/%.1f", core.getSpeed(true),core.getMaxSpeed()));
-					//pl.addChatMessage("Speed: " + core.getSpeed(true) + "/" + core.getMaxSpeed())
-				else if(hit.within(0,0.865,0.55,1.327,0.868))
-					activateControl(pl,3);
-				else if(hit.within(0, 1.725, 0.585,  2.05,  0.846))
-				{
-					int d = 1;
-					if(pl.isSneaking())
-						d = -1;
-					core.addSpeed(d);
-				}
-				else if(hit.within(3,2.156, 0.654,  2.540, 0.924))
-					core.sendDestinationStrings(pl);
-				else if(hit.within(3, 1.727, 0.626, 2.019, 0.826))
-					activateControl(pl, 10);
-				else if(hit.within(3, 1.361, 0.626, 1.634, 0.826))
-					activateControl(pl, 11);
-				else if(hit.within(3, 0.981, 0.626, 1.210, 0.826))
-					activateControl(pl, 12);
-				else if(hit.within(3, 1.361, 0.268, 1.634, 0.431))
-					activateControl(pl, 13);
-				else if(hit.within(3, 1.694, 0.227, 1.951, 0.408))
-					activateControl(pl, 14);
-				else if(hit.within(3, 1.039, 0.257, 1.238, 0.417))
-					activateControl(pl, 15);
-				else if(hit.within(1, 1.145, 0.207, 1.259, 0.443))
-					activateControl(pl, 20);
-				else if(hit.within(1, 1.333, 0.207, 1.465, 0.443))
-					activateControl(pl, 21);
-				else if(hit.within(1, 1.531, 0.207, 1.648, 0.443))
-					activateControl(pl, 22);
-				else if(hit.within(1, 1.730, 0.207, 1.856, 0.443))
-					activateControl(pl, 23);
-				else if(hit.within(1, 0.650, 0.664, 0.943, 0.856))	//Z Wheel 1
-					activateControl(pl, 24);
-				else if(hit.within(1, 1.264, 0.664, 1.545, 0.856))	//Z Wheel 2
-					activateControl(pl, 25);
-				else if(hit.within(2, 1.730, 0.147, 1.859, 0.470))
-					activateControl(pl, 30);
-				else if(hit.within(2, 1.581, 0.147, 1.710, 0.470))
-					activateControl(pl, 31);
-				else if(hit.within(2, 1.430, 0.147, 1.558, 0.470))
-					activateControl(pl, 32);
-				else if(hit.within(2, 1.284, 0.147, 1.415, 0.470))
-					activateControl(pl, 33);
-				else if(hit.within(2, 1.129, 0.283, 1.241, 0.384))
-					activateControl(pl, 34);
-	//			else if(hit.within(2, 1.408, 0.677, 1.660, 0.855))
-	//				activateControl(pl,35);
-				else if(hit.within(1, 0.985, 0.664, 1.230, 0.856))	//Flight Primer
-					activateControl(pl, 40);
-				else if(hit.within(2, 0.553, 0.629, 0.838, 0.924))	//Flight Regulator
-					activateControl(pl, 41);
-				else if(hit.within(0, 2.110, 0.562, 2.441, 0.872))	//Flight Takeoff
-					activateControl(pl, 42);
-				else if(hit.within(2, 2.251, 0.519, 2.371, 0.600))
-					activateControl(pl, 50);
-				else if(hit.within(2, 2.251, 0.646, 2.371, 0.730))
-					activateControl(pl, 51);
-				else if(hit.within(2, 0.290, 0.825, 0.441, 0.915))
-					activateControl(pl, 52);
-				else if(hit.within(0, 1.760, 0.172, 1.914, 0.265))
-					activateControl(pl, 53);
-				else if(hit.within(1, 1.013, 0.493, 1.194, 0.624))
-					activateControl(pl, 54);
-				else if(hit.within(3, 0.701, 0.703, 0.823, 0.792))
-					activateControl(pl, 55);
-				else if(hit.within(3, 0.701, 0.807, 0.823, 0.903))
-					activateControl(pl, 56);
-				else if(hit.within(2, 0.971, 0.598, 1.138, 0.941))
-					activateControl(pl, 60);
-				else if(hit.within(3, 2.557, 0.806, 2.683, 0.896))	//Delete rooms button
-					activateControl(pl, 901);
-				else if(hit.within(1, 2.369, 0.801, 2.491, 0.894))	//Load/Save Switch
-					activateControl(pl, 900);
-				else if(hit.within(1, 1.700, 0.513, 2.355, 0.898))
-				{
-					int jx = (int)(5*(hit.posZ - 1.700) / (2.355 - 1.700));
-					int ix = (int)(4*(hit.posY - 0.513) / (0.898 - 0.513));
-					int control = 1000 + (5 * ix) + jx;
-					activateControl(pl, control);
-				}
-				else if(hit.within(2, 1.187, 0.768, 1.603, 0.947))
-					activateControl(pl, 1020);
-				else if(hit.within(2, 1.677, 0.768, 2.103, 0.947))
-					activateControl(pl, 1021);
-				else if(hit.within(2, 2.189, 0.768, 2.592, 0.947))
-					activateControl(pl, 1022);
-				else
-					update = false;
-				
-				if(update)
-					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-				//sendDataPacket();
+				pl.addChatMessage("XP: " + core.getXP() + "/" + core.getXPNeeded());
+				pl.addChatMessage("Level:" + core.getLevel());
 			}
-			return true;
+			else if(hit.within(0, 1.10 , 0.271, 1.335, 0.400))
+				pl.addChatMessage(String.format("Speed: %.1f/%.1f", core.getSpeed(true),core.getMaxSpeed()));
+				//pl.addChatMessage("Speed: " + core.getSpeed(true) + "/" + core.getMaxSpeed())
+			else if(hit.within(0,0.865,0.55,1.327,0.868))
+				activateControl(pl,3);
+			else if(hit.within(0, 1.725, 0.585,  2.05,  0.846))
+			{
+				int d = 1;
+				if(pl.isSneaking())
+					d = -1;
+				core.addSpeed(d);
+			}
+			else if(hit.within(3,2.156, 0.654,  2.540, 0.924))
+				core.sendDestinationStrings(pl);
+			else if(hit.within(3, 1.727, 0.626, 2.019, 0.826))
+				activateControl(pl, 10);
+			else if(hit.within(3, 1.361, 0.626, 1.634, 0.826))
+				activateControl(pl, 11);
+			else if(hit.within(3, 0.981, 0.626, 1.210, 0.826))
+				activateControl(pl, 12);
+			else if(hit.within(3, 1.361, 0.268, 1.634, 0.431))
+				activateControl(pl, 13);
+			else if(hit.within(3, 1.694, 0.227, 1.951, 0.408))
+				activateControl(pl, 14);
+			else if(hit.within(3, 1.039, 0.257, 1.238, 0.417))
+				activateControl(pl, 15);
+			else if(hit.within(1, 1.145, 0.207, 1.259, 0.443))
+				activateControl(pl, 20);
+			else if(hit.within(1, 1.333, 0.207, 1.465, 0.443))
+				activateControl(pl, 21);
+			else if(hit.within(1, 1.531, 0.207, 1.648, 0.443))
+				activateControl(pl, 22);
+			else if(hit.within(1, 1.730, 0.207, 1.856, 0.443))
+				activateControl(pl, 23);
+			else if(hit.within(1, 0.650, 0.664, 0.943, 0.856))	//Z Wheel 1
+				activateControl(pl, 24);
+			else if(hit.within(1, 1.264, 0.664, 1.545, 0.856))	//Z Wheel 2
+				activateControl(pl, 25);
+			else if(hit.within(2, 1.730, 0.147, 1.859, 0.470))
+				activateControl(pl, 30);
+			else if(hit.within(2, 1.581, 0.147, 1.710, 0.470))
+				activateControl(pl, 31);
+			else if(hit.within(2, 1.430, 0.147, 1.558, 0.470))
+				activateControl(pl, 32);
+			else if(hit.within(2, 1.284, 0.147, 1.415, 0.470))
+				activateControl(pl, 33);
+			else if(hit.within(2, 1.129, 0.283, 1.241, 0.384))
+				activateControl(pl, 34);
+//			else if(hit.within(2, 1.408, 0.677, 1.660, 0.855))
+//				activateControl(pl,35);
+			else if(hit.within(1, 0.985, 0.664, 1.230, 0.856))	//Flight Primer
+				activateControl(pl, 40);
+			else if(hit.within(2, 0.553, 0.629, 0.838, 0.924))	//Flight Regulator
+				activateControl(pl, 41);
+			else if(hit.within(0, 2.110, 0.562, 2.441, 0.872))	//Flight Takeoff
+				activateControl(pl, 42);
+			else if(hit.within(2, 2.251, 0.519, 2.371, 0.600))
+				activateControl(pl, 50);
+			else if(hit.within(2, 2.251, 0.646, 2.371, 0.730))
+				activateControl(pl, 51);
+			else if(hit.within(2, 0.290, 0.825, 0.441, 0.915))
+				activateControl(pl, 52);
+			else if(hit.within(0, 1.760, 0.172, 1.914, 0.265))
+				activateControl(pl, 53);
+			else if(hit.within(1, 1.013, 0.493, 1.194, 0.624))
+				activateControl(pl, 54);
+			else if(hit.within(3, 0.701, 0.703, 0.823, 0.792))
+				activateControl(pl, 55);
+			else if(hit.within(3, 0.701, 0.807, 0.823, 0.903))
+				activateControl(pl, 56);
+			else if(hit.within(2, 0.971, 0.598, 1.138, 0.941))
+				activateControl(pl, 60);
+			else if(hit.within(3, 2.557, 0.806, 2.683, 0.896))	//Delete rooms button
+				activateControl(pl, 901);
+			else if(hit.within(1, 2.369, 0.801, 2.491, 0.894))	//Load/Save Switch
+				activateControl(pl, 900);
+			else if(hit.within(1, 1.700, 0.513, 2.355, 0.898))
+			{
+				int jx = (int)(5*(hit.posZ - 1.700) / (2.355 - 1.700));
+				int ix = (int)(4*(hit.posY - 0.513) / (0.898 - 0.513));
+				int control = 1000 + (5 * ix) + jx;
+				activateControl(pl, control);
+			}
+			else if(hit.within(2, 1.187, 0.768, 1.603, 0.947))
+				activateControl(pl, 1020);
+			else if(hit.within(2, 1.677, 0.768, 2.103, 0.947))
+				activateControl(pl, 1021);
+			else if(hit.within(2, 2.189, 0.768, 2.592, 0.947))
+				activateControl(pl, 1022);
+			else
+				update = false;
+			
+			if(update)
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			//sendDataPacket();
 		}
+		return true;
+	}
 
 	private HitPosition activateSide(EntityPlayer pl, int blockX,int blockY,int blockZ, float i, float j, float k, int side)
 	{

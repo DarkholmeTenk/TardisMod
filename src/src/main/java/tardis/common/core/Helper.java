@@ -336,6 +336,8 @@ public class Helper
 	
 	public static void playSound(int dim, int x, int y, int z, String sound, float vol)
 	{
+		if(!Helper.isServer())
+			return;
 		NBTTagCompound data = new NBTTagCompound();
 		data.setString("sound", sound);
 		data.setInteger("world", dim);
