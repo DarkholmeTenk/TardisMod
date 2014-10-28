@@ -121,7 +121,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					if(con.unstableControlPressed())
 					{
 						instability -= 0.5;
-						addXP(1);
+						addXP(inCoordinatedFlight() ? 3 : 2);
 					}
 					else
 					{
@@ -636,9 +636,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		switch(fun)
 		{
-		case LOCATE:	return tardisLevel > 3;
-		case SENSORS:	return tardisLevel > 5;
-		case STABILISE:	return tardisLevel > 7;
+		case LOCATE:	return tardisLevel >= 3;
+		case SENSORS:	return tardisLevel >= 5;
+		case STABILISE:	return tardisLevel >= 7;
 		default:		return false;
 		}
 	}
@@ -677,7 +677,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public double getXPNeeded()
 	{
-		return 100 * Math.max(1, tardisLevel);
+		if(tardisLevel <= 0)
+			return 1;
+		return TardisMod.xpBase + (tardisLevel * TardisMod.xpInc);
 	}
 	
 	public double addXP(double a)

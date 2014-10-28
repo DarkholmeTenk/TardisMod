@@ -91,6 +91,9 @@ public class TardisMod
 	public static TardisKeyItem keyItem;
 	public static TardisSonicScrewdriverItem screwItem;
 	
+	public static int xpBase = 80;
+	public static int xpInc  = 20;
+	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
 	{
@@ -103,9 +106,12 @@ public class TardisMod
 		int prioLevel = Helper.clamp(modConfig.getInt("Debug Level", priorityLevel.ordinal()),0,TardisOutput.Priority.values().length);
 		priorityLevel = TardisOutput.Priority.values()[prioLevel];
 		
-		providerID    = modConfig.getInt("Dimension Provider ID", 54);
-		tardisLoaded  = modConfig.getBoolean("Dimension always loaded", true);
-		keyInHand	  = modConfig.getBoolean("Key needs to be in hand", true);
+		providerID		= modConfig.getInt("Dimension Provider ID", 54);
+		tardisLoaded	= modConfig.getBoolean("Dimension always loaded", true);
+		keyInHand		= modConfig.getBoolean("Key needs to be in hand", true);
+		
+		xpBase			= modConfig.getInt("xp base amount", 80);
+		xpInc			= modConfig.getInt("xp increase", 20);
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
 		
 		blockConfig = configHandler.getConfigFile("Blocks");
