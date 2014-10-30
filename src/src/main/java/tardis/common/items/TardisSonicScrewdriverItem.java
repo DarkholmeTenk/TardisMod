@@ -3,18 +3,28 @@ package tardis.common.items;
 import java.util.ArrayList;
 import java.util.List;
 
+import buildcraft.api.tools.IToolWrench;
+
+import cofh.api.block.IDismantleable;
+import cofh.api.tileentity.IReconfigurableFacing;
+
+import tardis.TardisMod;
+import tardis.api.TardisFunction;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-public class TardisSonicScrewdriverItem extends TardisAbstractItem
+public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IToolWrench
 {
 
 	public TardisSonicScrewdriverItem(int par1)
@@ -121,6 +131,63 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 		}
 	}
 	
+	private boolean rightClickBlock(ItemStack is, TardisScrewdriverMode mode, EntityPlayer player, World w)
+	{
+		if(Helper.isServer())
+		{
+			MovingObjectPosition hitPos = getMovingObjectPositionFromPlayer(w, player, true);
+			if(mode.equals(TardisScrewdriverMode.Dismantle))
+			{
+				if(hitPos != null)
+				{
+					Block b = Helper.getBlock(w, hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+					if(b != null && b instanceof IDismantleable)
+					{
+						IDismantleable dis = (IDismantleable) b;
+						if(dis.canDismantle(player, w, hitPos.blockX, hitPos.blockY, hitPos.blockZ))
+						{
+							ItemStack s = dis.dismantleBlock(player, w, hitPos.blockX, hitPos.blockY, hitPos.blockZ, false);
+							if(s != null)
+								Helper.giveItemStack(player, s);
+							return true;
+						}
+					}
+				}
+			}
+			else if(mode.equals(TardisScrewdriverMode.Reconfigure))
+			{
+				if(hitPos != null)
+				{
+					if(w.getBlockId(hitPos.blockX, hitPos.blockY, hitPos.blockZ) == TardisMod.decoBlock.blockID)
+					{
+						int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+						if(m == 2 || m == 4)
+						{
+							TardisCoreTileEntity core = Helper.getTardisCore(w);
+							if(core.canModify(player))
+							{
+								w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.componentBlock.blockID, m==2?0:1, 3);
+								return true;
+							}
+							else
+								player.sendChatToPlayer(new ChatMessageComponent().addText("You do not have permission to modify this TARDIS"));
+						}
+					}
+					else
+					{
+						TileEntity te = w.getBlockTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+						if(te instanceof IReconfigurableFacing)
+						{
+							if(((IReconfigurableFacing)te).rotateBlock())
+								return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
     {
@@ -129,29 +196,32 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 		{
 			boolean valid = false;
 			int newValue = mode.ordinal();
-			while(!valid)
+			if(!rightClickBlock(is,mode,player,world))
 			{
-				newValue = (newValue + 1) % TardisScrewdriverMode.values().length;
-				TardisScrewdriverMode m = getMode(newValue);
-				if(m.requiredFunction != null)
+				while(!valid)
 				{
-					TardisCoreTileEntity te = getLinkedCore(is);
-					if(te != null && te.hasFunction(m.requiredFunction))
+					newValue = (newValue + 1) % TardisScrewdriverMode.values().length;
+					TardisScrewdriverMode m = getMode(newValue);
+					if(m.requiredFunction != null)
+					{
+						TardisCoreTileEntity te = getLinkedCore(is);
+						if(te != null && te.hasFunction(m.requiredFunction))
+							valid = true;
+					}
+					else
+					{
 						valid = true;
+					}
 				}
-				else
-				{
-					valid = true;
-				}
+				is.stackTagCompound.setInteger("screwdriverMode", newValue);
+				notifyMode(is,player);
 			}
-			is.stackTagCompound.setInteger("screwdriverMode", newValue);
-			notifyMode(is,player);
 		}
 		else if(Helper.isServer())
 		{
+			TardisCoreTileEntity core = getLinkedCore(is);
 			if(mode.equals(TardisScrewdriverMode.Locate))
 			{
-				TardisCoreTileEntity core = getLinkedCore(is);
 				if(core != null)
 				{
 					if(Helper.getWorldID(core.worldObj) == Helper.getWorldID(player.worldObj))
@@ -176,6 +246,15 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 				else
 					player.addChatMessage("[Sonic Screwdriver]The TARDIS could not be located");
 			}
+			else if(mode.equals(TardisScrewdriverMode.Transmat))
+			{
+				if(core.hasFunction(TardisFunction.TRANSMAT))
+					core.transmatEntity(player);
+			}
+			else if(mode.equals(TardisScrewdriverMode.Dismantle) || mode.equals(TardisScrewdriverMode.Reconfigure))
+			{
+				rightClickBlock(is,mode,player,world);
+			}
 		}
         return is;
     }
@@ -185,6 +264,25 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean canWrench(EntityPlayer player, int x, int y, int z)
+	{
+		ItemStack is = player.getHeldItem();
+		if(is != null)
+		{
+			TardisScrewdriverMode mode = getMode(is);
+			if(mode.equals(TardisScrewdriverMode.Dismantle) || mode.equals(TardisScrewdriverMode.Reconfigure))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void wrenchUsed(EntityPlayer player, int x, int y, int z)
+	{
+		player.swingItem();
 	}
 
 }

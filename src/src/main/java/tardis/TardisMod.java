@@ -7,6 +7,8 @@ import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
 import tardis.common.blocks.TardisAbstractBlock;
 import tardis.common.blocks.TardisBlock;
+import tardis.common.blocks.TardisComponentBlock;
+import tardis.common.blocks.TardisComponentItemBlock;
 import tardis.common.blocks.TardisConsoleBlock;
 import tardis.common.blocks.TardisCoreBlock;
 import tardis.common.blocks.TardisDebugBlock;
@@ -36,9 +38,11 @@ import tardis.common.core.TardisSoundHandler;
 import tardis.common.core.TardisTeleporter;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.items.TardisAbstractItem;
+import tardis.common.items.TardisComponentItem;
 import tardis.common.items.TardisKeyItem;
 import tardis.common.items.TardisSchemaItem;
 import tardis.common.items.TardisSonicScrewdriverItem;
+import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisSchemaCoreTileEntity;
@@ -78,6 +82,7 @@ public class TardisMod
 	public static TardisAbstractBlock tardisTopBlock;
 	public static TardisAbstractBlock tardisCoreBlock;
 	public static TardisAbstractBlock tardisConsoleBlock;
+	public static TardisAbstractBlock componentBlock;
 	public static TardisAbstractBlock internalDoorBlock;
 	public static TardisAbstractBlock decoBlock;
 	public static TardisAbstractBlock schemaBlock;
@@ -88,6 +93,7 @@ public class TardisMod
 	public static TardisSlabBlock	  slabBlock;
 	
 	public static TardisAbstractItem schemaItem;
+	public static TardisAbstractItem componentItem;
 	public static TardisKeyItem keyItem;
 	public static TardisSonicScrewdriverItem screwItem;
 	
@@ -142,6 +148,10 @@ public class TardisMod
 		GameRegistry.registerBlock(tardisConsoleBlock, tardisConsoleBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisConsoleTileEntity.class,tardisConsoleBlock.getUnlocalizedName());
 		
+		componentBlock = new TardisComponentBlock(blockConfig.getInt("tardisComponentBlockID",651));
+		GameRegistry.registerBlock(componentBlock,TardisComponentItemBlock.class,componentBlock.getUnlocalizedName());
+		GameRegistry.registerTileEntity(TardisComponentTileEntity.class, componentBlock.getUnlocalizedName());
+		
 		internalDoorBlock = new TardisInternalDoorBlock(blockConfig.getInt("tardisInternalDoorBlockID", 645));
 		GameRegistry.registerBlock(internalDoorBlock,TardisInternalDoorItemBlock.class,internalDoorBlock.getUnlocalizedName());
 		
@@ -179,6 +189,10 @@ public class TardisMod
 		keyItem = new TardisKeyItem(itemConfig.getInt("TARDIS Key Item ID", 1732));
 		GameRegistry.registerItem(keyItem, keyItem.getUnlocalizedName());
 		keyItem.initRecipes();
+		
+		componentItem = new TardisComponentItem(itemConfig.getInt("TARDIS Component Item ID", 1733));
+		GameRegistry.registerItem(componentItem, componentItem.getUnlocalizedName());
+		componentItem.initRecipes();
 	}
 	
 	@EventHandler

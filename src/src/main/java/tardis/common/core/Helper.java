@@ -12,11 +12,11 @@ import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
@@ -141,9 +141,9 @@ public class Helper
 		return p;
 	}
 	
-	public static void giveItemStack(EntityPlayerMP pl, ItemStack is)
+	public static void giveItemStack(EntityPlayer pl, ItemStack is)
 	{
-		InventoryPlayer inv = pl.inventory;
+		/*InventoryPlayer inv = pl.inventory;
 		if(!inv.addItemStackToInventory(is))
 		{
 			EntityItem ie = new EntityItem(pl.worldObj,pl.posX,pl.posY,pl.posZ,is);
@@ -152,7 +152,10 @@ public class Helper
 		else
 		{
 			inv.onInventoryChanged();
-		}
+		}*/
+		EntityItem ie = new EntityItem(pl.worldObj,pl.posX,pl.posY,pl.posZ,is);
+		ie.delayBeforeCanPickup = 0;
+		pl.worldObj.spawnEntityInWorld(ie);
 	}
 	
 	public static void generateTardisInterior(int dimID, String ownerName, TardisTileEntity exterior)
@@ -365,6 +368,22 @@ public class Helper
 	public static int getWorldID(World w)
 	{
 		return w.provider.dimensionId;
+	}
+	
+	public static Block getBlock(World w, int x, int y, int z)
+	{
+		int blockID = w.getBlockId(x, y, z);
+		if(blockID != 0)
+		{
+			try
+			{
+				return Block.blocksList[blockID];
+			}
+			catch(IndexOutOfBoundsException e)
+			{
+			}
+		}
+		return null;
 	}
 
 	public static EntityPlayerMP getPlayer(String username)

@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import appeng.api.DimentionalCoord;
+import appeng.api.me.util.Grid;
+import appeng.api.me.util.IGridInterface;
+
 import tardis.TardisMod;
 import tardis.api.IActivatable;
 import tardis.api.TardisFunction;
@@ -13,7 +17,9 @@ import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.items.TardisKeyItem;
+import tardis.common.tileents.components.TardisTEComponent;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -58,6 +64,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private double	tardisXP = 0;
 	private int		tardisLevel = 0;
 	
+	private SimpleCoordStore transmatPoint = null;
+	
 	private int shields;
 	private int maxShields;
 	private int hull;
@@ -78,8 +86,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private LockState lockState = LockState.Open; 
 	
 	private HashSet<SimpleCoordStore> roomSet = new HashSet<SimpleCoordStore>();
-	
 	private String ownerName;
+	
+	private ArrayList<SimpleCoordStore> gridLinks = new ArrayList<SimpleCoordStore>(); 
+	private int rfStored;
 	
 	static
 	{
@@ -132,9 +142,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					}
 					instability = Helper.clamp(instability, 0, 10);
 				}
-				if(con != null && con.unstableFlight() && (buttonTime * numButtons) >= takenTime)
+				if(con != null && con.unstableFlight() && (buttonTime * numButtons) > takenTime)
 					con.randomUnstableControl();
-				else if((buttonTime * numButtons) == takenTime)
+				else if((buttonTime * numButtons) <= takenTime)
 					con.clearUnstableControl();
 			}
 			if(takenTime == 0)// remove old tardis
@@ -639,6 +649,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		case LOCATE:	return tardisLevel >= 3;
 		case SENSORS:	return tardisLevel >= 5;
 		case STABILISE:	return tardisLevel >= 7;
+		case TRANSMAT:	return tardisLevel >= 9;
 		default:		return false;
 		}
 	}
@@ -810,6 +821,81 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return maxHull;
 	}
 	
+	public void addGridLink(SimpleCoordStore pos)
+	{
+		TardisOutput.print("TCTE", "Adding coord:" + pos.toString());
+		if(pos != null)
+			gridLinks.add(pos);
+	}
+	
+	public DimentionalCoord[] getGridLinks(SimpleCoordStore asker)
+	{
+		if(gridLinks.size() == 0)
+			return null;
+		ArrayList<DimentionalCoord> coords = new ArrayList<DimentionalCoord>(gridLinks.size()-1);
+		Iterator<SimpleCoordStore> iter = gridLinks.iterator();
+		while(iter.hasNext())
+		{
+			SimpleCoordStore s = iter.next();
+			if(s.equals(asker))
+				continue;
+			
+			TileEntity te = worldObj.getBlockTileEntity(s.x, s.y, s.z);
+			if(te instanceof TardisComponentTileEntity)
+			{
+				if(((TardisComponentTileEntity)te).hasComponent(TardisTEComponent.GRID))
+					coords.add(new DimentionalCoord(worldObj,s.x,s.y,s.z));
+				else
+					iter.remove();
+			}
+			else
+				iter.remove();
+		}
+		DimentionalCoord[] retVal = new DimentionalCoord[coords.size()];
+		coords.toArray(retVal);
+		return retVal;
+	}
+	
+	public void transmatEntity(Entity ent)
+	{
+		if(!hasFunction(TardisFunction.TRANSMAT))
+			return;
+		SimpleCoordStore to = getTransmatPoint();
+		Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "tardismod:transmat", 0.6F);
+		Helper.teleportEntity(ent, Helper.getWorldID(worldObj), to.x+0.5, to.y+1, to.z+0.5);
+		Helper.playSound(worldObj, to.x, to.y+1, to.z, "tardismod:transmat", 0.6F);
+	}
+	
+	public SimpleCoordStore getTransmatPoint()
+	{
+		if(isTransmatPointValid())
+			return transmatPoint;
+		return new SimpleCoordStore(worldObj,13,28,0);
+	}
+	
+	public void setTransmatPoint(SimpleCoordStore s)
+	{
+		transmatPoint = s;
+	}
+	
+	public boolean isTransmatPoint(SimpleCoordStore other)
+	{
+		if(transmatPoint != null)
+			return transmatPoint.equals(other);
+		return false;
+	}
+	
+	public boolean isTransmatPointValid()
+	{
+		if(transmatPoint == null)
+			return false;
+		World w= transmatPoint.getWorldObj();
+		TileEntity te = w.getBlockTileEntity(transmatPoint.x,transmatPoint.y, transmatPoint.z);
+		if(te != null && te instanceof TardisComponentTileEntity && ((TardisComponentTileEntity)te).hasComponent(TardisTEComponent.TRANSMAT))
+			return true;
+		return false;
+	}
+	
 	public void sendDestinationStrings(EntityPlayer pl)
 	{
 		TardisConsoleTileEntity console = getConsole();
@@ -918,14 +1004,17 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		super.readFromNBT(nbt);
 		lockState = LockState.values()[nbt.getInteger("lockState")];
+		if(nbt.hasKey("transmatPoint"))
+			transmatPoint = SimpleCoordStore.readFromNBT(nbt.getCompoundTag("transmatPoint"));
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
-		
 		nbt.setInteger("lockState", lockState.ordinal());
+		if(hasFunction(TardisFunction.TRANSMAT) && isTransmatPointValid())
+			nbt.setCompoundTag("transmatPoint", transmatPoint.writeToNBT());
 	}
 
 	@Override

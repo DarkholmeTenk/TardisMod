@@ -2,6 +2,7 @@ package tardis.common.blocks;
 
 import tardis.api.IActivatable;
 import tardis.api.IScrewable;
+import tardis.api.IWatching;
 import tardis.common.items.TardisSonicScrewdriverItem;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -56,7 +57,7 @@ public abstract class TardisAbstractBlockContainer extends TardisAbstractBlock i
 			{
 				Item heldBase = held.getItem();
 				if(heldBase instanceof TardisSonicScrewdriverItem && !w.isRemote)
-					answer = answer || ((IScrewable)te).screw(((TardisSonicScrewdriverItem)heldBase).getMode(held), pl);
+					answer = answer || ((IScrewable)te).screw(TardisSonicScrewdriverItem.getMode(held), pl);
 				else if(heldBase instanceof TardisSonicScrewdriverItem && w.isRemote)
 					answer = true;
 			}
@@ -70,5 +71,15 @@ public abstract class TardisAbstractBlockContainer extends TardisAbstractBlock i
     	}
         return answer;
     }
+    
+    @Override
+    public void onNeighborBlockChange(World w, int x, int y, int z, int neighbourBlockID)
+	{
+		TileEntity te = w.getBlockTileEntity(x, y, z);
+		if(te != null && te instanceof IWatching)
+		{
+			((IWatching)te).neighbourUpdated(neighbourBlockID);
+		}
+	}
 
 }

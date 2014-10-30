@@ -1,6 +1,7 @@
 package tardis.common.core.store;
 
 import tardis.common.core.Helper;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -50,6 +51,11 @@ public class SimpleCoordStore
 		return "World "+world + ":" + x+ ","+ y+ ","+ z;
 	}
 	
+	public String toSimpleString()
+	{
+		return x + "," + y + "," + z;
+	}
+	
 	@Override
 	public int hashCode()
 	{
@@ -59,6 +65,8 @@ public class SimpleCoordStore
 	@Override
 	public boolean equals(Object other)
 	{
+		if(this == other)
+			return true;
 		if(other != null && other instanceof SimpleCoordStore)
 		{
 			SimpleCoordStore o = (SimpleCoordStore)other;
@@ -66,5 +74,31 @@ public class SimpleCoordStore
 				return true;
 		}
 		return false;
+	}
+	
+	public NBTTagCompound writeToNBT()
+	{
+		NBTTagCompound nbt = new NBTTagCompound();
+		writeToNBT(nbt);
+		return nbt;
+	}
+	
+	public void writeToNBT(NBTTagCompound nbt)
+	{
+		nbt.setInteger("w", world);
+		nbt.setInteger("x", x);
+		nbt.setInteger("y", y);
+		nbt.setInteger("z", z);
+	}
+	
+	public static SimpleCoordStore readFromNBT(NBTTagCompound nbt)
+	{
+		if(!(nbt.hasKey("w") && nbt.hasKey("x") && nbt.hasKey("y") && nbt.hasKey("z")))
+			return null;
+		int w = nbt.getInteger("w");
+		int x = nbt.getInteger("x");
+		int y = nbt.getInteger("y");
+		int z = nbt.getInteger("z");
+		return new SimpleCoordStore(w,x,y,z);
 	}
 }
