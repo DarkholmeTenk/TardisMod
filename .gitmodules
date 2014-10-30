@@ -1,0 +1,3 @@
+[submodule "src/src/main/java"]
+	path = src/src/main/java
+	url = https://github.com/DarkholmeTenk/minecraftAPIs.git
