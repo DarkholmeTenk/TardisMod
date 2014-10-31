@@ -19,6 +19,7 @@ import tardis.common.tileents.components.TardisTEComponent;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -348,12 +349,17 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return false;
 	}
 	
+	private void enterTardis(EntityLivingBase ent)
+	{
+		Helper.teleportEntity(ent, worldObj.provider.dimensionId, 13.5, 28.5, 0, 90);
+	}
+	
 	public void enterTardis(EntityPlayer player, boolean ignoreLock)
 	{
 		if(player.worldObj.isRemote)
 			return;
 		if(ignoreLock || canOpenLock(player,false))
-			Helper.teleportEntity(player, worldObj.provider.dimensionId, 13.5, 28.5, 0, 90);
+			enterTardis(player);
 		else
 			player.addChatMessage("[TARDIS]The door is locked");
 	}
@@ -558,6 +564,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			TardisConsoleTileEntity con = getConsole();
 			if(con != null)
 				con.land();
+			List<Entity> inside = ext.getEntitiesInside();
+			for(Entity e: inside)
+				if(e instanceof EntityLivingBase)
+					enterTardis((EntityLivingBase) e);
 		}
 	}
 	

@@ -1,10 +1,16 @@
 package tardis.common.tileents;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class TardisTileEntity extends TardisAbstractTileEntity
@@ -228,4 +234,18 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 			owner = tag.getString("owner");
 	}
 
+	public List<Entity> getEntitiesInside()
+	{
+		ArrayList<Entity> list = new ArrayList<Entity>();
+		List<Object> genList = worldObj.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord+1, yCoord+2, zCoord+1));
+		if(genList != null)
+		{
+			for(Object o: genList)
+			{
+				if(o instanceof EntityLivingBase)
+					list.add((EntityLivingBase) o);
+			}
+		}
+		return list;
+	}
 }
