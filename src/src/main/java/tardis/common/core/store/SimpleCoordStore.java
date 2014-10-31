@@ -3,6 +3,7 @@ package tardis.common.core.store;
 import tardis.common.core.Helper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
 public class SimpleCoordStore
@@ -100,5 +101,10 @@ public class SimpleCoordStore
 		int y = nbt.getInteger("y");
 		int z = nbt.getInteger("z");
 		return new SimpleCoordStore(w,x,y,z);
+	}
+
+	public ChunkCoordIntPair toChunkCoords()
+	{
+		return new ChunkCoordIntPair(x>>4,z>>4);
 	}
 }

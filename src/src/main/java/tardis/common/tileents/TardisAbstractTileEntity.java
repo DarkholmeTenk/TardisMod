@@ -6,6 +6,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 
 import tardis.TardisMod;
+import tardis.api.IChunkLoader;
 import tardis.client.TardisClientProxy;
 import tardis.common.core.TardisOutput;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 
 public abstract class TardisAbstractTileEntity extends TileEntity
 {
+	public boolean init = false;
 	public static Random rand = new Random();
 	@Override
 	public Packet getDescriptionPacket()
@@ -32,6 +34,17 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	public void sendUpdate()
 	{
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+	
+	@Override
+	public void updateEntity()
+	{
+		if(!init)
+		{
+			init = true;
+			if(this instanceof IChunkLoader)
+				TardisMod.chunkManager.loadMe((IChunkLoader)this);
+		}
 	}
 	
 	public void sendDataPacket()

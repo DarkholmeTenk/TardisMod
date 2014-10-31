@@ -104,6 +104,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	@Override
 	public void updateEntity()
 	{
+		super.updateEntity();
 		if(++tickTimer % cycleLength == 0 && tickTimer != 0)
 			tickTimer = 0;
 		
@@ -561,12 +562,14 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	public boolean setControls(int dim, int x, int y, int z, boolean allowNearest)
 	{
+		int dCont   = Helper.clamp(dim,-1,1);
 		int[] xCont = getControlsFromDest(x);
 		int[] yCont = getYControls(y);
 		int[] zCont = getControlsFromDest(z);
-		if(allowNearest || (getFromControls(xCont) == x && getFromControls(zCont) == z))
+		if((allowNearest || (getFromControls(xCont) == x && getFromControls(zCont) == z)) && (dCont == dim))
 		{
 			relativeCoords = false;
+			dimControl = dCont;
 			xControls = xCont;
 			yControls = yCont;
 			zControls = zCont;

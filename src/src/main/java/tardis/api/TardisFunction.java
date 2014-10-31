@@ -5,7 +5,8 @@ public enum TardisFunction
 	TRANSMAT ("Transmat"),
 	LOCATE ("Locate"),
 	SENSORS ("Exterior sensors"),
-	STABILISE ("Blue stabilizers");
+	STABILISE ("Blue stabilizers"),
+	RECALL ("Remote recall");
 	
 	public final String name;
 	

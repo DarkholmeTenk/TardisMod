@@ -13,6 +13,7 @@ import tardis.api.TardisFunction;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
 import tardis.common.core.store.SimpleCoordStore;
+import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import net.minecraft.block.Block;
@@ -282,6 +283,20 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 			{
 				if(core.hasFunction(TardisFunction.TRANSMAT))
 					core.transmatEntity(player);
+			}
+			else if(mode.equals(TardisScrewdriverMode.Recall))
+			{
+				TardisConsoleTileEntity con = core.getConsole();
+				if(con != null && !core.inFlight())
+				{
+					if(con.setControls(Helper.getWorldID(player.worldObj), (int) player.posX, (int) player.posY, (int) player.posZ, false))
+					{
+						if(core.takeOff(true,player))
+							player.addChatMessage("[Sonic Screwdriver]TARDIS inbound");
+					}
+					else
+						player.addChatMessage("[Sonic Screwdriver]TARDIS recall failed");
+				}
 			}
 			else if(mode.equals(TardisScrewdriverMode.Dismantle) || mode.equals(TardisScrewdriverMode.Reconfigure))
 			{

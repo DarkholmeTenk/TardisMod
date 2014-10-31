@@ -52,7 +52,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 	
 	public void updateEntity()
 	{
-		
+		super.updateEntity();
 		if(inFlight())
 		{
 			if(isLanding() && !landingSoundPlayed)

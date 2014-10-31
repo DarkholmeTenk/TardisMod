@@ -8,6 +8,7 @@ import java.util.List;
 import appeng.api.DimentionalCoord;
 import tardis.TardisMod;
 import tardis.api.IActivatable;
+import tardis.api.IChunkLoader;
 import tardis.api.TardisFunction;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisConfigFile;
@@ -24,10 +25,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
-public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable
+public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable, IChunkLoader
 {
 	private static TardisConfigFile config;
 	private int exteriorWorld;
@@ -87,6 +89,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private HashSet<SimpleCoordStore> roomSet = new HashSet<SimpleCoordStore>();
 	private String ownerName;
 	
+	private static ChunkCoordIntPair[] loadable = null;
+	private boolean forcedFlight = false;
+	
 	private ArrayList<SimpleCoordStore> gridLinks = new ArrayList<SimpleCoordStore>(); 
 	private int rfStored;
 	private ItemStack[] items;
@@ -96,6 +101,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		config = TardisMod.configHandler.getConfigFile("tardisCore");
 		explodeChance = config.getDouble("Explosion chance (on control not pressed)", 0.25);
+		loadable = new ChunkCoordIntPair[4];
+		loadable[0] = new ChunkCoordIntPair( 0, 0);
+		loadable[1] = new ChunkCoordIntPair(-1, 0);
+		loadable[2] = new ChunkCoordIntPair( 0,-1);
+		loadable[3] = new ChunkCoordIntPair(-1,-1);
 	}
 	
 	{
@@ -119,14 +129,14 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:takeoff", 0.75F, 1, true);
 		totalFlightTimer++;
 		
-		if(inCoordinatedFlight())
+		if(inCoordinatedFlight() || forcedFlight)
 			inFlightTimer++;
 		if(inFlightTimer >= timeTillTakenOff)//Taken off
 		{
 			TardisConsoleTileEntity con = getConsole();
 			int takenTime = inFlightTimer - timeTillTakenOff;
 			int takenTimeTwo = flightTimer - timeTillTakenOff;
-			if(!worldObj.isRemote && !con.isStable() && takenTimeTwo % buttonTime == 0 && (getButtonTime() * numButtons) >= takenTime)
+			if(!worldObj.isRemote && !forcedFlight && !con.isStable() && takenTimeTwo % buttonTime == 0 && (getButtonTime() * numButtons) >= takenTime)
 			{
 				if(takenTimeTwo > 0)
 				{
@@ -208,6 +218,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	@Override
 	public void updateEntity()
 	{
+		super.updateEntity();
 		tickCount++;
 		
 		if(explode)
@@ -370,7 +381,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 						case 3:dx = -1;rot= 90; break;
 					}
 					
-					if(ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz) && ext.isAirBlock(exteriorX+dx, exteriorY, exteriorZ+dz))
+					if(softBlock(ext,exteriorX+dx, exteriorY, exteriorZ+dz) && softBlock(ext,exteriorX+dx, exteriorY, exteriorZ+dz))
 					{
 						Helper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx*1.3), exteriorY+1, exteriorZ+0.5+(dz*1.3),rot);
 					}
@@ -419,6 +430,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return true;
 	}
 	
+	public boolean takeOff(boolean forced,EntityPlayer pl)
+	{
+		forcedFlight = forced;
+		return takeOff(pl);
+	}
+	
 	public boolean takeOff(EntityPlayer pl)
 	{
 		if(!inFlight)
@@ -450,7 +467,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				sendUpdate();
 				return true;
 			}
-			else
+			else if(pl != null)
 				pl.addChatMessage("Not enough energy");
 		}
 		return false;
@@ -508,7 +525,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(landOnGround)
 		{
 			int offset = 1;
-			while(dY - offset > 0 && w.isAirBlock(dX, dY-offset, dZ))
+			while(dY - offset > 0 && softBlock(w,dX, dY-offset, dZ))
 				offset++;
 			dY = dY + 1 - offset;
 		}
@@ -530,6 +547,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(inFlight)
 		{
+			forcedFlight = false;
 			addXP(30);
 			inFlight = false;
 			sendUpdate();
@@ -661,6 +679,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		case SENSORS:	return tardisLevel >= 5;
 		case STABILISE:	return tardisLevel >= 7;
 		case TRANSMAT:	return tardisLevel >= 9;
+		case RECALL:	return tardisLevel >= 11;
 		default:		return false;
 		}
 	}
@@ -672,6 +691,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public double getSpeed(boolean modified)
 	{
+		if(forcedFlight)
+			return getMaxSpeed();
 		if(!modified)
 			return speed;
 		double mod = ((double)getNumRooms()) / getMaxNumRooms();
@@ -1018,7 +1039,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		boolean[] data = new boolean[2];
 		data[0] = data[1] = false;
 		TardisOutput.print("TCTE", "Checking for air @ " + x + "," + y + "," + z,TardisOutput.Priority.DEBUG);
-		if(w.isAirBlock(x, y, z) && w.isAirBlock(x, y+1, z))
+		if(softBlock(w,x, y, z) && softBlock(w, x, y+1, z))
 		{
 			data[0] = true;
 			int id = w.getBlockId(x, y-1, z);
@@ -1082,6 +1103,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		super.readFromNBT(nbt);
+		forcedFlight = nbt.getBoolean("forcedFlight");
 		lockState = LockState.values()[nbt.getInteger("lockState")];
 		if(nbt.hasKey("transmatPoint"))
 			transmatPoint = SimpleCoordStore.readFromNBT(nbt.getCompoundTag("transmatPoint"));
@@ -1143,6 +1165,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
+		nbt.setBoolean("forcedFlight", forcedFlight);
 		nbt.setInteger("lockState", lockState.ordinal());
 		if(hasFunction(TardisFunction.TRANSMAT) && isTransmatPointValid())
 			nbt.setCompoundTag("transmatPoint", transmatPoint.writeToNBT());
@@ -1219,6 +1242,24 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				timeTillLanded		= nbt.getInteger("ttLa");
 			}
 		}
+	}
+
+	@Override
+	public boolean shouldChunkload()
+	{
+		return true;
+	}
+
+	@Override
+	public SimpleCoordStore coords()
+	{
+		return new SimpleCoordStore(this);
+	}
+
+	@Override
+	public ChunkCoordIntPair[] loadable()
+	{
+		return loadable;
 	}
 
 }

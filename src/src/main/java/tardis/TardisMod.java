@@ -1,8 +1,8 @@
 package tardis;
 
 import java.io.IOException;
-
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
 import tardis.common.blocks.TardisAbstractBlock;
@@ -36,6 +36,7 @@ import tardis.common.core.TardisPacketHandler;
 import tardis.common.core.TardisPlayerRegistry;
 import tardis.common.core.TardisSoundHandler;
 import tardis.common.core.TardisTeleporter;
+import tardis.common.dimension.TardisChunkLoadingManager;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.items.TardisAbstractItem;
 import tardis.common.items.TardisComponentItem;
@@ -49,17 +50,22 @@ import tardis.common.tileents.TardisSchemaCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid="TardisMod",name="Tardis Mod",version="0.15",dependencies="required-after:FML; after:AppliedEnergistics")
 @NetworkMod(channels = { "TardisModChannel","TardisTrans","TardisDR","TardisSn" }, clientSideRequired = true, serverSideRequired = true, packetHandler = TardisPacketHandler.class, connectionHandler=TardisConnectionHandler.class)
 public class TardisMod
 {
+	@Instance
+	public static TardisMod i;
 	
 	@SidedProxy(clientSide="tardis.client.TardisClientProxy", serverSide="tardis.common.TardisProxy")
 	public static TardisProxy proxy;
@@ -72,6 +78,7 @@ public class TardisMod
 	public static TardisConfigHandler configHandler;
 	public static TardisDimensionRegistry dimReg;
 	public static TardisPlayerRegistry plReg;
+	public static TardisChunkLoadingManager chunkManager;
 	public static TardisCreativeTab tab = null;
 	
 	public static TardisOutput.Priority priorityLevel = TardisOutput.Priority.INFO;
@@ -149,6 +156,9 @@ public class TardisMod
 	{
 		keyItem.initRecipes();
 		componentItem.initRecipes();
+		chunkManager = new TardisChunkLoadingManager();
+		TickRegistry.registerTickHandler(chunkManager, Side.SERVER);
+		ForgeChunkManager.setForcedChunkLoadingCallback(this, chunkManager);
 	}
 	
 	private void initBlocks()

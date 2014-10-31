@@ -96,6 +96,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	@Override
 	public void updateEntity()
 	{
+		super.updateEntity();
 		if(!inited || compAdded)
 		{
 			compAdded = false;

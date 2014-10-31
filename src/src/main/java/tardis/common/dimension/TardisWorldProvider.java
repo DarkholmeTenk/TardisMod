@@ -13,6 +13,7 @@ public class TardisWorldProvider extends WorldProvider
 
 	public TardisWorldProvider()
 	{
+		worldChunkMgr = new TardisChunkManager();
 	}
 
 	@Override
