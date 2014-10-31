@@ -289,7 +289,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 				TardisConsoleTileEntity con = core.getConsole();
 				if(con != null && !core.inFlight())
 				{
-					if(con.setControls(Helper.getWorldID(player.worldObj), (int) player.posX, (int) player.posY, (int) player.posZ, false))
+					if(con.setControls(Helper.getWorldID(player.worldObj), (int) player.posX, (int) player.posY+1, (int) player.posZ, false))
 					{
 						if(core.takeOff(true,player))
 							player.addChatMessage("[Sonic Screwdriver]TARDIS inbound");

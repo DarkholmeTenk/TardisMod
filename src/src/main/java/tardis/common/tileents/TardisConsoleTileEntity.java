@@ -592,7 +592,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	private static int[] getYControls(int height)
 	{
 		int[] temp = new int[4];
-		temp[3] = height & 4;
+		temp[3] = height & 3;
 		temp[2] = (height & 12) >> 2;
 		temp[1] = (height & 48) >> 4;
 		temp[0] = (height & 192)>> 6;
