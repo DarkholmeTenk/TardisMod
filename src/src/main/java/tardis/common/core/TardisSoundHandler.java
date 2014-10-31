@@ -21,6 +21,7 @@ public class TardisSoundHandler
 			event.manager.addSound("tardismod:levelup.wav");
 			event.manager.addSound("tardismod:transmat.wav");
 			event.manager.addSound("tardismod:transmatFail.wav");
+			event.manager.addSound("tardismod:sonic.wav");
 		}
 		catch(Exception e)
 		{

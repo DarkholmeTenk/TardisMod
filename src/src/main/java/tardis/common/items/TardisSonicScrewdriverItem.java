@@ -342,6 +342,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 	@Override
 	public void wrenchUsed(EntityPlayer player, int x, int y, int z)
 	{
+		Helper.playSound(Helper.getWorldID(player.worldObj), x, y, z, "tardismod:sonic", 0.5F);
 		player.swingItem();
 	}
 
