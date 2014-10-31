@@ -10,6 +10,9 @@ tile.TardisMod.DecoBlock.CorridorRoundel.name=White Roundel
 tile.TardisMod.DecoBlock.CorridorFloor.name=White Floor
 tile.TardisMod.DecoBlock.Glass.name=Glass
 
+tile.TardisMod.Component.Roundel=Open Roundel
+tile.TardisMod.Component.CorridorRoundel=Open White Roundel
+
 tile.TardisMod.Schema.name=Schema Boundary
 
 tile.TardisMod.SchemaComponent.DoorConnector.name=Door
@@ -35,3 +38,9 @@ tile.TardisMod.StairBlock.name=Stair
 
 item.TardisMod.SonicScrewdriver.name=Sonic Screwdriver
 item.TardisMod.TardisKey.name=TARDIS Key
+
+item.TardisMod.Component.Transmat.name=TARDIS Cable Interface - Transmat
+item.TardisMod.Component.Mass-Energy.name=TARDIS Cable Interface - ME Cable
+item.TardisMod.Component.Inv.name=TARDIS Cable Interface - Itemduct
+item.TardisMod.Component.Fluid.name=TARDIS Cable Interface - Fluiduct
+item.TardisMod.Component.RF.name=TARDIS Cable Interface - Energy Conduit
