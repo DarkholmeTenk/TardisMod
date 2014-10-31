@@ -16,6 +16,7 @@ import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.items.TardisKeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFire;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -455,9 +456,17 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return false;
 	}
 	
+	private boolean softBlock(World w, int x, int y, int z)
+	{
+		Block b = Helper.getBlock(w,x,y,z);
+		if(b == null)
+			return w.isAirBlock(x, y, z);
+		return w.isAirBlock(x, y, z) || b.isBlockFoliage(w, x, y, z) || b.isBlockReplaceable(w, x, y, z) || b instanceof BlockFire;
+	}
+	
 	private boolean isValidPos(World w, int x, int y, int z)
 	{
-		return w.isAirBlock(x, y, z) && w.isAirBlock(x,y+1,z) && y > 0 && y < 254;
+		return y > 0 && y < 254 && softBlock(w,x,y,z) && softBlock(w,x,y+1,z);
 	}
 	
 	private void placeBox()
@@ -491,7 +500,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 							dZ += zO;
 							f = true;
 						}
-					}
+					} 
 				}
 			}
 		}
@@ -1013,7 +1022,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		{
 			data[0] = true;
 			int id = w.getBlockId(x, y-1, z);
-			if(w.isAirBlock(x, y-1, z) || id == Block.lavaMoving.blockID || id == Block.lavaStill.blockID || id == Block.waterMoving.blockID || id == Block.waterStill.blockID)
+			if(softBlock(w,x, y-1, z) || id == Block.fire.blockID || id == Block.lavaMoving.blockID || id == Block.lavaStill.blockID || id == Block.waterMoving.blockID || id == Block.waterStill.blockID)
 				data[1] = true;
 		}
 		return data;
