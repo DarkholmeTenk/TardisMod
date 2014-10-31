@@ -18,6 +18,7 @@ public class TardisTopBlock extends TardisAbstractBlock
 	@Override
 	public void initData()
 	{
+		setLightValue(1.0F);
 		setUnlocalizedName("TardisTop");
 	}
 
