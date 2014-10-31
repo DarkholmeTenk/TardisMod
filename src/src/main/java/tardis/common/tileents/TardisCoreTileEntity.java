@@ -503,13 +503,13 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			int[] check = {0,1,-1,2,-2, 3,-3, 4,-4, 5,-5};
 			for(int i=0;i<5&&!f;i++)
 			{
-				int xO = check[i];
+				int yO = check[i];
 				for(int j=0;j<5&&!f;j++)
 				{
-					int zO = check[j];
+					int xO = check[j];
 					for(int k=0;k<5&&!f;k++)
 					{
-						int yO = check[k];
+						int zO = check[k];
 						if(isValidPos(w,dX+xO,dY+yO,dZ+zO))
 						{
 							dX += xO;
