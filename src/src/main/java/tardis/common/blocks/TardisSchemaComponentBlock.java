@@ -132,6 +132,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 				if((!w.isRemote) && (!te.changeLock(pl,true)))
 					te.leaveTardis(pl,false);
     		}
+    		return true;
     	}
         return false;
     }

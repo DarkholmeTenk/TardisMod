@@ -1,5 +1,8 @@
 package tardis.common.tileents.components;
 
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -11,10 +14,14 @@ import tardis.common.tileents.TardisCoreTileEntity;
 
 public class TardisComponentEnergy extends TardisAbstractComponent implements IEnergyHandler
 {
+	private HashMap<ForgeDirection,AtomicInteger> hasFilled = new HashMap<ForgeDirection,AtomicInteger>(ForgeDirection.VALID_DIRECTIONS.length);
 	protected TardisComponentEnergy() {}
 	private int rfc = 0;
 	
-	public TardisComponentEnergy(TardisComponentTileEntity parent) {}
+	public TardisComponentEnergy(TardisComponentTileEntity parent)
+	{
+		blankHashmap();
+	}
 
 	@Override
 	public ITardisComponent create(TardisComponentTileEntity parent)
@@ -22,11 +29,26 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 		return new TardisComponentEnergy(parent);
 	}
 	
+	private void blankHashmap()
+	{
+		for(ForgeDirection f : ForgeDirection.VALID_DIRECTIONS)
+		{
+			if(hasFilled.containsKey(f))
+				hasFilled.get(f).set(0);
+			else
+				hasFilled.put(f,new AtomicInteger(0));
+		}
+	}
+	
 	private void scanNearby()
 	{
 		World w = parentObj.worldObj;
 		for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
 		{
+			int b = hasFilled.get(dir).getAndSet(0);
+			int max = TardisMod.rfPerT - rfc;
+			if(b > 0)
+				max = Math.min(max, b/2);
 			TileEntity te = w.getBlockTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
 			if(te instanceof IEnergyHandler && !(te instanceof TardisComponentTileEntity))
 			{
@@ -34,7 +56,7 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 				IEnergyHandler ieh = (IEnergyHandler)te;
 				if(ieh.canInterface(dir.getOpposite()))
 				{
-					int am = extractEnergy(dir,TardisMod.rfPerT - rfc,true);
+					int am = extractEnergy(dir,max,true);
 					am = Math.min(am, ieh.receiveEnergy(dir.getOpposite(), am, true));
 					rfc += ieh.receiveEnergy(dir.getOpposite(), extractEnergy(dir,am,false), false);
 				}
@@ -54,7 +76,12 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	{
 		TardisCoreTileEntity core = Helper.getTardisCore(parentObj.worldObj);
 		if(core != null)
-			return core.addRF(maxReceive,simulate);
+		{
+			int rec = core.addRF(maxReceive,simulate);
+			if(!simulate)
+				hasFilled.get(from).set(rec);
+			return rec;
+		}
 		return 0;
 	}
 
