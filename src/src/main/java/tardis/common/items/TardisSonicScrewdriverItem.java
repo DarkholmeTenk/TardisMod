@@ -178,9 +178,9 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 							if(s != null)
 								Helper.giveItemStack(player, s);
 							wrenchUsed(player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-							return true;
 						}
 					}
+					return true;
 				}
 			}
 			else if(mode.equals(TardisScrewdriverMode.Reconfigure))
@@ -215,6 +215,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 							}
 						}
 					}
+					return true;
 				}
 			}
 		}
