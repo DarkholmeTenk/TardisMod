@@ -1117,6 +1117,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		super.readFromNBT(nbt);
 		forcedFlight = nbt.getBoolean("forcedFlight");
 		lockState = LockState.values()[nbt.getInteger("lockState")];
+		rfStored  = nbt.getInteger("rfStored");
 		if(nbt.hasKey("transmatPoint"))
 			transmatPoint = SimpleCoordStore.readFromNBT(nbt.getCompoundTag("transmatPoint"));
 		if(nbt.hasKey("invStore"))
@@ -1179,6 +1180,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		super.writeToNBT(nbt);
 		nbt.setBoolean("forcedFlight", forcedFlight);
 		nbt.setInteger("lockState", lockState.ordinal());
+		nbt.setInteger("rfStored",rfStored);
 		if(hasFunction(TardisFunction.TRANSMAT) && isTransmatPointValid())
 			nbt.setCompoundTag("transmatPoint", transmatPoint.writeToNBT());
 		storeInv(nbt);
