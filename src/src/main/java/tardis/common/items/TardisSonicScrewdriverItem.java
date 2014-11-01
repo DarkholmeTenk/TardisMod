@@ -322,6 +322,12 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 		}
         return false;
     }
+	
+	@Override
+	public boolean shouldPassSneakingClickToBlock(World w, int x, int y, int z)
+	{
+		return true;
+	}
 
 	@Override
 	public void initRecipes()
