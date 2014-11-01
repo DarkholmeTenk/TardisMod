@@ -309,11 +309,14 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 	@Override
 	public boolean hitEntity(ItemStack is, EntityLivingBase hit, EntityLivingBase hitter)
     {
+		if(!Helper.isServer())
+			return false;
 		TardisScrewdriverMode mode = getMode(is);
 		if(TardisScrewdriverMode.Transmat.equals(mode) && !(hit instanceof EntityPlayer))
 		{
 			TardisCoreTileEntity core = getLinkedCore(is);
-			core.transmatEntity(hit);
+			if(core != null)
+				core.transmatEntity(hit);
 			return true;
 		}
         return false;
