@@ -560,14 +560,16 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engineDrum", 0.75F, 1, true);
 			TardisTileEntity ext = getExterior();
 			if(ext != null)
+			{
 				ext.forceLand();
+				List<Entity> inside = ext.getEntitiesInside();
+				for(Entity e: inside)
+					if(e instanceof EntityLivingBase)
+						enterTardis((EntityLivingBase) e);
+			}
 			TardisConsoleTileEntity con = getConsole();
 			if(con != null)
 				con.land();
-			List<Entity> inside = ext.getEntitiesInside();
-			for(Entity e: inside)
-				if(e instanceof EntityLivingBase)
-					enterTardis((EntityLivingBase) e);
 		}
 	}
 	

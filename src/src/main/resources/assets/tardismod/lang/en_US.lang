@@ -10,8 +10,8 @@ tile.TardisMod.DecoBlock.CorridorRoundel.name=White Roundel
 tile.TardisMod.DecoBlock.CorridorFloor.name=White Floor
 tile.TardisMod.DecoBlock.Glass.name=Glass
 
-tile.TardisMod.Component.Roundel=Open Roundel
-tile.TardisMod.Component.CorridorRoundel=Open White Roundel
+tile.TardisMod.Component.Roundel.name=Open Roundel
+tile.TardisMod.Component.CorridorRoundel.name=Open White Roundel
 
 tile.TardisMod.Schema.name=Schema Boundary
 
