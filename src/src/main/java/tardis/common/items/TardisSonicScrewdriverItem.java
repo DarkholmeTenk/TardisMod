@@ -180,7 +180,11 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 							wrenchUsed(player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 						}
 					}
-					return true;
+					else
+					{
+						TileEntity te = w.getBlockTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+						return te != null;
+					}
 				}
 			}
 			else if(mode.equals(TardisScrewdriverMode.Reconfigure))
@@ -214,8 +218,8 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 								return true;
 							}
 						}
+						return te != null;
 					}
-					return true;
 				}
 			}
 		}
