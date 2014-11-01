@@ -912,6 +912,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public int addRF(int am, boolean sim)
 	{
+		if(rand.nextDouble() < 0.01)
+			TardisOutput.print("TCTE", "RF adding:" + am + "," + sim);
 		int max = getMaxRF() - getRF();
 		if(!sim)
 			rfStored += Math.min(am, max);
@@ -920,6 +922,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public int remRF(int am, boolean sim)
 	{
+		if(rand.nextDouble() < 0.01)
+			TardisOutput.print("TCTE", "RF reming:" + am + "," + sim);
 		int max = getRF();
 		if(!sim)
 			rfStored -= Math.min(am, max);
