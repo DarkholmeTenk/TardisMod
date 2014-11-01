@@ -3,6 +3,7 @@ package tardis.common.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import tardis.TardisMod;
 import tardis.common.core.Helper;
 
 import net.minecraft.command.ICommandSender;
@@ -57,7 +58,11 @@ public class TardisTeleport extends TardisAbstractCommand
 					
 					try
 					{
-						int w = Integer.parseInt(astring[0+offset]);
+						int w = 0;
+						if(astring[0+offset].startsWith("#"))
+							w = TardisMod.plReg.getDimension(astring[0+offset].replaceFirst("#", ""));
+						else
+							w = Integer.parseInt(astring[0+offset]);
 						int x = Integer.parseInt(astring[1+offset]);
 						int y = Integer.parseInt(astring[2+offset]);
 						int z = Integer.parseInt(astring[3+offset]);
@@ -66,8 +71,13 @@ public class TardisTeleport extends TardisAbstractCommand
 					}
 					catch(Exception e)
 					{
+						Integer w = null;
+						if(astring[0+offset].startsWith("#"))
+							w = TardisMod.plReg.getDimension(astring[0+offset].replaceFirst("#", ""));
+						if(w == null)
+							w = Helper.toInt(astring[0+offset],0);
 						for(EntityPlayerMP plx : pls)
-							Helper.teleportEntity(plx,Helper.toInt(astring[0], 0));
+							Helper.teleportEntity(plx,w);
 					}
 				}
 				else if(pls.size() > 0)

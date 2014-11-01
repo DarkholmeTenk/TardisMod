@@ -8,10 +8,12 @@ import tardis.TardisMod;
 import tardis.common.tileents.TardisCoreTileEntity;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.WorldSavedData;
 
 public class TardisPlayerRegistry extends WorldSavedData
@@ -67,6 +69,15 @@ public class TardisPlayerRegistry extends WorldSavedData
 		return true;
 	}
 	
+	public boolean removePlayer(String username)
+	{
+		if(username != null)
+		{
+			return ownedDimMapping.values().remove(username);
+		}
+		return false;
+	}
+	
 	public Integer getDimension(String username)
 	{
 		Set<Integer> dims = ownedDimMapping.keySet();
@@ -112,6 +123,17 @@ public class TardisPlayerRegistry extends WorldSavedData
 			return values.contains(username);
 		return false;
 	}
+	
+	public void chatMapping(ICommandSender comsen)
+	{
+		comsen.sendChatToPlayer(new ChatMessageComponent().addText("Dimension mapping:"));
+		for(Integer i : ownedDimMapping.keySet())
+		{
+			String owner = ownedDimMapping.get(i);
+			if(i != null)
+				comsen.sendChatToPlayer(new ChatMessageComponent().addText(owner + "->" + i));
+		}
+	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
@@ -122,6 +144,7 @@ public class TardisPlayerRegistry extends WorldSavedData
 			NBTTagCompound tag = nbt.getCompoundTag("store"+i);
 			String un = tag.getString("username");
 			Integer dim = tag.getInteger("dimension");
+			TardisOutput.print("TPlReg", "NBT Load: Mapping " + un +"->" +dim);
 			addPlayer(un,dim);
 			i++;
 		}
@@ -130,6 +153,7 @@ public class TardisPlayerRegistry extends WorldSavedData
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
+		TardisOutput.print("TPlReg", "Saving to NBT");
 		int i = 0;
 		Set<Integer> dims = ownedDimMapping.keySet();
 		for(Integer j : dims)
