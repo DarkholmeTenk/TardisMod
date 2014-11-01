@@ -189,6 +189,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 				TardisCoreTileEntity te = Helper.getTardisCore(linkedDimension);
 				if(te != null)
 				{
+					te.linkToExterior(this);
 					if(!te.changeLock(player,false))
 						te.enterTardis(player,false);
 				}

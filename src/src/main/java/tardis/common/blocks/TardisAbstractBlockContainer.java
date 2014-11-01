@@ -3,6 +3,7 @@ package tardis.common.blocks;
 import tardis.api.IActivatable;
 import tardis.api.IScrewable;
 import tardis.api.IWatching;
+import tardis.common.core.Helper;
 import tardis.common.items.TardisSonicScrewdriverItem;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -61,6 +62,8 @@ public abstract class TardisAbstractBlockContainer extends TardisAbstractBlock i
 				else if(heldBase instanceof TardisSonicScrewdriverItem && w.isRemote)
 					answer = true;
 			}
+			if(answer)
+				Helper.playSound(Helper.getWorldID(w), x,y,z, "tardismod:sonic", 0.5F);
     	}
     	if(te != null && te instanceof IActivatable)
     	{

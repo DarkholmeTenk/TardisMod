@@ -2,9 +2,6 @@ package tardis.common.core;
 
 import java.util.HashSet;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-
 import tardis.TardisMod;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,7 +46,7 @@ public class TardisDimensionRegistry extends WorldSavedData
 
 	public static void save()
 	{
-		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
+		if(Helper.isServer())
 		{
 			TardisOutput.print("TDR", "Saving",TardisOutput.Priority.DEBUG);
 			if(TardisMod.dimReg == null)

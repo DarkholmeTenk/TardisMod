@@ -6,8 +6,6 @@ import java.util.Set;
 
 import tardis.TardisMod;
 import tardis.common.tileents.TardisCoreTileEntity;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,12 +20,12 @@ public class TardisPlayerRegistry extends WorldSavedData
 	
 	public TardisPlayerRegistry()
 	{
-		super("TardPlayReg");
+		super("TModPReg");
 	}
 	
 	public TardisPlayerRegistry(String s)
 	{
-		super(s);
+		super("TModPReg");
 	}
 	
 	public static TardisPlayerRegistry load()
@@ -35,12 +33,14 @@ public class TardisPlayerRegistry extends WorldSavedData
 		TardisOutput.print("TPR","Attempting to load tardis player registry");
 		try
 		{
-			WorldSavedData data = MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.loadData(TardisPlayerRegistry.class, "TardPlayReg");
-			if(data instanceof TardisPlayerRegistry)
+			WorldSavedData data = MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.loadData(TardisPlayerRegistry.class, "TModPReg");
+			TardisOutput.print("TPlReg", "Player registry " + data.toString());
+			if(data != null && data instanceof TardisPlayerRegistry)
 				return (TardisPlayerRegistry)data;
 		}
 		catch(Exception e)
 		{
+			TardisOutput.print("TPlReg", e.getMessage(),TardisOutput.Priority.ERROR);
 			e.printStackTrace();
 		}
 		return new TardisPlayerRegistry();
@@ -48,11 +48,11 @@ public class TardisPlayerRegistry extends WorldSavedData
 
 	public static void save()
 	{
-		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER))
+		if(Helper.isServer())
 		{
 			TardisOutput.print("TDR", "Saving",TardisOutput.Priority.DEBUG);
 			if(TardisMod.plReg == null)
-				TardisMod.plReg = new TardisPlayerRegistry();
+				TardisMod.plReg = load();
 			MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.setData("TardPlayReg", TardisMod.plReg);
 		}
 	}
@@ -139,6 +139,7 @@ public class TardisPlayerRegistry extends WorldSavedData
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		int i = 0;
+		TardisOutput.print("TPlReg", "Reading from NBT");
 		while(nbt.hasKey("store"+i))
 		{
 			NBTTagCompound tag = nbt.getCompoundTag("store"+i);

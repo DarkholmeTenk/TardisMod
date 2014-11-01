@@ -229,6 +229,7 @@ public class TardisMod
 		dimReg = TardisDimensionRegistry.load();
 		dimReg.registerDims();
 		plReg  = TardisPlayerRegistry.load();
+		TardisPlayerRegistry.save();
 		teleporter = new TardisTeleporter(event.getServer().worldServerForDimension(0));
 		TardisCommandRegister.registerCommands(event);
 	}
