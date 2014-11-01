@@ -33,7 +33,11 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 				//TardisOutput.print("TCE", "Attempting to energy");
 				IEnergyHandler ieh = (IEnergyHandler)te;
 				if(ieh.canInterface(dir.getOpposite()))
-					rfc += ieh.receiveEnergy(dir.getOpposite(), extractEnergy(dir,TardisMod.rfPerT - rfc,false), false);
+				{
+					int am = extractEnergy(dir,TardisMod.rfPerT - rfc,true);
+					am = Math.min(am, ieh.receiveEnergy(dir.getOpposite(), am, true));
+					rfc += ieh.receiveEnergy(dir.getOpposite(), extractEnergy(dir,am,false), false);
+				}
 			}
 		}
 	}
