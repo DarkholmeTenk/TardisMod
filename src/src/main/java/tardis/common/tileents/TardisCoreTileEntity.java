@@ -1330,16 +1330,17 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			
 			nbt.setInteger("energy",energy);
 			
-			nbt.setBoolean("inFlight", inFlight);
-			nbt.setInteger("flightTimer", flightTimer);
-			nbt.setInteger("totalFlightTimer", totalFlightTimer);
-			nbt.setInteger("inFlightTimer", inFlightTimer);
-			nbt.setInteger("numRooms", numRooms);
-			nbt.setDouble("speed", speed);
+			nbt.setBoolean("iF", inFlight);
+			nbt.setInteger("fT", flightTimer);
+			nbt.setInteger("tFT", totalFlightTimer);
+			nbt.setInteger("iFT", inFlightTimer);
+			nbt.setInteger("numR", numRooms);
+			nbt.setDouble("sped", speed);
 			
-			nbt.setInteger("shields",shields);
+			nbt.setInteger("shld",shields);
 			nbt.setInteger("hull",hull);
 			
+			/*
 			if(modders != null && modders.size() > 0)
 			{
 				String mods = modders.get(0);
@@ -1348,7 +1349,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					mods += "||" + modders.get(i);
 				}
 				nbt.setString("modders", mods);
-			}
+			}*/
 			if(inFlight())
 			{
 				nbt.setInteger("ttTO", timeTillTakenOff);
@@ -1384,14 +1385,14 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			
 			energy = nbt.getInteger("energy");
 			
-			flightTimer = nbt.getInteger("flightTimer");
-			inFlightTimer = nbt.getInteger("inFlightTimer");
-			totalFlightTimer = nbt.getInteger("totalFlightTimer");
-			inFlight = nbt.getBoolean("inFlight");
-			numRooms = nbt.getInteger("numRooms");
-			speed = nbt.getDouble("speed");
+			flightTimer = nbt.getInteger("fT");
+			inFlightTimer = nbt.getInteger("iFT");
+			totalFlightTimer = nbt.getInteger("tFT");
+			inFlight = nbt.getBoolean("iF");
+			numRooms = nbt.getInteger("numR");
+			speed = nbt.getDouble("sped");
 			
-			shields  = nbt.getInteger("shields");
+			shields  = nbt.getInteger("shld");
 			hull     = nbt.getInteger("hull");
 			
 			if(nbt.hasKey("modders"))
