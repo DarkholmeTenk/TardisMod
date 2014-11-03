@@ -708,7 +708,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 
 	public boolean canModify(EntityPlayer player)
 	{
-		//TardisOutput.print("TCTE","OwnerCheck:"+player.username+":"+ ownerName+"#"+worldObj.isRemote,TardisOutput.Priority.DEBUG);
 		return canModify(player.username);
 	}
 	

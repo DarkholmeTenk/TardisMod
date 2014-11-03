@@ -278,6 +278,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	@Override
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
+		nbt.setString("currentPerson", currentPerson);
 		if(preparingToUpgrade != null)
 			nbt.setInteger("preparingToUpgrade", preparingToUpgrade.ordinal());
 		nbt.setInteger("lastButton"			, lastButton);
@@ -286,6 +287,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	@Override
 	public void readTransmittable(NBTTagCompound nbt)
 	{
+		currentPerson	= nbt.getString("currentPerson");
 		lastButton		= nbt.getInteger("lastButton");
 		lastButtonTT	= tt;
 		preparingToUpgradeTT = tt;
