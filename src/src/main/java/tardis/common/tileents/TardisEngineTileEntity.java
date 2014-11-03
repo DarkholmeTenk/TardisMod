@@ -64,6 +64,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			Collections.sort(users, String.CASE_INSENSITIVE_ORDER);
 			currentUsers = users.toArray(currentUsers);
 			currentUserID = Helper.clamp(currentUserID, 0, currentUsers.length);
+			TardisOutput.print("TETE", "CurrentUsers:" + currentUsers.length + " detected");
 		}
 		setUsername();
 	}
@@ -91,9 +92,9 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 
 	public int getControlFromHit(HitPosition hit)
 	{
-		if(hit.within(2, 0.558, 0.690, 0.660, 0.768))
+		if(hit.within(2, 0.558, 0.685, 0.660, 0.768))
 			return 4;
-		else if(hit.within(2, 0.488, 0.690, 0.564, 0.768))
+		else if(hit.within(2, 0.488, 0.685, 0.564, 0.768))
 			return 5;
 		else if(hit.within(2, 0.558, 0.780, 0.660, 0.859))
 			return 6;

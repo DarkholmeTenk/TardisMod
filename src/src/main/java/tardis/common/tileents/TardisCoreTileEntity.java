@@ -721,7 +721,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(isOwner(modder.username))
 		{
-			if(modder.username.equals(name))
+			if(!modder.username.equals(name))
 			{
 				if(modders.contains(name))
 					modders.remove(name);
