@@ -1,5 +1,11 @@
+chamber.schema
+cobbleRoom.schema
 corridor.schema
 corridor4Way.schema
+dome.schema
+roundRoom.schema
+stairs.schema
 tardisConsoleMain.schema
 tardisConsoleWalkway.schema
-chamber.schema
+tardisConsoleMain.tardisConsoleWalkway.diff.schema
+tardisConsoleWalkway.tardisConsoleMain.diff.schema

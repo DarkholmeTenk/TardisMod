@@ -94,7 +94,11 @@ public class TardisConfigHandler
 		{
 			TardisOutput.print("TCH", "TCHSS:"+s);
 			if(s.endsWith(".schema") && !s.startsWith("tardis"))
-				found.add(s.replace(".schema", ""));
+			{
+				String q = s.replace(".schema", "");
+				if(!found.contains(q))
+					found.add(q);
+			}
 		}
 		Collections.sort(found,String.CASE_INSENSITIVE_ORDER);
 		return found.toArray(fA);

@@ -154,7 +154,10 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			else if(control == 6)
 				pl.sendChatToPlayer(new ChatMessageComponent().addText("[TARDIS] " + currentPerson + " does " + (core.canModify(currentPerson)?"":"not ") + " have permission to modify this TARDIS"));
 			else if(control == 7)
+			{
 				core.toggleModifier(pl, currentPerson);
+				core.sendUpdate();
+			}
 			else if(control >= 10 && control < 20)
 			{
 				if(core.unspentLevelPoints() > 0)
