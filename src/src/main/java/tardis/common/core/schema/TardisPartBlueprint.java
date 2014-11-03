@@ -409,23 +409,20 @@ public class TardisPartBlueprint
 			if(facing != primaryDoorFace)
 				modKey = rotate(key,primaryDoorFace,facing);
 			st.loadToWorld(w, newMeta, x+modKey.x, y+modKey.y, z+modKey.z);
-			if(st.getBlockID() == TardisMod.schemaCoreBlock.blockID)
-			{
-				TileEntity te = w.getBlockTileEntity(x+modKey.x, y+modKey.y, z+modKey.z);
-				if(te != null && te instanceof TardisSchemaCoreTileEntity)
-				{
-					String name = myName;
-					if(name.endsWith(".diff"))
-					{
-						String[] bits = name.split("\\.");
-						name = bits[0];
-						TardisOutput.print("TPB", "Name is a diff, so setting to " + name);
-					}
-					((TardisSchemaCoreTileEntity)te).setData(name,moddedBounds(facing),facing);
-				}
-			}
-			else if(st.getBlockID() == Block.chest.blockID)
+			if(st.getBlockID() == Block.chest.blockID)
 				w.setBlockMetadataWithNotify(x+modKey.x, y+modKey.y, z+modKey.z, newMeta, 3);
+		}
+		TileEntity te = w.getBlockTileEntity(x, y, z);
+		if(te instanceof TardisSchemaCoreTileEntity)
+		{
+			String name = myName;
+			if(name.endsWith(".diff"))
+			{
+				String[] bits = name.split("\\.");
+				name = bits[0];
+				TardisOutput.print("TPB", "Name is a diff, so setting to " + name);
+			}
+			((TardisSchemaCoreTileEntity)te).setData(name,moddedBounds(facing),facing);
 		}
 		getDoor(w,x,y,z,facing);
 	}
