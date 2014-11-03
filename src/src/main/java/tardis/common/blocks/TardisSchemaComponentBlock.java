@@ -6,6 +6,7 @@ import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
+import tardis.common.tileents.TardisEngineTileEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
@@ -24,7 +25,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 	public void initData()
 	{
 		setUnlocalizedName("SchemaComponent");
-		setSubNames("DoorConnector","DoorConnectorHidden","ControlPanel","ConsoleBlock", "TardisDoorBottom","TardisDoorTop","ConsoleTop");
+		setSubNames("DoorConnector","DoorConnectorHidden","ControlPanel","ConsoleBlock", "TardisDoorBottom","TardisDoorTop","ConsoleTop","Engine");
 	}
 
 	@Override
@@ -133,6 +134,14 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 					te.leaveTardis(pl,false);
     		}
     		return true;
+    	}
+    	if(meta == 7)
+    	{
+    		TardisEngineTileEntity te = Helper.getTardisEngine(w);
+    		if(te != null)
+    		{
+    			return te.activate(pl, s, y, t, j, k);
+    		}
     	}
         return false;
     }

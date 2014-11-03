@@ -2,15 +2,18 @@ package tardis.common.core;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import tardis.TardisMod;
+import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.TardisPartBlueprint;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
+import tardis.common.tileents.TardisEngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -177,7 +180,11 @@ public class Helper
 			e.printStackTrace();
 		}
 		if(tardisWorld.getBlockId(tardisCoreX, tardisCoreY, tardisCoreZ) != TardisMod.tardisCoreBlock.blockID)
+		{
 			tardisWorld.setBlock(tardisCoreX, tardisCoreY, tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
+			tardisWorld.setBlock(tardisCoreX, tardisCoreY-2, tardisCoreZ, TardisMod.tardisConsoleBlock.blockID);
+			tardisWorld.setBlock(tardisCoreX, tardisCoreY-5, tardisCoreZ, TardisMod.tardisEngineBlock.blockID);
+		}
 		TardisCoreTileEntity te = getTardisCore(dimID);
 		if(te != null)
 		{
@@ -323,18 +330,68 @@ public class Helper
 			return false;
 		else if(blockID == TardisMod.tardisConsoleBlock.blockID)
 			return false;
+		else if(blockID == TardisMod.tardisEngineBlock.blockID);
 		return true;
 	}
-
-	public static void loadSchema(String name,World w, int x, int y, int z, int facing)
+	
+	public static void loadSchema(File schemaFile, World w, int x, int y, int z, int facing)
 	{
-		TardisPartBlueprint bp = new TardisPartBlueprint(TardisMod.configHandler.getSchemaFile(name));
-		bp.reconstitute(w, x, y, z, facing);
+		TardisPartBlueprint pb = new TardisPartBlueprint(schemaFile);
+		pb.reconstitute(w, x, y, z, facing);
+	}
+
+	public static void loadSchema(String name, World w, int x, int y, int z, int facing)
+	{
+		File schemaFile = TardisMod.configHandler.getSchemaFile(name);
+		loadSchema(schemaFile, w, x, y, z, facing);
 	}
 	
+	public static void loadSchemaDiff(String fromName, String toName, World worldObj, int xCoord, int yCoord, int zCoord, int facing)
+	{
+		if(fromName.equals(toName))
+			return;
+		
+		long mstime = System.currentTimeMillis();
+		File schemaDiff = TardisMod.configHandler.getSchemaFile(toName+"."+fromName+".diff");
+		TardisPartBlueprint diff = null;
+		if(schemaDiff.exists())
+		{
+			TardisOutput.print("TH", "Loading diff from file");
+			diff = new TardisPartBlueprint(schemaDiff);
+		}
+		else
+		{
+			File fromFile	= TardisMod.configHandler.getSchemaFile(fromName);
+			File toFile		= TardisMod.configHandler.getSchemaFile(toName);
+			TardisPartBlueprint fromPB	= new TardisPartBlueprint(fromFile);
+			TardisPartBlueprint toPB	= new TardisPartBlueprint(toFile);
+			try
+			{
+				diff = new TardisPartBlueprint(toPB,fromPB);
+				diff.saveTo(schemaDiff);
+			}
+			catch (UnmatchingSchemaException e)
+			{
+				TardisOutput.print("TH", e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		
+		if(diff != null)
+		{
+			diff.reconstitute(worldObj, xCoord, yCoord, zCoord, facing);
+		}
+		TardisOutput.print("TH", "TimeTaken (ms):"+(System.currentTimeMillis() - mstime));
+	}
+
 	public static boolean isServer()
 	{
 		return FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER);
+	}
+	
+	public static void playSound(TileEntity te, String sound, float vol)
+	{
+		playSound(getWorldID(te.worldObj), te.xCoord, te.yCoord, te.zCoord, sound, vol);
 	}
 	
 	public static void playSound(World w, int x, int y, int z, String sound, float vol)
@@ -412,7 +469,7 @@ public class Helper
 		if(tardisWorld != null)
 		{
 			TileEntity te = tardisWorld.getBlockTileEntity(tardisCoreX, tardisCoreY, tardisCoreZ);
-			if(te != null && te instanceof TardisCoreTileEntity)
+			if(te instanceof TardisCoreTileEntity)
 			{
 				return (TardisCoreTileEntity)te;
 			}
@@ -421,6 +478,19 @@ public class Helper
 		{
 			TardisOutput.print("TH","No world passed",TardisOutput.Priority.DEBUG);
 		}
+		return null;
+	}
+	
+	public static TardisEngineTileEntity getTardisEngine(int dim)
+	{
+		return getTardisEngine(Helper.getWorld(dim));
+	}
+	
+	public static TardisEngineTileEntity getTardisEngine(World w)
+	{
+		TardisCoreTileEntity core = getTardisCore(w);
+		if(core != null)
+			return core.getEngine();
 		return null;
 	}
 	

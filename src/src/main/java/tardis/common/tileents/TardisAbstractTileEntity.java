@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntity;
 public abstract class TardisAbstractTileEntity extends TileEntity
 {
 	public boolean init = false;
+	public int tt = 0;
 	public static Random rand = new Random();
 	@Override
 	public Packet getDescriptionPacket()
@@ -39,6 +40,7 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	@Override
 	public void updateEntity()
 	{
+		tt++;
 		if(!init)
 		{
 			init = true;

@@ -8,6 +8,7 @@ import tardis.api.IControlMatrix;
 import tardis.api.TardisFunction;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
+import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.ControlStateStore;
 import tardis.common.items.TardisSonicScrewdriverItem;
@@ -71,35 +72,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		clampControls();
 	}
 	
-	private class HitPosition
-	{
-		public int side;
-		public float posZ;
-		public float posY;
-		
-		HitPosition(float height, float pos, int s)
-		{
-			posY = height;
-			posZ = pos;
-			side = s;
-		}
-		
-		public boolean within(int sideIn, double zMin, double yMin,double zMax,double yMax)
-		{
-			if(side != sideIn)
-				return false;
-			if(posZ < zMin || posZ > zMax)
-				return false;
-			if(posY < yMin || posY > yMax)
-				return false;
-			return true;
-		}
-		
-		public String toString()
-		{
-			return "[Hit s:" + side + " ["+posZ+","+posY+"]]";
-		}
-	}
+	
 	
 	@Override
 	public void updateEntity()
@@ -139,7 +112,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			if(schemaList == null)
 			{
 				TardisOutput.print("TConTE", "Getting schemas");
-				schemaList = TardisMod.configHandler.getSchemas();
+				refreshSchemas();
 				if(schemaList!= null && schemaList.length >0)
 				{
 					schemaNum = 0;
@@ -429,9 +402,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		{
 			lastButton = 5;
 			lastButtonTT = tickTimer;
-			if(!hasScrewdriver(0) && core.takeEnergy(core.getMaxEnergy()/2,false))
+			if(!hasScrewdriver(0) && core.takeEnergy(500,false))
 				setScrewdriver(0,true);
-			else if(hasScrewdriver(0) && core.addEnergy(2*core.getMaxEnergy()/5, false))
+			else if(hasScrewdriver(0) && core.addEnergy(400, false))
 				setScrewdriver(0,false);
 		}
 		else if(controlID == 6 || controlID == 7) // Screwdriver slot 0/1
@@ -539,7 +512,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		else
 		{
 			if(controlID == 901 && !core.canModify(pl))
-				pl.addChatMessage("[TARDIS]You don't have permission to modify this TARDIS");
+				pl.addChatMessage(TardisCoreTileEntity.cannotModifyMessage);
 			if(roomDeletePrepare)
 				roomDeletePrepare = false;
 		}
@@ -825,6 +798,13 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	}
 	
 	@Override
+	public double[] getColorRatio(int controlID)
+	{
+		double[] retVal = { 0, 0, 0 };
+		return retVal;
+	}
+
+	@Override
 	public double getControlHighlight(int controlID)
 	{
 		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
@@ -895,7 +875,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	public static void refreshSchemas()
 	{
 		schemaList = TardisMod.configHandler.getSchemas();
-		Arrays.sort(schemaList);
 	}
 	
 	public boolean getRelativeCoords()

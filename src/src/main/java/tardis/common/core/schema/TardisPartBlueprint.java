@@ -14,6 +14,7 @@ import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
+import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.tileents.TardisSchemaCoreTileEntity;
 
 import net.minecraft.block.Block;
@@ -30,7 +31,7 @@ public class TardisPartBlueprint
 	
 	public HashMap<TardisCoordStore,TardisSchemaStore>storage = new HashMap<TardisCoordStore,TardisSchemaStore>();
 	
-	private String myName;
+	public String myName;
 
 	public TardisPartBlueprint(World world, String name, int x, int y, int z) throws SchemaDoorNotFoundException, SchemaCoreNotFoundException
 	{
@@ -204,7 +205,7 @@ public class TardisPartBlueprint
 		NBTTagCompound store = new NBTTagCompound();
 		for(TardisCoordStore st : storage.keySet())
 		{
-			TardisOutput.print("TPB", "Adding " + st.toString() + " to store variable");
+			//TardisOutput.print("TPB", "Adding " + st.toString() + " to store variable");
 			store.setCompoundTag(st.toString(), storage.get(st).getTagCompound());
 		}
 		nbt.setCompoundTag("storage", store);
@@ -260,6 +261,55 @@ public class TardisPartBlueprint
 		}
 	}
 	
+	private boolean matchingBounds(int[] a, int[] b)
+	{
+		if(a== null || b == null)
+			return false;
+		if(a.length != b.length)
+			return false;
+		for(int i = 0;i<a.length;i++)
+			if(a[i] != b[i])
+				return false;
+		return true;
+	}
+	
+	public TardisPartBlueprint(TardisPartBlueprint to, TardisPartBlueprint from) throws UnmatchingSchemaException
+	{
+		if(to.primaryDoorFace == to.primaryDoorFace && matchingBounds(to.bounds,from.bounds) && to.primaryDoor.equals(from.primaryDoor))
+		{
+			
+			for(TardisCoordStore coord : to.storage.keySet())
+			{
+				if(!from.storage.containsKey(coord))
+				{
+					TardisOutput.print("TPB", "In to but not from:" + coord.toString());
+					storage.put(coord, to.storage.get(coord));
+				}
+				else
+				{
+					if(!from.storage.get(coord).equals(to.storage.get(coord)))
+						storage.put(coord, to.storage.get(coord));
+				}
+			}
+			
+			for(TardisCoordStore coord : from.storage.keySet())
+			{
+				if(!to.storage.containsKey(coord))
+				{
+					TardisOutput.print("TPB", "In from but not to:" + coord.toString());
+					storage.put(coord, TardisSchemaStore.airBlock);
+				}
+			}
+			
+			primaryDoor = to.primaryDoor;
+			primaryDoorFace = to.primaryDoorFace;
+			bounds = to.bounds;
+			myName = to.myName + "." + from.myName + ".diff";
+		}
+		else
+			throw new UnmatchingSchemaException(to,from,to.primaryDoorFace != to.primaryDoorFace, !matchingBounds(to.bounds,from.bounds), !to.primaryDoor.equals(from.primaryDoor));
+	}
+	
 	public TardisCoordStore getPrimaryDoorPos(int facing)
 	{
 		return rotate(primaryDoor,primaryDoorFace,facing);
@@ -277,7 +327,21 @@ public class TardisPartBlueprint
 			return key.rotateLeft();
 	}
 	
-	private void hollow(World w, int x, int y, int z, int facing)
+	public void hollow(World w, int x, int y, int z, int facing)
+	{
+		for(TardisCoordStore coord : storage.keySet())
+		{
+			TardisCoordStore rotated = coord;
+			if(primaryDoorFace != facing)
+				rotated = rotate(coord,primaryDoorFace,facing);
+			if(w.getBlockId(x+rotated.x, y+rotated.y, z+rotated.z) != 0)
+			{
+				w.setBlock(x+rotated.x, y+rotated.y, z+rotated.z, 0, 0, 2);
+			}
+		}
+	}
+	
+	public void clear(World w, int x, int y, int z, int facing)
 	{
 		TardisCoordStore min = new TardisCoordStore(-bounds[0],0,-bounds[1]);
 		TardisCoordStore max = new TardisCoordStore(bounds[2],bounds[4],bounds[3]);
@@ -314,6 +378,7 @@ public class TardisPartBlueprint
 	
 	public boolean roomFor(World w,int x, int y, int z,int facing)
 	{
+		/*
 		int[] bounds = moddedBounds(facing);
 		if(y < 0 || (y+bounds[4]) > 254)
 			return false;
@@ -321,7 +386,15 @@ public class TardisPartBlueprint
 			for(int yL = 0;yL <= bounds[4];yL++)
 				for(int zL = -bounds[1];zL <= bounds[3];zL++)
 					if(w.getBlockId(x+xL, y+yL, z+zL) != 0)
-						return false;
+						return false;*/
+		for(TardisCoordStore coord : storage.keySet())
+		{
+			TardisCoordStore rotated = coord;
+			if(primaryDoorFace != facing)
+				rotated = rotate(coord,primaryDoorFace,facing);
+			if(w.getBlockId(x+rotated.x, y+rotated.y, z+rotated.z) != 0)
+				return false;
+		}
 		return true;
 	}
 	
@@ -340,7 +413,16 @@ public class TardisPartBlueprint
 			{
 				TileEntity te = w.getBlockTileEntity(x+modKey.x, y+modKey.y, z+modKey.z);
 				if(te != null && te instanceof TardisSchemaCoreTileEntity)
-					((TardisSchemaCoreTileEntity)te).setData(myName,moddedBounds(facing),facing);
+				{
+					String name = myName;
+					if(name.endsWith(".diff"))
+					{
+						String[] bits = name.split("\\.");
+						name = bits[0];
+						TardisOutput.print("TPB", "Name is a diff, so setting to " + name);
+					}
+					((TardisSchemaCoreTileEntity)te).setData(name,moddedBounds(facing),facing);
+				}
 			}
 			else if(st.getBlockID() == Block.chest.blockID)
 				w.setBlockMetadataWithNotify(x+modKey.x, y+modKey.y, z+modKey.z, newMeta, 3);

@@ -56,5 +56,10 @@ public abstract class TardisAbstractCommand implements ICommand
 	{
 		return false;
 	}
+	
+	public void sendString(ICommandSender comsen,String toSend)
+	{
+		comsen.sendChatToPlayer(new ChatMessageComponent().addText(toSend));
+	}
 
 }

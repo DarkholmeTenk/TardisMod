@@ -3,10 +3,12 @@ package tardis.common.tileents;
 import java.util.ArrayList;
 import java.util.List;
 
+import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.schema.TardisPartBlueprint;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,6 +32,11 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 		name = passedName;
 		bounds = moddedBounds;
 		facing = passedFacing;
+	}
+	
+	public String getName()
+	{
+		return name;
 	}
 	
 	private AxisAlignedBB getBoundingBox()
@@ -86,6 +93,7 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 			List<Entity> ents = entitiesWithinRoom();
 			for(Entity ent: ents)
 				Helper.teleportEntityToSafety(ent);
+			/*
 			TardisOutput.print("TSCTE","Removing:" + (xCoord - bounds[0]) + "to" + (xCoord + bounds[2])+ ","+(zCoord-bounds[1])+"to"+(zCoord+bounds[3]));
 			for(int x = (xCoord-bounds[0]);x<=xCoord+bounds[2];x++)
 				for(int y = yCoord;y<=yCoord+bounds[4];y++)
@@ -94,7 +102,10 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 						if((x != xCoord || y != yCoord || z != zCoord) && !worldObj.isAirBlock(x, y, z) && Helper.isBlockRemovable(worldObj.getBlockId(x, y, z)))
 							worldObj.setBlockToAir(x, y, z);
 					}
-			worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+			worldObj.setBlockToAir(xCoord, yCoord, zCoord);*/
+			TardisPartBlueprint ohGod = new TardisPartBlueprint(TardisMod.configHandler.getSchemaFile(name));
+			TardisOutput.print("TSCTE", "Hollowing " + name);
+			ohGod.clear(worldObj,xCoord,yCoord,zCoord,facing);
 		}
 		else
 		{
@@ -121,7 +132,7 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 		}
 		else
 		{
-			player.addChatMessage("You do not own this TARDIS");
+			player.addChatMessage(TardisCoreTileEntity.cannotModifyMessage);
 		}
 		return false;
 	}

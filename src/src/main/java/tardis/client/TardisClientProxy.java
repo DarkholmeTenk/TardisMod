@@ -8,12 +8,14 @@ import tardis.TardisMod;
 import tardis.client.renderer.TardisComponentRenderer;
 import tardis.client.renderer.TardisConsoleRenderer;
 import tardis.client.renderer.TardisCoreRenderer;
+import tardis.client.renderer.TardisEngineRenderer;
 import tardis.client.renderer.TardisRenderer;
 import tardis.client.renderer.TardisSonicScrewdriverRenderer;
 import tardis.common.TardisProxy;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
+import tardis.common.tileents.TardisEngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.client.registry.ClientRegistry;
 
@@ -26,6 +28,7 @@ public class TardisClientProxy extends TardisProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(TardisCoreTileEntity.class, new TardisCoreRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TardisConsoleTileEntity.class, new TardisConsoleRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TardisComponentTileEntity.class, new TardisComponentRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TardisEngineTileEntity.class, new TardisEngineRenderer());
 	}
 
 	@Override

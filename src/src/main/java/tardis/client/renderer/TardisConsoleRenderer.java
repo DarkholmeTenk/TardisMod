@@ -67,7 +67,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 	
 	private void renderSchemaChooser(Tessellator tess, TardisConsoleTileEntity tce)
 	{
-		compRender.renderSchematicSelector(tess,tce,tce.schemaChooserString,52, 1.1,-0.4,-0.1, -45,-90,0, 0.4,0.4,0.2);
+		compRender.renderTextScreen(tess,tce,tce.schemaChooserString,52, 1.1,-0.4,-0.1, -45,-90,0, 0.4,0.4,0.2);
 		compRender.renderButton(tess,tce,50, 1.05,-0.42,0.8, 45,-90,0,0.5,0.5,0.5);
 		compRender.renderButton(tess,tce,51, 1.19,-0.29,0.8, 45,-90,0,0.5,0.5,0.5);
 	}

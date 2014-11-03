@@ -55,7 +55,9 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	
 	public boolean hasComponent(TardisTEComponent comp)
 	{
-		return comps.containsKey(comp.ordinal());
+		if(comps != null)
+			return comps.containsKey(comp.ordinal());
+		return false;
 	}
 	
 	public ITardisComponent getComponent(TardisTEComponent comp)
@@ -135,7 +137,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 				return true;
 			}
 			else
-				player.addChatMessage("You do not have permission to modify this TARDIS");
+				player.addChatMessage(TardisCoreTileEntity.cannotModifyMessage);
 		}
 		
 		boolean screwed = false;

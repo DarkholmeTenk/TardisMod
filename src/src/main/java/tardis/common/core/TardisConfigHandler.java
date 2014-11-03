@@ -6,9 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-
 import tardis.TardisMod;
 
 public class TardisConfigHandler
@@ -67,7 +67,7 @@ public class TardisConfigHandler
 	public String[] getSchemas()
 	{
 		String[] fA = new String[0];
-		HashSet<String> found = new HashSet<String>();
+		ArrayList<String> found = new ArrayList<String>();
 		try
 		{
 			InputStream is = TardisMod.class.getResourceAsStream("/assets/tardismod/schema/schemaList");
@@ -77,7 +77,11 @@ public class TardisConfigHandler
 			{
 				TardisOutput.print("TCH", "TCHSS:"+l);
 				if(l.endsWith(".schema") && !l.startsWith("tardis"))
-					found.add(l.replace(".schema", ""));
+				{
+					String q = l.replace(".schema", "");
+					if(!found.contains(q))
+						found.add(q);
+				}
 			}
 			TardisOutput.print("TCH","Read classpath");
 		}
@@ -91,7 +95,8 @@ public class TardisConfigHandler
 			TardisOutput.print("TCH", "TCHSS:"+s);
 			if(s.endsWith(".schema") && !s.startsWith("tardis"))
 				found.add(s.replace(".schema", ""));
-		}	
+		}
+		Collections.sort(found,String.CASE_INSENSITIVE_ORDER);
 		return found.toArray(fA);
 	}
 	

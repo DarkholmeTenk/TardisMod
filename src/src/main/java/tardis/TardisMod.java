@@ -14,6 +14,7 @@ import tardis.common.blocks.TardisCoreBlock;
 import tardis.common.blocks.TardisDebugBlock;
 import tardis.common.blocks.TardisDecoBlock;
 import tardis.common.blocks.TardisDecoItemBlock;
+import tardis.common.blocks.TardisEngineBlock;
 import tardis.common.blocks.TardisInternalDoorBlock;
 import tardis.common.blocks.TardisInternalDoorItemBlock;
 import tardis.common.blocks.TardisSchemaBlock;
@@ -46,6 +47,7 @@ import tardis.common.items.TardisSonicScrewdriverItem;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
+import tardis.common.tileents.TardisEngineTileEntity;
 import tardis.common.tileents.TardisSchemaCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.common.Mod;
@@ -60,7 +62,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid="TardisMod",name="Tardis Mod",version="0.15",dependencies="required-after:FML; after:AppliedEnergistics")
+@Mod(modid="TardisMod",name="Tardis Mod",version="0.16",dependencies="required-after:FML; after:AppliedEnergistics")
 @NetworkMod(channels = { "TardisModChannel","TardisTrans","TardisDR","TardisSn" }, clientSideRequired = true, serverSideRequired = true, packetHandler = TardisPacketHandler.class, connectionHandler=TardisConnectionHandler.class)
 public class TardisMod
 {
@@ -90,6 +92,7 @@ public class TardisMod
 	public static TardisAbstractBlock tardisTopBlock;
 	public static TardisAbstractBlock tardisCoreBlock;
 	public static TardisAbstractBlock tardisConsoleBlock;
+	public static TardisAbstractBlock tardisEngineBlock;
 	public static TardisAbstractBlock componentBlock;
 	public static TardisAbstractBlock internalDoorBlock;
 	public static TardisAbstractBlock decoBlock;
@@ -177,6 +180,10 @@ public class TardisMod
 		tardisConsoleBlock = new TardisConsoleBlock(blockConfig.getInt("tardisConsoleBlock",648));
 		GameRegistry.registerBlock(tardisConsoleBlock, tardisConsoleBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisConsoleTileEntity.class,tardisConsoleBlock.getUnlocalizedName());
+		
+		tardisEngineBlock = new TardisEngineBlock(blockConfig.getInt("tardisEngineBlock", 652));
+		GameRegistry.registerBlock(tardisEngineBlock, tardisEngineBlock.getUnlocalizedName());
+		GameRegistry.registerTileEntity(TardisEngineTileEntity.class, tardisEngineBlock.getUnlocalizedName());
 		
 		componentBlock = new TardisComponentBlock(blockConfig.getInt("tardisComponentBlockID",651));
 		GameRegistry.registerBlock(componentBlock,TardisComponentItemBlock.class,componentBlock.getUnlocalizedName());

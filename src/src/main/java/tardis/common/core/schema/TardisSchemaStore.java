@@ -1,5 +1,7 @@
 package tardis.common.core.schema;
 
+import java.util.HashSet;
+
 import tardis.TardisMod;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -12,6 +14,10 @@ public class TardisSchemaStore
 	private int blockMeta;
 	private NBTTagCompound nbtStore = null;
 	
+	public static final TardisSchemaStore airBlock = new TardisSchemaStore(0,0,null);
+	
+	private static HashSet<Integer> bannedIDs = null;
+	
 	public int getBlockID()
 	{
 		return blockID;
@@ -22,9 +28,22 @@ public class TardisSchemaStore
 		return blockMeta;
 	}
 	
+	private TardisSchemaStore(int bid, int bm, NBTTagCompound nbt)
+	{
+		blockID = bid;
+		blockMeta = bm;
+		nbtStore = nbt;
+	}
+	
 	private TardisSchemaStore()
 	{
-		
+		if(bannedIDs == null)
+		{
+			bannedIDs = new HashSet<Integer>();
+			bannedIDs.add(TardisMod.tardisCoreBlock.blockID);
+			bannedIDs.add(TardisMod.tardisConsoleBlock.blockID);
+			bannedIDs.add(TardisMod.tardisEngineBlock.blockID);
+		}
 	}
 	
 	public NBTTagCompound getTagCompound()
@@ -65,7 +84,7 @@ public class TardisSchemaStore
 	
 	public static TardisSchemaStore storeWorldBlock(World w,int x, int y, int z)
 	{
-		if(w.getBlockId(x, y, z) == 0 || w.getBlockId(x, y, z) == TardisMod.tardisCoreBlock.blockID)
+		if(w.getBlockId(x, y, z) == 0 || bannedIDs.contains(w.getBlockId(x, y, z)))
 			return null;
 		
 		TardisSchemaStore newStore = new TardisSchemaStore();
@@ -94,9 +113,16 @@ public class TardisSchemaStore
 		}
 		if(nbt.hasKey("tdSchemaNBT"))
 			newStore.nbtStore = nbt.getCompoundTag("tdSchemaNBT");
+		//TardisOutput.print("TSS", newStore.toString());
 		return newStore;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return "TardisSchemaStore [blockID=" + blockID + ", blockMeta=" + blockMeta + "]";
+	}
+
 	private static String getNameFromID(int id)
 	{
 		if(id == TardisMod.decoBlock.blockID)
@@ -154,6 +180,49 @@ public class TardisSchemaStore
 		if(name.equals("compBlock"))
 			return TardisMod.componentBlock.blockID;
 		return null;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + blockID;
+		result = prime * result + blockMeta;
+		result = prime * result + ((blockName == null) ? 0 : blockName.hashCode());
+		result = prime * result + ((nbtStore == null) ? 0 : nbtStore.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof TardisSchemaStore))
+			return false;
+		TardisSchemaStore other = (TardisSchemaStore) obj;
+		if (blockID != other.blockID)
+			return false;
+		if (blockMeta != other.blockMeta)
+			return false;
+		if (blockName == null)
+		{
+			if (other.blockName != null)
+				return false;
+		}
+		else if (!blockName.equals(other.blockName))
+			return false;
+		if (nbtStore == null)
+		{
+			if (other.nbtStore != null)
+				return false;
+		}
+		else if (!nbtStore.equals(other.nbtStore))
+			return false;
+		return true;
 	}
 
 }

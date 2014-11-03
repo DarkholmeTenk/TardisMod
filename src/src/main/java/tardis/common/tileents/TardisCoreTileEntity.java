@@ -1,6 +1,7 @@
 package tardis.common.tileents;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +11,7 @@ import tardis.TardisMod;
 import tardis.api.IActivatable;
 import tardis.api.IChunkLoader;
 import tardis.api.TardisFunction;
+import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
@@ -33,6 +35,8 @@ import net.minecraftforge.fluids.FluidStack;
 public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable, IChunkLoader
 {
 	private static TardisConfigFile config;
+	public static final String cannotModifyMessage	= "[TARDIS] You do not have permission to modify this TARDIS";
+	public static final String cannotUpgradeMessage	= "[TARDIS] You do not have enough upgrade points";
 	private int exteriorWorld;
 	private int exteriorX;
 	private int exteriorY;
@@ -41,14 +45,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	private int tickCount = 0;
 	
-	private static int energyPerSecond = 0;
-	
 	private double speed = 4;
 	private static double maxSpeed;
 	
 	private int energy;
-	private static int maxEnergy;
-	
 	private boolean inFlight = false;
 	private int flightTimer = 0;
 	private int inFlightTimer = 0;
@@ -62,17 +62,13 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private int numButtons;
 	
 	private int numRooms = 0;
-	private int maxNumRooms = 30;
 	private double	tardisXP = 0;
 	private int		tardisLevel = 0;
 	
 	private SimpleCoordStore transmatPoint = null;
 	
 	private int shields;
-	private int maxShields;
 	private int hull;
-	private int maxHull;
-	
 	private boolean deletingRooms = false;
 	private static double explodeChance = 0.25;
 	private boolean explode = false;
@@ -89,6 +85,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	private HashSet<SimpleCoordStore> roomSet = new HashSet<SimpleCoordStore>();
 	private String ownerName;
+	private ArrayList<String> modders = new ArrayList<String>();
 	
 	private static ChunkCoordIntPair[] loadable = null;
 	private boolean forcedFlight = false;
@@ -98,6 +95,18 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private ItemStack[] items;
 	private FluidStack[] fluids;
 	
+	private HashMap<TardisUpgradeMode,Integer> upgradeLevels = new HashMap<TardisUpgradeMode,Integer>();
+	
+	private static int maxNumRooms = 30;
+	private static int maxNumRoomsInc = 10;
+	private static int maxShields = 1000;
+	private static int maxShieldsInc = 500;
+	private int maxHull;
+	private static int maxEnergy = 1000;
+	private static int maxEnergyInc = 1000;
+	private static int energyPerSecond = 1;
+	private static int energyPerSecondInc = 1;
+
 	static
 	{
 		config = TardisMod.configHandler.getConfigFile("tardisCore");
@@ -110,11 +119,15 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	}
 	
 	{
-		maxSpeed = config.getDouble("maxSpeed", 8);
-		maxEnergy = config.getInt("maxEnergy", 1000);
-		maxNumRooms = config.getInt("maxRooms", 30);
-		maxShields  = config.getInt("maxShields", 1000);
-		maxHull		= config.getInt("maxHull", 1000);
+		maxSpeed			= config.getDouble("maxSpeed", 8);
+		maxEnergy			= config.getInt("maxEnergy", 1000);
+		maxNumRooms			= config.getInt("maxRooms", 30);
+		maxShields	 		= config.getInt("maxShields", 1000);
+		maxHull				= config.getInt("maxHull", 1000);
+		maxNumRoomsInc		= config.getInt("max rooms inc per level", 10);
+		maxShieldsInc		= config.getInt("max shields inc per level", 500);
+		maxEnergyInc		= config.getInt("max energy inc per level", 1000);
+		energyPerSecondInc	= config.getInt("energy per second inc per level",1);
 		shields		= maxShields;
 		hull		= maxHull;
 		
@@ -127,7 +140,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private void flightTick()
 	{
 		if(inFlightTimer == 0)
-			worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:takeoff", 0.75F, 1, true);
+			Helper.playSound(this, "tardismod:takeoff", 0.75F);
 		totalFlightTimer++;
 		
 		if(inCoordinatedFlight() || forcedFlight)
@@ -181,20 +194,20 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			if(inFlightTimer < timeTillLanding)
 			{
 				if(flightTimer % 69 == 0 && inFlight)
-					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engines", 0.75F, 1, true);
+					Helper.playSound(this, "tardismod:engines", 0.75F);
 				flightTimer++;
 			}
 			else
 			{
 				if(flightTimer % 69 == 0 && inFlightTimer < timeTillLandingInt)
-					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engines", 0.75F, 1, true);
+					Helper.playSound(this, "tardismod:engines", 0.75F);
 				flightTimer++;
 				
 				if(inFlightTimer == timeTillLanding)
 					placeBox();
 				
 				if(inFlightTimer == timeTillLandingInt)
-					worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:landingInt", 0.75F, 1, true);
+					Helper.playSound(this, "tardismod:landingInt", 0.75F);
 				
 				if(inFlightTimer >= timeTillLanded)
 					land();
@@ -233,7 +246,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		
 		if(tickCount % 20 == 0)
 		{
-			addEnergy(energyPerSecond,false);
+			addEnergy(getEnergyPerSecond(getLevel(TardisUpgradeMode.REGEN)),false);
 			safetyTick();
 		}
 		
@@ -462,10 +475,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				flightTimer = 0;
 				TardisTileEntity te = getExterior();
 				
-				timeTillTakenOff = (20 * 11);
-				timeTillLanding = timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
-				timeTillLandingInt = timeTillLanding + (20 * 6);
-				timeTillLanded  = timeTillLanding + (20 * 11);
+				timeTillTakenOff	= (20 * 11);
+				timeTillLanding		= timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
+				timeTillLandingInt	= timeTillLanding + (isFastLanding() ? 20 * 5 : 20 * 17);
+				timeTillLanded		= timeTillLanding + (isFastLanding() ? 20 * 5 : 20 * 22);
 				numButtons = (timeTillLanding - timeTillTakenOff) / getButtonTime();
 				
 				if(te != null)
@@ -545,7 +558,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			TardisTileEntity tardis = (TardisTileEntity) te;
 			tardis.linkedCore = this;
 			tardis.linkedDimension = worldObj.provider.dimensionId;
-			tardis.land();
+			tardis.land(isFastLanding());
 		}
 	}
 	
@@ -653,10 +666,78 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return null;
 	}
 	
+	public TardisConsoleTileEntity getConsole()
+	{
+		TileEntity te = worldObj.getBlockTileEntity(xCoord, yCoord - 2, zCoord);
+		if(te instanceof TardisConsoleTileEntity)
+				return (TardisConsoleTileEntity)te;
+		return null;
+	}
+	
+	public TardisEngineTileEntity getEngine()
+	{
+		TileEntity te = worldObj.getBlockTileEntity(xCoord, yCoord - 5, zCoord);
+		if(te instanceof TardisEngineTileEntity)
+			return (TardisEngineTileEntity)te;
+		return null;
+	}
+	
+	public TardisSchemaCoreTileEntity getSchemaCore()
+	{
+		TileEntity te = worldObj.getBlockTileEntity(xCoord, yCoord - 10, zCoord);
+		if(te instanceof TardisSchemaCoreTileEntity)
+			return (TardisSchemaCoreTileEntity)te;
+		return null;
+	}
+	
+	public void loadConsoleRoom(String sub)
+	{
+		String fullName = "tardisConsole" + sub;
+		TardisSchemaCoreTileEntity schemaCore = getSchemaCore();
+		if(schemaCore != null)
+		{
+			//schemaCore.remove();
+			//Helper.loadSchema(fullName, worldObj, xCoord, yCoord - 10, zCoord, 0);
+			Helper.loadSchemaDiff(schemaCore.getName(),fullName,worldObj, xCoord,yCoord-10,zCoord,0);
+		}
+		else
+		{
+			Helper.loadSchema(fullName, worldObj, xCoord, yCoord - 10, zCoord, 0);
+		}
+	}
+
 	public boolean canModify(EntityPlayer player)
 	{
-		TardisOutput.print("TCTE","OwnerCheck:"+player.username+":"+ ownerName+"#"+worldObj.isRemote,TardisOutput.Priority.DEBUG);
-		return player.username.equals(ownerName);
+		//TardisOutput.print("TCTE","OwnerCheck:"+player.username+":"+ ownerName+"#"+worldObj.isRemote,TardisOutput.Priority.DEBUG);
+		return canModify(player.username);
+	}
+	
+	public boolean canModify(String playerName)
+	{
+		return isOwner(playerName) || modders.contains(playerName);
+	}
+	
+	public void toggleModifier(EntityPlayer modder,String name)
+	{
+		if(isOwner(modder.username))
+		{
+			if(modder.username.equals(name))
+			{
+				if(modders.contains(name))
+					modders.remove(name);
+				else
+					modders.add(name);
+			}
+		}
+		else
+			modder.addChatMessage(cannotModifyMessage);
+	}
+	
+	public boolean isOwner(String name)
+	{
+		if(ownerName != null)
+			return ownerName.equals(name);
+		return false;
 	}
 	
 	public String getOwner()
@@ -672,17 +753,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
 	}
 
-	public TardisConsoleTileEntity getConsole()
-	{
-		TileEntity te = worldObj.getBlockTileEntity(xCoord, yCoord - 2, zCoord);
-		if(te != null)
-		{
-			if(te instanceof TardisConsoleTileEntity)
-				return (TardisConsoleTileEntity)te;
-		}
-		return null;
-	}
-	
 	public boolean hasFunction(TardisFunction fun)
 	{
 		switch(fun)
@@ -711,6 +781,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return speed * (1-(mod / 2.0));
 	}
 	
+	public boolean isFastLanding()
+	{
+		return getSpeed(true) > 8;
+	}
+	
 	public double addSpeed(double a)
 	{
 		if(!inFlight)
@@ -723,6 +798,40 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public int getLevel()
 	{
 		return tardisLevel;
+	}
+	
+	public int spentLevelPoints()
+	{
+		int spentPoints = 0;
+		for(TardisUpgradeMode mode : upgradeLevels.keySet())
+			spentPoints += upgradeLevels.get(mode);
+		return spentPoints;
+	}
+	
+	public int unspentLevelPoints()
+	{
+		return maxUnspentLevelPoints() - spentLevelPoints();
+	}
+	
+	public int maxUnspentLevelPoints()
+	{
+		return tardisLevel / 2;
+	}
+	
+	public int getLevel(TardisUpgradeMode mode)
+	{
+		int level = 0;
+		if(upgradeLevels.containsKey(mode))
+			level = upgradeLevels.get(mode);
+		return level;
+	}
+	
+	public void upgradeLevel(TardisUpgradeMode mode, int am)
+	{
+		if(unspentLevelPoints() >= am)
+		{
+			upgradeLevels.put(mode, am + getLevel(mode));
+		}
 	}
 	
 	public double getXP()
@@ -742,8 +851,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		tardisXP += Math.abs(a);
 		if(tardisXP >= getXPNeeded())
 		{
-			tardisXP -= getXPNeeded();
-			tardisLevel++;
+			while(tardisXP > getXPNeeded())
+			{
+				tardisXP -= getXPNeeded();
+				tardisLevel++;
+			}
 			Helper.playSound(worldObj, xCoord, yCoord, zCoord, "tardismod:levelup", 1);
 		}
 		sendUpdate();
@@ -755,9 +867,14 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return numRooms;
 	}
 	
+	public int getMaxNumRooms(int level)
+	{
+		return maxNumRooms + (maxNumRoomsInc * level);
+	}
+	
 	public int getMaxNumRooms()
 	{
-		return maxNumRooms;
+		return getMaxNumRooms(getLevel(TardisUpgradeMode.ROOMS));
 	}
 	
 	public boolean addRoom(boolean sub, TardisSchemaCoreTileEntity te)
@@ -815,9 +932,19 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		deletingRooms = true;
 	}
 	
+	public int getMaxEnergy(int level)
+	{
+		return maxEnergy + (maxEnergyInc * level);
+	}
+	
 	public int getMaxEnergy()
 	{
-		return maxEnergy;
+		return getMaxEnergy(getLevel(TardisUpgradeMode.ENERGY));
+	}
+	
+	public int getEnergyPerSecond(int level)
+	{
+		return energyPerSecond + (energyPerSecondInc * level);
 	}
 	
 	public int getEnergy()
@@ -829,7 +956,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(!sim)
 			energy += amount;
-		energy = Helper.clamp(energy,0,getMaxEnergy());
+		energy = Helper.clamp(energy,0,getMaxEnergy(getLevel(TardisUpgradeMode.ENERGY)));
 		return true;
 	}
 	
@@ -841,7 +968,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				energy -= amount;
 			return true;
 		}
-		energy = Helper.clamp(energy,0,getMaxEnergy());
+		energy = Helper.clamp(energy,0,getMaxEnergy(getLevel(TardisUpgradeMode.ENERGY)));
 		return false;
 	}
 	
@@ -850,9 +977,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return shields;
 	}
 	
-	public int getMaxShields()
+	public int getMaxShields(int level)
 	{
-		return maxShields;
+		return maxShields + (level * maxShieldsInc);
 	}
 	
 	public int getHull()
@@ -860,7 +987,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return hull;
 	}
 	
-	public int getMaxHull()
+	public int getMaxHull(int level)
 	{
 		return maxHull;
 	}
@@ -1212,12 +1339,31 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			
 			nbt.setInteger("shields",shields);
 			nbt.setInteger("hull",hull);
+			
+			if(modders != null && modders.size() > 0)
+			{
+				String mods = modders.get(0);
+				for(int i = 1;i<modders.size(); i++)
+				{
+					mods += "||" + modders.get(i);
+				}
+				nbt.setString("modders", mods);
+			}
 			if(inFlight())
 			{
 				nbt.setInteger("ttTO", timeTillTakenOff);
 				nbt.setInteger("ttL" , timeTillLanding);
 				nbt.setInteger("ttLI", timeTillLandingInt);
 				nbt.setInteger("ttLa", timeTillLanded);
+			}
+			if(upgradeLevels.size() > 0)
+			{
+				for(TardisUpgradeMode mode : upgradeLevels.keySet())
+				{
+					int am = upgradeLevels.get(mode);
+					if(am > 0)
+						nbt.setInteger("upgrade" + mode.name, am);
+				}
 			}
 		}
 	}
@@ -1248,12 +1394,32 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			shields  = nbt.getInteger("shields");
 			hull     = nbt.getInteger("hull");
 			
+			if(nbt.hasKey("modders"))
+			{
+				String[] mods	 = nbt.getString("modders").split("||");
+				if(mods != null && mods.length > 0)
+				{
+					for(String m : mods)
+						modders.add(m);
+				}
+			}
+			
 			if(nbt.hasKey("ttTO"))
 			{
 				timeTillTakenOff	= nbt.getInteger("ttTO");
 				timeTillLanding		= nbt.getInteger("ttL");
 				timeTillLandingInt	= nbt.getInteger("ttLI");
 				timeTillLanded		= nbt.getInteger("ttLa");
+			}
+			
+			for(TardisUpgradeMode mode :TardisUpgradeMode.values())
+			{
+				if(nbt.hasKey("upgrade"+mode.name))
+				{
+					int am = nbt.getInteger("upgrade"+mode.name);
+					if(am > 0)
+						upgradeLevels.put(mode, am);
+				}
 			}
 		}
 	}

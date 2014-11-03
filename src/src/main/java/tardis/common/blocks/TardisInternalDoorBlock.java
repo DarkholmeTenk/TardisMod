@@ -144,7 +144,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 					}
 					else if(!w.isRemote)
 					{
-						player.addChatMessage("You do not own this TARDIS");
+						player.addChatMessage(TardisCoreTileEntity.cannotModifyMessage);
 					}
 				}
 				else if(w.isRemote)

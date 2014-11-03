@@ -30,19 +30,6 @@ public class TardisCoordStore
 		return new TardisCoordStore(-x,y,-z);
 	}
 	
-	public boolean equals(TardisCoordStore other)
-	{
-		if(x == other.x && y == other.y && z == other.z)
-			return true;
-		return false;
-	}
-	
-	public int hashCode()
-	{
-		String temp = "" + x + "," + y + "," + z;
-		return temp.hashCode();
-	}
-	
 	public String toString()
 	{
 		return x + "," + y + "," + z;
@@ -63,6 +50,36 @@ public class TardisCoordStore
 			TardisOutput.print("TCS", "Trying to load coord " + from + " failed: " + e.getMessage(),TardisOutput.Priority.WARNING);
 		}
 		return null;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + x;
+		result = prime * result + y;
+		result = prime * result + z;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof TardisCoordStore))
+			return false;
+		TardisCoordStore other = (TardisCoordStore) obj;
+		if (x != other.x)
+			return false;
+		if (y != other.y)
+			return false;
+		if (z != other.z)
+			return false;
+		return true;
 	}
 
 }
