@@ -95,7 +95,7 @@ public class TardisControlRenderer
 		GL11.glDepthMask(false);
 		GL11.glScaled(0.025, 0.025, 0.025);
 		if(s != null)
-			fontRenderer.drawString(s.length() > 12 ? s.substring(0,12):s, 0, 0, 16579836);
+			fontRenderer.drawString(s.length() > 14 ? s.substring(0,14):s, 0, 0, 16579836);
 		GL11.glDepthMask(true);
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();

@@ -42,7 +42,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			lastButtonTT = -1;
 		}
 		
-		if(preparingToUpgrade != null && tt > (preparingToUpgradeTT + 40))
+		if(preparingToUpgrade != null && tt > (preparingToUpgradeTT + 80))
 		{
 			preparingToUpgrade = null;
 			preparingToUpgradeTT = -1;
@@ -91,13 +91,13 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 
 	public int getControlFromHit(HitPosition hit)
 	{
-		if(hit.within(2, 0.578, 0.694, 0.655, 0.768))
+		if(hit.within(2, 0.558, 0.690, 0.660, 0.768))
 			return 4;
-		else if(hit.within(2, 0.488, 0.694, 0.564, 0.768))
+		else if(hit.within(2, 0.488, 0.690, 0.564, 0.768))
 			return 5;
-		else if(hit.within(2, 0.578, 0.785, 0.655, 0.859))
+		else if(hit.within(2, 0.558, 0.780, 0.660, 0.859))
 			return 6;
-		else if(hit.within(2, 0.488, 0.795, 0.564, 0.859))
+		else if(hit.within(2, 0.488, 0.780, 0.565, 0.859))
 			return 7;
 		else if(hit.within(5, 0.393, 0.725, 0.545, 0.876))
 			return 10;
