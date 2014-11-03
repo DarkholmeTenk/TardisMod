@@ -289,8 +289,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 
 	public boolean activate(EntityPlayer player, int side)
 	{
-		/*if(ownerName != null)
-			leaveTardis(player,false);*/
+		if(!Helper.isServer())
+			return true;
+		sendDestinationStrings(player);
 		return true;
 	}
 	
