@@ -605,9 +605,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			}
 		}
 		temp[2] = Helper.clamp((dest-c)/6,-5,5);
-		c += temp[2];
-		temp[3] = Helper.clamp(dest-c    ,-5,5);
-		TardisOutput.print("TConTE","Found coords:" + Arrays.toString(temp),TardisOutput.Priority.DEBUG);
+		c += (6*temp[2]);
+		temp[3] = Helper.clamp(dest-c ,-5,5);
+		TardisOutput.print("TConTE","Found coords for "+dest+":" + Arrays.toString(temp),TardisOutput.Priority.DEBUG);
 		return temp;
 	}
 	
