@@ -1,9 +1,7 @@
 package tardis.common;
 
 import tardis.common.core.Helper;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
 public class TardisProxy
 {

@@ -139,6 +139,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	private void flightTick()
 	{
+		if(!Helper.isServer())
+			return;
 		if(inFlightTimer == 0)
 			Helper.playSound(this, "tardismod:takeoff", 0.75F);
 		totalFlightTimer++;
@@ -165,7 +167,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 						instability++;
 						if(shouldExplode())
 							explode = true;
-						worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+						sendUpdate();
 					}
 					instability = Helper.clamp(instability, 0, 10);
 				}
