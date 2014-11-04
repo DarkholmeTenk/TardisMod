@@ -72,9 +72,19 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 		return "";
 	}
 	
-	public static TardisCoreTileEntity getLinkedCore(ItemStack is)
+	public static int getLinkedDim(ItemStack is)
 	{
 		if(is.stackTagCompound != null)
+		{
+			int dim = is.stackTagCompound.getInteger("linkedTardis");
+			return dim;
+		}
+		return 0;
+	}
+
+	public static TardisCoreTileEntity getLinkedCore(ItemStack is)
+	{
+		if(is.stackTagCompound != null && is.stackTagCompound.hasKey("linkedTardis"))
 		{
 			int dim = is.stackTagCompound.getInteger("linkedTardis");
 			return Helper.getTardisCore(dim);

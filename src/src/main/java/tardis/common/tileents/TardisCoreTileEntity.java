@@ -283,7 +283,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				}
 			}
 			if(tickCount % 80 == 0)
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			{
+				worldObj.setBlock(xCoord, yCoord+1, zCoord, TardisMod.schemaComponentBlock.blockID, 8, 3);
+				sendUpdate();
+			}
 		}
 	}
 
@@ -1075,10 +1078,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return fluids;
 	}
 	
-	public void transmatEntity(Entity ent)
+	public boolean transmatEntity(Entity ent)
 	{
 		if(!hasFunction(TardisFunction.TRANSMAT))
-			return;
+			return false;
 		SimpleCoordStore to = getTransmatPoint();
 		int entWorld = Helper.getWorldID(ent.worldObj);
 		boolean trans = false;
@@ -1098,10 +1101,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "tardismod:transmat", 0.6F);
 			Helper.teleportEntity(ent, Helper.getWorldID(worldObj), to.x+0.5, to.y+1, to.z+0.5);
 			Helper.playSound(worldObj, to.x, to.y+1, to.z, "tardismod:transmat", 0.6F);
+			return true;
 		}
 		else
 		{
 			Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "tardismod:transmatFail", 0.6F);
+			return false;
 		}
 	}
 	
@@ -1265,6 +1270,15 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					fluids[i] = FluidStack.loadFluidStackFromNBT(invTag.getCompoundTag("i"+i));
 			}
 		}
+		if(nbt.hasKey("modders"))
+		{
+			String[] mods	 = nbt.getString("modders").split("||");
+			if(mods != null && mods.length > 0)
+			{
+				for(String m : mods)
+					modders.add(m);
+			}
+		}
 	}
 	
 	private void storeInv(NBTTagCompound nbt)
@@ -1312,6 +1326,15 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			nbt.setCompoundTag("transmatPoint", transmatPoint.writeToNBT());
 		storeInv(nbt);
 		storeFlu(nbt);
+		if(modders != null && modders.size() > 0)
+		{
+			String mods = modders.get(0);
+			for(int i = 1;i<modders.size(); i++)
+			{
+				mods += "||" + modders.get(i);
+			}
+			nbt.setString("modders", mods);
+		}
 	}
 
 	@Override
@@ -1340,16 +1363,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			nbt.setInteger("shld",shields);
 			nbt.setInteger("hull",hull);
 			
-			/*
-			if(modders != null && modders.size() > 0)
-			{
-				String mods = modders.get(0);
-				for(int i = 1;i<modders.size(); i++)
-				{
-					mods += "||" + modders.get(i);
-				}
-				nbt.setString("modders", mods);
-			}*/
+			
 			if(inFlight())
 			{
 				nbt.setInteger("ttTO", timeTillTakenOff);
@@ -1363,7 +1377,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				{
 					int am = upgradeLevels.get(mode);
 					if(am > 0)
-						nbt.setInteger("upgrade" + mode.name, am);
+						nbt.setInteger("uG" + mode.ordinal(), am);
 				}
 			}
 		}
@@ -1395,16 +1409,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			shields  = nbt.getInteger("shld");
 			hull     = nbt.getInteger("hull");
 			
-			if(nbt.hasKey("modders"))
-			{
-				String[] mods	 = nbt.getString("modders").split("||");
-				if(mods != null && mods.length > 0)
-				{
-					for(String m : mods)
-						modders.add(m);
-				}
-			}
-			
 			if(nbt.hasKey("ttTO"))
 			{
 				timeTillTakenOff	= nbt.getInteger("ttTO");
@@ -1415,9 +1419,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			
 			for(TardisUpgradeMode mode :TardisUpgradeMode.values())
 			{
-				if(nbt.hasKey("upgrade"+mode.name))
+				if(nbt.hasKey("uG"+mode.ordinal()))
 				{
-					int am = nbt.getInteger("upgrade"+mode.name);
+					int am = nbt.getInteger("uG"+mode.ordinal());
 					if(am > 0)
 						upgradeLevels.put(mode, am);
 				}

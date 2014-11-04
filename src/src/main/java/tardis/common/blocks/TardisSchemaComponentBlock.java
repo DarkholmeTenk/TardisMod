@@ -25,7 +25,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 	public void initData()
 	{
 		setUnlocalizedName("SchemaComponent");
-		setSubNames("DoorConnector","DoorConnectorHidden","ControlPanel","ConsoleBlock", "TardisDoorBottom","TardisDoorTop","ConsoleTop","Engine");
+		setSubNames("DoorConnector","DoorConnectorHidden","ControlPanel","ConsoleBlock", "TardisDoorBottom","TardisDoorTop","ConsoleTop","Engine","TimeRotor");
 	}
 
 	@Override

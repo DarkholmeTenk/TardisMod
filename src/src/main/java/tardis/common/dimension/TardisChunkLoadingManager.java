@@ -61,6 +61,8 @@ public class TardisChunkLoadingManager implements LoadingCallback, ITickHandler
 	
 	private void loadLoadables(Ticket t, IChunkLoader te)
 	{
+		if(t == null)
+			return;
 		ChunkCoordIntPair[] loadable = te.loadable();
 		if(loadable != null)
 			for(ChunkCoordIntPair load : loadable)

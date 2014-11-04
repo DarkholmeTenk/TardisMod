@@ -34,7 +34,10 @@ tile.TardisMod.InternalDoor.InternalDoor.name=Door
 tile.TardisMod.InternalDoor.InternalDoorPrimary.name=Primary Door
 tile.TardisMod.ConsoleBlock.name=Console
 tile.TardisMod.TardisCore.name=Time Rotor
+tile.TardisMod.SchemaComponent.TimeRotor.name=Time Rotor
 tile.TardisMod.StairBlock.name=Stair
+tile.TardisMod.TardisEngineBlock.name=Temporal Engine
+tile.TardisMod.SchemaComponent.Engine.name=Temporal Engine
 
 item.TardisMod.SonicScrewdriver.name=Sonic Screwdriver
 item.TardisMod.TardisKey.name=TARDIS Key

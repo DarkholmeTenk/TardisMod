@@ -38,6 +38,7 @@ import tardis.common.core.TardisPlayerRegistry;
 import tardis.common.core.TardisSoundHandler;
 import tardis.common.core.TardisTeleporter;
 import tardis.common.dimension.TardisChunkLoadingManager;
+import tardis.common.dimension.TardisDimensionEventHandler;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.items.TardisAbstractItem;
 import tardis.common.items.TardisComponentItem;
@@ -71,6 +72,7 @@ public class TardisMod
 	
 	@SidedProxy(clientSide="tardis.client.TardisClientProxy", serverSide="tardis.common.TardisProxy")
 	public static TardisProxy proxy;
+	public static TardisDimensionEventHandler dimEventHandler = new TardisDimensionEventHandler();
 	
 	private TardisConfigFile modConfig;
 	private TardisConfigFile blockConfig;
@@ -108,6 +110,7 @@ public class TardisMod
 	public static TardisKeyItem keyItem;
 	public static TardisSonicScrewdriverItem screwItem;
 	
+	public static boolean deathTransmatLive		= true;
 	public static int xpBase	= 80;
 	public static int xpInc		= 20;
 	public static int rfBase	= 50000;
@@ -141,6 +144,7 @@ public class TardisMod
 		maxFlu			= modConfig.getInt("Max mb per internal tank",16000);
 		numTanks		= modConfig.getInt("Number of internal tanks", 6);
 		numInvs			= modConfig.getInt("Number of internal inventory slots", 30);
+		deathTransmatLive	= modConfig.getBoolean("Live after death transmat", true);
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
 		
 		blockConfig = configHandler.getConfigFile("Blocks");
@@ -160,6 +164,7 @@ public class TardisMod
 		keyItem.initRecipes();
 		componentItem.initRecipes();
 		chunkManager = new TardisChunkLoadingManager();
+		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		TickRegistry.registerTickHandler(chunkManager, Side.SERVER);
 		ForgeChunkManager.setForcedChunkLoadingCallback(this, chunkManager);
 	}

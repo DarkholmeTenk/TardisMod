@@ -41,7 +41,7 @@ public class TardisPlayerRegistry extends WorldSavedData
 		catch(Exception e)
 		{
 			TardisOutput.print("TPlReg", e.getMessage(),TardisOutput.Priority.ERROR);
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return new TardisPlayerRegistry();
 	}

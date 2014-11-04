@@ -1,5 +1,6 @@
 package tardis.common;
 
+import tardis.common.core.Helper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -24,9 +25,6 @@ public class TardisProxy
 	
 	public World getWorld(int id)
 	{
-		MinecraftServer serv = MinecraftServer.getServer();
-		if(serv != null)
-			return serv.worldServerForDimension(id);
-		return DimensionManager.getWorld(id);
+		return Helper.getWorldServer(id);
 	}
 }

@@ -25,12 +25,13 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	public int lastButtonTT = -1;
 	private TardisUpgradeMode preparingToUpgrade = null;
 	private int preparingToUpgradeTT = -1;
+	private boolean litUp = false;
 	
 	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if(tt % 40 == 1)
+		if(tt % 40 == 1 && Helper.isServer())
 		{
 			verifyEngineBlocks();
 			getUsernames();
@@ -46,6 +47,8 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 		{
 			preparingToUpgrade = null;
 			preparingToUpgradeTT = -1;
+			if(Helper.isServer())
+				sendUpdate();
 		}
 	}
 	
@@ -63,8 +66,6 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			}
 			Collections.sort(users, String.CASE_INSENSITIVE_ORDER);
 			currentUsers = users.toArray(currentUsers);
-			currentUserID = Helper.clamp(currentUserID, 0, currentUsers.length);
-			TardisOutput.print("TETE", "CurrentUsers:" + currentUsers.length + " detected");
 		}
 		setUsername();
 	}
@@ -152,7 +153,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 				setUsername();
 			}
 			else if(control == 6)
-				pl.sendChatToPlayer(new ChatMessageComponent().addText("[TARDIS] " + currentPerson + " does " + (core.canModify(currentPerson)?"":"not ") + " have permission to modify this TARDIS"));
+				pl.sendChatToPlayer(new ChatMessageComponent().addText("[TARDIS] " + currentPerson + " does " + (core.canModify(currentPerson)?"":"not ") + "have permission to modify this TARDIS"));
 			else if(control == 7)
 			{
 				core.toggleModifier(pl, currentPerson);
@@ -178,7 +179,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 							{
 								preparingToUpgrade = mode;
 								preparingToUpgradeTT = tt;
-								pl.addChatMessage("[ENGINE] Sneak and activate the button to upgrade " + mode.name);
+								pl.addChatMessage("[ENGINE] Sneak and activate the button again to upgrade " + mode.name);
 							}
 						}
 					}
@@ -227,7 +228,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			if(cID == 4 || cID == 5 || cID == 7 || cID >= 10 && cID < 20)
 				return (lastButton == cID) ? 1.0 : 0;
 			if(cID == 6)
-				return core.canModify(currentPerson) ? 1 : 0.2;
+				return litUp ? 1 : 0.2;
 			if(cID >= 20 && cID < 30)
 			{
 				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(cID - 20);
@@ -281,21 +282,29 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	@Override
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
-		nbt.setString("currentPerson", currentPerson);
+		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
+		if(currentPerson != null)
+			nbt.setString("cP", currentPerson);
 		if(preparingToUpgrade != null)
-			nbt.setInteger("preparingToUpgrade", preparingToUpgrade.ordinal());
-		nbt.setInteger("lastButton"			, lastButton);
+			nbt.setInteger("ptU", preparingToUpgrade.ordinal());
+		else
+			nbt.setBoolean("ptUN", false);
+		nbt.setInteger("lB"			, lastButton);
+		nbt.setBoolean("lU", core.canModify(currentPerson));
 	}
 
 	@Override
 	public void readTransmittable(NBTTagCompound nbt)
 	{
-		currentPerson	= nbt.getString("currentPerson");
-		lastButton		= nbt.getInteger("lastButton");
+		currentPerson	= nbt.getString("cP");
+		lastButton		= nbt.getInteger("lB");
 		lastButtonTT	= tt;
+		litUp			= nbt.getBoolean("lU");
 		preparingToUpgradeTT = tt;
-		if(nbt.hasKey("preparingToUpgrade"))
+		if(nbt.hasKey("ptU"))
 			preparingToUpgrade = TardisUpgradeMode.getUpgradeMode(nbt.getInteger("preparingToUpgrade"));
+		else if(nbt.hasKey("ptUN"))
+			preparingToUpgrade = null;
 	}
 
 }
