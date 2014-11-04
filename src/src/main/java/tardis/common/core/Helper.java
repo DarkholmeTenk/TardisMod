@@ -425,7 +425,10 @@ public class Helper
 
 	public static WorldServer getWorldServer(int d)
 	{
-		return MinecraftServer.getServer().worldServerForDimension(d);
+		MinecraftServer serv = MinecraftServer.getServer();
+		if(serv != null)
+			return serv.worldServerForDimension(d);
+		return null;
 	}
 	
 	public static int getWorldID(World w)
