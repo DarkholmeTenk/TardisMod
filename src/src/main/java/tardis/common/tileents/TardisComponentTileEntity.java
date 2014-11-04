@@ -11,11 +11,13 @@ import appeng.api.me.tiles.IGridTileEntity;
 import appeng.api.me.util.IGridInterface;
 import tardis.TardisMod;
 import tardis.api.IActivatable;
+import tardis.api.IChunkLoader;
 import tardis.api.IScrewable;
 import tardis.api.IWatching;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.items.TardisComponentItem;
 import tardis.common.tileents.components.ITardisComponent;
 import tardis.common.tileents.components.TardisComponentGrid;
@@ -26,6 +28,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -34,7 +37,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 public class TardisComponentTileEntity extends TardisAbstractTileEntity implements IScrewable, IActivatable, IWatching, IGridTeleport,
-																		IGridTileEntity, IEnergyHandler, IInventory, IFluidHandler
+																		IGridTileEntity, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
 {
 	private HashMap<Integer,ITardisComponent> comps = new HashMap<Integer,ITardisComponent>();
 	private boolean valid = false;
@@ -596,6 +599,38 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 			{
 				if(comp instanceof IFluidHandler)
 					return ((IFluidHandler)comp).getTankInfo(from);
+			}
+		return null;
+	}
+
+	@Override
+	public boolean shouldChunkload()
+	{
+		if(valid && !compAdded)
+			for(ITardisComponent comp : comps.values())
+			{
+				if(comp instanceof IChunkLoader)
+					return ((IChunkLoader)comp).shouldChunkload();
+			}
+		return false;
+	}
+
+	@Override
+	public SimpleCoordStore coords()
+	{
+		if(coords == null)
+			coords = new SimpleCoordStore(this);
+		return coords;
+	}
+
+	@Override
+	public ChunkCoordIntPair[] loadable()
+	{
+		if(valid && !compAdded)
+			for(ITardisComponent comp : comps.values())
+			{
+				if(comp instanceof IChunkLoader)
+					return ((IChunkLoader)comp).loadable();
 			}
 		return null;
 	}

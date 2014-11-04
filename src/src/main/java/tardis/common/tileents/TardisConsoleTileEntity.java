@@ -42,6 +42,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	private boolean saveCoords = false;
 	private HashMap<Integer,ControlStateStore> states = new HashMap<Integer,ControlStateStore>();
+	private ControlStateStore currentLanding = null;
+	private ControlStateStore lastLanding = null;
 	
 	private int rdpCounter = 0;
 	private boolean roomDeletePrepare = false;
@@ -250,6 +252,10 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				activateControl(pl, 901);
 			else if(hit.within(1, 2.369, 0.801, 2.491, 0.894))	//Load/Save Switch
 				activateControl(pl, 900);
+			else if(hit.within(1, 2.377, 0.703, 2.498, 0.800))
+				activateControl(pl, 902);
+			else if(hit.within(1, 2.375, 0.610, 2.497, 0.701))
+				activateControl(pl, 903);
 			else if(hit.within(1, 1.700, 0.513, 2.355, 0.898))
 			{
 				int jx = (int)(5*(hit.posZ - 1.700) / (2.355 - 1.700));
@@ -458,6 +464,18 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		}
 		else if(controlID == 900)
 			saveCoords = !saveCoords;
+		else if(controlID == 902 || controlID == 903)
+		{
+			lastButton = controlID;
+			lastButtonTT = tickTimer;
+			if(!core.inFlight())
+			{
+				ControlStateStore toLoad = controlID == 902 ? lastLanding : currentLanding;
+				loadControls(toLoad);
+				primed = false;
+				regulated = false;
+			}
+		}
 		else if(controlID >= 1000) //Flight instabilitiers
 		{
 			if(controlID >= 1000 && controlID < 1023)
@@ -670,6 +688,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	public void loadControls(ControlStateStore state)
 	{
+		if(state == null)
+			return;
 		if(state.isValid())
 		{
 			TardisOutput.print("TConTE", "Loading state");
@@ -685,10 +705,15 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		}
 	}
 	
+	private ControlStateStore getCurrentControlState()
+	{
+		return new ControlStateStore(facing,dimControl,xControls,yControls,zControls,landGroundControl,relativeCoords);
+	}
+	
 	public void saveControls(int stateNum)
 	{
 		TardisOutput.print("TConTE", "Saving state to num:"+stateNum);
-		ControlStateStore s = new ControlStateStore(facing,dimControl,xControls,yControls,zControls,landGroundControl,relativeCoords);
+		ControlStateStore s = getCurrentControlState();
 		states.put(stateNum, s);
 	}
 	
@@ -774,7 +799,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				return (regulated ? 1 : 0);
 			if(controlID == 42)
 				return core.inFlight() ? 1 : 0;
-			if(controlID == 50 || controlID == 51 || controlID == 5)
+			if(controlID == 50 || controlID == 51 || controlID == 5 || controlID == 902 || controlID ==903)
 				return lastButton == controlID ? 1 : 0;
 			if(controlID == 52)
 				return dayNightControl ? 1 : 0;
@@ -868,6 +893,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	public void land()
 	{
+		lastLanding = currentLanding;
+		currentLanding = getCurrentControlState();
 		primed = false;
 		regulated = false;
 	}
@@ -923,6 +950,10 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			if(nbt.hasKey("css"+i))
 				states.put(i, ControlStateStore.readFromNBT(nbt.getCompoundTag("css"+i)));
 		}
+		if(nbt.hasKey("lastLandingCSS"))
+			lastLanding = ControlStateStore.readFromNBT(nbt.getCompoundTag("lastLandingCSS"));
+		if(nbt.hasKey("currentLandingCSS"))
+			currentLanding = ControlStateStore.readFromNBT(nbt.getCompoundTag("currentLandingCSS"));
 		clampControls();
 	}
 	
@@ -939,6 +970,18 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				states.get(i).writeToNBT(state);
 				nbt.setCompoundTag("css"+i, state);
 			}
+		}
+		if(lastLanding != null)
+		{
+			NBTTagCompound lT = new NBTTagCompound();
+			lastLanding.writeToNBT(lT);
+			nbt.setCompoundTag("lastLandingCSS", lT);
+		}
+		if(currentLanding != null)
+		{
+			NBTTagCompound lT = new NBTTagCompound();
+			currentLanding.writeToNBT(lT);
+			nbt.setCompoundTag("currentLandingCSS", lT);
 		}
 	}
 

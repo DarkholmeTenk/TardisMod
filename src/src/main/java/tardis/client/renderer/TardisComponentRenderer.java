@@ -60,7 +60,7 @@ public class TardisComponentRenderer extends TardisAbstractBlockRenderer
 		if(te instanceof TardisComponentTileEntity)
 		{
 			TardisComponentTileEntity tcte = ((TardisComponentTileEntity)te);
-			double ang = 360 / TardisTEComponent.values().length;
+			/*double ang = 360 / TardisTEComponent.values().length;
 			if(tcte.hasComponent(TardisTEComponent.GRID))
 				renderStick("stickGrid",0.1,0, 0*ang);
 			if(tcte.hasComponent(TardisTEComponent.TRANSMAT))
@@ -71,6 +71,22 @@ public class TardisComponentRenderer extends TardisAbstractBlockRenderer
 				renderStick("stickInv",0.1,0,3*ang);
 			if(tcte.hasComponent(TardisTEComponent.FLUID))
 				renderStick("stickFlu",0.1,0,4*ang);
+			if(tcte.hasComponent(TardisTEComponent.CHUNK))
+				renderStick("stickChLo",0.1,0,4*ang);
+			if(tcte.hasComponent(TardisTEComponent.COMPUTER))
+				renderStick("stickPer",0.1,0,4*ang);*/
+			int count =0;
+			for(TardisTEComponent comp : TardisTEComponent.values())
+				if(tcte.hasComponent(comp))
+					count++;
+			if(count > 0)
+			{
+				double ang = 360 / count;
+				int i = 0;
+				for(TardisTEComponent comp : TardisTEComponent.values())
+					if(tcte.hasComponent(comp))
+						renderStick(comp.tex,0.1,0,(i++)*ang);
+			}
 		}
 	}
 

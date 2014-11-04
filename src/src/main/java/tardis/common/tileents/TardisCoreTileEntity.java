@@ -408,7 +408,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					
 					if(softBlock(ext,exteriorX+dx, exteriorY, exteriorZ+dz) && softBlock(ext,exteriorX+dx, exteriorY, exteriorZ+dz))
 					{
-						Helper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx), exteriorY+1, exteriorZ+0.5+(dz),rot);
+						Helper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx), exteriorY, exteriorZ+0.5+(dz),rot);
 					}
 					else
 						player.addChatMessage("[TARDIS]The door is obstructed");
@@ -1440,7 +1440,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	@Override
 	public SimpleCoordStore coords()
 	{
-		return new SimpleCoordStore(this);
+		return coords;
 	}
 
 	@Override

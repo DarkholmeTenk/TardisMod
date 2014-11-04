@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
+import tardis.api.IChunkLoader;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.store.SimpleCoordStore;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
-public class TardisTileEntity extends TardisAbstractTileEntity
+public class TardisTileEntity extends TardisAbstractTileEntity implements IChunkLoader
 {
 	private int fadeTimer = 0;
 	
@@ -237,5 +240,27 @@ public class TardisTileEntity extends TardisAbstractTileEntity
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public boolean shouldChunkload()
+	{
+		return true;
+	}
+
+	@Override
+	public SimpleCoordStore coords()
+	{
+		if(coords == null)
+			coords = new SimpleCoordStore(this);
+		return coords;
+	}
+
+	@Override
+	public ChunkCoordIntPair[] loadable()
+	{
+		ChunkCoordIntPair[] loadable = new ChunkCoordIntPair[1];
+		loadable[0] = coords().toChunkCoords();
+		return loadable;
 	}
 }

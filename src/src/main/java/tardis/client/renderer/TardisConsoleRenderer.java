@@ -109,6 +109,8 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		compRender.renderPushSwitch(tess, tce, 900, -0.95, -0.2, 1.37, -39, 0, 0, 0.5, 0.5, 0.5);				//ID 900 save/load switch
 		if(core!=null && core.hasFunction(TardisFunction.SENSORS))
 			compRender.renderScreen(tess, tce, 54, "scanner", 0.47, -0.38, 1.1, 43, 180, 0, 0.3, 0.3, 0.3);
+		compRender.renderButton(tess, tce, 902, -0.95,-0.29,1.26,  -39,0,0,  0.5,0.5,0.5);
+		compRender.renderButton(tess, tce, 903, -0.95,-0.38,1.15,  -39,0,0,  0.5,0.5,0.5);
 	}
 	
 	private void renderBackPanel(Tessellator tess, TardisConsoleTileEntity tce, TardisCoreTileEntity core)

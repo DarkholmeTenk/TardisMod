@@ -47,3 +47,4 @@ item.TardisMod.Component.Mass-Energy.name=TARDIS Cable Interface - ME Cable
 item.TardisMod.Component.Inv.name=TARDIS Cable Interface - Itemduct
 item.TardisMod.Component.Fluid.name=TARDIS Cable Interface - Fluiduct
 item.TardisMod.Component.RF.name=TARDIS Cable Interface - Energy Conduit
+item.TardisMod.Component.ChunkLoader.name=TARDIS Cable Interface - Chunk Loader

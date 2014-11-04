@@ -48,6 +48,12 @@ public class TardisComponentItem extends TardisAbstractItem
 				'r', Item.enderPearl,
 				'i', Item.ingotIron));
 		
+		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.CHUNK), true, "grg","iii","gdg",
+				'g', Item.goldNugget,
+				'r', Item.enderPearl,
+				'd', Item.diamond,
+				'i', Item.ingotIron));
+		
 		ItemStack i = Materials.matQuartz;
 		if(i != null)
 		{

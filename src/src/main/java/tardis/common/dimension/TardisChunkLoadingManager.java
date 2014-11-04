@@ -61,14 +61,16 @@ public class TardisChunkLoadingManager implements LoadingCallback, ITickHandler
 	
 	private void loadLoadables(Ticket t, IChunkLoader te)
 	{
-		if(t == null)
+		if(t == null || te == null)
 			return;
 		ChunkCoordIntPair[] loadable = te.loadable();
 		if(loadable != null)
+		{
 			for(ChunkCoordIntPair load : loadable)
 				ForgeChunkManager.forceChunk(t, load);
-		NBTTagCompound nbt = t.getModData();
-		nbt.setCompoundTag("coords", te.coords().writeToNBT());
+			NBTTagCompound nbt = t.getModData();
+			nbt.setCompoundTag("coords", te.coords().writeToNBT());
+		}
 	}
 	
 	private Ticket getTicket(IChunkLoader te,World world)
@@ -96,7 +98,6 @@ public class TardisChunkLoadingManager implements LoadingCallback, ITickHandler
 					monitorableChunkLoaders.put(pos, getTicket(((IChunkLoader)te),w));
 				else if(t != null && ((IChunkLoader)te).shouldChunkload())
 					loadLoadables(t, (IChunkLoader)te);
-					
 			}
 			else
 			{

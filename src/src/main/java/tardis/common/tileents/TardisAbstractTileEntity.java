@@ -9,6 +9,7 @@ import tardis.TardisMod;
 import tardis.api.IChunkLoader;
 import tardis.client.TardisClientProxy;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.store.SimpleCoordStore;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
@@ -22,6 +23,7 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	public boolean init = false;
 	public int tt = 0;
 	public static Random rand = new Random();
+	public SimpleCoordStore coords = null;
 	@Override
 	public Packet getDescriptionPacket()
 	{
@@ -40,6 +42,8 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	@Override
 	public void updateEntity()
 	{
+		if(coords == null)
+			coords = new SimpleCoordStore(this);
 		tt++;
 		if(!init)
 		{
