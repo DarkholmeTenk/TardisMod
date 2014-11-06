@@ -165,13 +165,15 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	
 	public void doorActivated(World world, int x, int y, int z, EntityPlayer player)
 	{
+		if(!Helper.isServer())
+			return;
 		if(!inFlight())
 		{
 			if(linkedDimension == null)
 			{
 				if(!TardisMod.plReg.hasTardis(player.username))
 					linkedDimension = Helper.generateTardisInterior(player,this);
-				else if(Helper.isServer())
+				else
 					player.addChatMessage("You already own a TARDIS");
 			}
 			else
