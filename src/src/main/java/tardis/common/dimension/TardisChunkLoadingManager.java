@@ -69,7 +69,12 @@ public class TardisChunkLoadingManager implements LoadingCallback, ITickHandler
 			for(ChunkCoordIntPair load : loadable)
 				ForgeChunkManager.forceChunk(t, load);
 			NBTTagCompound nbt = t.getModData();
-			nbt.setCompoundTag("coords", te.coords().writeToNBT());
+			if(nbt != null)
+			{
+				SimpleCoordStore coords = te.coords();
+				if(coords != null)
+					nbt.setCompoundTag("coords", te.coords().writeToNBT());
+			}
 		}
 	}
 	
