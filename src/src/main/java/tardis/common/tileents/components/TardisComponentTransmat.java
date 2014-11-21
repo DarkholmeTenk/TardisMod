@@ -43,7 +43,7 @@ public class TardisComponentTransmat extends TardisAbstractComponent implements 
 					{
 						if(parentObj.worldObj.isAirBlock(xCoord, yCoord+1, zCoord)&&parentObj.worldObj.isAirBlock(xCoord, yCoord+2, zCoord))
 						{
-							core.setTransmatPoint(myCoord);
+							core.setTransmatPoint(new SimpleCoordStore(player));
 							c.addText("TARDIS transmat point set to " + myCoord.toSimpleString());
 						}
 						else

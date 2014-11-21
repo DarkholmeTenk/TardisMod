@@ -1,6 +1,7 @@
 package tardis.common.core.store;
 
 import tardis.common.core.Helper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -41,6 +42,15 @@ public class SimpleCoordStore
 		z = zin;
 	}
 	
+	public SimpleCoordStore(EntityPlayer player)
+	{
+		world = Helper.getWorldID(player.worldObj);
+		worldObj = player.worldObj;
+		x = (int) Math.floor(player.posX);
+		y = (int) Math.floor(player.posY);
+		z = (int) Math.floor(player.posZ);
+	}
+
 	public World getWorldObj()
 	{
 		return worldObj;

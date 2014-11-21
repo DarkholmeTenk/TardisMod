@@ -74,9 +74,9 @@ public class TardisMod
 	public static TardisProxy proxy;
 	public static TardisDimensionEventHandler dimEventHandler = new TardisDimensionEventHandler();
 	
-	private TardisConfigFile modConfig;
-	private TardisConfigFile blockConfig;
-	private TardisConfigFile itemConfig;
+	public static TardisConfigFile modConfig;
+	public static TardisConfigFile blockConfig;
+	public static TardisConfigFile itemConfig;
 	
 	public static TardisTeleporter teleporter = null;
 	public static TardisConfigHandler configHandler;
@@ -110,6 +110,7 @@ public class TardisMod
 	public static TardisKeyItem keyItem;
 	public static TardisSonicScrewdriverItem screwItem;
 	
+	public static float tardisVol = 1f;
 	public static boolean deathTransmatLive		= true;
 	public static int xpBase	= 80;
 	public static int xpInc		= 20;
@@ -135,6 +136,8 @@ public class TardisMod
 		providerID		= modConfig.getInt("Dimension Provider ID", 54);
 		tardisLoaded	= modConfig.getBoolean("Dimension always loaded", true);
 		keyInHand		= modConfig.getBoolean("Key needs to be in hand", true);
+		
+		tardisVol		= (float) modConfig.getDouble("Tardis Volume", 1);
 		
 		xpBase			= modConfig.getInt("xp base amount", 80);
 		xpInc			= modConfig.getInt("xp increase", 20);

@@ -58,7 +58,7 @@ public class TardisPacketHandler implements IPacketHandler
 				int y = nbt.getInteger("y");
 				int z = nbt.getInteger("z");
 				if(w != null)
-					w.playSound(x+0.5, y+0.5, z+0.5, sound, vol, 1, true);
+					w.playSound(x+0.5, y+0.5, z+0.5, sound, vol * TardisMod.tardisVol, 1, true);
 			}
 		}
 		catch(Exception e)

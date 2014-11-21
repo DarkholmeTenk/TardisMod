@@ -3,13 +3,10 @@ package tardis.common.tileents;
 import java.util.ArrayList;
 import java.util.List;
 
-import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
-import tardis.common.core.schema.TardisPartBlueprint;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

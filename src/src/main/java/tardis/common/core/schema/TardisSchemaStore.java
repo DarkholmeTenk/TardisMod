@@ -1,8 +1,12 @@
 package tardis.common.core.schema;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
+import appeng.api.Blocks;
+
 import tardis.TardisMod;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -17,6 +21,7 @@ public class TardisSchemaStore
 	public static final TardisSchemaStore airBlock = new TardisSchemaStore(0,0,null);
 	
 	private static HashSet<Integer> bannedIDs = null;
+	private static HashMap<String,Integer> blockCache = new HashMap<String,Integer>();
 	
 	public int getBlockID()
 	{
@@ -149,12 +154,20 @@ public class TardisSchemaStore
 			return "slabBlock";
 		if(id == TardisMod.componentBlock.blockID)
 			return "compBlock";
-		
+		Block[] bList = Block.blocksList;
+		if(id > 0 && bList.length > id)
+		{
+			Block b = bList[id];
+			if(b != null)
+				return b.getUnlocalizedName();
+		}
 		return null;
 	}
 	
 	private static Integer getIDFromName(String name)
 	{
+		if(name == null)
+			return null;
 		if(name.equals("decoBlock"))
 			return TardisMod.decoBlock.blockID;
 		if(name.equals("internalDoorBlock"))
@@ -179,6 +192,24 @@ public class TardisSchemaStore
 			return TardisMod.slabBlock.blockID;
 		if(name.equals("compBlock"))
 			return TardisMod.componentBlock.blockID;
+		Integer b = null;
+		if(blockCache.containsKey(name))
+			b = blockCache.get(name);
+		else
+		{
+			Block[] bList = Block.blocksList;
+			for(int i = 0; i<4096;i++)
+			{
+				Block block = bList[i];
+				if(block != null && block.getUnlocalizedName().equals(name))
+				{
+					blockCache.put(name,i);
+					b = i;
+				}
+			}
+		}
+		if(b != null)
+			return b;
 		return null;
 	}
 	

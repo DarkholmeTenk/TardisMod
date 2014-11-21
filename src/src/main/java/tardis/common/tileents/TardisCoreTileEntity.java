@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import appeng.api.DimentionalCoord;
 import tardis.TardisMod;
 import tardis.api.IActivatable;
@@ -42,6 +45,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private int exteriorY;
 	private int exteriorZ;
 	private float lastProximity = 0;
+	private double lastSpin = 0;
 	
 	private int tickCount = 0;
 	
@@ -66,7 +70,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private int		tardisLevel = 0;
 	
 	private SimpleCoordStore transmatPoint = null;
-	
 	private int shields;
 	private int hull;
 	private boolean deletingRooms = false;
@@ -385,7 +388,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
 	{
-		if(!inFlight)
+		if(!inFlight && hasValidExterior())
 		{
 			if(ignoreLock || canOpenLock(player,true))
 			{
@@ -513,7 +516,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	private void placeBox()
 	{
-		if(worldObj.isRemote)
+		if(worldObj.isRemote || hasValidExterior())
 			return;
 		
 		TardisConsoleTileEntity con = getConsole();
@@ -648,6 +651,15 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		{
 			return 0;
 		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public double getSpin()
+	{
+		double slowness = 3;
+		if(inFlight)
+			lastSpin = ((lastSpin + 1) % (360 * slowness));
+		return lastSpin / slowness;
 	}
 	
 	public void setExterior(World w, int x, int y, int z)
