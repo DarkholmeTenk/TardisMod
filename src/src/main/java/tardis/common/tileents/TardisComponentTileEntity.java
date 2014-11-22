@@ -337,7 +337,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	public boolean canConnectEnergy(ForgeDirection from)
 	{
 		if(!valid || compAdded)
-			return false;
+			return true;
 		for(ITardisComponent comp : comps.values())
 		{
 			if(comp instanceof IEnergyHandler)

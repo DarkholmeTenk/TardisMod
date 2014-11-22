@@ -382,6 +382,8 @@ public class TardisPartBlueprint
 	
 	public boolean roomFor(World w,int x, int y, int z,int facing)
 	{
+		if(y < 1 || y + bounds[4] > 255)
+			return false;
 		for(TardisCoordStore coord : storage.keySet())
 		{
 			TardisCoordStore rotated = coord;
