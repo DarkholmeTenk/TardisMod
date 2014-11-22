@@ -3,9 +3,8 @@ package tardis.common.items;
 import java.util.ArrayList;
 import java.util.List;
 
-import buildcraft.api.tools.IToolWrench;
-
 import cofh.api.block.IDismantleable;
+import cofh.api.item.IToolHammer;
 import cofh.api.tileentity.IReconfigurableFacing;
 
 import tardis.TardisMod;
@@ -22,17 +21,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IToolWrench
+public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IToolHammer
 {
 
-	public TardisSonicScrewdriverItem(int par1)
+	public TardisSonicScrewdriverItem()
 	{
-		super(par1);
+		super();
 		setUnlocalizedName("SonicScrewdriver");
 		setMaxDamage(64);
 		setMaxStackSize(1);
@@ -113,7 +112,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 			if(nbt == null)
 				nbt = is.stackTagCompound = new NBTTagCompound();
 			NBTTagCompound storeNBT = toStore.writeToNBT();
-			nbt.setCompoundTag("coordStore", storeNBT);
+			nbt.setTag("coordStore", storeNBT);
 		}
 	}
 	
@@ -161,10 +160,10 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 		{
 			if(o instanceof String)
 			{
-				ChatMessageComponent c = new ChatMessageComponent();
-				c.setColor(EnumChatFormatting.AQUA);
-				c.addText("[Sonic Screwdriver]" + (String)o);
-				player.sendChatToPlayer(c);
+				ChatComponentText c = new ChatComponentText("");
+				c.getChatStyle().setColor(EnumChatFormatting.AQUA);
+				c.appendText("[Sonic Screwdriver]" + (String)o);
+				player.addChatMessage(c);
 			}
 		}
 	}
@@ -178,21 +177,22 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 			{
 				if(hitPos != null)
 				{
-					Block b = Helper.getBlock(w, hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+					Block b = w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 					if(b != null && b instanceof IDismantleable)
 					{
 						IDismantleable dis = (IDismantleable) b;
 						if(dis.canDismantle(player, w, hitPos.blockX, hitPos.blockY, hitPos.blockZ))
 						{
-							ItemStack s = dis.dismantleBlock(player, w, hitPos.blockX, hitPos.blockY, hitPos.blockZ, false);
-							if(s != null)
-								Helper.giveItemStack(player, s);
-							wrenchUsed(player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+							ArrayList<ItemStack> s = dis.dismantleBlock(player, w, hitPos.blockX, hitPos.blockY, hitPos.blockZ, false);
+							for(ItemStack tis : s)
+								if(tis != null)
+									Helper.giveItemStack(player, tis);
+							toolUsed(is,player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 						}
 					}
 					else
 					{
-						TileEntity te = w.getBlockTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+						TileEntity te = w.getTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 						return te != null;
 					}
 				}
@@ -201,30 +201,30 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 			{
 				if(hitPos != null)
 				{
-					if(w.getBlockId(hitPos.blockX, hitPos.blockY, hitPos.blockZ) == TardisMod.decoBlock.blockID)
+					if(w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ) == TardisMod.decoBlock)
 					{
 						int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 						if(m == 2 || m == 4)
 						{
 							TardisCoreTileEntity core = Helper.getTardisCore(w);
-							if(core.canModify(player))
+							if(core == null || core.canModify(player))
 							{
-								w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.componentBlock.blockID, m==2?0:1, 3);
-								wrenchUsed(player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+								w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.componentBlock, m==2?0:1, 3);
+								toolUsed(is,player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 								return true;
 							}
 							else
-								player.sendChatToPlayer(new ChatMessageComponent().addText(TardisCoreTileEntity.cannotModifyMessage));
+								player.addChatMessage(TardisCoreTileEntity.cannotModifyMessage);
 						}
 					}
 					else
 					{
-						TileEntity te = w.getBlockTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+						TileEntity te = w.getTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 						if(te instanceof IReconfigurableFacing)
 						{
 							if(((IReconfigurableFacing)te).rotateBlock())
 							{
-								wrenchUsed(player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+								toolUsed(is,player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 								return true;
 							}
 						}
@@ -272,9 +272,9 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 			{
 				if(core != null)
 				{
-					if(Helper.getWorldID(core.worldObj) == Helper.getWorldID(player.worldObj))
+					if(Helper.getWorldID(core.getWorldObj()) == Helper.getWorldID(player.worldObj))
 					{
-						player.addChatMessage("[Sonic Screwdriver]You are in the TARDIS");
+						player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]You are in the TARDIS"));
 					}
 					else
 					{
@@ -283,16 +283,16 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 							TardisTileEntity ext = core.getExterior();
 							if(ext != null)
 							{
-								if(ext.worldObj.provider.dimensionId != player.worldObj.provider.dimensionId)
-									player.addChatMessage("[Sonic Screwdriver]The TARDIS does not appear to be in this dimension");
+								if(Helper.getWorldID(ext) != player.worldObj.provider.dimensionId)
+									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS does not appear to be in this dimension"));
 								else
-									player.addChatMessage("[Sonic Screwdriver]The TARDIS is at ["+ext.xCoord+","+ext.yCoord+","+ext.zCoord+"]");
+									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS is at ["+ext.xCoord+","+ext.yCoord+","+ext.zCoord+"]"));
 							}
 						}
 					}
 				}
 				else
-					player.addChatMessage("[Sonic Screwdriver]The TARDIS could not be located");
+					player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS could not be located"));
 			}
 			else if(mode.equals(TardisScrewdriverMode.Transmat))
 			{
@@ -307,10 +307,10 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 					if(con.setControls(Helper.getWorldID(player.worldObj), (int) player.posX, (int) player.posY, (int) player.posZ, false))
 					{
 						if(core.takeOff(true,player))
-							player.addChatMessage("[Sonic Screwdriver]TARDIS inbound");
+							player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS inbound"));
 					}
 					else
-						player.addChatMessage("[Sonic Screwdriver]TARDIS recall failed");
+						player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS recall failed"));
 				}
 			}
 			else if(mode.equals(TardisScrewdriverMode.Dismantle) || mode.equals(TardisScrewdriverMode.Reconfigure))
@@ -338,7 +338,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
     }
 	
 	@Override
-	public boolean shouldPassSneakingClickToBlock(World w, int x, int y, int z)
+	public boolean doesSneakBypassUse(World w, int x, int y, int z,EntityPlayer player)
 	{
 		return true;
 	}
@@ -351,9 +351,8 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 	}
 
 	@Override
-	public boolean canWrench(EntityPlayer player, int x, int y, int z)
+	public boolean isUsable(ItemStack is,EntityLivingBase player, int x, int y, int z)
 	{
-		ItemStack is = player.getHeldItem();
 		if(is != null)
 		{
 			TardisScrewdriverMode mode = getMode(is);
@@ -364,9 +363,10 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 	}
 
 	@Override
-	public void wrenchUsed(EntityPlayer player, int x, int y, int z)
+	public void toolUsed(ItemStack is, EntityLivingBase player, int x, int y, int z)
 	{
-		Helper.playSound(Helper.getWorldID(player.worldObj), x, y, z, "tardismod:sonic", 0.5F);
+		float speed = (float)(player.getRNG().nextDouble() * 0.5) + 1;
+		Helper.playSound(Helper.getWorldID(player.worldObj), x, y, z, "tardismod:sonic", 0.5F,speed);
 		player.swingItem();
 	}
 

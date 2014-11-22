@@ -6,10 +6,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import appeng.api.networking.IGridNode;
+import appeng.api.util.DimensionalCoord;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-import appeng.api.DimentionalCoord;
 import tardis.TardisMod;
 import tardis.api.IActivatable;
 import tardis.api.IChunkLoader;
@@ -27,10 +29,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
@@ -38,8 +41,8 @@ import net.minecraftforge.fluids.FluidStack;
 public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable, IChunkLoader
 {
 	private static TardisConfigFile config;
-	public static final String cannotModifyMessage	= "[TARDIS] You do not have permission to modify this TARDIS";
-	public static final String cannotUpgradeMessage	= "[TARDIS] You do not have enough upgrade points";
+	public static final ChatComponentText cannotModifyMessage	= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS");
+	public static final ChatComponentText cannotUpgradeMessage	= new ChatComponentText("[TARDIS] You do not have enough upgrade points");
 	private int exteriorWorld;
 	private int exteriorX;
 	private int exteriorY;
@@ -93,7 +96,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private static ChunkCoordIntPair[] loadable = null;
 	private boolean forcedFlight = false;
 	
-	private ArrayList<SimpleCoordStore> gridLinks = new ArrayList<SimpleCoordStore>(); 
+	private ArrayList<SimpleCoordStore> gridLinks = new ArrayList<SimpleCoordStore>();
+	public IGridNode grid = null;
 	private int rfStored;
 	private ItemStack[] items;
 	private FluidStack[] fluids;
@@ -145,7 +149,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(!Helper.isServer())
 			return;
 		if(inFlightTimer == 0)
-			Helper.playSound(this, "tardismod:takeoff", 0.75F);
+			Helper.playSound(this, "takeoff", 0.75F);
 		totalFlightTimer++;
 		
 		if(inCoordinatedFlight() || forcedFlight)
@@ -184,7 +188,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				World w = Helper.getWorld(exteriorWorld);
 				if(w != null)
 				{
-					if(w.getBlockId(exteriorX,exteriorY,exteriorZ) == TardisMod.tardisBlock.blockID)
+					if(w.getBlock(exteriorX,exteriorY,exteriorZ) == TardisMod.tardisBlock)
 					{
 						w.setBlockToAir(exteriorX, exteriorY, exteriorZ);
 						w.setBlockToAir(exteriorX, exteriorY+1, exteriorZ);
@@ -199,20 +203,20 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			if(inFlightTimer < timeTillLanding)
 			{
 				if(flightTimer % 69 == 0 && inFlight)
-					Helper.playSound(this, "tardismod:engines", 0.75F);
+					Helper.playSound(this, "engines", 0.75F);
 				flightTimer++;
 			}
 			else
 			{
 				if(flightTimer % 69 == 0 && inFlightTimer < timeTillLandingInt)
-					Helper.playSound(this, "tardismod:engines", 0.75F);
+					Helper.playSound(this, "engines", 0.75F);
 				flightTimer++;
 				
 				if(inFlightTimer == timeTillLanding)
 					placeBox();
 				
 				if(inFlightTimer == timeTillLandingInt)
-					Helper.playSound(this, "tardismod:landingInt", 0.75F);
+					Helper.playSound(this, "landingInt", 0.75F);
 				
 				if(inFlightTimer >= timeTillLanded)
 					land();
@@ -272,7 +276,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				if(i.hasNext())
 				{
 					SimpleCoordStore coord = i.next();
-					TileEntity te = worldObj.getBlockTileEntity(coord.x, coord.y, coord.z);
+					TileEntity te = worldObj.getTileEntity(coord.x, coord.y, coord.z);
 					if(te != null && te instanceof TardisSchemaCoreTileEntity)
 					{
 						TardisOutput.print("TCTE", "Removing room @ " + coord);
@@ -289,7 +293,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			}
 			if(tickCount % 80 == 0)
 			{
-				worldObj.setBlock(xCoord, yCoord+1, zCoord, TardisMod.schemaComponentBlock.blockID, 8, 3);
+				worldObj.setBlock(xCoord, yCoord+1, zCoord, TardisMod.schemaComponentBlock, 8, 3);
 				sendUpdate();
 			}
 		}
@@ -308,7 +312,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		World w = Helper.getWorld(exteriorWorld);
 		if(w != null)
 		{
-			if(w.getBlockId(exteriorX, exteriorY, exteriorZ) == TardisMod.tardisBlock.blockID)
+			if(w.getBlock(exteriorX, exteriorY, exteriorZ) == TardisMod.tardisBlock)
 				return true;
 		}
 		return false;
@@ -316,7 +320,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public void linkToExterior(TardisTileEntity exterior)
 	{
-		exteriorWorld = exterior.worldObj.provider.dimensionId;
+		exteriorWorld = exterior.getWorldObj().provider.dimensionId;
 		exteriorX = exterior.xCoord;
 		exteriorY = exterior.yCoord;
 		exteriorZ = exterior.zCoord;
@@ -365,7 +369,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		else if(lockState.equals(LockState.Locked))
 			return false;
 		else if(lockState.equals(LockState.OwnerOnly))
-			return player.username.equals(ownerName);
+			return player.getCommandSenderName().equals(ownerName);
 		else if(lockState.equals(LockState.KeyOnly))
 			return hasKey(player,false);
 		return false;
@@ -383,7 +387,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(ignoreLock || canOpenLock(player,false))
 			enterTardis(player);
 		else
-			player.addChatMessage("[TARDIS]The door is locked");
+			player.addChatMessage(new ChatComponentText("[TARDIS]The door is locked"));
 	}
 	
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
@@ -414,16 +418,16 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 						Helper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx), exteriorY, exteriorZ+0.5+(dz),rot);
 					}
 					else
-						player.addChatMessage("[TARDIS]The door is obstructed");
+						player.addChatMessage(new ChatComponentText("[TARDIS]The door is obstructed"));
 				}
 				else
-					player.addChatMessage("[TARDIS]The door refuses to open");
+					player.addChatMessage(new ChatComponentText("[TARDIS]The door refuses to open"));
 			}
 			else
-				player.addChatMessage("[TARDIS]The door is locked");
+				player.addChatMessage(new ChatComponentText("[TARDIS]The door is locked"));
 		}
 		else
-			player.addChatMessage("[TARDIS]The door won't open in flight");
+			player.addChatMessage(new ChatComponentText("[TARDIS]The door won't open in flight"));
 	}
 	
 	public boolean changeLock(EntityPlayer pl,boolean inside)
@@ -448,13 +452,13 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			
 		TardisOutput.print("TTE", "Lockstate:"+lockState.toString());
 		if(lockState.equals(LockState.KeyOnly))
-			pl.addChatMessage("[TARDIS]The door will only open with the key");
+			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will only open with the key"));
 		else if(lockState.equals(LockState.Locked))
-			pl.addChatMessage("[TARDIS]The door will not open");
+			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will not open"));
 		else if(lockState.equals(LockState.Open))
-			pl.addChatMessage("[TARDIS]The door will open for all");
+			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will open for all"));
 		else if(lockState.equals(LockState.OwnerOnly))
-			pl.addChatMessage("[TARDIS]The door will only open for its owner");
+			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will only open for its owner"));
 		return true;
 	}
 	
@@ -496,17 +500,17 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				return true;
 			}
 			else if(pl != null)
-				pl.addChatMessage("Not enough energy");
+				pl.addChatMessage(new ChatComponentText("Not enough energy"));
 		}
 		return false;
 	}
 	
 	private boolean softBlock(World w, int x, int y, int z)
 	{
-		Block b = Helper.getBlock(w,x,y,z);
+		Block b = w.getBlock(x,y,z);
 		if(b == null)
 			return w.isAirBlock(x, y, z);
-		return w.isAirBlock(x, y, z) || b.isBlockFoliage(w, x, y, z) || b.isBlockReplaceable(w, x, y, z) || b instanceof BlockFire;
+		return w.isAirBlock(x, y, z) || b.isFoliage(w, x, y, z) || b.isReplaceable(w, x, y, z) || b instanceof BlockFire;
 	}
 	
 	private boolean isValidPos(World w, int x, int y, int z)
@@ -557,11 +561,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				offset++;
 			dY = dY + 1 - offset;
 		}
-		w.setBlock(dX, dY, dZ, TardisMod.tardisBlock.blockID, facing, 3);
-		w.setBlock(dX, dY+1, dZ, TardisMod.tardisTopBlock.blockID, facing, 3);
+		w.setBlock(dX, dY, dZ, TardisMod.tardisBlock, facing, 3);
+		w.setBlock(dX, dY+1, dZ, TardisMod.tardisTopBlock, facing, 3);
 		
 		setExterior(w,dX,dY,dZ);
-		TileEntity te = w.getBlockTileEntity(dX,dY,dZ);
+		TileEntity te = w.getTileEntity(dX,dY,dZ);
 		if(te != null && te instanceof TardisTileEntity)
 		{
 			TardisTileEntity tardis = (TardisTileEntity) te;
@@ -579,7 +583,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			addXP(30);
 			inFlight = false;
 			sendUpdate();
-			worldObj.playSound(xCoord, yCoord, zCoord, "tardismod:engineDrum", 0.75F, 1, true);
+			worldObj.playSound(xCoord, yCoord, zCoord, "engineDrum", 0.75F, 1, true);
 			TardisTileEntity ext = getExterior();
 			if(ext != null)
 			{
@@ -677,7 +681,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		World w = Helper.getWorld(exteriorWorld);
 		if(w != null)
 		{
-			TileEntity te = w.getBlockTileEntity(exteriorX,exteriorY,exteriorZ);
+			TileEntity te = w.getTileEntity(exteriorX,exteriorY,exteriorZ);
 			if(te != null && te instanceof TardisTileEntity)
 				return (TardisTileEntity) te;
 		}
@@ -686,7 +690,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public TardisConsoleTileEntity getConsole()
 	{
-		TileEntity te = worldObj.getBlockTileEntity(xCoord, yCoord - 2, zCoord);
+		TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 2, zCoord);
 		if(te instanceof TardisConsoleTileEntity)
 				return (TardisConsoleTileEntity)te;
 		return null;
@@ -694,7 +698,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public TardisEngineTileEntity getEngine()
 	{
-		TileEntity te = worldObj.getBlockTileEntity(xCoord, yCoord - 5, zCoord);
+		TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 5, zCoord);
 		if(te instanceof TardisEngineTileEntity)
 			return (TardisEngineTileEntity)te;
 		return null;
@@ -702,7 +706,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public TardisSchemaCoreTileEntity getSchemaCore()
 	{
-		TileEntity te = worldObj.getBlockTileEntity(xCoord, yCoord - 10, zCoord);
+		TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 10, zCoord);
 		if(te instanceof TardisSchemaCoreTileEntity)
 			return (TardisSchemaCoreTileEntity)te;
 		return null;
@@ -726,7 +730,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 
 	public boolean canModify(EntityPlayer player)
 	{
-		return canModify(player.username);
+		return canModify(player.getCommandSenderName());
 	}
 	
 	public boolean canModify(String playerName)
@@ -736,9 +740,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public void toggleModifier(EntityPlayer modder,String name)
 	{
-		if(isOwner(modder.username))
+		if(isOwner(modder.getCommandSenderName()))
 		{
-			if(!modder.username.equals(name))
+			if(!modder.getCommandSenderName().equals(name))
 			{
 				if(modders.contains(name))
 					modders.remove(name);
@@ -873,7 +877,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				tardisXP -= getXPNeeded();
 				tardisLevel++;
 			}
-			Helper.playSound(worldObj, xCoord, yCoord, zCoord, "tardismod:levelup", 1);
+			Helper.playSound(worldObj, xCoord, yCoord, zCoord, "levelup", 1);
 		}
 		sendUpdate();
 		return tardisXP;
@@ -930,7 +934,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		{
 			for(SimpleCoordStore coord : roomSet)
 			{
-				TileEntity te = worldObj.getBlockTileEntity(coord.x, coord.y, coord.z);
+				TileEntity te = worldObj.getTileEntity(coord.x, coord.y, coord.z);
 				if(te != null && te instanceof TardisSchemaCoreTileEntity)
 				{
 					TardisOutput.print("TCTE", "Removing room @ " + coord);
@@ -1016,11 +1020,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			gridLinks.add(pos);
 	}
 	
-	public DimentionalCoord[] getGridLinks(SimpleCoordStore asker)
+	public DimensionalCoord[] getGridLinks(SimpleCoordStore asker)
 	{
 		if(gridLinks.size() == 0)
 			return null;
-		ArrayList<DimentionalCoord> coords = new ArrayList<DimentionalCoord>(gridLinks.size()-1);
+		ArrayList<DimensionalCoord> coords = new ArrayList<DimensionalCoord>(gridLinks.size()-1);
 		Iterator<SimpleCoordStore> iter = gridLinks.iterator();
 		while(iter.hasNext())
 		{
@@ -1028,18 +1032,18 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			if(s.equals(asker))
 				continue;
 			
-			TileEntity te = worldObj.getBlockTileEntity(s.x, s.y, s.z);
+			TileEntity te = worldObj.getTileEntity(s.x, s.y, s.z);
 			if(te instanceof TardisComponentTileEntity)
 			{
 				if(((TardisComponentTileEntity)te).hasComponent(TardisTEComponent.GRID))
-					coords.add(new DimentionalCoord(worldObj,s.x,s.y,s.z));
+					coords.add(new DimensionalCoord(worldObj,s.x,s.y,s.z));
 				else
 					iter.remove();
 			}
 			else
 				iter.remove();
 		}
-		DimentionalCoord[] retVal = new DimentionalCoord[coords.size()];
+		DimensionalCoord[] retVal = new DimensionalCoord[coords.size()];
 		coords.toArray(retVal);
 		return retVal;
 	}
@@ -1112,14 +1116,14 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		}
 		if(trans)
 		{
-			Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "tardismod:transmat", 0.6F);
+			Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "transmat", 0.6F);
 			Helper.teleportEntity(ent, Helper.getWorldID(worldObj), to.x+0.5, to.y+1, to.z+0.5);
 			Helper.playSound(worldObj, to.x, to.y+1, to.z, "tardismod:transmat", 0.6F);
 			return true;
 		}
 		else
 		{
-			Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "tardismod:transmatFail", 0.6F);
+			Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "transmatFail", 0.6F);
 			return false;
 		}
 	}
@@ -1148,7 +1152,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(transmatPoint == null)
 			return false;
 		World w= transmatPoint.getWorldObj();
-		TileEntity te = w.getBlockTileEntity(transmatPoint.x,transmatPoint.y, transmatPoint.z);
+		TileEntity te = w.getTileEntity(transmatPoint.x,transmatPoint.y, transmatPoint.z);
 		if(te != null && te instanceof TardisComponentTileEntity && ((TardisComponentTileEntity)te).hasComponent(TardisTEComponent.TRANSMAT))
 			return true;
 		return false;
@@ -1166,7 +1170,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			TardisOutput.print("TCTE","Dest:" + dD +","+dX+","+dY+","+dZ);
 			if(dD==desDim&&dX==desX&&dY==desY&&dZ==desZ&&desStrs!=null)
 				for(String s:desStrs)
-					pl.addChatMessage(s);
+					pl.addChatMessage(new ChatComponentText(s));
 			else
 			{
 				int instability = Helper.clamp(20 - (2 * tardisLevel),3,20);
@@ -1187,7 +1191,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				desZ = dZ;
 				desStrs = send;
 				for(String s:desStrs)
-					pl.addChatMessage(s);
+					pl.addChatMessage(new ChatComponentText(s));
 			}
 		}
 	}
@@ -1200,8 +1204,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(softBlock(w,x, y, z) && softBlock(w, x, y+1, z))
 		{
 			data[0] = true;
-			int id = w.getBlockId(x, y-1, z);
-			if(softBlock(w,x, y-1, z) || id == Block.fire.blockID || id == Block.lavaMoving.blockID || id == Block.lavaStill.blockID || id == Block.waterMoving.blockID || id == Block.waterStill.blockID)
+			Block id = w.getBlock(x, y-1, z);
+			if(softBlock(w,x, y-1, z) || id == Blocks.fire || id == Blocks.lava || id == Blocks.water)
 				data[1] = true;
 		}
 		return data;
@@ -1211,12 +1215,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(inFlight())
 		{
-			pl.sendChatToPlayer(new ChatMessageComponent().addText("Cannot use temporal scanners while in flight"));
+			pl.addChatMessage(new ChatComponentText("Cannot use temporal scanners while in flight"));
 			return;
 		}
 		List<String> string = new ArrayList<String>();
 		TardisTileEntity ext = getExterior();
-		World w = ext.worldObj;
+		World w = ext.getWorldObj();
 		int dx = 0;
 		int dz = 0;
 		string.add("Current position: Dimension " + exteriorWorld + " : " + exteriorX+","+exteriorY+","+exteriorZ);
@@ -1242,7 +1246,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		}
 		
 		for(String s:string)
-			pl.addChatMessage(s);
+			pl.addChatMessage(new ChatComponentText(s));
 	}
 	
 	//////////////////////////////
@@ -1304,12 +1308,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			if(items[i] != null)
 			{
 				NBTTagCompound iTag = new NBTTagCompound();
-				invTag.setCompoundTag("i"+j, items[i].writeToNBT(iTag));
+				invTag.setTag("i"+j, items[i].writeToNBT(iTag));
 				j++;
 			}
 		}
 		if(j > 0)
-			nbt.setCompoundTag("invStore", invTag);
+			nbt.setTag("invStore", invTag);
 	}
 	
 	private void storeFlu(NBTTagCompound nbt)
@@ -1321,12 +1325,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			if(fluids[i] != null)
 			{
 				NBTTagCompound iTag = new NBTTagCompound();
-				invTag.setCompoundTag("i"+j, fluids[i].writeToNBT(iTag));
+				invTag.setTag("i"+j, fluids[i].writeToNBT(iTag));
 				j++;
 			}
 		}
 		if(j > 0)
-			nbt.setCompoundTag("fluidStore", invTag);
+			nbt.setTag("fluidStore", invTag);
 	}
 	
 	@Override
@@ -1337,7 +1341,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		nbt.setInteger("lockState", lockState.ordinal());
 		nbt.setInteger("rfStored",rfStored);
 		if(hasFunction(TardisFunction.TRANSMAT) && isTransmatPointValid())
-			nbt.setCompoundTag("transmatPoint", transmatPoint.writeToNBT());
+			nbt.setTag("transmatPoint", transmatPoint.writeToNBT());
 		storeInv(nbt);
 		storeFlu(nbt);
 		if(modders != null && modders.size() > 0)

@@ -46,13 +46,13 @@ public class TardisSaveSchemaCommand extends TardisAbstractCommand
 		}
 		catch(SchemaCoreNotFoundException e)
 		{
-			pl.addChatMessage(e.getMessage());
+			sendString(pl,e.getMessage());
 			TardisOutput.print("TSSC", "ERROR:" + e.getMessage(),TardisOutput.Priority.ERROR);
 			e.printStackTrace();
 		}
 		catch(SchemaDoorNotFoundException e)
 		{
-			pl.addChatMessage(e.getMessage());
+			sendString(pl,e.getMessage());
 			TardisOutput.print("TSSC", "ERROR:" + e.getMessage(),TardisOutput.Priority.ERROR);
 			e.printStackTrace();
 		}
@@ -85,7 +85,7 @@ public class TardisSaveSchemaCommand extends TardisAbstractCommand
 				}
 				catch(NumberFormatException e)
 				{
-					pl.addChatMessage("Totally not numbers");
+					sendString(pl,"Totally not numbers");
 				}
 				
 			}
@@ -98,7 +98,7 @@ public class TardisSaveSchemaCommand extends TardisAbstractCommand
 				boolean f =false;
 				for(int i = 0;i<4 && !f;i++)
 				{
-					if(pl.worldObj.getBlockId(x, y-i, z) == TardisMod.schemaCoreBlock.blockID)
+					if(pl.worldObj.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
 					{
 						f = true;
 						y = y-i;
@@ -109,7 +109,7 @@ public class TardisSaveSchemaCommand extends TardisAbstractCommand
 			if(astring.length >= 1)
 			{
 				if(save(name,pl,pl.worldObj,x,y,z))
-					pl.addChatMessage("Schema saved");
+					sendString(pl,"Schema saved");
 			}
 		}
 	}

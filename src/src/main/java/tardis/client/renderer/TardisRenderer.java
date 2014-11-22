@@ -23,7 +23,7 @@ public class TardisRenderer extends TardisAbstractBlockRenderer
 	
 	public void renderBlock(Tessellator tesselator, TileEntity te, int x, int y, int z)
 	{
-		World world = te.worldObj;
+		World world = te.getWorldObj();
 		TardisTileEntity tte = null;
 		if(te != null && te instanceof TardisTileEntity)
 			tte = (TardisTileEntity) te;

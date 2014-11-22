@@ -50,7 +50,7 @@ public class TardisGiveSchemaCommand extends TardisAbstractCommand
 				}
 				else
 				{
-					pl.addChatMessage("Schema " + name + " does not exist");
+					sendString(pl,"Schema " + name + " does not exist");
 				}
 			}
 		}

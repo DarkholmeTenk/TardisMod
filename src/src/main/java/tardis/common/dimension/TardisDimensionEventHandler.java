@@ -1,5 +1,6 @@
 package tardis.common.dimension;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.common.core.Helper;
@@ -13,12 +14,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class TardisDimensionEventHandler
 {
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void damageHandler(LivingHurtEvent event)
 	{
 		if(!Helper.isServer())

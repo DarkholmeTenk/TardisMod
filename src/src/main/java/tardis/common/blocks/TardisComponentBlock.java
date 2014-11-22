@@ -10,13 +10,13 @@ import net.minecraft.world.World;
 public class TardisComponentBlock extends TardisAbstractBlockContainer
 {
 
-	public TardisComponentBlock(int par1)
+	public TardisComponentBlock()
 	{
-		super(par1);
+		super();
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world)
+	public TileEntity createNewTileEntity(World world, int extra)
 	{
 		return new TardisComponentTileEntity();
 	}
@@ -24,9 +24,9 @@ public class TardisComponentBlock extends TardisAbstractBlockContainer
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("Component");
+		setBlockName("Component");
 		setSubNames("Roundel","CorridorRoundel");
-		setLightValue(1F);
+		setLightLevel(1F);
 	}
 
 	@Override

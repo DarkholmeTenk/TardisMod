@@ -1,23 +1,24 @@
 package tardis.common.tileents.components;
 
-import appeng.api.DimentionalCoord;
-import appeng.api.WorldCoord;
-import appeng.api.events.GridTileLoadEvent;
-import appeng.api.events.GridTileUnloadEvent;
-import appeng.api.me.util.IGridInterface;
+import appeng.api.events.LocatableEventAnnounce;
+import appeng.api.features.ILocatable;
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
+import appeng.api.util.AECableType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
+import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 
-public class TardisComponentGrid extends TardisAbstractComponent
+public class TardisComponentGrid extends TardisAbstractComponent implements IGridHost, ILocatable
 {
 	private boolean inited = false;
 	private SimpleCoordStore myCoords = null;
 	private boolean powered = false;
-	private IGridInterface grid = null;
 	
 	protected TardisComponentGrid()	{	}
 	public TardisComponentGrid(TardisComponentTileEntity parent)
@@ -37,7 +38,7 @@ public class TardisComponentGrid extends TardisAbstractComponent
 		if(!inited && parentObj != null)
 		{
 			inited = true;
-			TardisCoreTileEntity core = Helper.getTardisCore(parentObj.worldObj);
+			TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
 			if(core != null)
 			{
 				core.addGridLink(myCoords);
@@ -52,48 +53,50 @@ public class TardisComponentGrid extends TardisAbstractComponent
 		myCoords = new SimpleCoordStore(parent);
 	}
 	
-	public DimentionalCoord[] findRemoteSide()
-	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj.worldObj);
-		if(core != null)
-			return core.getGridLinks(myCoords);
-		return null;
-	}
-	
-	public boolean getPowered()
-	{
-		return powered;
-	}
-	
-	public void setPowered(boolean bePowered)
-	{
-		powered = bePowered;
-	}
-	
-	public void setGrid(IGridInterface gi)
-	{
-		grid = gi;
-	}
-	
-	public IGridInterface getGrid()
-	{
-		return grid;
-	}
-	
 	@Override
 	public void revive(TardisComponentTileEntity parent)
 	{
 		TardisOutput.print("TCG", "Reviving TCG");
 		super.revive(parent);
-		MinecraftForge.EVENT_BUS.post(new GridTileLoadEvent(parentObj,parentObj.worldObj,new WorldCoord(xCoord,yCoord,zCoord)));
+		MinecraftForge.EVENT_BUS.post(new LocatableEventAnnounce(this,LocatableEventAnnounce.LocatableEvent.Register));
 	}
 	
 	@Override
 	public void die()
 	{
-		if(parentObj != null && parentObj.worldObj != null)
-			MinecraftForge.EVENT_BUS.post(new GridTileUnloadEvent(parentObj,parentObj.worldObj,new WorldCoord(xCoord,yCoord,zCoord)));
+		if(parentObj != null && parentObj.getWorldObj() != null)
+			MinecraftForge.EVENT_BUS.post(new LocatableEventAnnounce(this,LocatableEventAnnounce.LocatableEvent.Unregister));
 		super.die();
+	}
+	@Override
+	public long getLocatableSerial()
+	{
+		if(myCoords == null)
+			myCoords = new SimpleCoordStore(parentObj);
+		return myCoords.hashCode();
+	}
+	@Override
+	public IGridNode getGridNode(ForgeDirection dir)
+	{
+		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
+		if(core != null)
+		{
+			//if(core.grid == null)
+			//	core.grid = TardisMod.aeAPI.createGridNode(this);
+		}
+		return null;
+	}
+	@Override
+	public AECableType getCableConnectionType(ForgeDirection dir)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void securityBreak()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

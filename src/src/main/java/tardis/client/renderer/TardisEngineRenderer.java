@@ -62,10 +62,10 @@ public class TardisEngineRenderer extends TardisAbstractBlockRenderer
 	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
 	{
 		if(comps == null)
-			comps = new TardisControlRenderer(getFontRenderer(),tileEntityRenderer.renderEngine);
+			comps = new TardisControlRenderer(func_147498_b(),field_147501_a.field_147553_e);
 		if(te instanceof TardisEngineTileEntity)
 		{
-			TardisCoreTileEntity core = Helper.getTardisCore(te.worldObj);
+			TardisCoreTileEntity core = Helper.getTardisCore(te.getWorldObj());
 			TardisEngineTileEntity eng = (TardisEngineTileEntity)te;
 			renderRight(tess,eng,core);
 			renderFront(tess,eng,core);

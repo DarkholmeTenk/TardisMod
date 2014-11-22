@@ -16,7 +16,7 @@ public class TardisComponentChunkLoader extends TardisAbstractComponent implemen
 	
 	public TardisComponentChunkLoader(TardisComponentTileEntity parent)
 	{
-		w = parent.worldObj;
+		w = parent.getWorldObj();
 	}
 	
 	

@@ -1,8 +1,8 @@
 package tardis.common.blocks;
 
 import tardis.TardisMod;
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.Icon;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -10,18 +10,18 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TardisSchemaBlock extends TardisAbstractBlock 
 {
 	private final boolean visible;
-	private Icon blankIcon;
+	private IIcon blankIcon;
 	
-	public TardisSchemaBlock(int blockID)
+	public TardisSchemaBlock()
 	{
-		super(blockID);
+		super();
 		visible = TardisMod.modConfig.getBoolean("Visible schematic boundaries", false);
 	}
 
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("Schema");
+		setBlockName("Schema");
 	}
 
 	@Override
@@ -39,15 +39,15 @@ public class TardisSchemaBlock extends TardisAbstractBlock
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IconRegister register)
+	public void registerBlockIcons(IIconRegister register)
 	{
-		super.registerIcons(register);
+		super.registerBlockIcons(register);
 		blankIcon = register.registerIcon("tardismod:blank");
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIcon(int s, int d)
+	public IIcon getIcon(int s, int d)
 	{
 		if(visible)
 			return super.getIcon(s, d);

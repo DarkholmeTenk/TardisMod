@@ -3,6 +3,7 @@ package tardis.common.blocks;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -10,15 +11,15 @@ import net.minecraftforge.common.DimensionManager;
 public class TardisDebugBlock extends TardisAbstractBlock
 {
 
-	public TardisDebugBlock(int blockID)
+	public TardisDebugBlock()
 	{
-		super(blockID);
+		super();
 	}
 
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("DebugBlock");
+		setBlockName("DebugBlock");
 	}
 
 	@Override
@@ -32,7 +33,7 @@ public class TardisDebugBlock extends TardisAbstractBlock
 	{
 		int dimID = DimensionManager.getNextFreeDimId();
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
-		MinecraftServer.getServer().worldServerForDimension(dimID).setBlock(0, 8, 0, 1);
+		MinecraftServer.getServer().worldServerForDimension(dimID).setBlock(0, 8, 0, Blocks.stone);
 		Helper.teleportEntity(player, dimID, 0, 10, 0);
 		return true;
 	}

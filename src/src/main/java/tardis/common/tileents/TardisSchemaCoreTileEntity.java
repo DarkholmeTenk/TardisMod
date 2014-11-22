@@ -95,7 +95,7 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 				for(int y = yCoord;y<=yCoord+bounds[4];y++)
 					for(int z = (zCoord-bounds[1]);z<=zCoord+bounds[3];z++)
 					{
-						if((x != xCoord || y != yCoord || z != zCoord) && !worldObj.isAirBlock(x, y, z) && Helper.isBlockRemovable(worldObj.getBlockId(x, y, z)))
+						if((x != xCoord || y != yCoord || z != zCoord) && !worldObj.isAirBlock(x, y, z) && Helper.isBlockRemovable(worldObj.getBlock(x, y, z)))
 							worldObj.setBlockToAir(x, y, z);
 					}
 			worldObj.setBlockToAir(xCoord, yCoord, zCoord);

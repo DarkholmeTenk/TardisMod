@@ -1,6 +1,8 @@
 package tardis.api;
 
+import net.minecraft.block.Block;
+
 public interface IWatching
 {
-	public void neighbourUpdated(int neighbourBlockID);
+	public void neighbourUpdated(Block neighbourBlockID);
 }

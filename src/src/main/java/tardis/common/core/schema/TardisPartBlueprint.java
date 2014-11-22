@@ -18,6 +18,8 @@ import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.tileents.TardisSchemaCoreTileEntity;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -36,7 +38,7 @@ public class TardisPartBlueprint
 	public TardisPartBlueprint(World world, String name, int x, int y, int z) throws SchemaDoorNotFoundException, SchemaCoreNotFoundException
 	{
 		myName = name;
-		if(world.getBlockId(x, y, z) == TardisMod.schemaCoreBlock.blockID)
+		if(world.getBlock(x, y, z) == TardisMod.schemaCoreBlock)
 		{
 			getBounds(world,x,y,z);
 			getDoor(world,x,y,z);
@@ -52,31 +54,31 @@ public class TardisPartBlueprint
 	
 	private void getBounds(World world, int x, int y, int z)
 	{
-		int schemaID = TardisMod.schemaBlock.blockID;
+		Block schemaBlock = TardisMod.schemaBlock;
 		int tmp = 1;
 		boolean cont = true;
 		while(cont)
 		{
 			cont = false;
-			if(world.getBlockId(x - tmp, y, z) == schemaID)
+			if(world.getBlock(x - tmp, y, z) == schemaBlock)
 			{
 				cont = true;
 				bounds[0] = tmp;
 			}
 			
-			if(world.getBlockId(x, y, z - tmp) == schemaID)
+			if(world.getBlock(x, y, z - tmp) == schemaBlock)
 			{
 				cont = true;
 				bounds[1] = tmp;
 			}
 			
-			if(world.getBlockId(x + tmp, y, z) == schemaID)
+			if(world.getBlock(x + tmp, y, z) == schemaBlock)
 			{
 				cont = true;
 				bounds[2] = tmp;
 			}
 			
-			if(world.getBlockId(x, y, z + tmp) == schemaID)
+			if(world.getBlock(x, y, z + tmp) == schemaBlock)
 			{
 				cont = true;
 				bounds[3] = tmp;
@@ -89,7 +91,7 @@ public class TardisPartBlueprint
 		while(cont)
 		{
 			cont = false;
-			if(world.getBlockId(x-bounds[0], y+tmp, z-bounds[1]) == schemaID)
+			if(world.getBlock(x-bounds[0], y+tmp, z-bounds[1]) == schemaBlock)
 			{
 				bounds[4] = tmp;
 				cont = true;
@@ -119,12 +121,12 @@ public class TardisPartBlueprint
 			int xL = -bounds[0];
 			
 			for(int yL=0;yL<=bounds[4];yL++)
-				if(world.getBlockId(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock.blockID)
+				if(world.getBlock(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock)
 					handleDoor(world,x+xL,y+yL,z+zL,xL,yL,zL,0);
 			
 			xL = bounds[2];
 			for(int yL=0;yL<=bounds[4];yL++)
-				if(world.getBlockId(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock.blockID)
+				if(world.getBlock(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock)
 					handleDoor(world,x+xL,y+yL,z+zL,xL,yL,zL,2);
 		}
 		
@@ -132,12 +134,12 @@ public class TardisPartBlueprint
 		{
 			int zL = -bounds[1];
 			for(int yL=0;yL<=bounds[4];yL++)
-				if(world.getBlockId(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock.blockID)
+				if(world.getBlock(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock)
 					handleDoor(world,x+xL,y+yL,z+zL,xL,yL,zL,1);
 			
 			zL = bounds[3];
 			for(int yL=0;yL<=bounds[4];yL++)
-				if(world.getBlockId(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock.blockID)
+				if(world.getBlock(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock)
 					handleDoor(world,x+xL,y+yL,z+zL,xL,yL,zL,3);
 		}
 	}
@@ -149,12 +151,12 @@ public class TardisPartBlueprint
 			int xL = -bounds[0];
 			
 			for(int yL=0;yL<=bounds[4];yL++)
-				if(world.getBlockId(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock.blockID)
+				if(world.getBlock(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock)
 					handleDoor(world,x+xL,y+yL,z+zL,xL,yL,zL,0);
 			
 			xL = bounds[2];
 			for(int yL=0;yL<=bounds[4];yL++)
-				if(world.getBlockId(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock.blockID)
+				if(world.getBlock(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock)
 					handleDoor(world,x+xL,y+yL,z+zL,xL,yL,zL,2);
 		}
 		
@@ -162,12 +164,12 @@ public class TardisPartBlueprint
 		{
 			int zL = -bounds[1];
 			for(int yL=0;yL<=bounds[4];yL++)
-				if(world.getBlockId(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock.blockID)
+				if(world.getBlock(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock)
 					handleDoor(world,x+xL,y+yL,z+zL,xL,yL,zL,1);
 			
 			zL = bounds[3];
 			for(int yL=0;yL<=bounds[4];yL++)
-				if(world.getBlockId(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock.blockID)
+				if(world.getBlock(x+xL,y+yL,z+zL) == TardisMod.internalDoorBlock)
 					handleDoor(world,x+xL,y+yL,z+zL,xL,yL,zL,3);
 		}
 	}
@@ -206,13 +208,14 @@ public class TardisPartBlueprint
 		for(TardisCoordStore st : storage.keySet())
 		{
 			//TardisOutput.print("TPB", "Adding " + st.toString() + " to store variable");
-			store.setCompoundTag(st.toString(), storage.get(st).getTagCompound());
+			store.setTag(st.toString(), storage.get(st).getTagCompound());
 		}
-		nbt.setCompoundTag("storage", store);
+		nbt.setTag("storage", store);
 		try
 		{
 			DataOutputStream stream = new DataOutputStream(new FileOutputStream(saveFile));
-			NBTTagCompound.writeNamedTag(nbt, stream);
+			Helper.writeNBT(nbt, stream);
+			//NBTTagCompound.writeNamedTag(nbt, stream);
 			stream.close();
 		}
 		catch(IOException e)
@@ -226,7 +229,8 @@ public class TardisPartBlueprint
 		try
 		{
 			DataInputStream stream = new DataInputStream(new FileInputStream(loadFile));
-			NBTTagCompound nbt = (NBTTagCompound) NBTTagCompound.readNamedTag(stream);
+			//NBTTagCompound nbt = (NBTTagCompound) NBTTagCompound.readNamedTag(stream);
+			NBTTagCompound nbt = Helper.readNBT(stream);
 			myName = nbt.getString("name");
 			bounds = nbt.getIntArray("bounds");
 			if(nbt.hasKey("primaryDoor"))
@@ -334,9 +338,9 @@ public class TardisPartBlueprint
 			TardisCoordStore rotated = coord;
 			if(primaryDoorFace != facing)
 				rotated = rotate(coord,primaryDoorFace,facing);
-			if(w.getBlockId(x+rotated.x, y+rotated.y, z+rotated.z) != 0)
+			if(w.getBlock(x+rotated.x, y+rotated.y, z+rotated.z) != Blocks.air)
 			{
-				w.setBlock(x+rotated.x, y+rotated.y, z+rotated.z, 0, 0, 2);
+				w.setBlock(x+rotated.x, y+rotated.y, z+rotated.z, Blocks.air, 0, 2);
 			}
 		}
 	}
@@ -357,7 +361,7 @@ public class TardisPartBlueprint
 		for(int i = minX;i<=maxX;i++)
 			for(int j = minY;j<=maxY;j++)
 				for(int k = minZ;k<=maxZ;k++)
-					if(!w.isAirBlock(i, j, k) && Helper.isBlockRemovable(w.getBlockId(i, j, k)))
+					if(!w.isAirBlock(i, j, k) && Helper.isBlockRemovable(w.getBlock(i, j, k)))
 						w.setBlockToAir(i, j,k);
 	}
 	
@@ -378,21 +382,12 @@ public class TardisPartBlueprint
 	
 	public boolean roomFor(World w,int x, int y, int z,int facing)
 	{
-		/*
-		int[] bounds = moddedBounds(facing);
-		if(y < 0 || (y+bounds[4]) > 254)
-			return false;
-		for(int xL = -bounds[0];xL <= bounds[2];xL++)
-			for(int yL = 0;yL <= bounds[4];yL++)
-				for(int zL = -bounds[1];zL <= bounds[3];zL++)
-					if(w.getBlockId(x+xL, y+yL, z+zL) != 0)
-						return false;*/
 		for(TardisCoordStore coord : storage.keySet())
 		{
 			TardisCoordStore rotated = coord;
 			if(primaryDoorFace != facing)
 				rotated = rotate(coord,primaryDoorFace,facing);
-			if(w.getBlockId(x+rotated.x, y+rotated.y, z+rotated.z) != 0)
+			if(w.getBlock(x+rotated.x, y+rotated.y, z+rotated.z) != Blocks.air)
 				return false;
 		}
 		return true;
@@ -405,14 +400,14 @@ public class TardisPartBlueprint
 		{
 			TardisSchemaStore st = storage.get(key);
 			TardisCoordStore modKey = key;
-			int newMeta = TardisSchemaRotationHandler.getNewMetadata(st.getBlockID(), st.getBlockMeta(), primaryDoorFace, facing);
+			int newMeta = TardisSchemaRotationHandler.getNewMetadata(st.getBlock(), st.getBlockMeta(), primaryDoorFace, facing);
 			if(facing != primaryDoorFace)
 				modKey = rotate(key,primaryDoorFace,facing);
 			st.loadToWorld(w, newMeta, x+modKey.x, y+modKey.y, z+modKey.z);
-			if(st.getBlockID() == Block.chest.blockID)
+			if(st.getBlock() == Blocks.chest)
 				w.setBlockMetadataWithNotify(x+modKey.x, y+modKey.y, z+modKey.z, newMeta, 3);
 		}
-		TileEntity te = w.getBlockTileEntity(x, y, z);
+		TileEntity te = w.getTileEntity(x, y, z);
 		if(te instanceof TardisSchemaCoreTileEntity)
 		{
 			String name = myName;

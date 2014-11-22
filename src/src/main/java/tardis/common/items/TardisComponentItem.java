@@ -1,9 +1,8 @@
 package tardis.common.items;
 
-import appeng.api.Materials;
 import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.common.core.TardisOutput;
@@ -12,9 +11,9 @@ import tardis.common.tileents.components.TardisTEComponent;
 public class TardisComponentItem extends TardisAbstractItem
 {
 
-	public TardisComponentItem(int par1)
+	public TardisComponentItem()
 	{
-		super(par1);
+		super();
 		setUnlocalizedName("Component");
 		setSubNames(TardisTEComponent.getStrings());
 		setMaxStackSize(8);
@@ -22,46 +21,47 @@ public class TardisComponentItem extends TardisAbstractItem
 	
 	public ItemStack getIS(TardisTEComponent comp)
 	{
-		return new ItemStack(itemID,1,comp.ordinal());
+		return new ItemStack(this,1,comp.ordinal());
 	}
 
 	@Override
 	public void initRecipes()
 	{
 		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.ENERGY), true, "grg","iii","grg",
-				'g', Item.goldNugget,
-				'r', Item.redstone,
-				'i', Item.ingotIron));
+				'g', Items.gold_nugget,
+				'r', Items.redstone,
+				'i', Items.iron_ingot));
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.FLUID), true, "grg","iii","grg",
-				'g', Item.goldNugget,
-				'r', Item.bucketEmpty,
-				'i', Item.ingotIron));
+				'g', Items.gold_nugget,
+				'r', Items.bucket,
+				'i', Items.iron_ingot));
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.INVENTORY), true, "grg","iii","grg",
-				'g', Item.goldNugget,
-				'r', Block.chest,
-				'i', Item.ingotIron));
+				'g', Items.gold_nugget,
+				'r', Blocks.chest,
+				'i', Items.iron_ingot));
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.TRANSMAT), true, "grg","iii","grg",
-				'g', Item.goldNugget,
-				'r', Item.enderPearl,
-				'i', Item.ingotIron));
+				'g', Items.gold_nugget,
+				'r', Items.ender_pearl,
+				'i', Items.iron_ingot));
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.CHUNK), true, "grg","iii","gdg",
-				'g', Item.goldNugget,
-				'r', Item.enderPearl,
-				'd', Item.diamond,
-				'i', Item.ingotIron));
+				'g', Items.gold_nugget,
+				'r', Items.ender_pearl,
+				'd', Items.diamond,
+				'i', Items.iron_ingot));
 		
-		ItemStack i = Materials.matQuartz;
+		ItemStack i = null;
+		//ItemStack i = Materials.materialCertusQuartzCrystal;
 		if(i != null)
 		{
 			TardisOutput.print("TCI","Registering AE recipe");
 			GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.GRID), true, "grg","iii","grg",
-					'g', Item.goldNugget,
+					'g', Items.gold_nugget,
 					'r', i.copy(),
-					'i', Item.ingotIron));
+					'i', Items.iron_ingot));
 		}
 	}
 

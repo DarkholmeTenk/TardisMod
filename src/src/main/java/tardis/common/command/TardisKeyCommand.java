@@ -10,7 +10,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatMessageComponent;
 
 public class TardisKeyCommand extends TardisAbstractCommand
 {
@@ -55,7 +54,7 @@ public class TardisKeyCommand extends TardisAbstractCommand
 		}
 		if(to == null || from == null)
 		{
-			comSen.sendChatToPlayer(new ChatMessageComponent().addText(getCommandUsage(comSen)));
+			sendString(comSen,getCommandUsage(comSen));
 			return;
 		}
 		else

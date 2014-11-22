@@ -24,8 +24,8 @@ public class TardisComponentInventory extends TardisAbstractComponent implements
 	
 	private TardisCoreTileEntity getCore()
 	{
-		if(parentObj != null && parentObj.worldObj != null)
-			return Helper.getTardisCore(parentObj.worldObj);
+		if(parentObj != null && parentObj.getWorldObj() != null)
+			return Helper.getTardisCore(parentObj.getWorldObj());
 		return null;
 	}
 
@@ -76,27 +76,9 @@ public class TardisComponentInventory extends TardisAbstractComponent implements
 	}
 
 	@Override
-	public String getInvName()
-	{
-		return "TardisMod.LinkedInventory";
-	}
-
-	@Override
-	public boolean isInvNameLocalized()
-	{
-		return false;
-	}
-
-	@Override
 	public int getInventoryStackLimit()
 	{
 		return 64;
-	}
-
-	@Override
-	public void onInventoryChanged()
-	{
-		
 	}
 
 	@Override
@@ -104,12 +86,6 @@ public class TardisComponentInventory extends TardisAbstractComponent implements
 	{
 		return false;
 	}
-
-	@Override
-	public void openChest() {}
-
-	@Override
-	public void closeChest() {}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack)
@@ -121,6 +97,39 @@ public class TardisComponentInventory extends TardisAbstractComponent implements
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public String getInventoryName()
+	{
+		return "TardisMod.LinkedInventory";
+	}
+
+	@Override
+	public boolean hasCustomInventoryName()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void markDirty()
+	{
+		Helper.getTardisCore(parentObj.getWorldObj()).markDirty();
+	}
+
+	@Override
+	public void openInventory()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeInventory()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -4,25 +4,25 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.TardisMod;
 import tardis.common.tileents.TardisSchemaCoreTileEntity;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class TardisSchemaCoreBlock extends TardisAbstractBlockContainer
 {
 	private final boolean visible;
-	private Icon blankIcon;
+	private IIcon blankIcon;
 	
-	public TardisSchemaCoreBlock(int par1)
+	public TardisSchemaCoreBlock()
 	{
-		super(par1);
+		super();
 		visible = TardisMod.modConfig.getBoolean("Visible schematic boundaries", false);
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world)
+	public TileEntity createNewTileEntity(World world, int extra)
 	{
 		return new TardisSchemaCoreTileEntity();
 	}
@@ -30,7 +30,7 @@ public class TardisSchemaCoreBlock extends TardisAbstractBlockContainer
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("SchemaCore");
+		setBlockName("SchemaCore");
 		
 	}
 
@@ -48,15 +48,15 @@ public class TardisSchemaCoreBlock extends TardisAbstractBlockContainer
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IconRegister register)
+	public void registerBlockIcons(IIconRegister register)
 	{
-		super.registerIcons(register);
+		super.registerBlockIcons(register);
 		blankIcon = register.registerIcon("tardismod:blank");
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Icon getIcon(int s, int d)
+	public IIcon getIcon(int s, int d)
 	{
 		if(visible)
 			return super.getIcon(s, d);

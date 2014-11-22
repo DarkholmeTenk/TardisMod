@@ -6,7 +6,6 @@ import tardis.TardisMod;
 import tardis.common.core.Helper;
 
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
 
 public class TardisRegCommand extends TardisAbstractCommand
 {
@@ -33,7 +32,7 @@ public class TardisRegCommand extends TardisAbstractCommand
 	public void commandBody(ICommandSender comsen, String[] astring)
 	{
 		if(astring.length == 0)
-			comsen.sendChatToPlayer(new ChatMessageComponent().addText(getCommandUsage(comsen)));
+			sendString(comsen,getCommandUsage(comsen));
 		else
 		{
 			if(astring[0].equals("list"))
@@ -44,9 +43,9 @@ public class TardisRegCommand extends TardisAbstractCommand
 				{
 					String un = astring[1];
 					if(TardisMod.plReg.removePlayer(un))
-						comsen.sendChatToPlayer(new ChatMessageComponent().addText(un + " removed from listing"));
+						sendString(comsen,un + " removed from listing");
 					else
-						comsen.sendChatToPlayer(new ChatMessageComponent().addText(un + " could not be removed"));
+						sendString(comsen,un + " could not be removed");
 				}
 			}
 			else if(astring[0].equals("set"))
@@ -56,9 +55,9 @@ public class TardisRegCommand extends TardisAbstractCommand
 					String un = astring[1];
 					int dim = Helper.toInt(astring[2], 0);
 					if(TardisMod.plReg.addPlayer(un, dim))
-						comsen.sendChatToPlayer(new ChatMessageComponent().addText(un + " added to listing"));
+						sendString(comsen,un + " added to listing");
 					else
-						comsen.sendChatToPlayer(new ChatMessageComponent().addText(un + " could not be added to listing"));
+						sendString(comsen,un + " could not be added to listing");
 				}
 			}
 		}

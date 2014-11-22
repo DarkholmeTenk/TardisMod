@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
@@ -79,7 +80,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	
 	private void playTakeoffSound()
 	{
-		Helper.playSound(this, "tardismod:takeoff", 1);
+		Helper.playSound(this, "takeoff", 1);
 		takingOffSoundPlayed = true;
 	}
 	
@@ -100,9 +101,9 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	private void playLandSound()
 	{
 		if(!landFast)
-			Helper.playSound(this, "tardismod:landing", 1);
+			Helper.playSound(this, "landing", 1);
 		else
-			Helper.playSound(this, "tardismod:landingInt", 1);
+			Helper.playSound(this, "landingInt", 1);
 		landingSoundPlayed = true;
 	}
 	
@@ -171,10 +172,10 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 		{
 			if(linkedDimension == null)
 			{
-				if(!TardisMod.plReg.hasTardis(player.username))
+				if(!TardisMod.plReg.hasTardis(player.getCommandSenderName()))
 					linkedDimension = Helper.generateTardisInterior(player,this);
 				else
-					player.addChatMessage("You already own a TARDIS");
+					player.addChatMessage(new ChatComponentText("You already own a TARDIS"));
 			}
 			else
 			{

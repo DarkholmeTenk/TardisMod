@@ -35,13 +35,13 @@ public class TardisClientProxy extends TardisProxy
 	public void handleTardisTransparency(int worldID,int x, int y, int z)
 	{
 		WorldServer world = MinecraftServer.getServer().worldServerForDimension(worldID);
-		world.markBlockForRenderUpdate(x, y, z);
+		world.markBlockRangeForRenderUpdate(x, y, z, x, y, z);
 	}
 	
 	@Override
 	public void postAssignment()
 	{
-		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem.itemID, new TardisSonicScrewdriverRenderer());
+		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, new TardisSonicScrewdriverRenderer());
 	}
 	
 	@Override

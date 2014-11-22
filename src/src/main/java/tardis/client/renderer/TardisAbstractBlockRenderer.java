@@ -20,13 +20,14 @@ public abstract class TardisAbstractBlockRenderer extends TileEntitySpecialRende
 		//This will move our renderer so that it will be on proper place in the world
 		GL11.glTranslatef((float)d0, (float)d1, (float)d2);
 		
-		World w = tileEntity.worldObj;
+		World w = tileEntity.getWorldObj();
 		int x = tileEntity.xCoord;
 		int y = tileEntity.yCoord;
 		int z = tileEntity.zCoord;
 		
 		Tessellator tessellator = Tessellator.instance;
-		float brightness = getBlock().getBlockBrightness(w, x, y, z);
+		
+		float brightness = w.getBlockLightValue(x, y, z);
 		int l = w.getLightBrightnessForSkyBlocks(x, y, z, 0);
 		int l1 = l % 65536;
 		int l2 = l / 65536;

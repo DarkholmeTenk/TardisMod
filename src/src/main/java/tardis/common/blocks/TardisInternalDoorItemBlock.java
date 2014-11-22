@@ -1,11 +1,12 @@
 package tardis.common.blocks;
 
+import net.minecraft.block.Block;
 import tardis.TardisMod;
 
 public class TardisInternalDoorItemBlock extends TardisAbstractItemBlock
 {
 
-	public TardisInternalDoorItemBlock(int par1)
+	public TardisInternalDoorItemBlock(Block par1)
 	{
 		super(par1);
 	}

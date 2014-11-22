@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import cofh.api.energy.IEnergyHandler;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
@@ -42,19 +42,19 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	
 	private void scanNearby()
 	{
-		World w = parentObj.worldObj;
+		World w = parentObj.getWorldObj();
 		for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
 		{
 			int b = hasFilled.get(dir).getAndSet(0);
 			int max = TardisMod.rfPerT - rfc;
 			if(b > 0)
 				max = Math.min(max, b/2);
-			TileEntity te = w.getBlockTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
+			TileEntity te = w.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
 			if(te instanceof IEnergyHandler && !(te instanceof TardisComponentTileEntity))
 			{
 				//TardisOutput.print("TCE", "Attempting to energy");
 				IEnergyHandler ieh = (IEnergyHandler)te;
-				if(ieh.canInterface(dir.getOpposite()))
+				if(ieh.canConnectEnergy(dir.getOpposite()))
 				{
 					int am = extractEnergy(dir,max,true);
 					am = Math.min(am, ieh.receiveEnergy(dir.getOpposite(), am, true));
@@ -74,7 +74,7 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj.worldObj);
+		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
 		if(core != null)
 		{
 			int rec = core.addRF(maxReceive,simulate);
@@ -88,23 +88,23 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	@Override
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj.worldObj);
+		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
 		if(core != null)
 			return core.remRF(maxExtract,simulate);
 		return 0;
 	}
 
 	@Override
-	public boolean canInterface(ForgeDirection from)
+	public boolean canConnectEnergy(ForgeDirection from)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj.worldObj);
+		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
 		return core != null;
 	}
 
 	@Override
 	public int getEnergyStored(ForgeDirection from)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj.worldObj);
+		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
 		if(core != null)
 			return core.getRF();
 		return 0;
@@ -113,7 +113,7 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	@Override
 	public int getMaxEnergyStored(ForgeDirection from)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj.worldObj);
+		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
 		if(core != null)
 			return core.getMaxRF();
 		return 0;

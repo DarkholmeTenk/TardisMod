@@ -1,6 +1,9 @@
 package tardis;
 
 import java.io.IOException;
+
+import appeng.api.AEApi;
+import appeng.api.IAppEngApi;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,11 +32,9 @@ import tardis.common.command.TardisCommandRegister;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisConfigHandler;
-import tardis.common.core.TardisConnectionHandler;
 import tardis.common.core.TardisCreativeTab;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
-import tardis.common.core.TardisPacketHandler;
 import tardis.common.core.TardisPlayerRegistry;
 import tardis.common.core.TardisSoundHandler;
 import tardis.common.core.TardisTeleporter;
@@ -45,6 +46,7 @@ import tardis.common.items.TardisComponentItem;
 import tardis.common.items.TardisKeyItem;
 import tardis.common.items.TardisSchemaItem;
 import tardis.common.items.TardisSonicScrewdriverItem;
+import tardis.common.network.TardisPacketHandler;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
@@ -58,13 +60,12 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.network.FMLEventChannel;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid="TardisMod",name="Tardis Mod",version="0.17",dependencies="required-after:FML; after:AppliedEnergistics")
-@NetworkMod(channels = { "TardisModChannel","TardisTrans","TardisDR","TardisSn" }, clientSideRequired = true, serverSideRequired = true, packetHandler = TardisPacketHandler.class, connectionHandler=TardisConnectionHandler.class)
 public class TardisMod
 {
 	@Instance
@@ -73,6 +74,10 @@ public class TardisMod
 	@SidedProxy(clientSide="tardis.client.TardisClientProxy", serverSide="tardis.common.TardisProxy")
 	public static TardisProxy proxy;
 	public static TardisDimensionEventHandler dimEventHandler = new TardisDimensionEventHandler();
+	public static TardisPacketHandler packetHandler = new TardisPacketHandler();
+	public static FMLEventChannel networkChannel;
+	
+	public static IAppEngApi aeAPI = null;
 	
 	public static TardisConfigFile modConfig;
 	public static TardisConfigFile blockConfig;
@@ -136,7 +141,7 @@ public class TardisMod
 		providerID		= modConfig.getInt("Dimension Provider ID", 54);
 		tardisLoaded	= modConfig.getBoolean("Dimension always loaded", true);
 		keyInHand		= modConfig.getBoolean("Key needs to be in hand", true);
-		
+		registerNetwork();
 		tardisVol		= (float) modConfig.getDouble("Tardis Volume", 1);
 		
 		xpBase			= modConfig.getInt("xp base amount", 80);
@@ -149,7 +154,6 @@ public class TardisMod
 		numInvs			= modConfig.getInt("Number of internal inventory slots", 30);
 		deathTransmatLive	= modConfig.getBoolean("Live after death transmat", true);
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
-		
 		blockConfig = configHandler.getConfigFile("Blocks");
 		initBlocks();
 		
@@ -161,6 +165,12 @@ public class TardisMod
 		proxy.postAssignment();
 	}
 	
+	private void registerNetwork()
+	{
+		networkChannel = NetworkRegistry.INSTANCE.newEventDrivenChannel("tardis");
+		networkChannel.register(packetHandler);
+	}
+	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
@@ -168,73 +178,74 @@ public class TardisMod
 		componentItem.initRecipes();
 		chunkManager = new TardisChunkLoadingManager();
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
-		TickRegistry.registerTickHandler(chunkManager, Side.SERVER);
+		MinecraftForge.EVENT_BUS.register(chunkManager);
+		aeAPI = AEApi.instance();
 		ForgeChunkManager.setForcedChunkLoadingCallback(this, chunkManager);
 	}
 	
 	private void initBlocks()
 	{
-		tardisBlock = new TardisBlock(blockConfig.getInt("tardisBlock",639));
+		tardisBlock = new TardisBlock();
 		GameRegistry.registerBlock(tardisBlock,tardisBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisTileEntity.class, tardisBlock.getUnlocalizedName());
 		
-		tardisTopBlock = new TardisTopBlock(blockConfig.getInt("tardisTopBlockID",644));
+		tardisTopBlock = new TardisTopBlock();
 		GameRegistry.registerBlock(tardisTopBlock,tardisTopBlock.getUnlocalizedName());
 		
-		tardisCoreBlock = new TardisCoreBlock(blockConfig.getInt("tardisCoreBlock", 647));
+		tardisCoreBlock = new TardisCoreBlock();
 		GameRegistry.registerBlock(tardisCoreBlock,tardisCoreBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisCoreTileEntity.class, tardisCoreBlock.getUnlocalizedName());
 		
-		tardisConsoleBlock = new TardisConsoleBlock(blockConfig.getInt("tardisConsoleBlock",648));
+		tardisConsoleBlock = new TardisConsoleBlock();
 		GameRegistry.registerBlock(tardisConsoleBlock, tardisConsoleBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisConsoleTileEntity.class,tardisConsoleBlock.getUnlocalizedName());
 		
-		tardisEngineBlock = new TardisEngineBlock(blockConfig.getInt("tardisEngineBlock", 652));
+		tardisEngineBlock = new TardisEngineBlock();
 		GameRegistry.registerBlock(tardisEngineBlock, tardisEngineBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisEngineTileEntity.class, tardisEngineBlock.getUnlocalizedName());
 		
-		componentBlock = new TardisComponentBlock(blockConfig.getInt("tardisComponentBlockID",651));
+		componentBlock = new TardisComponentBlock();
 		GameRegistry.registerBlock(componentBlock,TardisComponentItemBlock.class,componentBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisComponentTileEntity.class, componentBlock.getUnlocalizedName());
 		
-		internalDoorBlock = new TardisInternalDoorBlock(blockConfig.getInt("tardisInternalDoorBlockID", 645));
+		internalDoorBlock = new TardisInternalDoorBlock();
 		GameRegistry.registerBlock(internalDoorBlock,TardisInternalDoorItemBlock.class,internalDoorBlock.getUnlocalizedName());
 		
-		decoBlock = new TardisDecoBlock(blockConfig.getInt("decoBlockID", 640));
+		decoBlock = new TardisDecoBlock();
 		GameRegistry.registerBlock(decoBlock, TardisDecoItemBlock.class, decoBlock.getUnlocalizedName());
 		
-		stairBlock = new TardisStairBlock(blockConfig.getInt("stairBlockID",649));
+		stairBlock = new TardisStairBlock();
 		GameRegistry.registerBlock(stairBlock,stairBlock.getUnlocalizedName());
 		
-		debugBlock = new TardisDebugBlock(blockConfig.getInt("debugBlockID", 641));
+		debugBlock = new TardisDebugBlock();
 		GameRegistry.registerBlock(debugBlock, debugBlock.getUnlocalizedName());
 		
-		schemaBlock = new TardisSchemaBlock(blockConfig.getInt("schemaBlockID", 642));
+		schemaBlock = new TardisSchemaBlock();
 		GameRegistry.registerBlock(schemaBlock, schemaBlock.getUnlocalizedName());
 		
-		schemaCoreBlock = new TardisSchemaCoreBlock(blockConfig.getInt("schemaCoreBlockID", 646));
+		schemaCoreBlock = new TardisSchemaCoreBlock();
 		GameRegistry.registerBlock(schemaCoreBlock,schemaCoreBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisSchemaCoreTileEntity.class, schemaCoreBlock.getUnlocalizedName());
 		
-		schemaComponentBlock = new TardisSchemaComponentBlock(blockConfig.getInt("schemaComponentBlockID", 643));
+		schemaComponentBlock = new TardisSchemaComponentBlock();
 		GameRegistry.registerBlock(schemaComponentBlock, TardisSchemaComponentItemBlock.class, schemaComponentBlock.getUnlocalizedName());
 		
-		slabBlock = new TardisSlabBlock(blockConfig.getInt("slabBlockID", 650));
+		slabBlock = new TardisSlabBlock();
 		GameRegistry.registerBlock(slabBlock,TardisSlabItemBlock.class,slabBlock.getUnlocalizedName());
 	}
 	
 	private void initItems()
 	{
-		schemaItem = new TardisSchemaItem(itemConfig.getInt("Schematic Item ID",1730));
+		schemaItem = new TardisSchemaItem();
 		GameRegistry.registerItem(schemaItem, schemaItem.getUnlocalizedName());
 		
-		screwItem = new TardisSonicScrewdriverItem(itemConfig.getInt("Screwdriver Item ID",1731));
+		screwItem = new TardisSonicScrewdriverItem();
 		GameRegistry.registerItem(screwItem, screwItem.getUnlocalizedName());
 		
-		keyItem = new TardisKeyItem(itemConfig.getInt("TARDIS Key Item ID", 1732));
+		keyItem = new TardisKeyItem();
 		GameRegistry.registerItem(keyItem, keyItem.getUnlocalizedName());
 		
-		componentItem = new TardisComponentItem(itemConfig.getInt("TARDIS Component Item ID", 1733));
+		componentItem = new TardisComponentItem();
 		GameRegistry.registerItem(componentItem, componentItem.getUnlocalizedName());
 	}
 	

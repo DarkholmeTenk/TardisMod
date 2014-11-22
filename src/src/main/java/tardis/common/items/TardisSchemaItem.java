@@ -9,9 +9,9 @@ import net.minecraft.nbt.NBTTagCompound;
 public class TardisSchemaItem extends TardisAbstractItem
 {
 
-	public TardisSchemaItem(int par1)
+	public TardisSchemaItem()
 	{
-		super(par1);
+		super();
 		setMaxStackSize(1);
 		setUnlocalizedName("Schematic");
 	}

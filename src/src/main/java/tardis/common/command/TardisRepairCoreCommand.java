@@ -48,7 +48,7 @@ public class TardisRepairCoreCommand extends TardisAbstractCommand
 		{
 			TardisOutput.print("TRCC", "WOrld?"+((EntityPlayerMP)comSen).worldObj.isRemote);
 			worldID  = ((EntityPlayer) comSen).worldObj.provider.dimensionId;
-			newOwner = ((EntityPlayer) comSen).username;
+			newOwner = Helper.getUsername((EntityPlayer) comSen);
 		}
 		
 		boolean total = false;
@@ -85,7 +85,7 @@ public class TardisRepairCoreCommand extends TardisAbstractCommand
 			TardisCoreTileEntity tce = Helper.getTardisCore(world);
 			if(tce == null && world.provider instanceof TardisWorldProvider)
 			{
-				world.setBlock(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
+				world.setBlock(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, TardisMod.tardisCoreBlock);
 				tce = Helper.getTardisCore(world);
 			}
 			//TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);

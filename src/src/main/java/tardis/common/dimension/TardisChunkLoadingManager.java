@@ -9,8 +9,9 @@ import tardis.TardisMod;
 import tardis.api.IChunkLoader;
 import tardis.common.core.store.SimpleCoordStore;
 
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -20,7 +21,7 @@ import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
-public class TardisChunkLoadingManager implements LoadingCallback, ITickHandler
+public class TardisChunkLoadingManager implements LoadingCallback
 {
 	HashMap<SimpleCoordStore,Ticket> monitorableChunkLoaders = new HashMap<SimpleCoordStore,Ticket>();
 	private int tickCount=0;
@@ -73,7 +74,7 @@ public class TardisChunkLoadingManager implements LoadingCallback, ITickHandler
 			{
 				SimpleCoordStore coords = te.coords();
 				if(coords != null)
-					nbt.setCompoundTag("coords", te.coords().writeToNBT());
+					nbt.setTag("coords", te.coords().writeToNBT());
 			}
 		}
 	}
@@ -93,7 +94,7 @@ public class TardisChunkLoadingManager implements LoadingCallback, ITickHandler
 		{
 			SimpleCoordStore pos = keyIter.next();
 			World w = pos.getWorldObj();
-			TileEntity te = w.getBlockTileEntity(pos.x, pos.y, pos.z);
+			TileEntity te = w.getTileEntity(pos.x, pos.y, pos.z);
 			if(te instanceof IChunkLoader)
 			{
 				Ticket t = monitorableChunkLoaders.get(pos);
@@ -113,34 +114,20 @@ public class TardisChunkLoadingManager implements LoadingCallback, ITickHandler
 		}
 	}
 
-	@Override
-	public void tickStart(EnumSet<TickType> type, Object... tickData)
+	@SubscribeEvent
+	public void handleTick(ServerTickEvent event)
 	{
+		if(event.phase.equals(TickEvent.Phase.END))
+			tickEnd();
 	}
-
-	@Override
-	public void tickEnd(EnumSet<TickType> type, Object... tickData)
+	
+	private void tickEnd()
 	{
-		if(type.contains(TickType.SERVER))
+		if(((tickCount++%10) == 0) || forceCheck)
 		{
-			if(((tickCount++%10) == 0) || forceCheck)
-			{
-				forceCheck = false;
-				validateChunkLoaders();
-			}
+			forceCheck = false;
+			validateChunkLoaders();
 		}
-	}
-
-	@Override
-	public EnumSet<TickType> ticks()
-	{
-		return EnumSet.of(TickType.SERVER);
-	}
-
-	@Override
-	public String getLabel()
-	{
-		return "TardisChunkLoadingManager";
 	}
 
 }

@@ -47,7 +47,7 @@ public class TardisWorldProvider extends WorldProvider
 		worldObj.thunderingStrength = 0;
 		worldObj.updateWeatherBody();
 		if(worldObj.isRaining())
-			worldObj.toggleRain();
+			worldObj.setRainStrength(0);
 	}
 	
 	@Override

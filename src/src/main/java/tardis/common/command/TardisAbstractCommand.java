@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 
 public abstract class TardisAbstractCommand implements ICommand
 {
@@ -34,7 +34,7 @@ public abstract class TardisAbstractCommand implements ICommand
 		if(canCommandSenderUseCommand(icommandsender))
 			commandBody(icommandsender,astring);
 		else
-			icommandsender.sendChatToPlayer(new ChatMessageComponent().addText("You do not have permission for that command"));
+			icommandsender.addChatMessage(new ChatComponentText("You do not have permission for that command"));
 	}
 	
 	public abstract void commandBody(ICommandSender icommandsender,String[] astring);
@@ -59,7 +59,7 @@ public abstract class TardisAbstractCommand implements ICommand
 	
 	public void sendString(ICommandSender comsen,String toSend)
 	{
-		comsen.sendChatToPlayer(new ChatMessageComponent().addText(toSend));
+		comsen.addChatMessage(new ChatComponentText(toSend));
 	}
 
 }

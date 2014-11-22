@@ -1,8 +1,9 @@
 package tardis.common.core.schema;
 
-import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.init.Blocks;
 
 public class TardisSchemaRotationHandler
 {
@@ -67,18 +68,14 @@ public class TardisSchemaRotationHandler
 		return blockMeta;
 	}
 	
-	public static int getNewMetadata(int blockID, int blockMeta, int oldFacing, int newFacing)
+	public static int getNewMetadata(Block block, int blockMeta, int oldFacing, int newFacing)
 	{
 		if(oldFacing == newFacing)
 			return blockMeta;
-		Block[] stairs = {Block.stairsBrick,Block.stairsCobblestone,Block.stairsNetherBrick,Block.stairsNetherQuartz,Block.stairsSandStone,Block.stairsStoneBrick,Block.stairsWoodBirch,Block.stairsWoodJungle,Block.stairsWoodSpruce,Block.stairsWoodOak, TardisMod.stairBlock};
-		if(blockID == Block.chest.blockID)
+		if(block == Blocks.chest)
 			return getChestMetadata(blockMeta,oldFacing,newFacing);
-		for(Block b: stairs)
-		{
-			if(blockID == b.blockID)
+		if(block instanceof BlockStairs)
 				return getStairsMetadata(blockMeta, oldFacing, newFacing);
-		}
 		return blockMeta;
 	}
 }

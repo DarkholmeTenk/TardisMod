@@ -1,0 +1,11 @@
+{
+	"engines": {"category": "master","sounds": [{ "name": "engines","stream": "false" }]},
+	"engineDrum": {"category": "master","sounds": [{ "name": "engineDrum","stream": "false" }]},
+	"landing": {"category": "master","sounds": [{ "name": "landing","stream": "false" }]},
+	"landingInt": {"category": "master","sounds": [{ "name": "landingInt","stream": "false" }]},
+	"levelup": {"category": "master","sounds": [{ "name": "levelup","stream": "false" }]},
+	"sonic": {"category": "master","sounds": [{ "name": "sonic","stream": "false" }]},
+	"takeoff": {"category": "master","sounds": [{ "name": "takeoff","stream": "false" }]},
+	"transmat": {"category": "master","sounds": [{ "name": "transmat","stream": "false" }]},
+	"transmatFail": {"category": "master","sounds": [{ "name": "transmatFail","stream": "false" }]}
+}

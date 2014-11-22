@@ -16,15 +16,15 @@ import net.minecraft.world.World;
 public class TardisSchemaComponentBlock extends TardisAbstractBlock
 {
 
-	public TardisSchemaComponentBlock(int blockID)
+	public TardisSchemaComponentBlock()
 	{
-		super(blockID);
+		super();
 	}
 
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("SchemaComponent");
+		setBlockName("SchemaComponent");
 		setSubNames("DoorConnector","DoorConnectorHidden","ControlPanel","ConsoleBlock", "TardisDoorBottom","TardisDoorTop","ConsoleTop","Engine","TimeRotor");
 	}
 
@@ -46,14 +46,14 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 	{
 		if(w.getBlockMetadata(x, y, z) == 1)
 		{
-			return AxisAlignedBB.getAABBPool().getAABB(0,0,0,0,0,0);
+			return AxisAlignedBB.getBoundingBox(0,0,0,0,0,0);
 		}
 		else
 			return super.getCollisionBoundingBoxFromPool(w, x, y, z);
 	}
 	
 	@Override
-	public boolean isBlockNormalCube(World w, int x, int y, int z)
+	public boolean isNormalCube(IBlockAccess w, int x, int y, int z)
     {
         return w.getBlockMetadata(x,y,z) != 1;
     }
@@ -89,7 +89,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 
 	public static boolean isDoorConnector(World w,int x, int y, int z)
 	{
-		if(w.getBlockId(x,y,z) == TardisMod.schemaComponentBlock.blockID && w.getBlockMetadata(x, y, z) <= 1)
+		if(w.getBlock(x,y,z) == TardisMod.schemaComponentBlock && w.getBlockMetadata(x, y, z) <= 1)
 			return true;
 		return false;
 	}
@@ -113,7 +113,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
     		boolean found = false;
     		for(int i = 1;i<10 && found == false;i++)
     		{
-    			if(w.getBlockId(x, y-i, z) == TardisMod.schemaCoreBlock.blockID)
+    			if(w.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
     			{
     				return ((TardisAbstractBlockContainer)TardisMod.schemaCoreBlock).onBlockActivated(w, x, y-i, z, pl, s, t, j, k);
     			}

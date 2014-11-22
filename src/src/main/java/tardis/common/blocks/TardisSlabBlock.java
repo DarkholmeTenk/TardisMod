@@ -4,9 +4,10 @@ import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -15,18 +16,18 @@ public class TardisSlabBlock extends TardisAbstractBlock
 	private final static String[] names		= {"Console","Corridor","Walkway","Glass"};
 	private final static String[] suffixes	= {"topbottom", "side"};
 
-	public TardisSlabBlock(int blockID)
+	public TardisSlabBlock()
 	{
-		super(blockID);
+		super();
 	}
 
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("Slab");
+		setBlockName("Slab");
 		setSubNames(names);
 		setIconArray(names.length,suffixes.length);
-		setLightValue(1F);
+		setLightLevel(1F);
 	}
 	
 	@Override
@@ -36,7 +37,7 @@ public class TardisSlabBlock extends TardisAbstractBlock
 	}
 	
 	@Override
-	public Icon getIcon(int s, int d)
+	public IIcon getIcon(int s, int d)
 	{
 		return super.getIcon(s, d/2);
 	}
@@ -48,7 +49,7 @@ public class TardisSlabBlock extends TardisAbstractBlock
 	}
 	
 	@Override
-	public void getSubBlocks(int itemID,CreativeTabs tab,List itemList)
+	public void getSubBlocks(Item itemID,CreativeTabs tab,List itemList)
 	{
 		itemList.add(new ItemStack(itemID,1,0));
 		itemList.add(new ItemStack(itemID,1,2));
@@ -114,7 +115,7 @@ public class TardisSlabBlock extends TardisAbstractBlock
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x, int y, int z, int ox, int oy, int oz)
 	{
-		if(w.getBlockId(x, y, z) == blockID && w.getBlockId(ox, oy, oz) == blockID)
+		if(w.getBlock(x, y, z) == this && w.getBlock(ox, oy, oz) == this)
 		{
 			if(oy == y)
 			{

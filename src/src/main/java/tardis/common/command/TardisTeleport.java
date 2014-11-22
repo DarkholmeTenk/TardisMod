@@ -94,12 +94,12 @@ public class TardisTeleport extends TardisAbstractCommand
 				}
 				else
 				{
-					pl.addChatMessage(getCommandUsage(comSen));
+					sendString(pl,getCommandUsage(comSen));
 				}
 			}
 			else
 			{
-				pl.addChatMessage(getCommandUsage(comSen));
+				sendString(pl,getCommandUsage(comSen));
 			}
 		}
 	}

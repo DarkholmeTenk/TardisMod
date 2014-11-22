@@ -1,11 +1,8 @@
-chamber.schema
-cobbleRoom.schema
+bigChamber.schema
 corridor.schema
 corridor4Way.schema
-dome.schema
-roundRoom.schema
 stairs.schema
+stairsUp.schema
+stairsDown.schema
 tardisConsoleMain.schema
 tardisConsoleWalkway.schema
-tardisConsoleMain.tardisConsoleWalkway.diff.schema
-tardisConsoleWalkway.tardisConsoleMain.diff.schema

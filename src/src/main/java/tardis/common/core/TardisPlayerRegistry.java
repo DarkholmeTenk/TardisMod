@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.WorldSavedData;
 
 public class TardisPlayerRegistry extends WorldSavedData
@@ -96,7 +96,7 @@ public class TardisPlayerRegistry extends WorldSavedData
 	
 	public Integer getDimension(EntityPlayer player)
 	{
-		return getDimension(player.username);
+		return getDimension(Helper.getUsername(player));
 	}
 	
 	public TardisCoreTileEntity getCore(EntityPlayer player)
@@ -126,12 +126,12 @@ public class TardisPlayerRegistry extends WorldSavedData
 	
 	public void chatMapping(ICommandSender comsen)
 	{
-		comsen.sendChatToPlayer(new ChatMessageComponent().addText("Dimension mapping:"));
+		comsen.addChatMessage(new ChatComponentText("Dimension mapping:"));
 		for(Integer i : ownedDimMapping.keySet())
 		{
 			String owner = ownedDimMapping.get(i);
 			if(i != null)
-				comsen.sendChatToPlayer(new ChatMessageComponent().addText(owner + "->" + i));
+				comsen.addChatMessage(new ChatComponentText(owner + "->" + i));
 		}
 	}
 
@@ -165,7 +165,7 @@ public class TardisPlayerRegistry extends WorldSavedData
 			{
 				tag.setString("username", s);
 				tag.setInteger("dimension", j);
-				nbt.setCompoundTag("store"+i, tag);
+				nbt.setTag("store"+i, tag);
 				i++;
 			}
 		}

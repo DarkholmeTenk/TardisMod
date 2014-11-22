@@ -1,8 +1,14 @@
 package tardis.common.core;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
+import io.netty.buffer.Unpooled;
+
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.zip.ZipException;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -11,6 +17,7 @@ import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.TardisPartBlueprint;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.network.packet.TardisSoundPacket;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisEngineTileEntity;
@@ -22,9 +29,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -131,37 +138,24 @@ public class Helper
 		teleportEntity(ent,worldID,ent.posX,ent.posY,ent.posZ);
 	}
 	
-	public static Packet250CustomPayload nbtPacket(String channel,NBTTagCompound nbt)
+	/*public static FMLProxyPacket nbtPacket(String channel,NBTTagCompound nbt)
 	{
-		Packet250CustomPayload p = new Packet250CustomPayload();
-		p.channel = channel;
 		try
 		{
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			DataOutputStream stream = new DataOutputStream(bos);
 			NBTTagCompound.writeNamedTag(nbt, stream);
-			p.data = bos.toByteArray();
-			p.length = p.data.length;
+			FMLProxyPacket p = new FMLProxyPacket(bos.toByteArray(),"tardis");
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
 		return p;
-	}
+	}*/
 	
 	public static void giveItemStack(EntityPlayer pl, ItemStack is)
 	{
-		/*InventoryPlayer inv = pl.inventory;
-		if(!inv.addItemStackToInventory(is))
-		{
-			EntityItem ie = new EntityItem(pl.worldObj,pl.posX,pl.posY,pl.posZ,is);
-			pl.worldObj.spawnEntityInWorld(ie);
-		}
-		else
-		{
-			inv.onInventoryChanged();
-		}*/
 		EntityItem ie = new EntityItem(pl.worldObj,pl.posX,pl.posY,pl.posZ,is);
 		ie.delayBeforeCanPickup = 0;
 		pl.worldObj.spawnEntityInWorld(ie);
@@ -179,24 +173,24 @@ public class Helper
 			TardisOutput.print("TH", "Generating tardis error: " + e.getMessage());
 			e.printStackTrace();
 		}
-		if(tardisWorld.getBlockId(tardisCoreX, tardisCoreY, tardisCoreZ) != TardisMod.tardisCoreBlock.blockID)
+		if(tardisWorld.getBlock(tardisCoreX, tardisCoreY, tardisCoreZ) != TardisMod.tardisCoreBlock)
 		{
-			tardisWorld.setBlock(tardisCoreX, tardisCoreY, tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
-			tardisWorld.setBlock(tardisCoreX, tardisCoreY-2, tardisCoreZ, TardisMod.tardisConsoleBlock.blockID);
-			tardisWorld.setBlock(tardisCoreX, tardisCoreY-5, tardisCoreZ, TardisMod.tardisEngineBlock.blockID);
+			tardisWorld.setBlock(tardisCoreX, tardisCoreY, tardisCoreZ, TardisMod.tardisCoreBlock);
+			tardisWorld.setBlock(tardisCoreX, tardisCoreY-2, tardisCoreZ, TardisMod.tardisConsoleBlock);
+			tardisWorld.setBlock(tardisCoreX, tardisCoreY-5, tardisCoreZ, TardisMod.tardisEngineBlock);
 		}
 		TardisCoreTileEntity te = getTardisCore(dimID);
 		if(te != null)
 		{
 			te.setOwner(ownerName);
 			if(exterior != null)
-				te.setExterior(exterior.worldObj, exterior.xCoord, exterior.yCoord, exterior.zCoord);
+				te.setExterior(exterior.getWorldObj(), exterior.xCoord, exterior.yCoord, exterior.zCoord);
 		}
 	}
 	
 	public static int generateTardisInterior(String ownerName,TardisTileEntity exterior)
 	{
-		if(exterior.worldObj.isRemote)
+		if(exterior.getWorldObj().isRemote)
 			return 0;
 		int dimID = DimensionManager.getNextFreeDimId();
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
@@ -208,49 +202,22 @@ public class Helper
 	
 	public static int generateTardisInterior(EntityPlayer player,TardisTileEntity exterior)
 	{
-		int dimID = generateTardisInterior(player.username,exterior);
+		int dimID = generateTardisInterior(player.getCommandSenderName(),exterior);
 		TardisCoreTileEntity te = getTardisCore(dimID);
 		if(te != null)
 			te.enterTardis(player, true);
 		return dimID;
-		/*
-		if(player.worldObj.isRemote)
-			return 0;
-		int dimID = DimensionManager.getNextFreeDimId();
-		DimensionManager.registerDimension(dimID, TardisMod.providerID);
-		TardisMod.dimReg.addDimension(dimID);
-		TardisDimensionRegistry.save();
-		World tardisWorld = Helper.getWorld(dimID);
-		try
-		{
-			loadSchema("tardisConsoleMain",tardisWorld,tardisCoreX,tardisCoreY-10,tardisCoreZ,0);
-		}
-		catch(Exception e)
-		{
-			TardisOutput.print("TH", "Generating tardis error: " + e.getMessage());
-			e.printStackTrace();
-		}
-		tardisWorld.setBlock(tardisCoreX, tardisCoreY, tardisCoreZ, TardisMod.tardisCoreBlock.blockID);
-		TardisCoreTileEntity te = getTardisCore(dimID);
-		if(te != null)
-		{
-			te.setOwner(player.username);
-			te.enterTardis(player,true);
-			te.setExterior(exterior.worldObj, exterior.xCoord, exterior.yCoord, exterior.zCoord);
-		}
-		return dimID;
-		*/
 	}
 	
 	public static void summonNewTardis(EntityPlayer player)
 	{
-		if(TardisMod.plReg.hasTardis(player.username))
+		if(TardisMod.plReg.hasTardis(player.getCommandSenderName()))
 			return;
 		
 		TardisTileEntity te = summonTardis(player);
 		if(te != null)
 		{
-			int dimID = generateTardisInterior(player.username,te);
+			int dimID = generateTardisInterior(player.getCommandSenderName(),te);
 			te.linkToDimension(dimID);
 			TardisConsoleTileEntity con = getTardisConsole(dimID);
 			if(con != null)
@@ -315,22 +282,22 @@ public class Helper
 		
 		if(place != null)
 		{
-			w.setBlock(place.x, place.y, place.z, TardisMod.tardisBlock.blockID, 0, 3);
-			w.setBlock(place.x, place.y+1,place.z, TardisMod.tardisTopBlock.blockID, 0, 3);
-			TileEntity te = w.getBlockTileEntity(place.x,place.y,place.z);
+			w.setBlock(place.x, place.y, place.z, TardisMod.tardisBlock, 0, 3);
+			w.setBlock(place.x, place.y+1,place.z, TardisMod.tardisTopBlock, 0, 3);
+			TileEntity te = w.getTileEntity(place.x,place.y,place.z);
 			if(te instanceof TardisTileEntity)
 				return (TardisTileEntity)te;
 		}
 		return null;
 	}
 	
-	public static boolean isBlockRemovable(int blockID)
+	public static boolean isBlockRemovable(Block blockID)
 	{
-		if(blockID == TardisMod.tardisCoreBlock.blockID)
+		if(blockID == TardisMod.tardisCoreBlock)
 			return false;
-		else if(blockID == TardisMod.tardisConsoleBlock.blockID)
+		else if(blockID == TardisMod.tardisConsoleBlock)
 			return false;
-		else if(blockID == TardisMod.tardisEngineBlock.blockID);
+		else if(blockID == TardisMod.tardisEngineBlock);
 		return true;
 	}
 	
@@ -386,12 +353,17 @@ public class Helper
 
 	public static boolean isServer()
 	{
-		return FMLCommonHandler.instance().getEffectiveSide().equals(Side.SERVER);
+		return !FMLCommonHandler.instance().getEffectiveSide().equals(Side.CLIENT);
 	}
 	
 	public static void playSound(TileEntity te, String sound, float vol)
 	{
-		playSound(getWorldID(te.worldObj), te.xCoord, te.yCoord, te.zCoord, sound, vol);
+		playSound(getWorldID(te.getWorldObj()), te.xCoord, te.yCoord, te.zCoord, sound, vol);
+	}
+	
+	public static void playSound(TileEntity te, String sound, float vol, float speed)
+	{
+		playSound(getWorldID(te.getWorldObj()), te.xCoord, te.yCoord, te.zCoord, sound, vol,speed);
 	}
 	
 	public static void playSound(World w, int x, int y, int z, String sound, float vol)
@@ -400,19 +372,41 @@ public class Helper
 		playSound(dim,x,y,z,sound,vol);
 	}
 	
+	public static void playSound(World w, int x, int y, int z, String sound, float vol,float speed)
+	{
+		int dim = getWorldID(w);
+		playSound(dim,x,y,z,sound,vol,speed);
+	}
+	
 	public static void playSound(int dim, int x, int y, int z, String sound, float vol)
+	{
+		playSound(dim,x,y,z,sound,vol,1);
+	}
+	
+	public static void playSound(int dim, int x, int y, int z, String sound, float vol, float speed)
 	{
 		if(!Helper.isServer())
 			return;
 		NBTTagCompound data = new NBTTagCompound();
+		if(!sound.contains(":"))
+			sound = "tardismod:" + sound;
 		data.setString("sound", sound);
 		data.setInteger("world", dim);
 		data.setInteger("x",x);
 		data.setInteger("y",y);
 		data.setInteger("z",z);
 		data.setFloat("vol",vol);
-		Packet250CustomPayload packet = nbtPacket("TardisSn",data);
-		MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayersInDimension(packet, dim);
+		if(speed != 1)
+			data.setFloat("spe", speed);
+		TardisSoundPacket packet = new TardisSoundPacket(Unpooled.buffer(),data);
+		TardisOutput.print("TH","Sending sound packet");
+		TardisMod.networkChannel.sendToDimension(packet, dim);
+		//MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayersInDimension(packet, dim);
+	}
+	
+	public static String getUsername(EntityPlayer player)
+	{
+		return player.getCommandSenderName();
 	}
 
 	public static World getWorld(int dimensionID)
@@ -436,25 +430,26 @@ public class Helper
 		return w.provider.dimensionId;
 	}
 	
-	public static Block getBlock(World w, int x, int y, int z)
+	public static int getWorldID(TileEntity te)
 	{
-		int blockID = w.getBlockId(x, y, z);
-		if(blockID != 0)
-		{
-			try
-			{
-				return Block.blocksList[blockID];
-			}
-			catch(IndexOutOfBoundsException e)
-			{
-			}
-		}
-		return null;
+		World w = te.getWorldObj();
+		if(w != null)
+			return getWorldID(w);
+		return 0;
 	}
 
 	public static EntityPlayerMP getPlayer(String username)
 	{
-		return MinecraftServer.getServer().getConfigurationManager().getPlayerForUsername(username);
+		List playerEnts = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+		for(Object o : playerEnts)
+		{
+			if(o instanceof EntityPlayerMP)
+			{
+				if(((EntityPlayerMP)o).getCommandSenderName().equals(username))
+					return (EntityPlayerMP)o;
+			}
+		}
+		return null;
 	}
 
 	public static TardisCoreTileEntity getTardisCore(int dimensionID)
@@ -471,7 +466,7 @@ public class Helper
 	{
 		if(tardisWorld != null)
 		{
-			TileEntity te = tardisWorld.getBlockTileEntity(tardisCoreX, tardisCoreY, tardisCoreZ);
+			TileEntity te = tardisWorld.getTileEntity(tardisCoreX, tardisCoreY, tardisCoreZ);
 			if(te instanceof TardisCoreTileEntity)
 			{
 				return (TardisCoreTileEntity)te;
@@ -480,6 +475,17 @@ public class Helper
 		else
 		{
 			TardisOutput.print("TH","No world passed",TardisOutput.Priority.DEBUG);
+		}
+		return null;
+	}
+	
+	public static TardisCoreTileEntity getTardisCore(TileEntity te)
+	{
+		if(te != null)
+		{
+			World w = te.getWorldObj();
+			if(w != null)
+				return getTardisCore(w);
 		}
 		return null;
 	}
@@ -511,5 +517,49 @@ public class Helper
 		if(core != null)
 			return core.getConsole();
 		return null;
+	}
+	
+	public static NBTTagCompound readNBT(InputStream in)
+	{
+		try
+		{
+			NBTTagCompound nbt = CompressedStreamTools.readCompressed(in);
+			return nbt;
+		}
+		catch(ZipException e)
+		{
+			try
+			{
+				if(in instanceof DataInputStream)
+				{
+					NBTTagCompound nbt = CompressedStreamTools.read((DataInputStream)in);
+					return nbt;
+				}
+				return null;
+			}
+			catch (IOException e1)
+			{
+				e1.printStackTrace();
+			}
+		}
+		catch(IOException e)
+		{
+			TardisOutput.print("TH", "Error writing NBT: "+ e.getMessage(),TardisOutput.Priority.ERROR);
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static void writeNBT(NBTTagCompound nbt, OutputStream out)
+	{
+		try
+		{
+			CompressedStreamTools.writeCompressed(nbt, out);
+		}
+		catch(IOException e)
+		{
+			TardisOutput.print("TH", "Error writing NBT: "+ e.getMessage(),TardisOutput.Priority.ERROR);
+			e.printStackTrace();
+		}
 	}
 }

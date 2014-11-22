@@ -6,9 +6,9 @@ import net.minecraft.item.ItemStack;
 
 public abstract class TardisAbstractItemBlock extends ItemBlock
 {
-	int bID;
+	Block bID;
 	
-	public TardisAbstractItemBlock(int par1)
+	public TardisAbstractItemBlock(Block par1)
 	{
 		super(par1);
 		bID = par1;
@@ -31,7 +31,7 @@ public abstract class TardisAbstractItemBlock extends ItemBlock
 		{
 			return block.getUnlocalizedName(itemStack.getItemDamage());
 		}
-		return Block.blocksList[this.bID].getUnlocalizedName();
+		return bID.getUnlocalizedName();
 	}
 
 }

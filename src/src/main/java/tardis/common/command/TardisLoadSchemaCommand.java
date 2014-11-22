@@ -36,6 +36,7 @@ public class TardisLoadSchemaCommand extends TardisAbstractCommand
 			if(astring.length == 5)
 			{
 				String name = astring[0];
+				TardisOutput.print("TLC", "Attempting to load " + name +" in dim " + Helper.getWorldID(pl.worldObj));
 				try
 				{
 					int x = Integer.parseInt(astring[1]);
@@ -46,7 +47,7 @@ public class TardisLoadSchemaCommand extends TardisAbstractCommand
 				}
 				catch(NumberFormatException e)
 				{
-					pl.addChatMessage("Totally not numbers");
+					sendString(pl,"Totally not numbers");
 				}
 				catch(Exception e)
 				{

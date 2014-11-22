@@ -4,7 +4,7 @@ import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -27,9 +27,9 @@ public class TardisComponentFluid extends TardisAbstractComponent implements IFl
 	
 	private FluidStack[] getTanks()
 	{
-		if(parentObj != null && parentObj.worldObj != null)
+		if(parentObj != null && parentObj.getWorldObj() != null)
 		{
-			TardisCoreTileEntity core = Helper.getTardisCore(parentObj.worldObj);
+			TardisCoreTileEntity core = Helper.getTardisCore(parentObj.getWorldObj());
 			if(core != null)
 				return core.getTanks();
 		}
@@ -167,5 +167,4 @@ public class TardisComponentFluid extends TardisAbstractComponent implements IFl
 		}
 		return null;
 	}
-
 }

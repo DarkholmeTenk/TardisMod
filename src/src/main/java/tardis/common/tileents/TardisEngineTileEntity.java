@@ -12,8 +12,9 @@ import tardis.common.core.Helper;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 
 public class TardisEngineTileEntity extends TardisAbstractTileEntity implements IControlMatrix
 {
@@ -62,7 +63,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			for(Object o : plList)
 			{
 				if(o instanceof EntityPlayer)
-					users.add(((EntityPlayer)o).username);
+					users.add(((EntityPlayer)o).getCommandSenderName());
 			}
 			Collections.sort(users, String.CASE_INSENSITIVE_ORDER);
 			currentUsers = users.toArray(currentUsers);
@@ -83,12 +84,12 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	
 	private void verifyEngineBlocks()
 	{
-		if(worldObj.getBlockId(xCoord, yCoord-1, zCoord) == 0)
-			worldObj.setBlock(xCoord, yCoord-1, zCoord, TardisMod.schemaComponentBlock.blockID, 7, 3);
-		if(worldObj.getBlockId(xCoord, yCoord+1, zCoord) == 0)
-			worldObj.setBlock(xCoord, yCoord+1, zCoord, TardisMod.schemaComponentBlock.blockID, 7, 3);
-		if(worldObj.getBlockId(xCoord, yCoord+2, zCoord) == 0)
-			worldObj.setBlock(xCoord, yCoord+2, zCoord, TardisMod.schemaComponentBlock.blockID, 7, 3);
+		if(worldObj.getBlock(xCoord, yCoord-1, zCoord) == Blocks.air)
+			worldObj.setBlock(xCoord, yCoord-1, zCoord, TardisMod.schemaComponentBlock, 7, 3);
+		if(worldObj.getBlock(xCoord, yCoord+1, zCoord) == Blocks.air)
+			worldObj.setBlock(xCoord, yCoord+1, zCoord, TardisMod.schemaComponentBlock, 7, 3);
+		if(worldObj.getBlock(xCoord, yCoord+2, zCoord) == Blocks.air)
+			worldObj.setBlock(xCoord, yCoord+2, zCoord, TardisMod.schemaComponentBlock, 7, 3);
 	}
 
 	public int getControlFromHit(HitPosition hit)
@@ -153,7 +154,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 				setUsername();
 			}
 			else if(control == 6)
-				pl.sendChatToPlayer(new ChatMessageComponent().addText("[TARDIS] " + currentPerson + " does " + (core.canModify(currentPerson)?"":"not ") + "have permission to modify this TARDIS"));
+				pl.addChatMessage(new ChatComponentText("[TARDIS] " + currentPerson + " does " + (core.canModify(currentPerson)?"":"not ") + "have permission to modify this TARDIS"));
 			else if(control == 7)
 			{
 				core.toggleModifier(pl, currentPerson);
@@ -179,7 +180,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 							{
 								preparingToUpgrade = mode;
 								preparingToUpgradeTT = tt;
-								pl.addChatMessage("[ENGINE] Sneak and activate the button again to upgrade " + mode.name);
+								pl.addChatMessage(new ChatComponentText("[ENGINE] Sneak and activate the button again to upgrade " + mode.name));
 							}
 						}
 					}
@@ -195,11 +196,11 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 				if(mode != null)
 				{
 					int level = core.getLevel(mode);
-					pl.addChatMessage("[ENGINE] " + mode.name + " lvl: " + level + "/" + core.maxUnspentLevelPoints());
+					pl.addChatMessage(new ChatComponentText("[ENGINE] " + mode.name + " lvl: " + level + "/" + core.maxUnspentLevelPoints()));
 				}
 			}
 			else if(control == 30)
-				pl.addChatMessage("Unspent level points: " + core.unspentLevelPoints() +"/"+core.maxUnspentLevelPoints());
+				pl.addChatMessage(new ChatComponentText("Unspent level points: " + core.unspentLevelPoints() +"/"+core.maxUnspentLevelPoints()));
 		}
 		sendUpdate();
 	}

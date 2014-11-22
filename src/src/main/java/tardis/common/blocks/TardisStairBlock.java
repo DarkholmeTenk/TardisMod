@@ -5,26 +5,26 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.world.World;
+import net.minecraft.world.IBlockAccess;
 
 public class TardisStairBlock extends BlockStairs
 {
 	private String unlocalizedFragment;
 	
-	public TardisStairBlock(int id)
+	public TardisStairBlock()
 	{
-		super(id,TardisMod.decoBlock,3);
+		super(TardisMod.decoBlock,3);
 		setHardness(-1.0f);
 		setCreativeTab(TardisMod.tab);
-		setUnlocalizedName("StairBlock");
-		setLightValue(1F);
+		setBlockName("StairBlock");
+		setLightLevel(1F);
 	}
 	
 	@Override
-	public Block setUnlocalizedName(String name)
+	public Block setBlockName(String name)
 	{
 		unlocalizedFragment = name;
-		return super.setUnlocalizedName(name);
+		return super.setBlockName(name);
 	}
 	
 	@Override
@@ -34,19 +34,19 @@ public class TardisStairBlock extends BlockStairs
 	}
 	
 	@Override
-	public boolean canCreatureSpawn(EnumCreatureType type, World world, int x, int y, int z)
+	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess world, int x, int y, int z)
     {
 		return false;
     }
 	
 	@Override
-	public boolean canEntityDestroy(World world, int x, int y, int z, Entity entity)
+	public boolean canEntityDestroy(IBlockAccess world, int x, int y, int z, Entity entity)
 	{
 		return false;
 	}
 	
 	@Override
-	public boolean canBeReplacedByLeaves(World world, int x, int y, int z)
+	public boolean canBeReplacedByLeaves(IBlockAccess world, int x, int y, int z)
 	{
 		return false;
 	}

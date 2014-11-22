@@ -10,13 +10,13 @@ import net.minecraft.world.World;
 public class TardisConsoleBlock extends TardisAbstractBlockContainer
 {
 
-	public TardisConsoleBlock(int par1)
+	public TardisConsoleBlock()
 	{
-		super(par1);
+		super();
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world)
+	public TileEntity createNewTileEntity(World world, int extra)
 	{
 		return new TardisConsoleTileEntity();
 	}
@@ -24,7 +24,7 @@ public class TardisConsoleBlock extends TardisAbstractBlockContainer
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("ConsoleBlock");
+		setBlockName("ConsoleBlock");
 
 	}
 

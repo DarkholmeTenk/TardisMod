@@ -1,23 +1,19 @@
-package tardis.common.core;
+package tardis.common.network;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import tardis.common.core.TardisOutput;
+import tardis.common.network.packet.TardisAbstractPacket.PacketType;
+import tardis.common.network.packet.TardisDimRegPacket;
+import tardis.common.network.packet.TardisSoundPacket;
 
-import tardis.TardisMod;
+import cpw.mods.fml.common.eventhandler.Event;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.CustomNetworkEvent;
+import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.Player;
-import cpw.mods.fml.relauncher.Side;
-
-public class TardisPacketHandler implements IPacketHandler
+public class TardisPacketHandler
 {
-
+/*
 	@Override
 	public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player)
 	{
@@ -137,6 +133,32 @@ public class TardisPacketHandler implements IPacketHandler
 				catch (IOException e) {	}
 			}
 		}
+	}*/
+	
+	@SubscribeEvent
+	public void handleCustomPacket(ClientCustomPacketEvent event)
+	{
+		FMLProxyPacket p = event.packet;
+		Class clazz =event.getClass();
+		TardisOutput.print("TPH","Received packet with channel:" + p.channel() +", " + clazz.getName());
+		int discriminator = p.payload().getByte(0);
+		p.payload().readerIndex(1);
+		p.payload().discardReadBytes();
+		PacketType type = PacketType.find(discriminator);
+		if(type == PacketType.SOUND)
+			new TardisSoundPacket(p.payload()).play();
+		else if(type == PacketType.DIMREG)
+			new TardisDimRegPacket(p.payload()).registerDims();
 	}
-
+	@SubscribeEvent
+	public void handlePacket(Event event)
+	{
+		TardisOutput.print("TPH", event.getClass().getName());
+		if(event instanceof CustomNetworkEvent)
+		{
+			Object wrappedEvent = ((CustomNetworkEvent)event).wrappedEvent;
+			if(wrappedEvent != null)
+				TardisOutput.print("TPH","w:"+wrappedEvent.getClass().getName());
+		}
+	}
 }

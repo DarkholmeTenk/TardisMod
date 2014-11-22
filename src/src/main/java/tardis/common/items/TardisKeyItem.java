@@ -9,18 +9,19 @@ import tardis.common.core.Helper;
 import tardis.common.tileents.TardisCoreTileEntity;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class TardisKeyItem extends TardisAbstractItem
 {
 
-	public TardisKeyItem(int par1)
+	public TardisKeyItem()
 	{
-		super(par1);
+		super();
 		setUnlocalizedName("TardisKey");
 		setMaxStackSize(1);
 	}
@@ -66,14 +67,14 @@ public class TardisKeyItem extends TardisAbstractItem
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
     {
 		if(is!= null && getOwnerName(is) == null)
-			setOwnerName(is,player.username);
+			setOwnerName(is,Helper.getUsername(player));
 		
-		if(Helper.isServer() && !TardisMod.plReg.hasTardis(getOwnerName(is)) && player.username == getOwnerName(is))
+		if(Helper.isServer() && !TardisMod.plReg.hasTardis(getOwnerName(is)) && Helper.getUsername(player).equals(getOwnerName(is)))
 		{
 			Helper.summonNewTardis(player);
-			player.addChatMessage("[TARDIS KEY]The key feels warm");
+			player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
 		}
-		else if(Helper.isServer() && player.username == getOwnerName(is))
+		else if(Helper.isServer() && Helper.getUsername(player).equals(getOwnerName(is)))
 		{
 			TardisCoreTileEntity te = TardisMod.plReg.getCore(player);
 			if(te != null)
@@ -81,7 +82,7 @@ public class TardisKeyItem extends TardisAbstractItem
 				if(!te.hasValidExterior())
 				{
 					Helper.summonOldTardis(player);
-					player.addChatMessage("[TARDIS KEY]The key feels warm");
+					player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
 				}
 			}
 		}
@@ -92,7 +93,7 @@ public class TardisKeyItem extends TardisAbstractItem
 	public void initRecipes()
 	{
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem,1),true, " i "," i "," ii",
-				'i', Item.ingotIron));
+				'i', Items.iron_ingot));
 	}
 
 }

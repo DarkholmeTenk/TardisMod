@@ -27,8 +27,7 @@ public class TardisChunkProvider implements IChunkProvider
 	@Override
 	public Chunk provideChunk(int i, int j)
 	{
-		byte[] abyte = new byte[32768];
-		Chunk c = new Chunk(worldObj, abyte, i, j);
+		Chunk c = new Chunk(worldObj, i, j);
 		c.generateSkylightMap();
 		return c;
 	}
@@ -75,12 +74,6 @@ public class TardisChunkProvider implements IChunkProvider
 	}
 
 	@Override
-	public ChunkPosition findClosestStructure(World world, String s, int i, int j, int k)
-	{
-		return null;
-	}
-
-	@Override
 	public int getLoadedChunkCount()
 	{
 		return 0;
@@ -94,6 +87,12 @@ public class TardisChunkProvider implements IChunkProvider
 	@Override
 	public void saveExtraData()
 	{
+	}
+
+	@Override
+	public ChunkPosition func_147416_a(World arg0, String arg1, int arg2, int arg3, int arg4)
+	{
+		return null;
 	}
 
 }

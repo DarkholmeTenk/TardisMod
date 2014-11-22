@@ -10,13 +10,13 @@ import net.minecraft.world.World;
 public class TardisCoreBlock extends TardisAbstractBlockContainer
 {
 
-	public TardisCoreBlock(int par1)
+	public TardisCoreBlock()
 	{
-		super(par1);
+		super();
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world)
+	public TileEntity createNewTileEntity(World world, int extra)
 	{
 		return new TardisCoreTileEntity();
 	}
@@ -24,9 +24,9 @@ public class TardisCoreBlock extends TardisAbstractBlockContainer
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("TardisCore");
+		setBlockName("TardisCore");
 		setBlockBounds(0,-1,0,1,2,1);
-		setLightValue(1.0F);
+		setLightLevel(1.0F);
 	}
 
 	@Override

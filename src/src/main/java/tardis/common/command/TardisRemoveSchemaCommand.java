@@ -7,7 +7,6 @@ import tardis.TardisMod;
 import tardis.common.tileents.TardisConsoleTileEntity;
 
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
 
 public class TardisRemoveSchemaCommand extends TardisAbstractCommand
 {
@@ -43,13 +42,13 @@ public class TardisRemoveSchemaCommand extends TardisAbstractCommand
 				if(schema.exists())
 				{
 					schema.delete();
-					icommandsender.sendChatToPlayer(new ChatMessageComponent().addText("Removed schematic " + name));
+					sendString(icommandsender,"Removed schematic " + name);
 					TardisConsoleTileEntity.refreshSchemas();
 				}
 			}
 			catch(Exception e)
 			{
-				icommandsender.sendChatToPlayer(new ChatMessageComponent().addText("Unable to remove"));
+				sendString(icommandsender,"Unable to remove");
 			}
 		}
 	}

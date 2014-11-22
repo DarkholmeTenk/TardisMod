@@ -16,7 +16,7 @@ public abstract class TardisAbstractComponent implements ITardisComponent
 	protected void parentAdded(TardisComponentTileEntity parent)
 	{
 		parentObj = parent;
-		world  = Helper.getWorldID(parent.worldObj);
+		world  = Helper.getWorldID(parent.getWorldObj());
 		xCoord = parent.xCoord;
 		yCoord = parent.yCoord;
 		zCoord = parent.zCoord;

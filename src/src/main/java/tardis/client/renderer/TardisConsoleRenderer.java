@@ -130,7 +130,8 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
 	{
 		if(compRender == null)
-			compRender = new TardisControlRenderer(getFontRenderer(),tileEntityRenderer.renderEngine);
+			compRender = new TardisControlRenderer(func_147498_b(),field_147501_a.field_147553_e);
+		
 		
 		GL11.glPushMatrix();
 		//This line actually rotates the renderer.

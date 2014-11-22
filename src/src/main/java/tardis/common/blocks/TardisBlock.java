@@ -16,13 +16,13 @@ public class TardisBlock extends TardisAbstractBlockContainer
 {
 	
 	//INIT THINGS
-	public TardisBlock(int par1)
+	public TardisBlock()
 	{
-		super(par1);
+		super();
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world)
+	public TileEntity createNewTileEntity(World world, int extra)
 	{
 		return new TardisTileEntity();
 	}
@@ -30,7 +30,7 @@ public class TardisBlock extends TardisAbstractBlockContainer
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("Tardis");		
+		setBlockName("Tardis");		
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class TardisBlock extends TardisAbstractBlockContainer
     	int myMeta = world.getBlockMetadata(x, y, z);
     	if((myMeta == 0 && i == 2) || (myMeta == 1 && i == 5) || (myMeta == 2 && i == 3) || (myMeta == 3 && i == 4))
     	{
-    		TileEntity te = world.getBlockTileEntity(x, y, z);
+    		TileEntity te = world.getTileEntity(x, y, z);
     		if(te instanceof TardisTileEntity)
     		{
     			TardisTileEntity tte = (TardisTileEntity) te;
@@ -79,14 +79,14 @@ public class TardisBlock extends TardisAbstractBlockContainer
 	
 		int dir = MathHelper.floor_double((double)(entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
 		world.setBlockMetadataWithNotify(x, y, z, dir, 3);
-		world.setBlock(x, y+1, z, TardisMod.tardisTopBlock.blockID, dir, 3);
+		world.setBlock(x, y+1, z, TardisMod.tardisTopBlock, dir, 3);
 	}
 	
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta)
 	{
 		super.onBlockDestroyedByPlayer(world, x, y, z, meta);
-		if(world.getBlockId(x, y+1,z) == TardisMod.tardisTopBlock.blockID)
+		if(world.getBlock(x, y+1,z) == TardisMod.tardisTopBlock)
 			world.setBlockToAir(x, y+1, z);
 	}
 	

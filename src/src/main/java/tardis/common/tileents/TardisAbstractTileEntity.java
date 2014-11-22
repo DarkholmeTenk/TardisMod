@@ -11,9 +11,9 @@ import tardis.client.TardisClientProxy;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.Packet132TileEntityData;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.tileentity.TileEntity;
@@ -24,13 +24,14 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	public int tt = 0;
 	public static Random rand = new Random();
 	public SimpleCoordStore coords = null;
+	
 	@Override
 	public Packet getDescriptionPacket()
 	{
 		TardisOutput.print("TATE","Compiling description packet",TardisOutput.Priority.OLDDEBUG);
 		NBTTagCompound tag = new NBTTagCompound();
 		writeTransmittable(tag);
-		Packet p = new Packet132TileEntityData(xCoord,yCoord,zCoord,3,tag);
+		Packet p = new S35PacketUpdateTileEntity(xCoord,yCoord,zCoord,3,tag);
 		return p;
 	}
 	
@@ -70,12 +71,12 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	}
 	
 	@Override
-	public void onDataPacket(INetworkManager net, Packet132TileEntityData packet)
-	{
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet)
+    {
 		if(TardisMod.proxy instanceof TardisClientProxy)
 			TardisClientProxy.cWorld = worldObj;
 		TardisOutput.print("TATE","Receiving description packet",TardisOutput.Priority.OLDDEBUG);
-		readTransmittable(packet.data);
+		readTransmittable(packet.func_148857_g());
 		super.onDataPacket(net, packet);
 	}
 	

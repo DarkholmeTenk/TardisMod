@@ -1,7 +1,8 @@
 package tardis.common.tileents.components;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import tardis.api.IScrewable;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
@@ -31,28 +32,28 @@ public class TardisComponentTransmat extends TardisAbstractComponent implements 
 			TardisCoreTileEntity core = Helper.getTardisCore(world);
 			if(core != null)
 			{
-				ChatMessageComponent c = new ChatMessageComponent();
+				ChatComponentText c = new ChatComponentText("");
 				if(core.canModify(player))
 				{
 					if(core.isTransmatPoint(myCoord))
 					{
 						core.setTransmatPoint(null);
-						c.addText("TARDIS transmat point set to default location");
+						c.appendText("TARDIS transmat point set to default location");
 					}
 					else
 					{
-						if(parentObj.worldObj.isAirBlock(xCoord, yCoord+1, zCoord)&&parentObj.worldObj.isAirBlock(xCoord, yCoord+2, zCoord))
+						if(parentObj.getWorldObj().isAirBlock(xCoord, yCoord+1, zCoord)&&parentObj.getWorldObj().isAirBlock(xCoord, yCoord+2, zCoord))
 						{
 							core.setTransmatPoint(new SimpleCoordStore(player));
-							c.addText("TARDIS transmat point set to " + myCoord.toSimpleString());
+							c.appendText("TARDIS transmat point set to " + myCoord.toSimpleString());
 						}
 						else
-							c.addText("Not enough room for transmat");
+							c.appendText("Not enough room for transmat");
 					}
 				}
 				else
-					c.addText("You don't have permission to modify this TARDIS");
-				player.sendChatToPlayer(c);
+					c.appendText("You don't have permission to modify this TARDIS");
+				player.addChatMessage(c);
 				return true;
 			}
 		}

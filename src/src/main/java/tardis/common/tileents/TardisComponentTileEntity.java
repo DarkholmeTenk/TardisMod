@@ -4,11 +4,9 @@ import java.util.HashMap;
 
 import cofh.api.energy.IEnergyHandler;
 
-import appeng.api.DimentionalCoord;
-import appeng.api.WorldCoord;
-import appeng.api.me.tiles.IGridTeleport;
-import appeng.api.me.tiles.IGridTileEntity;
-import appeng.api.me.util.IGridInterface;
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
+import appeng.api.util.AECableType;
 import tardis.TardisMod;
 import tardis.api.IActivatable;
 import tardis.api.IChunkLoader;
@@ -20,24 +18,23 @@ import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.items.TardisComponentItem;
 import tardis.common.tileents.components.ITardisComponent;
-import tardis.common.tileents.components.TardisComponentGrid;
 import tardis.common.tileents.components.TardisTEComponent;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-public class TardisComponentTileEntity extends TardisAbstractTileEntity implements IScrewable, IActivatable, IWatching, IGridTeleport,
-																		IGridTileEntity, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
+public class TardisComponentTileEntity extends TardisAbstractTileEntity implements IScrewable, IActivatable, IWatching,
+																		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
 {
 	private HashMap<Integer,ITardisComponent> comps = new HashMap<Integer,ITardisComponent>();
 	private boolean valid = false;
@@ -78,7 +75,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 			int i = 0;
 			for(Integer compVal : comps.keySet())
 			{
-				ItemStack is = new ItemStack(TardisMod.componentItem.itemID,1,compVal);
+				ItemStack is = new ItemStack(TardisMod.componentItem,1,compVal);
 				retIS[i] = is;
 				i++;
 			}
@@ -109,7 +106,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 			inited = true;
 			if(Helper.isServer() && valid)
 			{
-				worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlockId(xCoord,yCoord,zCoord));
+				worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord,yCoord,zCoord));
 				sendUpdate();
 			}
 		}
@@ -127,7 +124,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 		if(mode == TardisScrewdriverMode.Dismantle)
 		{
 			TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
-			if(core.canModify(player))
+			if(core == null || core.canModify(player))
 			{
 				ItemStack[] contained = getComponentItems();
 				if(contained.length > 0)
@@ -136,7 +133,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 						Helper.giveItemStack(player, is);
 				}
 				int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-				worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.decoBlock.blockID, d == 0 ? 2 : 4, 3);
+				worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.decoBlock, d == 0 ? 2 : 4, 3);
 				return true;
 			}
 			else
@@ -178,15 +175,15 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 							{
 								pl.inventory.decrStackSize(pl.inventory.currentItem, 1);
 								//pl.inventory.setInventorySlotContents(pl.inventory.currentItem, null);
-								pl.inventory.onInventoryChanged();
+								pl.inventory.markDirty();
 							}
 						}
 						else
-							pl.sendChatToPlayer(new ChatMessageComponent().addText("That component has already been fitted"));
+							pl.addChatMessage(new ChatComponentText("That component has already been fitted"));
 					}
 				}
 				else
-					pl.sendChatToPlayer(new ChatMessageComponent().addText("You do not have permission to modify this TARDIS"));
+					pl.addChatMessage(new ChatComponentText("You do not have permission to modify this TARDIS"));
 			}
 		}
 		boolean activated = false;
@@ -202,14 +199,14 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	}
 
 	@Override
-	public void neighbourUpdated(int neighbourBlockID)
+	public void neighbourUpdated(Block neighbourBlock)
 	{
 		if(comps.size() > 0)
 		{
 			for(ITardisComponent te : comps.values())
 			{
 				if(te instanceof IWatching)
-					((IWatching)te).neighbourUpdated(neighbourBlockID);
+					((IWatching)te).neighbourUpdated(neighbourBlock);
 			}
 		}
 	}
@@ -255,7 +252,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 					//TardisOutput.print("TCompTE", "Writing " + relevantComp.componentName + " to nbt");
 					compNBT.setBoolean("exists", true);
 					te.writeToNBT(compNBT);
-					nbt.setCompoundTag(relevantComp.componentName, compNBT);
+					nbt.setTag(relevantComp.componentName, compNBT);
 				}
 			}
 		}
@@ -308,68 +305,10 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 			}
 		}
 	}
-
-	@Override
-	public DimentionalCoord[] findRemoteSide()
-	{
-		ITardisComponent grid = getComponent(TardisTEComponent.GRID);
-		if(grid != null && grid instanceof TardisComponentGrid)
-		{
-			return ((TardisComponentGrid)grid).findRemoteSide();
-		}
-		return null;
-	}
-
-	@Override
-	public WorldCoord getLocation()
-	{
-		return new WorldCoord(xCoord,yCoord,zCoord);
-	}
-
-	@Override
+	
 	public boolean isValid()
 	{
 		return valid && !compAdded;
-	}
-
-	@Override
-	public void setPowerStatus(boolean hasPower)
-	{
-		ITardisComponent te = getComponent(TardisTEComponent.GRID);
-		if(te != null)
-			((TardisComponentGrid)te).setPowered(hasPower);
-	}
-
-	@Override
-	public boolean isPowered()
-	{
-		ITardisComponent te = getComponent(TardisTEComponent.GRID);
-		if(te != null)
-			return ((TardisComponentGrid)te).getPowered();
-		return false;
-	}
-
-	@Override
-	public IGridInterface getGrid()
-	{
-		ITardisComponent te = getComponent(TardisTEComponent.GRID);
-		if(te != null)
-			return ((TardisComponentGrid)te).getGrid();
-		return null;
-	}
-
-	@Override
-	public void setGrid(IGridInterface gi)
-	{
-		ITardisComponent te = getComponent(TardisTEComponent.GRID);
-		if(te != null)
-			((TardisComponentGrid)te).setGrid(gi);
-	}
-
-	@Override
-	public World getWorld()
-	{
-		return worldObj;
 	}
 
 	@Override
@@ -395,14 +334,14 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	}
 
 	@Override
-	public boolean canInterface(ForgeDirection from)
+	public boolean canConnectEnergy(ForgeDirection from)
 	{
 		if(!valid || compAdded)
 			return false;
 		for(ITardisComponent comp : comps.values())
 		{
 			if(comp instanceof IEnergyHandler)
-				return ((IEnergyHandler)comp).canInterface(from);
+				return ((IEnergyHandler)comp).canConnectEnergy(from);
 		}
 		return false;
 	}
@@ -487,22 +426,16 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	}
 
 	@Override
-	public String getInvName()
+	public String getInventoryName()
 	{
 		for(ITardisComponent comp : comps.values())
 		{
 			if(comp instanceof IInventory)
-				return ((IInventory)comp).getInvName();
+				return ((IInventory)comp).getInventoryName();
 		}
 		return null;
 	}
-
-	@Override
-	public boolean isInvNameLocalized()
-	{
-		return false;
-	}
-
+	
 	@Override
 	public int getInventoryStackLimit()
 	{
@@ -513,10 +446,10 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	public boolean isUseableByPlayer(EntityPlayer entityplayer){return false;}
 
 	@Override
-	public void openChest(){	}
+	public void openInventory(){	}
 
 	@Override
-	public void closeChest(){	}
+	public void closeInventory(){	}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack)
@@ -633,6 +566,47 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 					return ((IChunkLoader)comp).loadable();
 			}
 		return null;
+	}
+
+	@Override
+	public boolean hasCustomInventoryName()
+	{
+		return false;
+	}
+
+	@Override
+	public IGridNode getGridNode(ForgeDirection dir)
+	{
+		if(valid && !compAdded)
+			for(ITardisComponent comp : comps.values())
+			{
+				if(comp instanceof IGridHost)
+					return ((IGridHost)comp).getGridNode(dir);
+			}
+		return null;
+	}
+
+	@Override
+	public AECableType getCableConnectionType(ForgeDirection dir)
+	{
+		if(valid && !compAdded)
+			for(ITardisComponent comp : comps.values())
+			{
+				if(comp instanceof IGridHost)
+					return ((IGridHost)comp).getCableConnectionType(dir);
+			}
+		return AECableType.SMART;
+	}
+
+	@Override
+	public void securityBreak()
+	{
+		if(valid && !compAdded)
+			for(ITardisComponent comp : comps.values())
+			{
+				if(comp instanceof IGridHost)
+					((IGridHost)comp).securityBreak();
+			}
 	}
 
 }

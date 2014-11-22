@@ -8,13 +8,13 @@ import net.minecraft.world.World;
 public class TardisEngineBlock extends TardisAbstractBlockContainer
 {
 
-	public TardisEngineBlock(int par1)
+	public TardisEngineBlock()
 	{
-		super(par1);
+		super();
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world)
+	public TileEntity createNewTileEntity(World world, int extra)
 	{
 		return new TardisEngineTileEntity();
 	}
@@ -22,8 +22,8 @@ public class TardisEngineBlock extends TardisAbstractBlockContainer
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("TardisEngineBlock");
-		setLightValue(0.8F);
+		setBlockName("TardisEngineBlock");
+		setLightLevel(0.8F);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class TardisEngineBlock extends TardisAbstractBlockContainer
     public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer pl, int s, float i, float j, float k)
     {
 		boolean superEffect = super.onBlockActivated(w, x, y, z, pl, s, i, j, k);
-		TileEntity te = w.getBlockTileEntity(x,y,z);
+		TileEntity te = w.getTileEntity(x,y,z);
 		if(te instanceof TardisEngineTileEntity)
 		{
 			superEffect = ((TardisEngineTileEntity)te).activate(pl, s, y, i, j, k);;

@@ -13,6 +13,7 @@ import tardis.common.items.TardisSchemaItem;
 import tardis.common.items.TardisSonicScrewdriverItem;
 import tardis.common.tileents.TardisCoreTileEntity;
 
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,21 +21,22 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.Icon;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class TardisInternalDoorBlock extends TardisAbstractBlock
 {
-	public TardisInternalDoorBlock(int blockID)
+	public TardisInternalDoorBlock()
 	{
-		super(blockID);
+		super();
 	}
 
 	@Override
 	public void initData()
 	{
-		setUnlocalizedName("InternalDoor");
+		setBlockName("InternalDoor");
 		setSubNames("InternalDoor","InternalDoorPrimary");
 	}
 	
@@ -48,7 +50,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	}
 	
 	@Override
-	public void getSubBlocks(int itemID,CreativeTabs tab,List itemList)
+	public void getSubBlocks(Item itemID,CreativeTabs tab,List itemList)
 	{
 		itemList.add(new ItemStack(itemID,1,0));
 		itemList.add(new ItemStack(itemID,1,4));
@@ -125,7 +127,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 								}
 								else if(!w.isRemote)
 								{
-									player.addChatMessage("Too many rooms in this TARDIS");
+									player.addChatMessage(new ChatComponentText("Too many rooms in this TARDIS"));
 								}
 							}
 							else
@@ -133,13 +135,13 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 								if(!w.isRemote)
 								{
 									TardisOutput.print("TIDB", "NoRoom:"+nX+","+nY+","+nZ,TardisOutput.Priority.DEBUG);
-									player.addChatMessage("Not enough room for schematic");
+									player.addChatMessage(new ChatComponentText("Not enough room for schematic"));
 								}
 							}
 						}
 						else if(schemaCarrier)
 						{
-							player.addChatMessage("No schematic loaded");
+							player.addChatMessage(new ChatComponentText("No schematic loaded"));
 						}
 					}
 					else if(!w.isRemote)
@@ -171,14 +173,14 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	{
 		if(w.getBlockMetadata(x, y, z) >= 8)
 		{
-			return AxisAlignedBB.getAABBPool().getAABB(0,0,0,0,0,0);
+			return AxisAlignedBB.getBoundingBox(0,0,0,0,0,0);
 		}
 		else
 			return super.getCollisionBoundingBoxFromPool(w, x, y, z);
 	}
 	
 	@Override
-	public boolean isBlockNormalCube(World w, int x, int y, int z)
+	public boolean isNormalCube(IBlockAccess w, int x, int y, int z)
 	{
 		return w.getBlockMetadata(x,y,z) < 8;
 	}
@@ -207,10 +209,10 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	}
 	
 	@Override
-	public void onNeighborBlockChange(World w, int x, int y, int z, int bID)
+	public void onNeighborBlockChange(World w, int x, int y, int z, Block bID)
 	{
 		super.onNeighborBlockChange(w, x, y, z, bID);
-		if(bID != TardisMod.schemaComponentBlock.blockID)
+		if(bID != TardisMod.schemaComponentBlock)
 			manageConnected(w,x,y,z,w.getBlockMetadata(x, y, z)%4);
 	}
 	
@@ -250,12 +252,12 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	
 	public static boolean hasConnector(World w, int x, int y, int z)
 	{
-		if(w.getBlockId(x, y, z) == TardisMod.internalDoorBlock.blockID)
+		if(w.getBlock(x, y, z) == TardisMod.internalDoorBlock)
 		{
 			int facing = w.getBlockMetadata(x, y, z) % 4;
 			int connectedDoorX = x + dx(facing);
 			int connectedDoorZ = z + dz(facing);
-			if(w.getBlockId(connectedDoorX, y, connectedDoorZ) == TardisMod.internalDoorBlock.blockID)
+			if(w.getBlock(connectedDoorX, y, connectedDoorZ) == TardisMod.internalDoorBlock)
 				if((w.getBlockMetadata(connectedDoorX, y, connectedDoorZ) % 4) == opposingFace(facing))
 					return true;
 		}
@@ -278,7 +280,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	}
 	
 	@Override
-	public Icon getIcon(int s, int d)
+	public IIcon getIcon(int s, int d)
 	{
 		int iconMeta = (d % 8) >= 4 ? 1 : 0;
 		//TardisOutput.print("TIDB", "Meta"+d+"->"+iconMeta);

@@ -19,7 +19,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements IControlMatrix
@@ -168,16 +168,16 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			else if(hit.within(0, 0.779, 0.431, 0.901, 0.525))
 				activateControl(pl,5);
 			else if(hit.within(0, 1.651, 0.271, 1.883, 0.400))//Gauge1
-				pl.addChatMessage("Energy: " + core.getEnergy() + "/" + core.getMaxEnergy());
+				pl.addChatMessage(new ChatComponentText("Energy: " + core.getEnergy() + "/" + core.getMaxEnergy()));
 			else if(hit.within(0, 1.375, 0.271, 1.615, 0.400))
-				pl.addChatMessage("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms());
+				pl.addChatMessage(new ChatComponentText("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms()));
 			else if(hit.within(0, 1.517, 0.138, 1.750, 0.265))
 			{
-				pl.addChatMessage("XP: " + core.getXP() + "/" + core.getXPNeeded());
-				pl.addChatMessage("Level:" + core.getLevel());
+				pl.addChatMessage(new ChatComponentText("XP: " + core.getXP() + "/" + core.getXPNeeded()));
+				pl.addChatMessage(new ChatComponentText("Level:" + core.getLevel()));
 			}
 			else if(hit.within(0, 1.10 , 0.271, 1.335, 0.400))
-				pl.addChatMessage(String.format("Speed: %.1f/%.1f", core.getSpeed(true),core.getMaxSpeed()));
+				pl.addChatMessage(new ChatComponentText(String.format("Speed: %.1f/%.1f", core.getSpeed(true),core.getMaxSpeed())));
 				//pl.addChatMessage("Speed: " + core.getSpeed(true) + "/" + core.getMaxSpeed())
 			else if(hit.within(0,0.865,0.55,1.327,0.868))
 				activateControl(pl,3);
@@ -512,10 +512,10 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			{
 				if(!pl.isSneaking())
 				{
-					ChatMessageComponent c = new ChatMessageComponent();
-					c.setColor(EnumChatFormatting.DARK_RED);
-					c.addText("[TARDIS]Sneak-right click this button again to activate deletion protocol");
-					pl.sendChatToPlayer(c);
+					ChatComponentText c = new ChatComponentText("");
+					c.getChatStyle().setColor(EnumChatFormatting.DARK_RED);
+					c.appendText("[TARDIS]Sneak-right click this button again to activate deletion protocol");
+					pl.addChatMessage(c);
 					rdpCounter = 40;
 					roomDeletePrepare = true;
 				}
@@ -572,7 +572,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	public boolean setControls(TardisTileEntity ext, boolean allowNearest)
 	{
-		int dim = Helper.getWorldID(ext.worldObj);
+		int dim = Helper.getWorldID(ext.getWorldObj());
 		int xC = ext.xCoord;
 		int yC = ext.yCoord;
 		int zC = ext.zCoord;
@@ -934,7 +934,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	public TardisCoreTileEntity getCore()
 	{
-		TileEntity core = worldObj.getBlockTileEntity(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ);
+		TileEntity core = worldObj.getTileEntity(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ);
 		if(core != null && core instanceof TardisCoreTileEntity)
 			return (TardisCoreTileEntity)core;
 		return null;
@@ -968,20 +968,20 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			{
 				NBTTagCompound state = new NBTTagCompound();
 				states.get(i).writeToNBT(state);
-				nbt.setCompoundTag("css"+i, state);
+				nbt.setTag("css"+i, state);
 			}
 		}
 		if(lastLanding != null)
 		{
 			NBTTagCompound lT = new NBTTagCompound();
 			lastLanding.writeToNBT(lT);
-			nbt.setCompoundTag("lastLandingCSS", lT);
+			nbt.setTag("lastLandingCSS", lT);
 		}
 		if(currentLanding != null)
 		{
 			NBTTagCompound lT = new NBTTagCompound();
 			currentLanding.writeToNBT(lT);
-			nbt.setCompoundTag("currentLandingCSS", lT);
+			nbt.setTag("currentLandingCSS", lT);
 		}
 	}
 

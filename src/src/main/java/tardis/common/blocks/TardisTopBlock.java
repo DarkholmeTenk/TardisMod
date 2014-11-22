@@ -10,16 +10,16 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TardisTopBlock extends TardisAbstractBlock
 {
 
-	public TardisTopBlock(int blockID)
+	public TardisTopBlock()
 	{
-		super(blockID);
+		super();
 	}
 
 	@Override
 	public void initData()
 	{
-		setLightValue(1.0F);
-		setUnlocalizedName("TardisTop");
+		setLightLevel(1.0F);
+		setBlockName("TardisTop");
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class TardisTopBlock extends TardisAbstractBlock
 	@Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int i, float j, float k, float l)
     {
-    	if(world.getBlockId(x, y-1, z) == TardisMod.tardisBlock.blockID)
+    	if(world.getBlock(x, y-1, z) == TardisMod.tardisBlock)
     	{
     		return TardisMod.tardisBlock.onBlockActivated(world, x, y - 1, z, player, i, j, k, l);
     	}
@@ -56,7 +56,7 @@ public class TardisTopBlock extends TardisAbstractBlock
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta)
 	{
 		super.onBlockDestroyedByPlayer(world, x, y, z, meta);
-		if(world.getBlockId(x, y-1,z) == TardisMod.tardisBlock.blockID)
+		if(world.getBlock(x, y-1,z) == TardisMod.tardisBlock)
 			world.setBlockToAir(x, y-1, z);
 	}
 

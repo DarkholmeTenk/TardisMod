@@ -17,8 +17,8 @@ public class SimpleCoordStore
 	
 	public SimpleCoordStore(TileEntity te)
 	{
-		world = te.worldObj.provider.dimensionId;
-		worldObj = te.worldObj;
+		world = te.getWorldObj().provider.dimensionId;
+		worldObj = te.getWorldObj();
 		x = te.xCoord;
 		y = te.yCoord;
 		z = te.zCoord;

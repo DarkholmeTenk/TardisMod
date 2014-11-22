@@ -1,11 +1,12 @@
 package tardis.common.blocks;
 
+import net.minecraft.block.Block;
 import tardis.TardisMod;
 
 public class TardisSchemaComponentItemBlock extends TardisAbstractItemBlock
 {
 
-	public TardisSchemaComponentItemBlock(int par1)
+	public TardisSchemaComponentItemBlock(Block par1)
 	{
 		super(par1);
 	}

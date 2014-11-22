@@ -10,25 +10,26 @@ import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public abstract class TardisAbstractBlock extends Block
 {
-	private Icon iconBuffer = null;
+	private IIcon iconBuffer = null;
 	private String unlocalizedFragment = "";
 	private String[] subNames = null;
-	private Icon[] subIcons = null;
+	private IIcon[] subIcons = null;
 
-	public TardisAbstractBlock(int blockID, Material blockMaterial)
+	public TardisAbstractBlock(Material blockMaterial)
 	{
-		super(blockID, blockMaterial);
+		super(blockMaterial);
 		setResistance(6000000.0F);
 		setHardness(-1.0f);
 		setCreativeTab(TardisMod.tab);
@@ -36,9 +37,9 @@ public abstract class TardisAbstractBlock extends Block
 		initRecipes();
 	}
 	
-	public TardisAbstractBlock(int blockID)
+	public TardisAbstractBlock()
 	{
-		this(blockID, Material.iron);
+		this(Material.iron);
 	}
 	
 	public void setSubNames(String... subnames)
@@ -53,14 +54,14 @@ public abstract class TardisAbstractBlock extends Block
 	{
 		String[] suffixes = getIconSuffix();
 		if(suffixes == null)
-			subIcons = new Icon[length];
+			subIcons = new IIcon[length];
 		else
-			subIcons = new Icon[length * suffixes.length];
+			subIcons = new IIcon[length * suffixes.length];
 	}
 	
 	public void setIconArray(int names, int suffixes)
 	{
-		subIcons = new Icon[names * suffixes];
+		subIcons = new IIcon[names * suffixes];
 	}
 	
 	public String[] getIconSuffix()
@@ -93,10 +94,10 @@ public abstract class TardisAbstractBlock extends Block
 	}
 	
 	@Override
-	public Block setUnlocalizedName(String par1Str)
+	public Block setBlockName(String par1Str)
 	{
 		unlocalizedFragment = par1Str;
-		return super.setUnlocalizedName(par1Str);
+		return super.setBlockName(par1Str);
 	}
 	
 	@Override
@@ -106,7 +107,7 @@ public abstract class TardisAbstractBlock extends Block
 	}
 	
 	@Override
-	public void getSubBlocks(int itemID,CreativeTabs tab,List itemList)
+	public void getSubBlocks(Item itemID,CreativeTabs tab,List itemList)
 	{
 		int numItems = Math.max(1,getNumSubNames());
 		for(int i = 0; i<numItems;i++)
@@ -127,26 +128,26 @@ public abstract class TardisAbstractBlock extends Block
 	}
 	
 	@Override
-	public boolean canCreatureSpawn(EnumCreatureType type, World world, int x, int y, int z)
+	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess world, int x, int y, int z)
     {
 		return false;
     }
 	
 	@Override
-	public boolean canEntityDestroy(World world, int x, int y, int z, Entity entity)
+	public boolean canEntityDestroy(IBlockAccess world, int x, int y, int z, Entity entity)
 	{
 		return false;
 	}
 	
 	@Override
-	public boolean canBeReplacedByLeaves(World world, int x, int y, int z)
+	public boolean canBeReplacedByLeaves(IBlockAccess world, int x, int y, int z)
 	{
 		return false;
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IconRegister register)
+	public void registerBlockIcons(IIconRegister register)
 	{
 		if(subIcons != null)
 		{
@@ -201,7 +202,7 @@ public abstract class TardisAbstractBlock extends Block
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public Icon getIcon(int side, int metadata)
+	public IIcon getIcon(int side, int metadata)
     {
 		if(subIcons != null)
 		{
