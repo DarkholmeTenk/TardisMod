@@ -48,11 +48,11 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 			int b = hasFilled.get(dir).getAndSet(0);
 			int max = TardisMod.rfPerT - rfc;
 			if(b > 0)
-				max = Math.min(max, b/2);
+				//max = Math.min(max, b/2);
+				max = 0;
 			TileEntity te = w.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
 			if(te instanceof IEnergyHandler && !(te instanceof TardisComponentTileEntity))
 			{
-				//TardisOutput.print("TCE", "Attempting to energy");
 				IEnergyHandler ieh = (IEnergyHandler)te;
 				if(ieh.canConnectEnergy(dir.getOpposite()))
 				{
