@@ -127,7 +127,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	
 	public boolean activate(EntityPlayer pl, int side, int blockY, float x, float y, float z)
 	{
-		if(!Helper.isServer())
+		if(Helper.isServer())
 			return true;
 		float relativeY = (blockY - yCoord) + y;
 		float relativeX = (side >= 4) ? z : x;
@@ -135,7 +135,8 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 		int control = getControlFromHit(hit);
 		if(control != -1)
 		{
-			activateControl(pl,control);
+			Helper.activateControl(this, pl, control);
+			//activateControl(pl,control);
 		}
 		return true;
 	}
@@ -167,6 +168,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 					if(core.canModify(pl))
 					{
 						TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 10);
+						TardisOutput.print("TETE", "Setting mode to " + mode.name);
 						if(mode != null)
 						{
 							if(preparingToUpgrade == mode && pl.isSneaking())
@@ -200,7 +202,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 				}
 			}
 			else if(control == 30)
-				pl.addChatMessage(new ChatComponentText("Unspent level points: " + core.unspentLevelPoints() +"/"+core.maxUnspentLevelPoints()));
+				pl.addChatMessage(new ChatComponentText("[ENGINE] Unspent level points: " + core.unspentLevelPoints() +"/"+core.maxUnspentLevelPoints()));
 		}
 		sendUpdate();
 	}
@@ -303,7 +305,9 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 		litUp			= nbt.getBoolean("lU");
 		preparingToUpgradeTT = tt;
 		if(nbt.hasKey("ptU"))
-			preparingToUpgrade = TardisUpgradeMode.getUpgradeMode(nbt.getInteger("preparingToUpgrade"));
+		{
+			preparingToUpgrade = TardisUpgradeMode.getUpgradeMode(nbt.getInteger("ptU"));
+		}
 		else if(nbt.hasKey("ptUN"))
 			preparingToUpgrade = null;
 	}

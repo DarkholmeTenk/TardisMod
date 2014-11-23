@@ -130,6 +130,51 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		}
 	}
 	
+	private HitPosition activateSide(EntityPlayer pl, int blockX,int blockY,int blockZ, float i, float j, float k, int side)
+		{
+			float distanceAway = (side == 0 || side == 2) ? (float) (Math.abs(pl.posX - 0.5) - 0.5) : (float) (Math.abs(pl.posZ - 0.5) - 0.5);
+			float distanceSide = (side == 0 || side == 2) ? (float) (pl.posZ + 1) : (float) (pl.posX + 1);
+			float hitAway;
+			if(blockX != 0 || blockZ != 0)
+			{
+				if(side == 0 && blockX < 1)
+					return null;
+				if(side == 1 && blockZ < 1)
+					return null;
+				if(side == 2 && blockX > -1)
+					return null;
+				if(side == 3 && blockZ > -1)
+					return null;
+				hitAway = (side == 0 ? i : (side == 2 ? 1-i : (side == 1 ? k : 1-k)));
+			}
+			else
+			{
+				if(side == 0 && i < 0.9)
+					return null;
+				if(side == 2 && i > 0.1)
+					return null;
+				if(side == 3 && k > 0.1)
+					return null;
+				if(side == 1 && k < 0.9)
+					return null;
+				j = j + 1;
+				hitAway = (side == 0 ? i : (side == 2 ? 1-i : (side == 1 ? k : 1-k))) - 1;
+			}
+			float hitSide;
+			if(side == 0 || side == 2)
+				hitSide = blockZ + 1 + k;
+			else
+				hitSide = blockX + 1 + i;
+			
+			float delta = activatedDelta(hitAway,j,distanceAway,(float) (pl.posY + pl.eyeHeight - yCoord));
+			float hitX = activatedX(hitAway,distanceAway,delta);
+	//		float hitY = activatedY(j,pl.eyeHeight,delta);
+			float hitZ = activatedZ(hitSide,distanceSide, delta);
+			if((hitZ < 1 && (1-hitX) >= hitZ) || (hitZ > 2 && (1-hitX) > (3-hitZ)))
+				return null;
+			return new HitPosition(hitX,hitZ,side);
+		}
+
 	private float activatedDelta(float xH,float yH, float xP, float yP)
 	{
 		float delta = (float) ((1.5 - xP - yP)/(-xP+yH+xH-yP));
@@ -151,189 +196,152 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		return (float) (zP - (delta * (zP - zH)));
 	}
 	
+	public int getControlFromHit(HitPosition hit)
+	{
+		if(hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
+			return 6;
+		if(hit.within(2, 1.214, 0.581, 1.338, 0.669))
+			return 7;
+		if(hit.within(0, 0.779, 0.431, 0.901, 0.525))
+			return 5;
+		if(hit.within(0, 1.651, 0.271, 1.883, 0.400))//Gauge1
+			return 0;
+		if(hit.within(0, 1.375, 0.271, 1.615, 0.400))
+			return 1;
+		if(hit.within(0, 1.517, 0.138, 1.750, 0.265))
+			return 8;
+		if(hit.within(0, 1.10 , 0.271, 1.335, 0.400))
+			return 2;
+		if(hit.within(0,0.865,0.55,1.327,0.868))
+			return 3;
+		if(hit.within(0, 1.725, 0.585,  2.05,  0.846))
+			return 4;
+		if(hit.within(3,2.156, 0.654,  2.540, 0.924))
+			return 100;
+		if(hit.within(3, 1.727, 0.626, 2.019, 0.826))
+			return 10;
+		if(hit.within(3, 1.361, 0.626, 1.634, 0.826))
+			return 11;
+		if(hit.within(3, 0.981, 0.626, 1.210, 0.826))
+			return 12;
+		if(hit.within(3, 1.361, 0.268, 1.634, 0.431))
+			return 13;
+		if(hit.within(3, 1.694, 0.227, 1.951, 0.408))
+			return 14;
+		if(hit.within(3, 1.039, 0.257, 1.238, 0.417))
+			return 15;
+		if(hit.within(1, 1.145, 0.207, 1.259, 0.443))
+			return 20;
+		if(hit.within(1, 1.333, 0.207, 1.465, 0.443))
+			return 21;
+		if(hit.within(1, 1.531, 0.207, 1.648, 0.443))
+			return 22;
+		if(hit.within(1, 1.730, 0.207, 1.856, 0.443))
+			return 23;
+		if(hit.within(1, 0.650, 0.664, 0.943, 0.856))	//Z Wheel 1
+			return 24;
+		if(hit.within(1, 1.264, 0.664, 1.545, 0.856))	//Z Wheel 2
+			return 25;
+		if(hit.within(2, 1.730, 0.147, 1.859, 0.470))
+			return 30;
+		if(hit.within(2, 1.581, 0.147, 1.710, 0.470))
+			return 31;
+		if(hit.within(2, 1.430, 0.147, 1.558, 0.470))
+			return 32;
+		if(hit.within(2, 1.284, 0.147, 1.415, 0.470))
+			return 33;
+		if(hit.within(2, 1.129, 0.283, 1.241, 0.384))
+			return 34;
+		if(hit.within(1, 0.985, 0.664, 1.230, 0.856))	//Flight Primer
+			return 40;
+		if(hit.within(2, 0.553, 0.629, 0.838, 0.924))	//Flight Regulator
+			return 41;
+		if(hit.within(0, 2.110, 0.562, 2.441, 0.872))	//Flight Takeoff
+			return 42;
+		if(hit.within(2, 2.251, 0.519, 2.371, 0.600))
+			return 50;
+		if(hit.within(2, 2.251, 0.646, 2.371, 0.730))
+			return 51;
+		if(hit.within(2, 0.290, 0.825, 0.441, 0.915))
+			return 52;
+		if(hit.within(0, 1.760, 0.172, 1.914, 0.265))
+			return 53;
+		if(hit.within(1, 1.013, 0.493, 1.194, 0.624))
+			return 54;
+		if(hit.within(3, 0.701, 0.703, 0.823, 0.792))
+			return 55;
+		if(hit.within(3, 0.701, 0.807, 0.823, 0.903))
+			return 56;
+		if(hit.within(2, 0.971, 0.598, 1.138, 0.941))
+			return 60;
+		if(hit.within(3, 2.557, 0.806, 2.683, 0.896))	//Delete rooms button
+			return 901;
+		if(hit.within(1, 2.369, 0.801, 2.491, 0.894))	//Load/Save Switch
+			return 900;
+		if(hit.within(1, 2.377, 0.703, 2.498, 0.800))
+			return 902;
+		if(hit.within(1, 2.375, 0.610, 2.497, 0.701))
+			return 903;
+		if(hit.within(1, 1.700, 0.513, 2.355, 0.898))
+		{
+			int jx = (int)(5*(hit.posZ - 1.700) / (2.355 - 1.700));
+			int ix = (int)(4*(hit.posY - 0.513) / (0.898 - 0.513));
+			int control = 1000 + (5 * ix) + jx;
+			return control;
+		}
+		if(hit.within(2, 1.187, 0.768, 1.603, 0.947))
+			return 1020;
+		if(hit.within(2, 1.677, 0.768, 2.103, 0.947))
+			return 1021;
+		if(hit.within(2, 2.189, 0.768, 2.592, 0.947))
+			return 1022;
+		return -1;
+	}
+	
 	public boolean activate(EntityPlayer pl, int blockX,int blockY,int blockZ, float i, float j, float k)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
+		if(Helper.isServer())
+			return true;
 		HitPosition hit = null;
 		for(int cnt=0;cnt<4&&hit==null;cnt++)
 			hit = activateSide(pl,blockX, blockY, blockZ, i, j, k, cnt);
-		if(hit != null && core != null)
+		if(hit != null)
 		{
-			boolean update = true;
-			TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
-			if(hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
-				activateControl(pl,6);
-			else if(hit.within(2, 1.214, 0.581, 1.338, 0.669))
-				activateControl(pl,7);
-			else if(hit.within(0, 0.779, 0.431, 0.901, 0.525))
-				activateControl(pl,5);
-			else if(hit.within(0, 1.651, 0.271, 1.883, 0.400))//Gauge1
-				pl.addChatMessage(new ChatComponentText("Energy: " + core.getEnergy() + "/" + core.getMaxEnergy()));
-			else if(hit.within(0, 1.375, 0.271, 1.615, 0.400))
-				pl.addChatMessage(new ChatComponentText("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms()));
-			else if(hit.within(0, 1.517, 0.138, 1.750, 0.265))
-			{
-				pl.addChatMessage(new ChatComponentText("XP: " + core.getXP() + "/" + core.getXPNeeded()));
-				pl.addChatMessage(new ChatComponentText("Level:" + core.getLevel()));
-			}
-			else if(hit.within(0, 1.10 , 0.271, 1.335, 0.400))
-				pl.addChatMessage(new ChatComponentText(String.format("Speed: %.1f/%.1f", core.getSpeed(true),core.getMaxSpeed())));
-				//pl.addChatMessage("Speed: " + core.getSpeed(true) + "/" + core.getMaxSpeed())
-			else if(hit.within(0,0.865,0.55,1.327,0.868))
-				activateControl(pl,3);
-			else if(hit.within(0, 1.725, 0.585,  2.05,  0.846))
-			{
-				int d = 1;
-				if(pl.isSneaking())
-					d = -1;
-				core.addSpeed(d);
-			}
-			else if(hit.within(3,2.156, 0.654,  2.540, 0.924))
-				core.sendDestinationStrings(pl);
-			else if(hit.within(3, 1.727, 0.626, 2.019, 0.826))
-				activateControl(pl, 10);
-			else if(hit.within(3, 1.361, 0.626, 1.634, 0.826))
-				activateControl(pl, 11);
-			else if(hit.within(3, 0.981, 0.626, 1.210, 0.826))
-				activateControl(pl, 12);
-			else if(hit.within(3, 1.361, 0.268, 1.634, 0.431))
-				activateControl(pl, 13);
-			else if(hit.within(3, 1.694, 0.227, 1.951, 0.408))
-				activateControl(pl, 14);
-			else if(hit.within(3, 1.039, 0.257, 1.238, 0.417))
-				activateControl(pl, 15);
-			else if(hit.within(1, 1.145, 0.207, 1.259, 0.443))
-				activateControl(pl, 20);
-			else if(hit.within(1, 1.333, 0.207, 1.465, 0.443))
-				activateControl(pl, 21);
-			else if(hit.within(1, 1.531, 0.207, 1.648, 0.443))
-				activateControl(pl, 22);
-			else if(hit.within(1, 1.730, 0.207, 1.856, 0.443))
-				activateControl(pl, 23);
-			else if(hit.within(1, 0.650, 0.664, 0.943, 0.856))	//Z Wheel 1
-				activateControl(pl, 24);
-			else if(hit.within(1, 1.264, 0.664, 1.545, 0.856))	//Z Wheel 2
-				activateControl(pl, 25);
-			else if(hit.within(2, 1.730, 0.147, 1.859, 0.470))
-				activateControl(pl, 30);
-			else if(hit.within(2, 1.581, 0.147, 1.710, 0.470))
-				activateControl(pl, 31);
-			else if(hit.within(2, 1.430, 0.147, 1.558, 0.470))
-				activateControl(pl, 32);
-			else if(hit.within(2, 1.284, 0.147, 1.415, 0.470))
-				activateControl(pl, 33);
-			else if(hit.within(2, 1.129, 0.283, 1.241, 0.384))
-				activateControl(pl, 34);
-//			else if(hit.within(2, 1.408, 0.677, 1.660, 0.855))
-//				activateControl(pl,35);
-			else if(hit.within(1, 0.985, 0.664, 1.230, 0.856))	//Flight Primer
-				activateControl(pl, 40);
-			else if(hit.within(2, 0.553, 0.629, 0.838, 0.924))	//Flight Regulator
-				activateControl(pl, 41);
-			else if(hit.within(0, 2.110, 0.562, 2.441, 0.872))	//Flight Takeoff
-				activateControl(pl, 42);
-			else if(hit.within(2, 2.251, 0.519, 2.371, 0.600))
-				activateControl(pl, 50);
-			else if(hit.within(2, 2.251, 0.646, 2.371, 0.730))
-				activateControl(pl, 51);
-			else if(hit.within(2, 0.290, 0.825, 0.441, 0.915))
-				activateControl(pl, 52);
-			else if(hit.within(0, 1.760, 0.172, 1.914, 0.265))
-				activateControl(pl, 53);
-			else if(hit.within(1, 1.013, 0.493, 1.194, 0.624))
-				activateControl(pl, 54);
-			else if(hit.within(3, 0.701, 0.703, 0.823, 0.792))
-				activateControl(pl, 55);
-			else if(hit.within(3, 0.701, 0.807, 0.823, 0.903))
-				activateControl(pl, 56);
-			else if(hit.within(2, 0.971, 0.598, 1.138, 0.941))
-				activateControl(pl, 60);
-			else if(hit.within(3, 2.557, 0.806, 2.683, 0.896))	//Delete rooms button
-				activateControl(pl, 901);
-			else if(hit.within(1, 2.369, 0.801, 2.491, 0.894))	//Load/Save Switch
-				activateControl(pl, 900);
-			else if(hit.within(1, 2.377, 0.703, 2.498, 0.800))
-				activateControl(pl, 902);
-			else if(hit.within(1, 2.375, 0.610, 2.497, 0.701))
-				activateControl(pl, 903);
-			else if(hit.within(1, 1.700, 0.513, 2.355, 0.898))
-			{
-				int jx = (int)(5*(hit.posZ - 1.700) / (2.355 - 1.700));
-				int ix = (int)(4*(hit.posY - 0.513) / (0.898 - 0.513));
-				int control = 1000 + (5 * ix) + jx;
-				activateControl(pl, control);
-			}
-			else if(hit.within(2, 1.187, 0.768, 1.603, 0.947))
-				activateControl(pl, 1020);
-			else if(hit.within(2, 1.677, 0.768, 2.103, 0.947))
-				activateControl(pl, 1021);
-			else if(hit.within(2, 2.189, 0.768, 2.592, 0.947))
-				activateControl(pl, 1022);
-			else
-				update = false;
-			
-			if(update)
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			//sendDataPacket();
+			//TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
+			int controlHit = getControlFromHit(hit);
+			if(controlHit >= 0)
+				Helper.activateControl(this, pl,controlHit);
 		}
+		else
+			TardisOutput.print("TConTE", "No hit");
 		return true;
 	}
 
-	private HitPosition activateSide(EntityPlayer pl, int blockX,int blockY,int blockZ, float i, float j, float k, int side)
-	{
-		if(pl.worldObj.isRemote)
-			return null;
-		
-		float distanceAway = (side == 0 || side == 2) ? (float) (Math.abs(pl.posX - 0.5) - 0.5) : (float) (Math.abs(pl.posZ - 0.5) - 0.5);
-		float distanceSide = (side == 0 || side == 2) ? (float) (pl.posZ + 1) : (float) (pl.posX + 1);
-		float hitAway;
-		if(blockX != 0 || blockZ != 0)
-		{
-			if(side == 0 && blockX < 1)
-				return null;
-			if(side == 1 && blockZ < 1)
-				return null;
-			if(side == 2 && blockX > -1)
-				return null;
-			if(side == 3 && blockZ > -1)
-				return null;
-			hitAway = (side == 0 ? i : (side == 2 ? 1-i : (side == 1 ? k : 1-k)));
-		}
-		else
-		{
-			if(side == 0 && i < 0.9)
-				return null;
-			if(side == 2 && i > 0.1)
-				return null;
-			if(side == 3 && k > 0.1)
-				return null;
-			if(side == 1 && k < 0.9)
-				return null;
-			//TardisOutput.print("TConTE", "side:"+side+","+i+","+j+","+k);
-			j = j + 1;
-			hitAway = (side == 0 ? i : (side == 2 ? 1-i : (side == 1 ? k : 1-k))) - 1;
-		}
-		//TardisOutput.print("TConTE","j:"+j+",a:"+hitAway);
-		float hitSide;
-		if(side == 0 || side == 2)
-			hitSide = blockZ + 1 + k;
-		else
-			hitSide = blockX + 1 + i;
-		
-		float delta = activatedDelta(hitAway,j,distanceAway,pl.eyeHeight);
-		float hitX = activatedX(hitAway,distanceAway,delta);
-//		float hitY = activatedY(j,pl.eyeHeight,delta);
-		float hitZ = activatedZ(hitSide,distanceSide, delta);
-		if((hitZ < 1 && (1-hitX) >= hitZ) || (hitZ > 2 && (1-hitX) > (3-hitZ)))
-			return null;
-		return new HitPosition(hitX,hitZ,side);
-	}
-	
-	private void activateControl(EntityPlayer pl,int controlID)
+	public void activateControl(EntityPlayer pl,int controlID)
 	{
 		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 		TardisOutput.print("TConTE","Control:"+controlID,TardisOutput.Priority.DEBUG);
-		if(!core.inCoordinatedFlight())
+		if(controlID == 0)
+			pl.addChatMessage(new ChatComponentText("Energy: " + core.getEnergy() + "/" + core.getMaxEnergy()));
+		else if(controlID == 1)
+			pl.addChatMessage(new ChatComponentText("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms()));
+		else if(controlID == 2)
+			pl.addChatMessage(new ChatComponentText(String.format("Speed: %.1f/%.1f", core.getSpeed(true),core.getMaxSpeed())));
+		else if(controlID == 8)
+		{
+			pl.addChatMessage(new ChatComponentText("XP: " + core.getXP() + "/" + core.getXPNeeded()));
+			pl.addChatMessage(new ChatComponentText("Level:" + core.getLevel()));
+		}
+		else if(controlID == 4)
+		{
+			int d = 1;
+			if(pl.isSneaking())
+				d = -1;
+			core.addSpeed(d);
+		}
+		else if(controlID == 100)
+			core.sendDestinationStrings(pl);
+		else if(!core.inCoordinatedFlight())
 		{
 			if(isMovementControl(controlID) && (!core.inFlight() || !core.inCoordinatedFlight()))
 			{

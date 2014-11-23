@@ -120,10 +120,9 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 	@Override
     public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer pl, int s, float t, float j, float k)
     {
-		if(w.isRemote)
-			return true;
+		boolean ser = Helper.isServer();
     	int meta = w.getBlockMetadata(x, y, z);
-    	if(meta == 2)
+    	if(meta == 2 && ser)
     	{
     		boolean found = false;
     		for(int i = 1;i<10 && found == false;i++)
@@ -134,13 +133,13 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
     			}
     		}
     	}
-    	if(meta == 3 || meta == 6)
+    	if((meta == 3 || meta == 6) && !ser)
     	{
     		TardisConsoleTileEntity console = Helper.getTardisConsole(w);
 			if(console != null)
 				return console.activate(pl, x, y, z, t, j, k);
     	}
-    	if(meta == 4 || meta == 5)
+    	if((meta == 4 || meta == 5) && ser)
     	{
     		TardisCoreTileEntity te = Helper.getTardisCore(w);
     		if(te != null)
@@ -150,7 +149,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
     		}
     		return true;
     	}
-    	if(meta == 7)
+    	if(meta == 7 && !ser)
     	{
     		TardisEngineTileEntity te = Helper.getTardisEngine(w);
     		if(te != null)

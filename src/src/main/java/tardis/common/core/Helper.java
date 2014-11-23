@@ -17,6 +17,7 @@ import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.TardisPartBlueprint;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.network.packet.TardisControlPacket;
 import tardis.common.network.packet.TardisSoundPacket;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
@@ -402,6 +403,21 @@ public class Helper
 		TardisOutput.print("TH","Sending sound packet");
 		TardisMod.networkChannel.sendToDimension(packet, dim);
 		//MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayersInDimension(packet, dim);
+	}
+	
+	public static void activateControl(TileEntity te, EntityPlayer player, int control)
+	{
+		if(Helper.isServer())
+			return;
+		NBTTagCompound data = new NBTTagCompound();
+		data.setInteger("cID", control);
+		data.setString("pl", getUsername(player));
+		data.setInteger("dim", getWorldID(te));
+		data.setInteger("x", te.xCoord);
+		data.setInteger("y", te.yCoord);
+		data.setInteger("z", te.zCoord);
+		TardisControlPacket p = new TardisControlPacket(data);
+		TardisMod.networkChannel.sendToServer(p);
 	}
 	
 	public static String getUsername(EntityPlayer player)

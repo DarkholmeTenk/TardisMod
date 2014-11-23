@@ -53,6 +53,7 @@ import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisEngineTileEntity;
 import tardis.common.tileents.TardisSchemaCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -65,11 +66,12 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid="TardisMod",name="Tardis Mod",version="0.17",dependencies="required-after:FML; after:AppliedEnergistics")
+@Mod(modid="TardisMod",name="Tardis Mod",version="0.17",dependencies="required-after:FML; after:appliedenergistics2")
 public class TardisMod
 {
 	@Instance
 	public static TardisMod i;
+	public static boolean inited = false;
 	
 	@SidedProxy(clientSide="tardis.client.TardisClientProxy", serverSide="tardis.common.TardisProxy")
 	public static TardisProxy proxy;
@@ -160,7 +162,7 @@ public class TardisMod
 		itemConfig = configHandler.getConfigFile("Items");
 		initItems();
 		
-		MinecraftForge.EVENT_BUS.register(new TardisSoundHandler());
+		//MinecraftForge.EVENT_BUS.register(new TardisSoundHandler());
 		
 		proxy.postAssignment();
 	}
@@ -174,13 +176,14 @@ public class TardisMod
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
+		aeAPI = AEApi.instance();
 		keyItem.initRecipes();
 		componentItem.initRecipes();
 		chunkManager = new TardisChunkLoadingManager();
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
-		MinecraftForge.EVENT_BUS.register(chunkManager);
-		aeAPI = AEApi.instance();
+		FMLCommonHandler.instance().bus().register(chunkManager);
 		ForgeChunkManager.setForcedChunkLoadingCallback(this, chunkManager);
+		inited = true;
 	}
 	
 	private void initBlocks()

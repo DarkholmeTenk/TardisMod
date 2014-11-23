@@ -19,7 +19,6 @@ import tardis.common.tileents.TardisSchemaCoreTileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;

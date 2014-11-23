@@ -2,6 +2,7 @@ package tardis.common.network;
 
 import tardis.common.core.TardisOutput;
 import tardis.common.network.packet.TardisAbstractPacket.PacketType;
+import tardis.common.network.packet.TardisControlPacket;
 import tardis.common.network.packet.TardisDimRegPacket;
 import tardis.common.network.packet.TardisSoundPacket;
 
@@ -9,6 +10,8 @@ import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.CustomNetworkEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.CustomPacketEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ServerCustomPacketEvent;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 
 public class TardisPacketHandler
@@ -136,11 +139,22 @@ public class TardisPacketHandler
 	}*/
 	
 	@SubscribeEvent
-	public void handleCustomPacket(ClientCustomPacketEvent event)
+	public void handleCustomClientPacket(ClientCustomPacketEvent event)
+	{
+		handleCustomPacket(event);
+	}
+	
+	@SubscribeEvent
+	public void handleCustomServerPacket(ServerCustomPacketEvent event)
+	{
+		handleCustomPacket(event);
+	}
+	
+	@SubscribeEvent
+	public void handleCustomPacket(CustomPacketEvent event)
 	{
 		FMLProxyPacket p = event.packet;
 		Class clazz =event.getClass();
-		TardisOutput.print("TPH","Received packet with channel:" + p.channel() +", " + clazz.getName());
 		int discriminator = p.payload().getByte(0);
 		p.payload().readerIndex(1);
 		p.payload().discardReadBytes();
@@ -149,16 +163,7 @@ public class TardisPacketHandler
 			new TardisSoundPacket(p.payload()).play();
 		else if(type == PacketType.DIMREG)
 			new TardisDimRegPacket(p.payload()).registerDims();
-	}
-	@SubscribeEvent
-	public void handlePacket(Event event)
-	{
-		TardisOutput.print("TPH", event.getClass().getName());
-		if(event instanceof CustomNetworkEvent)
-		{
-			Object wrappedEvent = ((CustomNetworkEvent)event).wrappedEvent;
-			if(wrappedEvent != null)
-				TardisOutput.print("TPH","w:"+wrappedEvent.getClass().getName());
-		}
+		else if(type == PacketType.CONTROL)
+			new TardisControlPacket(p.payload()).activate();
 	}
 }

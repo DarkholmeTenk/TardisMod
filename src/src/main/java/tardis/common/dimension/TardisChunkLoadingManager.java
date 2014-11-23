@@ -1,6 +1,5 @@
 package tardis.common.dimension;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +11,7 @@ import tardis.common.core.store.SimpleCoordStore;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+import cpw.mods.fml.relauncher.Side;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -117,7 +117,8 @@ public class TardisChunkLoadingManager implements LoadingCallback
 	@SubscribeEvent
 	public void handleTick(ServerTickEvent event)
 	{
-		if(event.phase.equals(TickEvent.Phase.END))
+		//TardisOutput.print("TCLM", "Server tick");
+		if(event.side.equals(Side.SERVER) && event.phase.equals(TickEvent.Phase.END))
 			tickEnd();
 	}
 	
@@ -125,6 +126,7 @@ public class TardisChunkLoadingManager implements LoadingCallback
 	{
 		if(((tickCount++%10) == 0) || forceCheck)
 		{
+			//TardisOutput.print("TCLM", "Handling chunks");
 			forceCheck = false;
 			validateChunkLoaders();
 		}

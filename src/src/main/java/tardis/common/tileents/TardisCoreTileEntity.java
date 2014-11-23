@@ -116,7 +116,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 
 	static
 	{
-		config = TardisMod.configHandler.getConfigFile("tardisCore");
+		config = TardisMod.configHandler.getConfigFile("Core");
 		explodeChance = config.getDouble("Explosion chance (on control not pressed)", 0.25);
 		loadable = new ChunkCoordIntPair[4];
 		loadable[0] = new ChunkCoordIntPair( 0, 0);

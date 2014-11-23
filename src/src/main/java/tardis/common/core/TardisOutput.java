@@ -6,12 +6,34 @@ public class TardisOutput
 {
 	public enum Priority { NONE, ERROR, WARNING, INFO, DEBUG, OLDDEBUG }
 	public static Priority defaultPriority = Priority.INFO;
+	public static TardisConfigFile configFile = null;
+	
+	private static boolean shouldDisplay(String descriptor)
+	{
+		if (!(descriptor.equals("CF") || descriptor.equals("TCH")))
+		{
+			if(configFile == null)
+			{
+				if(TardisMod.inited && TardisMod.configHandler != null)
+				{
+					configFile = TardisMod.configHandler.getConfigFile("DebugOutput");
+				}
+			}
+			if(configFile != null && configFile.read)
+			{
+				return configFile.getBoolean(descriptor, true);
+			}
+		}
+		return true;
+	}
 	
 	public static void print(String descriptor,String message,Priority prio)
 	{
-		String toDisplay = "[TM][" + descriptor + "]" + message;
 		if(prio.ordinal() <= TardisMod.priorityLevel.ordinal())
 		{
+			if(!shouldDisplay(descriptor))
+				return;
+			String toDisplay = "[TM][" + descriptor + "]" + message;
 			if(prio.equals(Priority.ERROR))
 				System.err.println(toDisplay);
 			else

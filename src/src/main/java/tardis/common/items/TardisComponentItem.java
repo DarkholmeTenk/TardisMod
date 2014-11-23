@@ -5,6 +5,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.components.TardisTEComponent;
 
@@ -53,15 +54,17 @@ public class TardisComponentItem extends TardisAbstractItem
 				'd', Items.diamond,
 				'i', Items.iron_ingot));
 		
-		ItemStack i = null;
-		//ItemStack i = Materials.materialCertusQuartzCrystal;
-		if(i != null)
+		if(TardisMod.aeAPI != null)
 		{
-			TardisOutput.print("TCI","Registering AE recipe");
-			GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.GRID), true, "grg","iii","grg",
-					'g', Items.gold_nugget,
-					'r', i.copy(),
-					'i', Items.iron_ingot));
+			ItemStack i = TardisMod.aeAPI.materials().materialCertusQuartzCrystal.stack(1);
+			if(i != null)
+			{
+				TardisOutput.print("TCI","Registering AE recipe");
+				GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.GRID), true, "grg","iii","grg",
+						'g', Items.gold_nugget,
+						'r', i.copy(),
+						'i', Items.iron_ingot));
+			}
 		}
 	}
 
