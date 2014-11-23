@@ -6,3 +6,5 @@ stairsUp.schema
 stairsDown.schema
 tardisConsoleMain.schema
 tardisConsoleWalkway.schema
+tardisConsoleMain.tardisConsoleWalkway.diff.schema
+tardisConsoleWalkway.tardisConsoleMain.diff.schema

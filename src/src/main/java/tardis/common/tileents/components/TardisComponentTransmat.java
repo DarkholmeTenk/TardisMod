@@ -35,17 +35,18 @@ public class TardisComponentTransmat extends TardisAbstractComponent implements 
 				ChatComponentText c = new ChatComponentText("");
 				if(core.canModify(player))
 				{
-					if(core.isTransmatPoint(myCoord))
+					SimpleCoordStore transPoint = new SimpleCoordStore(player);
+					if(core.isTransmatPoint(transPoint))
 					{
 						core.setTransmatPoint(null);
 						c.appendText("TARDIS transmat point set to default location");
 					}
 					else
 					{
-						if(parentObj.getWorldObj().isAirBlock(xCoord, yCoord+1, zCoord)&&parentObj.getWorldObj().isAirBlock(xCoord, yCoord+2, zCoord))
+						if(parentObj.getWorldObj().isAirBlock((int)player.posX, (int)player.posY, (int)player.posZ)&&parentObj.getWorldObj().isAirBlock((int)player.posX, (int)player.posY+1, (int)player.posZ))
 						{
-							core.setTransmatPoint(new SimpleCoordStore(player));
-							c.appendText("TARDIS transmat point set to " + myCoord.toSimpleString());
+							core.setTransmatPoint(transPoint);
+							c.appendText("TARDIS transmat point set to " + core.getTransmatPoint().toSimpleString());
 						}
 						else
 							c.appendText("Not enough room for transmat");
