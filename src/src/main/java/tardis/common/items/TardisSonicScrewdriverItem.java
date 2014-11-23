@@ -365,8 +365,8 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 	@Override
 	public void toolUsed(ItemStack is, EntityLivingBase player, int x, int y, int z)
 	{
-		float speed = (float)(player.getRNG().nextDouble() * 0.5) + 1;
-		Helper.playSound(Helper.getWorldID(player.worldObj), x, y, z, "tardismod:sonic", 0.5F,speed);
+		float speed = (float)(player.getRNG().nextDouble() * 0.5) + 0.75f;
+		Helper.playSound(Helper.getWorldID(player.worldObj), x, y, z, "tardismod:sonic", 0.25F,speed);
 		player.swingItem();
 	}
 

@@ -58,6 +58,12 @@ public class TardisStairBlock extends BlockStairs
     }
 	
 	@Override
+	public int getMobilityFlag()
+	{
+		return 2;
+	}
+	
+	@Override
 	public boolean isOpaqueCube()
 	{
 		return false;

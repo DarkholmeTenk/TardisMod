@@ -117,7 +117,7 @@ public class TardisSchemaCoreTileEntity extends TardisAbstractTileEntity impleme
 		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 		if(core == null || core.canModify(player))
 		{
-			if(mode.equals(TardisScrewdriverMode.Dismantle))
+			if(mode == TardisScrewdriverMode.Dismantle)
 			{
 				if(core== null || core.addRoom(true,this))
 				{

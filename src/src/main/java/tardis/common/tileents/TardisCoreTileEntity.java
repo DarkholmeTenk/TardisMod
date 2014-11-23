@@ -900,11 +900,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public boolean addRoom(boolean sub, TardisSchemaCoreTileEntity te)
 	{
-		if(sub && numRooms > 0)
+		if(sub)
 		{
 			if(Helper.isServer() && te != null)
 				roomSet.remove(new SimpleCoordStore(te));
-			numRooms --;
+			if(numRooms > 0)
+				numRooms --;
 			return true;
 		}
 		

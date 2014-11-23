@@ -24,6 +24,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 	@Override
 	public void initData()
 	{
+		this.opaque = false;
 		setBlockName("SchemaComponent");
 		setSubNames("DoorConnector","DoorConnectorHidden","ControlPanel","ConsoleBlock", "TardisDoorBottom","TardisDoorTop","ConsoleTop","Engine","TimeRotor");
 	}
@@ -53,9 +54,23 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 	}
 	
 	@Override
+	public boolean isNormalCube()
+	{
+		return false;
+	}
+	
+	@Override
 	public boolean isNormalCube(IBlockAccess w, int x, int y, int z)
     {
-        return w.getBlockMetadata(x,y,z) != 1;
+        if(w.getBlockMetadata(x,y,z) != 1)
+        	return super.isNormalCube(w, x, y, z);
+        return false;
+    }
+	
+	@Override
+	public boolean func_149730_j()
+    {
+		return false;
     }
 	
 	@Override 
@@ -67,7 +82,7 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
 	@Override
 	public boolean isBlockSolid(IBlockAccess w, int x, int y, int z, int s)
     {
-        return shouldSideBeRendered(w,x,y,z,s);
+        return isNormalCube(w,x,y,z);
     }
 	
 	@Override

@@ -29,7 +29,6 @@ public class TardisSoundPacket extends TardisAbstractPacket
 	{
 		if(Helper.isServer())
 			return;
-		TardisOutput.print("TSP", "Attempting to play sound packet");
 		NBTTagCompound data = getNBT();
 		if(data != null && data.hasKey("sound"))
 		{
@@ -45,7 +44,8 @@ public class TardisSoundPacket extends TardisAbstractPacket
 			World w = Helper.getWorld(dim);
 			if(w != null)
 			{
-				w.playSound(x, y, z, sound, vol, 1f, true);
+				TardisOutput.print("TSP", "Attempting to play sound packet: " + sound +"," + vol+","+speed);
+				w.playSound(x, y, z, sound, vol, speed, true);
 			}
 		}
 	}

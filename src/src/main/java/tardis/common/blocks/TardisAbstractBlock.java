@@ -235,6 +235,12 @@ public abstract class TardisAbstractBlock extends Block
 		}
     }
 	
+	@Override
+	public int getMobilityFlag()
+	{
+		return 2;
+	}
+	
 	public abstract void initData();
 	
 	public abstract void initRecipes();

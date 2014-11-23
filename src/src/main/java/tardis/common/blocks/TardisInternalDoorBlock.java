@@ -165,7 +165,8 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	@Override
 	public AxisAlignedBB getSelectedBoundingBoxFromPool(World w, int x, int y, int z)
 	{
-		return getCollisionBoundingBoxFromPool(w,x,y,z);
+		return super.getSelectedBoundingBoxFromPool(w, x, y, z);
+		//return getCollisionBoundingBoxFromPool(w,x,y,z);
 	}
 	
 	@Override
@@ -188,7 +189,13 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	@Override
 	public boolean isBlockSolid(IBlockAccess w, int x, int y, int z, int s)
 	{
-		return shouldSideBeRendered(w,x,y,z,s);
+		return isNormalCube(w,x,y,z);
+	}
+	
+	@Override
+	public boolean renderAsNormalBlock()
+	{
+		return false;
 	}
 	
 	@Override
@@ -218,6 +225,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 	
 	public static void manageConnected(World w, int x, int y, int z, int facing)
 	{
+		TardisOutput.print("TIDB", "Setting connected: " + w.isRemote);
 		boolean connected = hasConnector(w,x,y,z);
 		if(w.getBlockMetadata(x, y, z) < 8 && connected)
 			w.setBlockMetadataWithNotify(x, y, z, 8+w.getBlockMetadata(x, y, z), 3);
@@ -245,7 +253,7 @@ public class TardisInternalDoorBlock extends TardisAbstractBlock
 			for(int cY=-mY;cY<=MY;cY++)
 			{
 				if(TardisSchemaComponentBlock.isDoorConnector(w, x+(d*dX), y+cY, z+(d*dZ)))
-					w.setBlockMetadataWithNotify(x+(d*dX), y+cY, z+(d*dZ), connected?1:0, 3);
+					w.setBlockMetadataWithNotify(x+(d*dX), y+cY, z+(d*dZ), connected?1:0, 2);
 			}
 		}
 	}

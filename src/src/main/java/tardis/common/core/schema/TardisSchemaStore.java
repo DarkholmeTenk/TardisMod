@@ -157,14 +157,14 @@ public class TardisSchemaStore
 	
 	private static Block getBlockFromName(String name)
 	{
-		TardisOutput.print("TSS", "Seaching for " + name);
+		//TardisOutput.print("TSS", "Seaching for " + name);
 		Block b = null;
 		b = GameData.getBlockRegistry().get(name);
 		if(b != null && !b.equals(Blocks.air))
 			return b;
 		else
 		{
-			TardisOutput.print("TSS", "Null, searching cache");
+			//TardisOutput.print("TSS", "Null, searching cache");
 			if(blockCache.containsKey(name))
 				return blockCache.get(name);
 			else
@@ -176,7 +176,7 @@ public class TardisSchemaStore
 					b = blockIter.next();
 					if(b.getUnlocalizedName().equals(name))
 					{
-						TardisOutput.print("TSS", "Matching " + name + " to " + b.getUnlocalizedName());
+						//TardisOutput.print("TSS", "Matching " + name + " to " + b.getUnlocalizedName());
 						blockCache.put(name, b);
 						return b;
 					}
