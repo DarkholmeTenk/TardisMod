@@ -1,12 +1,19 @@
 package tardis.common.tileents;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 
 import cofh.api.energy.IEnergyHandler;
 
+import appeng.api.networking.GridFlags;
+import appeng.api.networking.GridNotification;
+import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
+import appeng.api.util.AEColor;
+import appeng.api.util.DimensionalCoord;
 import tardis.TardisMod;
 import tardis.api.IActivatable;
 import tardis.api.IChunkLoader;
@@ -34,7 +41,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 public class TardisComponentTileEntity extends TardisAbstractTileEntity implements IScrewable, IActivatable, IWatching,
-																		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
+																		IGridHost, IGridBlock, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
 {
 	private HashMap<Integer,ITardisComponent> comps = new HashMap<Integer,ITardisComponent>();
 	private boolean valid = false;
@@ -607,6 +614,78 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 				if(comp instanceof IGridHost)
 					((IGridHost)comp).securityBreak();
 			}
+	}
+
+	@Override
+	public double getIdlePowerUsage()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public EnumSet<GridFlags> getFlags()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isWorldAccessable()
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public DimensionalCoord getLocation()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AEColor getGridColor()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void onGridNotification(GridNotification notification)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setNetworkStatus(IGrid grid, int channelsInUse)
+	{
+		
+	}
+
+	@Override
+	public EnumSet<ForgeDirection> getConnectableSides()
+	{
+		return null;
+	}
+
+	@Override
+	public IGridHost getMachine()
+	{
+		return null;
+	}
+
+	@Override
+	public void gridChanged()
+	{
+		
+	}
+
+	@Override
+	public ItemStack getMachineRepresentation()
+	{
+		return null;
 	}
 
 }

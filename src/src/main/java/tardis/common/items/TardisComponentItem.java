@@ -60,10 +60,10 @@ public class TardisComponentItem extends TardisAbstractItem
 			if(i != null)
 			{
 				TardisOutput.print("TCI","Registering AE recipe");
-				GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.GRID), true, "grg","iii","grg",
+				/*GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.GRID), true, "grg","iii","grg",
 						'g', Items.gold_nugget,
 						'r', i.copy(),
-						'i', Items.iron_ingot));
+						'i', Items.iron_ingot));*/
 			}
 		}
 	}

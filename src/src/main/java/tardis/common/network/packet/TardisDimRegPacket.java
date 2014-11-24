@@ -5,6 +5,7 @@ import java.io.IOException;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
+import tardis.common.core.TardisDimensionRegistry;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 
@@ -25,7 +26,11 @@ public class TardisDimRegPacket extends TardisAbstractPacket
 	{
 		NBTTagCompound nbt = getNBT();
 		if(nbt != null && !Helper.isServer())
+		{
+			if(TardisMod.dimReg == null)
+				TardisMod.dimReg = TardisDimensionRegistry.load();
 			TardisMod.dimReg.readFromNBT(nbt);
+		}
 	}
 
 }
