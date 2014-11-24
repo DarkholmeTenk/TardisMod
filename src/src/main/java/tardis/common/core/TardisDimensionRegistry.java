@@ -5,9 +5,16 @@ import io.netty.buffer.Unpooled;
 
 import java.util.HashSet;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+
 import tardis.TardisMod;
 import tardis.common.network.packet.TardisDimRegPacket;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldSavedData;
@@ -108,5 +115,24 @@ public class TardisDimensionRegistry extends WorldSavedData
 		NBTTagCompound t = new NBTTagCompound();
 		TardisMod.dimReg.writeToNBT(t);
 		return new TardisDimRegPacket(Unpooled.buffer(),t);
+	}
+	
+	@SubscribeEvent
+	public void sendPacket(PlayerLoggedInEvent event)
+	{
+		sendPacket((PlayerEvent)event);
+	}
+	
+	@SubscribeEvent
+	public void sendPacket(PlayerChangedDimensionEvent event)
+	{
+		sendPacket((PlayerEvent)event);
+	}
+	
+	public void sendPacket(PlayerEvent event)
+	{
+		EntityPlayer pl = event.player;
+		if(pl instanceof EntityPlayerMP && TardisMod.networkChannel != null)
+			TardisMod.networkChannel.sendTo(getPacket(),(EntityPlayerMP) pl);
 	}
 }
