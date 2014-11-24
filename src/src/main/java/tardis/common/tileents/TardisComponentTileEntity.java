@@ -41,7 +41,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 public class TardisComponentTileEntity extends TardisAbstractTileEntity implements IScrewable, IActivatable, IWatching,
-																		IGridHost, IGridBlock, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
+																		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
 {
 	private HashMap<Integer,ITardisComponent> comps = new HashMap<Integer,ITardisComponent>();
 	private boolean valid = false;
@@ -614,78 +614,6 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 				if(comp instanceof IGridHost)
 					((IGridHost)comp).securityBreak();
 			}
-	}
-
-	@Override
-	public double getIdlePowerUsage()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public EnumSet<GridFlags> getFlags()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isWorldAccessable()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public DimensionalCoord getLocation()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AEColor getGridColor()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void onGridNotification(GridNotification notification)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setNetworkStatus(IGrid grid, int channelsInUse)
-	{
-		
-	}
-
-	@Override
-	public EnumSet<ForgeDirection> getConnectableSides()
-	{
-		return null;
-	}
-
-	@Override
-	public IGridHost getMachine()
-	{
-		return null;
-	}
-
-	@Override
-	public void gridChanged()
-	{
-		
-	}
-
-	@Override
-	public ItemStack getMachineRepresentation()
-	{
-		return null;
 	}
 
 }
