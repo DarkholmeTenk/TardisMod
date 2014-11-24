@@ -9,6 +9,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ServerConnectionFromClientEvent;
 
 import tardis.TardisMod;
 import tardis.common.network.packet.TardisDimRegPacket;
@@ -127,6 +128,12 @@ public class TardisDimensionRegistry extends WorldSavedData
 	public void sendPacket(PlayerChangedDimensionEvent event)
 	{
 		sendPacket((PlayerEvent)event);
+	}
+	
+	@SubscribeEvent
+	public void sendPacket(ServerConnectionFromClientEvent event)
+	{
+		TardisMod.networkChannel.sendToAll(getPacket());
 	}
 	
 	public void sendPacket(PlayerEvent event)
