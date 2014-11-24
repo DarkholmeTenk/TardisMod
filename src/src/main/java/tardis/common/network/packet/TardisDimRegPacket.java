@@ -30,6 +30,7 @@ public class TardisDimRegPacket extends TardisAbstractPacket
 			if(TardisMod.dimReg == null)
 				TardisMod.dimReg = TardisDimensionRegistry.load();
 			TardisMod.dimReg.readFromNBT(nbt);
+			TardisMod.dimReg.registerDims();
 		}
 	}
 

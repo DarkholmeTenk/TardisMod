@@ -94,7 +94,6 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 			for(int curr: dims)
 			{
 				addDimension(curr);
-				registerDim(curr);
 			}
 		}
 		save();
