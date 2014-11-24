@@ -2,6 +2,8 @@ package tardis.common.core;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.HashSet;
 
@@ -21,7 +23,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.DimensionManager;
 
-public class TardisDimensionRegistry extends WorldSavedData
+public class TardisDimensionRegistry extends WorldSavedData implements GenericFutureListener
 {
 	public TardisDimensionRegistry(String par1Str)
 	{
@@ -133,7 +135,8 @@ public class TardisDimensionRegistry extends WorldSavedData
 	@SubscribeEvent
 	public void sendPacket(ServerConnectionFromClientEvent event)
 	{
-		TardisMod.networkChannel.sendToAll(getPacket());
+		event.manager.scheduleOutboundPacket(getPacket(), this);
+		//TardisMod.networkChannel.sendToAll(getPacket());
 	}
 	
 	public void sendPacket(PlayerEvent event)
@@ -141,5 +144,10 @@ public class TardisDimensionRegistry extends WorldSavedData
 		EntityPlayer pl = event.player;
 		if(pl instanceof EntityPlayerMP && TardisMod.networkChannel != null)
 			TardisMod.networkChannel.sendTo(getPacket(),(EntityPlayerMP) pl);
+	}
+
+	@Override
+	public void operationComplete(Future future) throws Exception
+	{
 	}
 }
