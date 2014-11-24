@@ -257,6 +257,8 @@ public class TardisMod
 	{
 		dimReg = TardisDimensionRegistry.load();
 		dimReg.registerDims();
+		FMLCommonHandler.instance().bus().register(dimReg);
+		MinecraftForge.EVENT_BUS.register(dimReg);
 		plReg  = TardisPlayerRegistry.load();
 		TardisPlayerRegistry.save();
 		teleporter = new TardisTeleporter(event.getServer().worldServerForDimension(0));
