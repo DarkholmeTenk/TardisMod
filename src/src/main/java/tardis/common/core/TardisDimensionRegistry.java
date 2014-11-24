@@ -94,6 +94,7 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 			for(int curr: dims)
 			{
 				addDimension(curr);
+				registerDim(curr);
 			}
 		}
 		save();
@@ -136,7 +137,6 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 	public void sendPacket(ServerConnectionFromClientEvent event)
 	{
 		event.manager.scheduleOutboundPacket(getPacket(), this);
-		//TardisMod.networkChannel.sendToAll(getPacket());
 	}
 	
 	public void sendPacket(PlayerEvent event)
