@@ -79,7 +79,7 @@ public class TardisKeyItem extends TardisAbstractItem
 			TardisCoreTileEntity te = TardisMod.plReg.getCore(player);
 			if(te != null)
 			{
-				if(!te.hasValidExterior())
+				if(!te.hasValidExterior() && !te.inFlight())
 				{
 					Helper.summonOldTardis(player);
 					player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));

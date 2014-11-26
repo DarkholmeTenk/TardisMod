@@ -1,5 +1,6 @@
 package tardis.client;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -47,8 +48,14 @@ public class TardisClientProxy extends TardisProxy
 	@Override
 	public World getWorld(int id)
 	{
-		if(id == cWorld.provider.dimensionId)
-			return cWorld;
+		if(Minecraft.getMinecraft() != null)
+		{
+			if(Minecraft.getMinecraft().thePlayer != null)
+				cWorld = Minecraft.getMinecraft().thePlayer.worldObj;
+		}
+		if(cWorld != null)
+			if(id == cWorld.provider.dimensionId)
+				return cWorld;
 		return super.getWorld(id);
 	}
 }
