@@ -91,7 +91,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	private HashSet<SimpleCoordStore> roomSet = new HashSet<SimpleCoordStore>();
 	private String ownerName;
-	private ArrayList<String> modders = new ArrayList<String>();
+	private ArrayList<Integer> modders = new ArrayList<Integer>();
 	
 	private static ChunkCoordIntPair[] loadable = null;
 	private boolean forcedFlight = false;
@@ -293,8 +293,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			}
 			if(tickCount % 80 == 0)
 			{
-				worldObj.setBlock(xCoord, yCoord+1, zCoord, TardisMod.schemaComponentBlock, 8, 3);
-				sendUpdate();
+				if(worldObj.playerEntities != null && worldObj.playerEntities.size() > 0)
+				{
+					worldObj.setBlock(xCoord, yCoord+1, zCoord, TardisMod.schemaComponentBlock, 8, 3);
+					sendUpdate();
+				}
 			}
 		}
 	}
@@ -730,12 +733,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 
 	public boolean canModify(EntityPlayer player)
 	{
-		return canModify(player.getCommandSenderName());
+		return canModify(Helper.getUsername(player));
 	}
 	
 	public boolean canModify(String playerName)
 	{
-		return isOwner(playerName) || modders.contains(playerName);
+		return isOwner(playerName) || modders.contains(playerName.hashCode());
 	}
 	
 	public void toggleModifier(EntityPlayer modder,String name)
@@ -744,10 +747,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		{
 			if(!modder.getCommandSenderName().equals(name))
 			{
-				if(modders.contains(name))
-					modders.remove(name);
+				if(modders.contains(name.hashCode()))
+					modders.remove(name.hashCode());
 				else
-					modders.add(name);
+					modders.add(name.hashCode());
 			}
 		}
 		else
@@ -1266,11 +1269,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		super.readFromNBT(nbt);
-		forcedFlight = nbt.getBoolean("forcedFlight");
-		lockState = LockState.values()[nbt.getInteger("lockState")];
-		rfStored  = nbt.getInteger("rfStored");
-		if(nbt.hasKey("transmatPoint"))
-			transmatPoint = SimpleCoordStore.readFromNBT(nbt.getCompoundTag("transmatPoint"));
+		forcedFlight = nbt.getBoolean("fF");
+		lockState = LockState.values()[nbt.getInteger("lS")];
+		rfStored  = nbt.getInteger("rS");
+		if(nbt.hasKey("tP"))
+			transmatPoint = SimpleCoordStore.readFromNBT(nbt.getCompoundTag("tP"));
 		if(nbt.hasKey("invStore"))
 		{
 			NBTTagCompound invTag = nbt.getCompoundTag("invStore");
@@ -1280,22 +1283,22 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					items[i] = ItemStack.loadItemStackFromNBT(invTag.getCompoundTag("i"+i));
 			}
 		}
-		if(nbt.hasKey("fluidStore"))
+		if(nbt.hasKey("fS"))
 		{
-			NBTTagCompound invTag = nbt.getCompoundTag("fluidStore");
+			NBTTagCompound invTag = nbt.getCompoundTag("fS");
 			for(int i = 0;i<fluids.length;i++)
 			{
 				if(invTag.hasKey("i"+i))
 					fluids[i] = FluidStack.loadFluidStackFromNBT(invTag.getCompoundTag("i"+i));
 			}
 		}
-		if(nbt.hasKey("modders"))
+		if(nbt.hasKey("mods"))
 		{
-			String[] mods	 = nbt.getString("modders").split("||");
-			if(mods != null && mods.length > 0)
+			int[] mods = nbt.getIntArray("mods");
+			if(mods != null && mods.length>0)
 			{
-				for(String m : mods)
-					modders.add(m);
+				for(int i : mods)
+					modders.add(i);
 			}
 		}
 	}
@@ -1331,28 +1334,26 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			}
 		}
 		if(j > 0)
-			nbt.setTag("fluidStore", invTag);
+			nbt.setTag("fS", invTag);
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
-		nbt.setBoolean("forcedFlight", forcedFlight);
-		nbt.setInteger("lockState", lockState.ordinal());
-		nbt.setInteger("rfStored",rfStored);
+		nbt.setBoolean("fF", forcedFlight);
+		nbt.setInteger("lS", lockState.ordinal());
+		nbt.setInteger("rS",rfStored);
 		if(hasFunction(TardisFunction.TRANSMAT) && isTransmatPointValid())
-			nbt.setTag("transmatPoint", transmatPoint.writeToNBT());
+			nbt.setTag("tP", transmatPoint.writeToNBT());
 		storeInv(nbt);
 		storeFlu(nbt);
 		if(modders != null && modders.size() > 0)
 		{
-			String mods = modders.get(0);
-			for(int i = 1;i<modders.size(); i++)
-			{
-				mods += "||" + modders.get(i);
-			}
-			nbt.setString("modders", mods);
+			int[] mods = new int[modders.size()];
+			for(int i = 0;i<modders.size();i++)
+				mods[i] = modders.get(i);
+			nbt.setIntArray("mods", mods);
 		}
 	}
 

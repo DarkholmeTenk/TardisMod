@@ -389,6 +389,11 @@ public class Helper
 		if(!Helper.isServer())
 			return;
 		NBTTagCompound data = new NBTTagCompound();
+		World w = Helper.getWorld(dim);
+		//No point playing a sound to a world with no entities in
+		if(w != null)
+			if(w.playerEntities != null && w.playerEntities.size() == 0)
+				return;
 		if(!sound.contains(":"))
 			sound = "tardismod:" + sound;
 		data.setString("sound", sound);
@@ -400,7 +405,6 @@ public class Helper
 		if(speed != 1)
 			data.setFloat("spe", speed);
 		TardisSoundPacket packet = new TardisSoundPacket(Unpooled.buffer(),data);
-		TardisOutput.print("TH","Sending sound packet");
 		TardisMod.networkChannel.sendToDimension(packet, dim);
 		//MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayersInDimension(packet, dim);
 	}
