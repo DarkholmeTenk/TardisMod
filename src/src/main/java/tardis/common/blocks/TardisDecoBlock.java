@@ -4,14 +4,24 @@ import net.minecraft.world.IBlockAccess;
 
 public class TardisDecoBlock extends TardisAbstractBlock
 {
+	private final boolean lit;
 	private static final String[] subs = {"Floor","Wall","Roundel","Corridor","CorridorRoundel","CorridorFloor","Glass", "WallPlain"};
 	
+	public TardisDecoBlock(boolean light)
+	{
+		super();
+		lit = light;
+	}
+
 	@Override
 	public void initData()
 	{
 		setBlockName("DecoBlock");
 		setSubNames(subs);
-		setLightLevel(1F);
+		if(lit)
+			setLightLevel(1F);
+		else
+			setLightLevel(0F);
 	}
 	
 	@Override
@@ -32,5 +42,4 @@ public class TardisDecoBlock extends TardisAbstractBlock
         	return false;
         return super.shouldSideBeRendered(w, s, x,y,z,mX, mY, mZ);
 	}
-
 }

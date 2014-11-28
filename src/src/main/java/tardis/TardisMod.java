@@ -14,6 +14,7 @@ import tardis.common.blocks.TardisComponentBlock;
 import tardis.common.blocks.TardisComponentItemBlock;
 import tardis.common.blocks.TardisConsoleBlock;
 import tardis.common.blocks.TardisCoreBlock;
+import tardis.common.blocks.TardisDarkDecoItemBlock;
 import tardis.common.blocks.TardisDebugBlock;
 import tardis.common.blocks.TardisDecoBlock;
 import tardis.common.blocks.TardisDecoItemBlock;
@@ -107,6 +108,7 @@ public class TardisMod
 	public static TardisAbstractBlock componentBlock;
 	public static TardisAbstractBlock internalDoorBlock;
 	public static TardisAbstractBlock decoBlock;
+	public static TardisAbstractBlock darkDecoBlock;
 	public static TardisAbstractBlock schemaBlock;
 	public static TardisAbstractBlock schemaCoreBlock;
 	public static TardisAbstractBlock schemaComponentBlock;
@@ -138,7 +140,6 @@ public class TardisMod
 		tab = new TardisCreativeTab();
 		
 		modConfig   = configHandler.getConfigFile("Mod");
-		
 		int prioLevel = Helper.clamp(modConfig.getInt("Debug Level", priorityLevel.ordinal()),0,TardisOutput.Priority.values().length);
 		priorityLevel = TardisOutput.Priority.values()[prioLevel];
 		
@@ -221,8 +222,11 @@ public class TardisMod
 		internalDoorBlock = new TardisInternalDoorBlock();
 		GameRegistry.registerBlock(internalDoorBlock,TardisInternalDoorItemBlock.class,internalDoorBlock.getUnlocalizedName());
 		
-		decoBlock = new TardisDecoBlock();
+		decoBlock = new TardisDecoBlock(true);
 		GameRegistry.registerBlock(decoBlock, TardisDecoItemBlock.class, decoBlock.getUnlocalizedName());
+		
+		darkDecoBlock = new TardisDecoBlock(false);
+		GameRegistry.registerBlock(darkDecoBlock, TardisDarkDecoItemBlock.class, decoBlock.getUnlocalizedName()+"Dark");
 		
 		stairBlock = new TardisStairBlock();
 		GameRegistry.registerBlock(stairBlock,stairBlock.getUnlocalizedName());

@@ -1,12 +1,19 @@
 package tardis.common.tileents;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import appeng.api.networking.GridFlags;
+import appeng.api.networking.GridNotification;
+import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridBlock;
+import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
+import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
 
 import cpw.mods.fml.relauncher.Side;
@@ -36,9 +43,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
-public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable, IChunkLoader
+public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable, IChunkLoader, IGridBlock
 {
 	private static TardisConfigFile config;
 	public static final ChatComponentText cannotModifyMessage	= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS");
@@ -117,7 +125,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private static int energyCostDimChange = 2000;
 	private static int energyCostFlightMax = 3000;
 	private static double energyCostPower  = 0.8;
-
+	
 	static
 	{
 		config = TardisMod.configHandler.getConfigFile("Core");
@@ -1564,6 +1572,77 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public ChunkCoordIntPair[] loadable()
 	{
 		return loadable;
+	}
+
+	
+	//ME STUFF
+	@Override
+	public double getIdlePowerUsage()
+	{
+		return 0;
+	}
+
+	@Override
+	public EnumSet<GridFlags> getFlags()
+	{
+		EnumSet<GridFlags> flags = EnumSet.of(GridFlags.COMPRESSED_CHANNEL,GridFlags.CANNOT_CARRY_COMPRESSED,GridFlags.DENSE_CAPACITY);
+		return flags;
+	}
+
+	@Override
+	public boolean isWorldAccessable()
+	{
+		return false;
+	}
+
+	@Override
+	public DimensionalCoord getLocation()
+	{
+		return new DimensionalCoord(worldObj,xCoord,yCoord,zCoord);
+	}
+
+	@Override
+	public AEColor getGridColor()
+	{
+		return AEColor.Transparent;
+	}
+
+	@Override
+	public void onGridNotification(GridNotification notification)
+	{
+		
+	}
+
+	@Override
+	public void setNetworkStatus(IGrid grid, int channelsInUse)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public EnumSet<ForgeDirection> getConnectableSides()
+	{
+		return EnumSet.noneOf(ForgeDirection.class);
+	}
+
+	@Override
+	public IGridHost getMachine()
+	{
+		return null;
+	}
+
+	@Override
+	public void gridChanged()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ItemStack getMachineRepresentation()
+	{
+		return new ItemStack(TardisMod.tardisCoreBlock,1);
 	}
 
 }
