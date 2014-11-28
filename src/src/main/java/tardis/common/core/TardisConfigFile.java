@@ -134,7 +134,7 @@ public class TardisConfigFile
 		while(!read);
 		try
 		{
-			if(containedInt.containsKey(name))
+			if(containedDbl.containsKey(name))
 				return containedDbl.get(name);
 			
 			containedDbl.put(name, defaultValue);
@@ -152,7 +152,7 @@ public class TardisConfigFile
 		while(!read);
 		try
 		{
-			if(containedInt.containsKey(name))
+			if(containedBln.containsKey(name))
 				return containedBln.get(name);
 			
 			containedBln.put(name, defaultValue);
@@ -170,7 +170,7 @@ public class TardisConfigFile
 		while(!read);
 		try
 		{
-			if(containedInt.containsKey(name))
+			if(containedStr.containsKey(name))
 				return containedStr.get(name);
 			
 			containedStr.put(name, defaultValue);
