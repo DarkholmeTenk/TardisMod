@@ -46,6 +46,7 @@ public class TardisConfigFile
 						containedStr.put(data[1], data[2]);
 				}
 			}
+			fileReader.close();
 		}
 		catch(Exception e)
 		{
