@@ -35,6 +35,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
@@ -482,7 +483,7 @@ public class Helper
 		return null;
 	}
 	
-	public static TardisCoreTileEntity getTardisCore(World tardisWorld)
+	public static TardisCoreTileEntity getTardisCore(IBlockAccess tardisWorld)
 	{
 		if(tardisWorld != null)
 		{
@@ -515,7 +516,7 @@ public class Helper
 		return getTardisEngine(Helper.getWorld(dim));
 	}
 	
-	public static TardisEngineTileEntity getTardisEngine(World w)
+	public static TardisEngineTileEntity getTardisEngine(IBlockAccess w)
 	{
 		TardisCoreTileEntity core = getTardisCore(w);
 		if(core != null)
@@ -531,7 +532,7 @@ public class Helper
 		return null;
 	}
 	
-	public static TardisConsoleTileEntity getTardisConsole(World tardisWorld)
+	public static TardisConsoleTileEntity getTardisConsole(IBlockAccess tardisWorld)
 	{
 		TardisCoreTileEntity core = getTardisCore(tardisWorld);
 		if(core != null)

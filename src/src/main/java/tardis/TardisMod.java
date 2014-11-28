@@ -36,7 +36,6 @@ import tardis.common.core.TardisCreativeTab;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisPlayerRegistry;
-import tardis.common.core.TardisSoundHandler;
 import tardis.common.core.TardisTeleporter;
 import tardis.common.dimension.TardisChunkLoadingManager;
 import tardis.common.dimension.TardisDimensionEventHandler;
@@ -64,7 +63,6 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.FMLEventChannel;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid="TardisMod",name="Tardis Mod",version="0.17",dependencies="required-after:FML; after:appliedenergistics2")
 public class TardisMod
@@ -223,10 +221,11 @@ public class TardisMod
 		debugBlock = new TardisDebugBlock();
 		GameRegistry.registerBlock(debugBlock, debugBlock.getUnlocalizedName());
 		
-		schemaBlock = new TardisSchemaBlock();
+		boolean visibleSchema = modConfig.getBoolean("Visible schematic boundaries", false);
+		schemaBlock = new TardisSchemaBlock(visibleSchema);
 		GameRegistry.registerBlock(schemaBlock, schemaBlock.getUnlocalizedName());
 		
-		schemaCoreBlock = new TardisSchemaCoreBlock();
+		schemaCoreBlock = new TardisSchemaCoreBlock(visibleSchema);
 		GameRegistry.registerBlock(schemaCoreBlock,schemaCoreBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisSchemaCoreTileEntity.class, schemaCoreBlock.getUnlocalizedName());
 		

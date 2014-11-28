@@ -13,6 +13,7 @@ import tardis.client.renderer.TardisEngineRenderer;
 import tardis.client.renderer.TardisRenderer;
 import tardis.client.renderer.TardisSonicScrewdriverRenderer;
 import tardis.common.TardisProxy;
+import tardis.common.core.Helper;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
@@ -48,10 +49,13 @@ public class TardisClientProxy extends TardisProxy
 	@Override
 	public World getWorld(int id)
 	{
-		if(Minecraft.getMinecraft() != null)
+		if(!Helper.isServer())
 		{
-			if(Minecraft.getMinecraft().thePlayer != null)
-				cWorld = Minecraft.getMinecraft().thePlayer.worldObj;
+			if(Minecraft.getMinecraft() != null)
+			{
+				if(Minecraft.getMinecraft().thePlayer != null)
+					cWorld = Minecraft.getMinecraft().thePlayer.worldObj;
+			}
 		}
 		if(cWorld != null)
 			if(id == cWorld.provider.dimensionId)

@@ -12,10 +12,10 @@ public class TardisSchemaBlock extends TardisAbstractBlock
 	private final boolean visible;
 	private IIcon blankIcon;
 	
-	public TardisSchemaBlock()
+	public TardisSchemaBlock(boolean vis)
 	{
 		super();
-		visible = TardisMod.modConfig.getBoolean("Visible schematic boundaries", false);
+		visible = vis;
 	}
 
 	@Override
