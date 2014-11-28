@@ -20,6 +20,7 @@ public class TardisConfigFile
 	{
 		confFile = fileLoc;
 		readFile();
+		dumpData();
 		read = true;
 	}
 	
@@ -43,7 +44,6 @@ public class TardisConfigFile
 						containedBln.put(data[1], Boolean.parseBoolean(data[2]));
 					else if(data[0].equals("S"))
 						containedStr.put(data[1], data[2]);
-					TardisOutput.print("CF", "DI",line);
 				}
 			}
 		}
@@ -63,6 +63,21 @@ public class TardisConfigFile
 				TardisOutput.print("CF", confFile, e.getMessage());
 			}
 		}
+	}
+	
+	private void dumpData()
+	{
+		for(String s : containedInt.keySet())
+			TardisOutput.print("CF", "I: " + s + " : " + containedInt.get(s));
+		
+		for(String s : containedDbl.keySet())
+			TardisOutput.print("CF", "D: " + s + " : " + containedDbl.get(s));
+
+		for(String s : containedBln.keySet())
+			TardisOutput.print("CF", "B: " + s + " : " + containedBln.get(s));
+		
+		for(String s : containedStr.keySet())
+			TardisOutput.print("CF", "S: " + s + " : " + containedStr.get(s));
 	}
 	
 	private void writeHashMap(PrintWriter writer, String prefix,HashMap map) throws IOException

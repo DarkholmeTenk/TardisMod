@@ -1,6 +1,5 @@
 package tardis.common.core;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -80,7 +79,8 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 		{
 			TardisOutput.print("TDR", "Registering dim " + id,TardisOutput.Priority.DEBUG);
 			DimensionManager.registerDimension(id, TardisMod.providerID);
-			TardisMod.networkChannel.sendToAll(getPacket());
+			if(Helper.isServer())
+				TardisMod.networkChannel.sendToAll(getPacket());
 		}
 	}
 
