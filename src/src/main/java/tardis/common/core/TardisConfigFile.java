@@ -97,8 +97,7 @@ public class TardisConfigFile
 	
 	public int getInt(String name,int defaultValue)
 	{
-		if(!read)
-			return defaultValue;
+		while(!read);
 		try
 		{
 			if(containedInt.containsKey(name))
@@ -116,8 +115,7 @@ public class TardisConfigFile
 	
 	public double getDouble(String name,double defaultValue)
 	{
-		if(!read)
-			return defaultValue;
+		while(!read);
 		try
 		{
 			if(containedInt.containsKey(name))
@@ -135,8 +133,7 @@ public class TardisConfigFile
 	
 	public boolean getBoolean(String name,boolean defaultValue)
 	{
-		if(!read)
-			return defaultValue;
+		while(!read);
 		try
 		{
 			if(containedInt.containsKey(name))
@@ -154,8 +151,7 @@ public class TardisConfigFile
 	
 	public String getString(String name,String defaultValue)
 	{
-		if(!read)
-			return defaultValue;
+		while(!read);
 		try
 		{
 			if(containedInt.containsKey(name))
