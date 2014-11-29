@@ -41,6 +41,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	public String owner;
 	private ResourceLocation skin = null;
 	private ResourceLocation defaultSkin = new ResourceLocation("tardismod","textures/models/Tardis.png");
+	private static String baseURL = null;
 	
 	Integer linkedDimension = null;
 	TardisCoreTileEntity linkedCore = null;
@@ -48,6 +49,8 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	public void updateEntity()
 	{
 		super.updateEntity();
+		if(baseURL == null)
+			baseURL = TardisMod.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
 		if(linkedDimension != null && linkedDimension != 0 && linkedCore == null)
 			linkedCore = Helper.getTardisCore(linkedDimension);
 		if(linkedCore != null && owner == null)
@@ -88,7 +91,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 		if(object == null)
 		{
 			TardisOutput.print("TTE", "Downloading " + owner + " skin");
-			object = new ThreadDownloadTardisData(null, "http://skins.darkcraft.io/tardis/"+owner+".png", defaultSkin, new ImageBufferDownload());
+			object = new ThreadDownloadTardisData(null, baseURL+owner+".png", defaultSkin, new ImageBufferDownload());
 		}
 		texMan.loadTexture(skin, object);
 		return object;
