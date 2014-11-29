@@ -43,7 +43,12 @@ public class TardisConfigFile
 					else if(data[0].equals("B"))
 						containedBln.put(data[1], Boolean.parseBoolean(data[2]));
 					else if(data[0].equals("S"))
-						containedStr.put(data[1], data[2]);
+					{
+						String compiledString = data[2];
+						for(int i = 3; i< data.length; i++)
+							compiledString += ":" + data[i];
+						containedStr.put(data[1], compiledString);
+					}
 				}
 			}
 			fileReader.close();
