@@ -1,19 +1,28 @@
 package tardis.common.tileents;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import tardis.TardisMod;
 import tardis.api.IChunkLoader;
+import tardis.client.ThreadDownloadTardisData;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ImageBufferDownload;
+import net.minecraft.client.renderer.ThreadDownloadImageData;
+import net.minecraft.client.renderer.texture.ITextureObject;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
@@ -29,7 +38,9 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	private boolean takingOffSoundPlayed = false;
 	private boolean landingSoundPlayed = false;
 	
-	private String owner;
+	public String owner;
+	private ResourceLocation skin = null;
+	private ResourceLocation defaultSkin = new ResourceLocation("tardismod","textures/models/Tardis.png");
 	
 	Integer linkedDimension = null;
 	TardisCoreTileEntity linkedCore = null;
@@ -37,6 +48,10 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	public void updateEntity()
 	{
 		super.updateEntity();
+		if(linkedDimension != null && linkedDimension != 0 && linkedCore == null)
+			linkedCore = Helper.getTardisCore(linkedDimension);
+		if(linkedCore != null && owner == null)
+			owner = linkedCore.getOwner();
 		if(inFlight())
 		{
 			if(isLanding() && !landingSoundPlayed)
@@ -61,6 +76,29 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 			if(!landed)
 				land();
 		}
+	}
+	
+	private ITextureObject loadSkin(TextureManager texMan)
+	{
+		if(owner == null)
+			return null;
+		texMan = Minecraft.getMinecraft().getTextureManager();
+		skin = new ResourceLocation("tardismod","textures/tardis/" + StringUtils.stripControlCodes(owner) +".png");
+		ITextureObject object = texMan.getTexture(skin);
+		if(object == null)
+		{
+			TardisOutput.print("TTE", "Downloading " + owner + " skin");
+			object = new ThreadDownloadTardisData(null, "http://skins.darkcraft.io/tardis/"+owner+".png", defaultSkin, new ImageBufferDownload());
+		}
+		texMan.loadTexture(skin, object);
+		return object;
+	}
+	
+	public ResourceLocation getSkin(TextureManager texMan)
+	{
+		if(skin == null)
+			loadSkin(texMan);
+		return skin == null ? defaultSkin : skin;
 	}
 	
 	public boolean isTakingOff()

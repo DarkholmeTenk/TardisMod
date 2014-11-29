@@ -124,7 +124,7 @@ public class TardisChunkLoadingManager implements LoadingCallback
 	
 	private void tickEnd()
 	{
-		if(((tickCount++%10) == 0) || forceCheck)
+		if(((tickCount++%10) == 1) || forceCheck)
 		{
 			//TardisOutput.print("TCLM", "Handling chunks");
 			forceCheck = false;

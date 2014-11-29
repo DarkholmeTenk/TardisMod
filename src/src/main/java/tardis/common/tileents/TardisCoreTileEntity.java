@@ -775,6 +775,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		ownerName = name;
 		if(!worldObj.isRemote && TardisMod.plReg != null && !TardisMod.plReg.hasTardis(ownerName))
 			TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
+		TardisTileEntity ext = getExterior();
+		if(ext != null)
+			ext.owner = name;
 	}
 
 	public boolean hasFunction(TardisFunction fun)

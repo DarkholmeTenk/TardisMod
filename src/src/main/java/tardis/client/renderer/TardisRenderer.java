@@ -9,7 +9,6 @@ import tardis.common.tileents.TardisTileEntity;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 public class TardisRenderer extends TardisAbstractBlockRenderer
@@ -36,7 +35,7 @@ public class TardisRenderer extends TardisAbstractBlockRenderer
 			GL11.glRotatef(dir * (-90F), 0F, 1F, 0F);
 			GL11.glRotatef(180F, 0F, 0, 1F);
 			GL11.glTranslatef(0F, -1.5F, 0F);
-			bindTexture(new ResourceLocation("tardismod","textures/models/Tardis.png"));
+			bindTexture(tte.getSkin(this.field_147501_a.field_147553_e));
 			GL11.glColor4f(1F, 1F, 1F, tte.getTransparency());
 			model.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 			GL11.glPopMatrix();
