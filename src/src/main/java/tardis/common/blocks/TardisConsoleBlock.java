@@ -9,12 +9,6 @@ import net.minecraft.world.World;
 
 public class TardisConsoleBlock extends TardisAbstractBlockContainer
 {
-
-	public TardisConsoleBlock()
-	{
-		super();
-	}
-
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{

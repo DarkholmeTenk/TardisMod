@@ -14,13 +14,6 @@ import net.minecraft.world.World;
 
 public class TardisBlock extends TardisAbstractBlockContainer
 {
-	
-	//INIT THINGS
-	public TardisBlock()
-	{
-		super();
-	}
-
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{
@@ -30,7 +23,8 @@ public class TardisBlock extends TardisAbstractBlockContainer
 	@Override
 	public void initData()
 	{
-		setBlockName("Tardis");		
+		setBlockName("Tardis");
+		setBlockBounds(0,0,0,1,2,1);
 	}
 
 	@Override

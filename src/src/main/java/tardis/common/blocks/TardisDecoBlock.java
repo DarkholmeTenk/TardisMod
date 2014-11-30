@@ -4,14 +4,8 @@ import net.minecraft.world.IBlockAccess;
 
 public class TardisDecoBlock extends TardisAbstractBlock
 {
-
 	private static final String[] subs = {"Floor","Wall","Roundel","Corridor","CorridorRoundel","CorridorFloor","Glass", "WallPlain"};
 	
-	public TardisDecoBlock()
-	{
-		super();
-	}
-
 	@Override
 	public void initData()
 	{

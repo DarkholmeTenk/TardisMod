@@ -7,12 +7,6 @@ import net.minecraft.world.World;
 
 public class TardisEngineBlock extends TardisAbstractBlockContainer
 {
-
-	public TardisEngineBlock()
-	{
-		super();
-	}
-
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{

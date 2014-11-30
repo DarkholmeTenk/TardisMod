@@ -4,6 +4,7 @@ import java.util.List;
 
 import tardis.TardisMod;
 import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisEngineTileEntity;
@@ -122,6 +123,12 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
     {
 		boolean ser = Helper.isServer();
     	int meta = w.getBlockMetadata(x, y, z);
+    	if(meta == 6 && j > 0.5 && ser || meta == 8)
+		{
+			TardisCoreTileEntity core = Helper.getTardisCore(w);
+			if(core != null)
+				core.activate(pl, s);
+		}
     	if(meta == 2 && ser)
     	{
     		boolean found = false;
@@ -165,8 +172,6 @@ public class TardisSchemaComponentBlock extends TardisAbstractBlock
     {
         if(w.getBlockMetadata(x, y, z) == 3)
         	this.setBlockBounds(0, 0.5F, 0, 1, 1, 1);
-        else if(w.getBlockMetadata(x, y, z) == 6)
-        	this.setBlockBounds(0, 0, 0, 1, 0.5F, 1);
         else if(w.getBlockMetadata(x,y,z) == 1)
         	this.setBlockBounds(0,0,0,0,0,0);
         else
