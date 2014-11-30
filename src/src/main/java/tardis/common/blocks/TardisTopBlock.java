@@ -1,7 +1,9 @@
 package tardis.common.blocks;
 
 import tardis.TardisMod;
+import tardis.common.tileents.TardisTileEntity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
@@ -54,11 +56,37 @@ public class TardisTopBlock extends TardisAbstractBlock
 	}
 	
 	@Override
+	public boolean isOpaqueCube()
+	{
+		return false;
+	}
+	
+	@Override
+	public boolean isBlockSolid(IBlockAccess w, int x, int y, int z, int s)
+	{
+		return false;
+	}
+	
+	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta)
 	{
 		super.onBlockDestroyedByPlayer(world, x, y, z, meta);
 		if(world.getBlock(x, y-1,z) == TardisMod.tardisBlock)
 			world.setBlockToAir(x, y-1, z);
+	}
+	
+	@Override
+	public boolean isNormalCube(IBlockAccess w, int x, int y, int z)
+	{
+		TileEntity te = w.getTileEntity(x, y-1, z);
+		if(te instanceof TardisTileEntity)
+		{
+			if(((TardisTileEntity)te).isLanding())
+				return false;
+			return true;
+		}
+		else
+			return false;
 	}
 
 }

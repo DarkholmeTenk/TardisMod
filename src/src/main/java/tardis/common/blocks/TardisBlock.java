@@ -90,11 +90,29 @@ public class TardisBlock extends TardisAbstractBlockContainer
 	{
 	   return false;
 	}
+	
+	@Override
+	public boolean isBlockSolid(IBlockAccess w, int x, int y, int z, int s)
+	{
+		return false;
+	}
 
 	@Override
 	public boolean isOpaqueCube()
 	{
 	   return false;
+	}
+	
+	@Override
+	public boolean isNormalCube(IBlockAccess w, int x, int y, int z)
+	{
+		TileEntity te = w.getTileEntity(x, y, z);
+		if(te instanceof TardisTileEntity)
+		{
+			if(((TardisTileEntity)te).isLanding())
+				return false;
+		}
+		return true;
 	}
 
 }
