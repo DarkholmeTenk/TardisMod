@@ -1,6 +1,5 @@
 package tardis.common.tileents;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ImageBufferDownload;
-import net.minecraft.client.renderer.ThreadDownloadImageData;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.Entity;
@@ -33,7 +31,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	private boolean landed = false;
 	private boolean landFast = true;
 	private boolean takingOff = false;
-	private boolean landing   = false;
+	private boolean landing   = true;
 	
 	private boolean takingOffSoundPlayed = false;
 	private boolean landingSoundPlayed = false;
@@ -55,6 +53,23 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 			linkedCore = Helper.getTardisCore(linkedDimension);
 		if(linkedCore != null && owner == null)
 			owner = linkedCore.getOwner();
+		if(linkedDimension != null && tt % 20 == 0)
+		{
+			TardisCoreTileEntity core = Helper.getTardisCore(linkedDimension);
+			if(core != null)
+			{
+				TardisTileEntity ext = core.getExterior();
+				if(ext != null)
+				{
+					if(!equals(ext))
+					{
+						worldObj.setBlockToAir(xCoord, yCoord+1, zCoord);
+						worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+						return;
+					}
+				}
+			}
+		}
 		if(inFlight())
 		{
 			if(isLanding() && !landingSoundPlayed)
