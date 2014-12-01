@@ -96,7 +96,7 @@ public class TardisRepairCoreCommand extends TardisAbstractCommand
 					tce.removeAllRooms(true);
 					Helper.generateTardisInterior(worldID, newOwner, tce.getExterior());
 				}
-				tce.repair(newOwner, numRooms, energy);
+				tce.commandRepair(newOwner, numRooms, energy);
 			}
 			else if(total)
 					Helper.generateTardisInterior(worldID, newOwner, null);

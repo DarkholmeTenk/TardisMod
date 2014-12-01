@@ -117,7 +117,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	static
 	{
 		config = TardisMod.configHandler.getConfigFile("Core");
-		explodeChance = config.getDouble("Explosion chance (on control not pressed)", 0.25);
+		explodeChance = config.getDouble("Explosion chance (on control not pressed)", 0.6);
 		loadable = new ChunkCoordIntPair[4];
 		loadable[0] = new ChunkCoordIntPair( 0, 0);
 		loadable[1] = new ChunkCoordIntPair(-1, 0);
@@ -171,12 +171,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					}
 					else
 					{
-						instability++;
+						instability+=Math.max(1,getSpeed(true)*3/getMaxSpeed());
 						if(shouldExplode())
 							explode = true;
 						sendUpdate();
 					}
-					instability = Helper.clamp(instability, 0, 10);
+					instability = Helper.clamp(instability, 0, 18);
 				}
 				if(con != null && con.unstableFlight() && (buttonTime * numButtons) > takenTime)
 					con.randomUnstableControl();
@@ -521,22 +521,29 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return y > 0 && y < 254 && softBlock(w,x,y,z) && softBlock(w,x,y+1,z);
 	}
 	
+	private int getOffsetFromInstability()
+	{
+		if(forcedFlight)
+			return 0;
+		return rand.nextInt(2 * instability) - instability;
+	}
+	
 	private void placeBox()
 	{
 		if(worldObj.isRemote || hasValidExterior())
 			return;
 		
 		TardisConsoleTileEntity con = getConsole();
-		int dX = con.getXFromControls(exteriorX);
+		int dX = con.getXFromControls(exteriorX) + getOffsetFromInstability();
 		int dY = con.getYFromControls(exteriorY);
-		int dZ = con.getZFromControls(exteriorZ);
+		int dZ = con.getZFromControls(exteriorZ) + getOffsetFromInstability();
 		int facing = con.getFacingFromControls();
 		World w = Helper.getWorld(con.getDimFromControls());
 		if(!(isValidPos(w,dX,dY,dZ)))
 		{
 			boolean f = false;
-			int[] check = {0,1,-1,2,-2, 3,-3, 4,-4, 5,-5};
-			for(int i=0;i<5&&!f;i++)
+			int[] check = {0,1,-1,2,-2, 3,-3, 4,-4, 5,-5, 6,-6};
+			for(int i=0;i<check.length&&!f;i++)
 			{
 				int yO = check[i];
 				for(int j=0;j<5&&!f;j++)
@@ -616,8 +623,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	private boolean shouldExplode()
 	{
-		double eC = explodeChance * ((getSpeed(false) + 1) / 3.0);
-		eC *= Helper.clamp(3.0 / tardisLevel, 0.2, 1);
+		double eC = explodeChance * ((getSpeed(false) + 1) *3 / getMaxSpeed());
+		eC *= Helper.clamp(3.0 / ((tardisLevel+1)/2), 0.2, 1);
 		return rand.nextDouble() < eC;
 	}
 	
@@ -1186,7 +1193,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				if(desStrs!= null && desStrs.length == 4)
 					send = desStrs;
 				
-				send[0] = "The TARDIS will materialize in dimension " + dD + " near:";
+				send[0] = "The TARDIS will materialize in dimension " + getDimensionName(dD) + " near:";
 				if(dX != desX || send[1] == null)
 					send[1] = "x = " + (dX + (rand.nextInt(2 * instability) - instability));
 				if(dY != desY || send[2] == null)
@@ -1203,17 +1210,62 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		}
 	}
 	
+	/**
+	 * @param w A world object to check
+	 * @param x The xCoord to check
+	 * @param y The yCoord of the bottom block of the TARDIS
+	 * @param z The zCoord to check
+	 * @return A boolean array of length 5.
+	 * Element 0 = If door is not obstructed by a solid block (i.e. the door is openable)
+	 * Element 1 = If door is obstructed by a dangerous block (e.g. lava/fire)
+	 * Element 2 = There is a drop of 2 or more blocks
+	 * Element 3 = The drop will result in water
+	 * Element 4 = The drop will result in lava/fire
+	 */
 	private boolean[] getObstructData(World w, int x, int y, int z)
 	{
-		boolean[] data = new boolean[2];
-		data[0] = data[1] = false;
+		boolean[] data = new boolean[4];
+		data[0] = data[1] = data[2] = data[3] = data[4] = false;
 		TardisOutput.print("TCTE", "Checking for air @ " + x + "," + y + "," + z,TardisOutput.Priority.DEBUG);
 		if(softBlock(w,x, y, z) && softBlock(w, x, y+1, z))
 		{
 			data[0] = true;
-			Block id = w.getBlock(x, y-1, z);
-			if(softBlock(w,x, y-1, z) || id == Blocks.fire || id == Blocks.lava || id == Blocks.water)
+			Block bottom = w.getBlock(x, y, z);
+			Block top = w.getBlock(x, y+1, z);
+			if(bottom == Blocks.fire || bottom == Blocks.lava || top == Blocks.fire || top == Blocks.lava)
 				data[1] = true;
+			else
+			{
+				for(int i = 1;i<=2;i++)
+				{
+					if((y-i) < 1)
+					{
+						data[2] = true;
+						break;
+					}
+					if(!softBlock(w,x,y-i,z))
+						break;
+					if(i == 2)
+						data[2] = true;
+				}
+				if(data[2])
+				{
+					boolean g = true;
+					for(int i = y-3;i>0 && g;i--)
+					{
+						if(!softBlock(w,x,i,z))
+							g = true;
+						Block b = w.getBlock(x, i, z);
+						if(b == Blocks.water)
+							data[3] = true;
+						else if(b == Blocks.lava)
+							data[4] = true;
+						else
+							continue;
+						break;
+					}
+				}
+			}
 		}
 		return data;
 	}
@@ -1222,7 +1274,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(inFlight())
 		{
-			pl.addChatMessage(new ChatComponentText("Cannot use temporal scanners while in flight"));
+			pl.addChatMessage(new ChatComponentText("Cannot use exterior scanners while in flight"));
 			return;
 		}
 		List<String> string = new ArrayList<String>();
@@ -1230,7 +1282,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		World w = ext.getWorldObj();
 		int dx = 0;
 		int dz = 0;
-		string.add("Current position: Dimension " + exteriorWorld + " : " + exteriorX+","+exteriorY+","+exteriorZ);
+		string.add("Current position: Dimension " + getDimensionName(exteriorWorld) + " : " + exteriorX+","+exteriorY+","+exteriorZ);
 		int facing = w.getBlockMetadata(exteriorX, exteriorY, exteriorZ);
 		for(int i=0;i<4;i++)
 		{
@@ -1243,12 +1295,16 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			}
 			String s = (i == facing ? "Current facing " : "Facing ");
 			boolean[] data = getObstructData(w,exteriorX+dx,exteriorY,exteriorZ+dz);
-			if(!data[0])
+			if(data[0])
 				s += "obstructed";
-			else if(!data[1])
-				s += "safe";
-			else
+			if(data[1])
+				s += "unsafe exit";
+			if(data[2])
 				s += "unsafe drop";
+			if(data[3])
+				s += " into water";
+			if(data[4])
+				s += " into lava";
 			string.add(s);
 		}
 		
@@ -1256,11 +1312,18 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			pl.addChatMessage(new ChatComponentText(s));
 	}
 	
+	private String getDimensionName(int worldID)
+	{
+		if(worldID != 10000)
+			return Helper.getDimensionName(worldID);
+		return "The Time Vortex";
+	}
+	
 	//////////////////////////////
 	//////NBT DATA////////////////
 	//////////////////////////////
 	
-	public void repair(String newO, int numRoom, int en)
+	public void commandRepair(String newO, int numRoom, int en)
 	{
 		energy = en;
 		numRooms = numRoom;

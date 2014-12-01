@@ -39,6 +39,7 @@ import tardis.common.core.TardisPlayerRegistry;
 import tardis.common.core.TardisTeleporter;
 import tardis.common.dimension.TardisChunkLoadingManager;
 import tardis.common.dimension.TardisDimensionEventHandler;
+import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.items.TardisAbstractItem;
 import tardis.common.items.TardisComponentItem;
@@ -59,6 +60,7 @@ import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.FMLEventChannel;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -85,6 +87,7 @@ public class TardisMod
 	
 	public static TardisTeleporter teleporter = null;
 	public static TardisConfigHandler configHandler;
+	public static TardisDimensionHandler otherDims;
 	public static TardisDimensionRegistry dimReg;
 	public static TardisPlayerRegistry plReg;
 	public static TardisChunkLoadingManager chunkManager;
@@ -177,10 +180,6 @@ public class TardisMod
 		aeAPI = AEApi.instance();
 		keyItem.initRecipes();
 		componentItem.initRecipes();
-		chunkManager = new TardisChunkLoadingManager();
-		MinecraftForge.EVENT_BUS.register(dimEventHandler);
-		FMLCommonHandler.instance().bus().register(chunkManager);
-		ForgeChunkManager.setForcedChunkLoadingCallback(this, chunkManager);
 		inited = true;
 	}
 	
@@ -249,6 +248,25 @@ public class TardisMod
 		
 		componentItem = new TardisComponentItem();
 		GameRegistry.registerItem(componentItem, componentItem.getUnlocalizedName());
+	}
+	
+	@EventHandler
+	public void serverAboutToStart(FMLServerAboutToStartEvent event)
+	{
+		if(otherDims != null)
+			MinecraftForge.EVENT_BUS.unregister(otherDims);
+		otherDims = new TardisDimensionHandler();
+		MinecraftForge.EVENT_BUS.register(otherDims);
+		
+		if(chunkManager != null)
+		{
+			MinecraftForge.EVENT_BUS.unregister(dimEventHandler);
+			FMLCommonHandler.instance().bus().unregister(chunkManager);
+		}
+		chunkManager = new TardisChunkLoadingManager();
+		MinecraftForge.EVENT_BUS.register(dimEventHandler);
+		FMLCommonHandler.instance().bus().register(chunkManager);
+		ForgeChunkManager.setForcedChunkLoadingCallback(this, chunkManager);
 	}
 	
 	@EventHandler

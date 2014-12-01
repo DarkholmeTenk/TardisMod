@@ -83,11 +83,16 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 				TardisMod.networkChannel.sendToAll(getPacket());
 		}
 	}
+	
+	public boolean hasDimension(int id)
+	{
+		return dimensionIDs.contains(id);
+	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
 	{
-		TardisOutput.print("TDR", "Reading from nbt");
+		//TardisOutput.print("TDR", "Reading from nbt");
 		int[] dims = nbt.getIntArray("registeredDimensions");
 		if(dims != null)
 		{
@@ -102,7 +107,7 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
-		TardisOutput.print("TDR", "Writing to nbt:" + dimensionIDs.size(),TardisOutput.Priority.DEBUG);
+		//TardisOutput.print("TDR", "Writing to nbt:" + dimensionIDs.size(),TardisOutput.Priority.DEBUG);
 		int[] dims = new int[dimensionIDs.size()];
 		int i=0;
 		for(Integer curr:dimensionIDs)

@@ -31,6 +31,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	private int   facing    = 0;
 	private int   dimControl = 0;
+	private float dimControlState = 0;
 	private int[] xControls = new int[6];
 	private int[] zControls = new int[6];
 	private int[] yControls = new int[4];
@@ -399,7 +400,12 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				else if(controlID == 55)
 					uncoordinated  = !uncoordinated;
 				else if(controlID == 60)
-					dimControl = Helper.cycle(dimControl + (pl.isSneaking()?-1:1), -1, 1);
+				{
+					int newDimControl = dimControl + (pl.isSneaking() ? -1 : 1);
+					newDimControl = Helper.clamp(newDimControl, 0, TardisMod.otherDims.numDims()-1);
+					TardisOutput.print("TConTE", "Setting dim control to " + newDimControl +" / " + TardisMod.otherDims.numDims());
+					dimControl = newDimControl;
+				}
 			}
 			else if(!core.inFlight())
 			{
@@ -561,7 +567,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	public boolean setControls(int dim, int x, int y, int z, boolean allowNearest)
 	{
-		int dCont   = Helper.clamp(dim,-1,1);
+		int dCont   = TardisMod.otherDims.getControlFromDim(dim);
 		int[] xCont = getControlsFromDest(x);
 		int[] yCont = getYControls(y);
 		int[] zCont = getControlsFromDest(z);
@@ -647,7 +653,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	public int getDimFromControls()
 	{
-		return dimControl;
+		return TardisMod.otherDims.getDimFromControl(dimControl);
 	}
 	
 	public int getZFromControls(int extZ)
@@ -702,7 +708,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		{
 			TardisOutput.print("TConTE", "Loading state");
 			facing = state.facing;
-			dimControl = state.dimControl;
+			dimControl = TardisMod.otherDims.getControlFromDim(state.dimControl);
 			xControls = state.xControls.clone();
 			yControls = state.yControls.clone();
 			zControls = state.zControls.clone();
@@ -715,7 +721,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	private ControlStateStore getCurrentControlState()
 	{
-		return new ControlStateStore(facing,dimControl,xControls,yControls,zControls,landGroundControl,relativeCoords);
+		return new ControlStateStore(facing,getDimFromControls(),xControls,yControls,zControls,landGroundControl,relativeCoords);
 	}
 	
 	public void saveControls(int stateNum)
@@ -818,7 +824,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			if(controlID == 56)
 				return stable ? 1 : 0;
 			if(controlID == 60)
-				return (dimControl+1) / 2.0;
+				return dimControlState;
 			if(controlID == 900)
 				return saveCoords ? 1 : 0;
 			if(controlID == 901)
@@ -953,6 +959,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	{
 		super.readFromNBT(nbt);
 		schemaNum = nbt.getInteger("schemaNum");
+		int dC = nbt.getInteger("dC");
+		TardisOutput.print("TConTE", "Attempting to set dim controls to dim: " + dC);
+		dimControl = TardisMod.otherDims.getControlFromDim(dC);
 		for(int i = 0;i<20;i++)
 		{
 			if(nbt.hasKey("css"+i))
@@ -970,6 +979,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	{
 		super.writeToNBT(nbt);
 		nbt.setInteger("schemaNum", schemaNum);
+		int dimID = getDimFromControls();
+		TardisOutput.print("TConTE", "Saving dim as :" + dimID);
+		nbt.setInteger("dC", dimID);
 		for(int i = 0;i<20;i++)
 		{
 			if(states.containsKey(i))
@@ -1005,7 +1017,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		tickTimer = nbt.getInteger("tickTimer");
 		hasScrewdriver = nbt.getInteger("hasScrewdriver");
 		facing    = nbt.getInteger("facing");
-		dimControl = nbt.getInteger("dimControl");
 		xControls = nbt.getIntArray("xControls");
 		zControls = nbt.getIntArray("zControls");
 		yControls = nbt.getIntArray("yControls");
@@ -1034,7 +1045,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		nbt.setBoolean("primed", primed);
 		nbt.setBoolean("regulated", regulated);
 		nbt.setInteger("facing", facing);
-		nbt.setInteger("dimControl",dimControl);
 		nbt.setIntArray("xControls", xControls);
 		nbt.setIntArray("zControls", zControls);
 		nbt.setIntArray("yControls", yControls);
@@ -1044,5 +1054,17 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		nbt.setString("schemaChooserString", schemaChooserString);
 		nbt.setInteger("lastButton",lastButton);
 		nbt.setInteger("lastButtonTT",lastButtonTT);
+	}
+	
+	@Override
+	public void writeTransmittableOnly(NBTTagCompound nbt)
+	{
+		nbt.setFloat("dCS",((float) dimControl) / (TardisMod.otherDims.numDims() - 1f));
+	}
+	
+	@Override
+	public void readTransmittableOnly(NBTTagCompound nbt)
+	{
+		dimControlState = nbt.getFloat("dCS");
 	}
 }

@@ -31,6 +31,7 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 		TardisOutput.print("TATE","Compiling description packet",TardisOutput.Priority.OLDDEBUG);
 		NBTTagCompound tag = new NBTTagCompound();
 		writeTransmittable(tag);
+		writeTransmittableOnly(tag);
 		Packet p = new S35PacketUpdateTileEntity(xCoord,yCoord,zCoord,3,tag);
 		return p;
 	}
@@ -76,13 +77,19 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 		if(TardisMod.proxy instanceof TardisClientProxy)
 			TardisClientProxy.cWorld = worldObj;
 		TardisOutput.print("TATE","Receiving description packet",TardisOutput.Priority.OLDDEBUG);
-		readTransmittable(packet.func_148857_g());
+		NBTTagCompound nbt = packet.func_148857_g();
+		readTransmittable(nbt);
+		readTransmittableOnly(nbt);
 		super.onDataPacket(net, packet);
 	}
 	
 	public abstract void writeTransmittable(NBTTagCompound nbt);
 	
 	public abstract void readTransmittable(NBTTagCompound nbt);
+	
+	public void writeTransmittableOnly(NBTTagCompound nbt){}
+	
+	public void readTransmittableOnly(NBTTagCompound nbt){}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
