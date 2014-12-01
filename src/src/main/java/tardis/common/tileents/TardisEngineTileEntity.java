@@ -11,8 +11,13 @@ import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
+import tardis.common.items.TardisSonicScrewdriverItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 
@@ -27,6 +32,10 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	private TardisUpgradeMode preparingToUpgrade = null;
 	private int preparingToUpgradeTT = -1;
 	private boolean litUp = false;
+	
+	private boolean hasScrew = false;
+	private NBTTagCompound screwNBT = null;
+	private int screwMode = 0;
 	
 	@Override
 	public void updateEntity()
@@ -120,6 +129,20 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			return 23;
 		else if(hit.within(5, 0.729, 0.711, 0.888, 0.898))
 			return 30;
+		else if(hit.within(3, 0.42, 0.532, 0.59, 0.664))
+			return 39;
+		else if(hit.within(3, 0.360, 0.274, 0.440, 0.346))
+			return 41;
+		else if(hit.within(3, 0.460, 0.274, 0.540, 0.346))
+			return 44;
+		else if(hit.within(3, 0.560, 0.274, 0.640, 0.346))
+			return 45;
+		else if(hit.within(3, 0.360, 0.360, 0.440, 0.438))
+			return 51;
+		else if(hit.within(3, 0.460, 0.360, 0.540, 0.438))
+			return 54;
+		else if(hit.within(3, 0.560, 0.360, 0.640, 0.438))
+			return 55;
 		else
 			TardisOutput.print("TETE", hit.toString());
 		return -1;
@@ -203,6 +226,61 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			}
 			else if(control == 30)
 				pl.addChatMessage(new ChatComponentText("[ENGINE] Unspent level points: " + core.unspentLevelPoints() +"/"+core.maxUnspentLevelPoints()));
+			else if(control == 39)
+			{
+				if(hasScrewdriver(0) && pl instanceof EntityPlayerMP)
+				{
+					ItemStack toGive = new ItemStack(TardisMod.screwItem,1,0);
+					validateScrewNBT();
+					toGive.stackTagCompound = screwNBT;
+					hasScrew = false;
+					screwNBT = null;
+					TardisMod.screwItem.notifyMode(toGive,pl,false);
+					Helper.giveItemStack((EntityPlayerMP) pl, toGive);
+				}
+				else
+				{
+					ItemStack held = pl.getHeldItem();
+					if(held != null)
+					{
+						Item item = held.getItem();
+						if(item instanceof TardisSonicScrewdriverItem)
+						{
+							InventoryPlayer inv = pl.inventory;
+							screwNBT = held.stackTagCompound;
+							hasScrew = true;
+							validateScrewNBT();
+							inv.mainInventory[inv.currentItem] = null;
+						}
+					}
+				}
+			}
+			else if(control >= 40 && control < 50)
+			{
+				validateScrewNBT();
+				if(hasScrew && core.canModify(pl))
+					TardisSonicScrewdriverItem.togglePermission(screwNBT, TardisSonicScrewdriverItem.getMode(control-40));
+			}
+			else if(control >= 50 && control < 60)
+			{
+				validateScrewNBT();
+				if(hasScrew && screwNBT != null)
+				{
+					TardisScrewdriverMode m = TardisSonicScrewdriverItem.getMode(control - 50);
+					String modeString = m.name();
+					String s = "Sonic screwdriver ";
+					if(m.requiredFunction == null || core.hasFunction(m.requiredFunction))
+					{
+						s += TardisSonicScrewdriverItem.hasPermission(screwNBT, m) ? "has":"does not have";
+						s += " " + modeString + " permission";
+					}
+					else
+					{
+						s += "does not have " + modeString + " functionality";
+					}
+					Helper.sendString(pl,"[ENGINE]",s);
+				}
+			}
 		}
 		sendUpdate();
 	}
@@ -225,6 +303,8 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	@Override
 	public double getControlState(int cID)
 	{
+		if(Helper.isServer())
+			return 0;
 		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 		if(core != null)
 		{
@@ -245,6 +325,27 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 					return ((double)core.unspentLevelPoints()) / ((double)core.maxUnspentLevelPoints());
 				return 0;
 			}
+			if(cID >= 40 && cID < 60)
+			{
+				if(!hasScrew)
+					return 0;
+				int mID = cID >= 50 ? cID-50:cID - 40;
+				if(hasScrew && screwNBT == null)
+					validateScrewNBT();
+				TardisScrewdriverMode m = TardisSonicScrewdriverItem.getMode(mID);
+				if(cID < 50)
+					return TardisSonicScrewdriverItem.hasPermission(screwNBT,m) ? 1 : 0;
+				else
+				{
+					if(m.requiredFunction == null || core.hasFunction(m.requiredFunction))
+					{
+						double v = TardisSonicScrewdriverItem.hasPermission(screwNBT,m) ? 1 : 0.2;
+						//TardisOutput.print("TETE", "V:" + v);
+						return v;
+					}
+					return 0.2;
+				}
+			}
 		}
 		return (float)(((tt+cID) % 40) / 39.0);
 	}
@@ -255,6 +356,12 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 		double[] retVal = { 0, 0, 0 };
 		if(controlID == 6)
 			retVal = new double[]{ 0.2, 0.3, 0.9 };
+		if(controlID >= 50 && controlID < 60)
+		{
+			TardisScrewdriverMode m = TardisSonicScrewdriverItem.getMode(controlID - 50);
+			//TardisOutput.print("TETE","Colors: "+ m.c[0] + "," + m.c[1] + "," + m.c[2]);
+			return m.c;
+		}
 		return retVal;
 	}
 
@@ -269,22 +376,59 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 		}
 		return -1;
 	}
+	
+	private void validateScrewNBT()
+	{
+		if(hasScrew)
+		{
+			if(screwNBT == null)
+			{
+				TardisOutput.print("TETE", "New NBT For Screw");
+				screwNBT = new NBTTagCompound();
+				screwNBT.setInteger("scMo", 0);
+				screwNBT.setInteger("linkedTardis", Helper.getWorldID(this));
+				screwNBT.setInteger("perm",0xFF);
+			}
+			screwNBT.setInteger("linkedTardis",Helper.getWorldID(this));
+		}
+		else
+		{
+			if(screwNBT != null)
+				screwNBT = null;
+		}
+	}
 
 	@Override
 	public boolean hasScrewdriver(int slot)
 	{
-		return false;
+		return hasScrew;
 	}
 
 	@Override
 	public TardisScrewdriverMode getScrewMode(int slot)
 	{
-		return TardisScrewdriverMode.Dismantle;
+		return TardisSonicScrewdriverItem.getMode(screwMode);
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound nbt)
+	{
+		super.readFromNBT(nbt);
+		
+	}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound nbt)
+	{
+		super.writeToNBT(nbt);
+		
 	}
 
 	@Override
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
+		if(screwNBT != null)
+			nbt.setTag("sNBT", screwNBT);
 		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 		if(currentPerson != null)
 			nbt.setString("cP", currentPerson);
@@ -292,6 +436,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			nbt.setInteger("ptU", preparingToUpgrade.ordinal());
 		else
 			nbt.setBoolean("ptUN", false);
+		nbt.setBoolean("hS", hasScrew);
 		nbt.setInteger("lB"			, lastButton);
 		nbt.setBoolean("lU", core.canModify(currentPerson));
 	}
@@ -299,6 +444,9 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	@Override
 	public void readTransmittable(NBTTagCompound nbt)
 	{
+		if(nbt.hasKey("sNBT"))
+			screwNBT = nbt.getCompoundTag("sNBT");
+		hasScrew		= nbt.getBoolean("hS");
 		currentPerson	= nbt.getString("cP");
 		lastButton		= nbt.getInteger("lB");
 		lastButtonTT	= tt;
@@ -310,6 +458,19 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 		}
 		else if(nbt.hasKey("ptUN"))
 			preparingToUpgrade = null;
+	}
+	
+	@Override
+	public void readTransmittableOnly(NBTTagCompound nbt)
+	{
+		screwMode = nbt.getInteger("scMo");
+	}
+	
+	@Override
+	public void writeTransmittableOnly(NBTTagCompound nbt)
+	{
+		if(screwNBT != null)
+			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 	}
 
 }

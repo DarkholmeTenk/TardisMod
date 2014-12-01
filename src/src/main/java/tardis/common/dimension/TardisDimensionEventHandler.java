@@ -3,6 +3,7 @@ package tardis.common.dimension;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import tardis.TardisMod;
 import tardis.api.TardisFunction;
+import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.items.TardisSonicScrewdriverItem;
@@ -64,13 +65,16 @@ public class TardisDimensionEventHandler
 						Item i = is.getItem();
 						if(i instanceof TardisSonicScrewdriverItem)
 						{
-							int linkedDim = TardisSonicScrewdriverItem.getLinkedDim(is);
-							if(linkedDim != 0)
+							if(TardisSonicScrewdriverItem.hasPermission(is, TardisScrewdriverMode.Transmat))
 							{
-								if(savePlayer(player,linkedDim))
+								int linkedDim = TardisSonicScrewdriverItem.getLinkedDim(is);
+								if(linkedDim != 0)
 								{
-									event.setCanceled(cancel && TardisMod.deathTransmatLive);
-									return;
+									if(savePlayer(player,linkedDim))
+									{
+										event.setCanceled(cancel && TardisMod.deathTransmatLive);
+										return;
+									}
 								}
 							}
 						}

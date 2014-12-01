@@ -11,6 +11,7 @@ import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
@@ -54,10 +55,10 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 		if(isTag == null)
 		{
 			is.stackTagCompound = isTag = new NBTTagCompound();
-			isTag.setInteger("screwdriverMode", 0);
+			isTag.setInteger("scMo", 0);
 		}
 		
-		return getMode(isTag.getInteger("screwdriverMode"));
+		return getMode(isTag.getInteger("scMo"));
 	}
 	
 	public static String getSchema(ItemStack is)
@@ -76,6 +77,16 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 		if(is.stackTagCompound != null)
 		{
 			int dim = is.stackTagCompound.getInteger("linkedTardis");
+			return dim;
+		}
+		return 0;
+	}
+	
+	public static int getLinkedDim(NBTTagCompound nbt)
+	{
+		if(nbt != null)
+		{
+			int dim = nbt.getInteger("linkedTardis");
 			return dim;
 		}
 		return 0;
@@ -151,21 +162,41 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 		}
 	}
 	
-	public void notifyMode(ItemStack is, EntityPlayer player)
+	public boolean isValidMode(ItemStack is, TardisScrewdriverMode mode)
 	{
-		getMode(is);
-		ArrayList<Object> list = new ArrayList<Object>();
-		addInfo(is,player,list);
-		for(Object o: list)
+		if(!hasPermission(is,mode))
+			return false;
+		if(mode.requiredFunction == null)
+			return true;
+		TardisOutput.print("TSSI", "HasP");
+		TardisCoreTileEntity core = getLinkedCore(is);
+		if(core == null)
+			return false;
+		if(!core.hasFunction(mode.requiredFunction))
+			return false;
+		return true;
+	}
+	
+	public void notifyMode(ItemStack is, EntityPlayer player, boolean override)
+	{
+		TardisScrewdriverMode mode = getMode(is);
+		if(override || isValidMode(is,mode))
 		{
-			if(o instanceof String)
+			ArrayList<Object> list = new ArrayList<Object>();
+			addInfo(is,player,list);
+			for(Object o: list)
 			{
-				ChatComponentText c = new ChatComponentText("");
-				c.getChatStyle().setColor(EnumChatFormatting.AQUA);
-				c.appendText("[Sonic Screwdriver]" + (String)o);
-				player.addChatMessage(c);
+				if(o instanceof String)
+				{
+					ChatComponentText c = new ChatComponentText("");
+					c.getChatStyle().setColor(EnumChatFormatting.AQUA);
+					c.appendText("[Sonic Screwdriver]" + (String)o);
+					player.addChatMessage(c);
+				}
 			}
 		}
+		else
+			switchMode(is, player.worldObj, player, mode);
 	}
 	
 	private boolean rightClickBlock(ItemStack is, TardisScrewdriverMode mode, EntityPlayer player, World w)
@@ -236,34 +267,81 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 		return false;
 	}
 	
+	public static boolean hasPermission(ItemStack is, TardisScrewdriverMode mode)
+	{
+		if(is == null)
+			return false;
+		if(is.stackTagCompound == null)
+			return false;
+		return hasPermission(is.stackTagCompound, mode);
+	}
+	
+	public static boolean hasPermission(NBTTagCompound nbt, TardisScrewdriverMode mode)
+	{
+		int permissions = 0xff;
+		if(nbt.hasKey("perm"))
+			permissions = nbt.getInteger("perm");
+		else
+			nbt.setInteger("perm", permissions);
+		int toCheck = (int) Math.pow(2, mode.ordinal());
+		//TardisOutput.print("TSSI", String.format("Checking perm %2X : %2X = %b",permissions,toCheck, (permissions & toCheck) == toCheck));
+		return (permissions & toCheck) == toCheck;
+	}
+	
+	public static void setPermission(ItemStack is, TardisScrewdriverMode mode, boolean value)
+	{
+		if(is == null)
+			return;
+		if(is.stackTagCompound == null)
+			return;
+		setPermission(is.stackTagCompound, mode, value);
+	}
+	
+	public static void setPermission(NBTTagCompound nbt, TardisScrewdriverMode mode, boolean value)
+	{
+		TardisOutput.print("TSSI", "Setting permission " + mode.name()  +" to "+ value);
+		int permissions = 0xff;
+		if(nbt.hasKey("perm"))
+			permissions = nbt.getInteger("perm");
+		int toCheck = (int) Math.pow(2, mode.ordinal());
+		if(!value)
+			permissions -= permissions & toCheck;
+		else
+			permissions += toCheck & (~permissions);
+		nbt.setInteger("perm", permissions);
+	}
+	
+	public static void togglePermission(NBTTagCompound nbt, TardisScrewdriverMode mode)
+	{
+		TardisOutput.print("TSSI", "Toggling permission " + mode.name());
+		setPermission(nbt,mode,!hasPermission(nbt,mode));
+	}
+	
+	private void switchMode(ItemStack is, World world, EntityPlayer player, TardisScrewdriverMode mode)
+	{
+		boolean valid = false;
+		boolean first = false;
+		int newValue = mode.ordinal();
+		while(((!valid) && (newValue != 0)) || (!first))
+		{
+			first = true;
+			newValue = (newValue + 1) % TardisScrewdriverMode.values().length;
+			TardisScrewdriverMode m = getMode(newValue);
+			valid = isValidMode(is,m);
+			TardisOutput.print("TSSI", "V:"+valid);
+		}
+		is.stackTagCompound.setInteger("scMo", newValue);
+		notifyMode(is,player,true);
+	}
+	
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
     {
 		TardisScrewdriverMode mode = getMode(is);
 		if(!world.isRemote && player.isSneaking())
 		{
-			boolean valid = false;
-			int newValue = mode.ordinal();
 			if(!rightClickBlock(is,mode,player,world))
-			{
-				while(!valid)
-				{
-					newValue = (newValue + 1) % TardisScrewdriverMode.values().length;
-					TardisScrewdriverMode m = getMode(newValue);
-					if(m.requiredFunction != null)
-					{
-						TardisCoreTileEntity te = getLinkedCore(is);
-						if(te != null && te.hasFunction(m.requiredFunction))
-							valid = true;
-					}
-					else
-					{
-						valid = true;
-					}
-				}
-				is.stackTagCompound.setInteger("screwdriverMode", newValue);
-				notifyMode(is,player);
-			}
+				switchMode(is,world,player,mode);
 		}
 		else if(Helper.isServer())
 		{
