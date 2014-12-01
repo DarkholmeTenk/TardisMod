@@ -531,7 +531,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(forcedFlight)
 			return 0;
-		return rand.nextInt(2 * instability) - instability;
+		return rand.nextInt(Math.max(0,2 * instability)) - instability;
 	}
 	
 	private void placeBox()
@@ -1301,16 +1301,20 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			}
 			String s = (i == facing ? "Current facing " : "Facing ");
 			boolean[] data = getObstructData(w,exteriorX+dx,exteriorY,exteriorZ+dz);
-			if(data[0])
+			if(!data[0])
 				s += "obstructed";
-			if(data[1])
+			else if(data[1])
 				s += "unsafe exit";
-			if(data[2])
+			else if(data[2])
+			{
 				s += "unsafe drop";
-			if(data[3])
-				s += " into water";
-			if(data[4])
-				s += " into lava";
+				if(data[3])
+					s += " into water";
+				if(data[4])
+					s += " into lava";
+			}
+			else
+				s += " safe";
 			string.add(s);
 		}
 		
