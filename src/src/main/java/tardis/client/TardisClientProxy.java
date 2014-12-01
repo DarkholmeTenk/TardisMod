@@ -84,7 +84,7 @@ public class TardisClientProxy extends TardisProxy
 		if(object == null)
 		{
 			TardisOutput.print("TTE", "Downloading " + tte.owner + " skin");
-			object = new ThreadDownloadTardisData(null, tte.baseURL+tte.owner+".png", defaultSkin, new ImageBufferDownload());
+			object = new ThreadDownloadTardisData(null, TardisTileEntity.baseURL+tte.owner+".png", defaultSkin, new ImageBufferDownload());
 		}
 		texMan.loadTexture(skin, object);
 		return object;

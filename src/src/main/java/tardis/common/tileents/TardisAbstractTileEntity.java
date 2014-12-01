@@ -8,6 +8,7 @@ import cpw.mods.fml.relauncher.Side;
 import tardis.TardisMod;
 import tardis.api.IChunkLoader;
 import tardis.client.TardisClientProxy;
+import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,7 +51,7 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 		if(!init)
 		{
 			init = true;
-			if(this instanceof IChunkLoader)
+			if(Helper.isServer() && this instanceof IChunkLoader)
 				TardisMod.chunkManager.loadMe((IChunkLoader)this);
 		}
 	}
