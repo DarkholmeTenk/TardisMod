@@ -30,7 +30,7 @@ public class SimpleCoordStore
 		x = xin;
 		y = yin;
 		z = zin;
-		worldObj = Helper.getWorld(world);
+		worldObj = Helper.getWorldServer(world);
 	}
 	
 	public SimpleCoordStore(World w, int xin, int yin, int zin)

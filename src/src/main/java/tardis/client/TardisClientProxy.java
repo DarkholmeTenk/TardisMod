@@ -1,7 +1,12 @@
 package tardis.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ImageBufferDownload;
+import net.minecraft.client.renderer.texture.ITextureObject;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -14,15 +19,20 @@ import tardis.client.renderer.TardisRenderer;
 import tardis.client.renderer.TardisSonicScrewdriverRenderer;
 import tardis.common.TardisProxy;
 import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisEngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TardisClientProxy extends TardisProxy
 {
+	private ResourceLocation skin = null;
+	private ResourceLocation defaultSkin = new ResourceLocation("tardismod","textures/models/Tardis.png");
 	public static World cWorld = null;
 	public TardisClientProxy()
 	{
@@ -61,5 +71,30 @@ public class TardisClientProxy extends TardisProxy
 			if(id == cWorld.provider.dimensionId)
 				return cWorld;
 		return super.getWorld(id);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	private ITextureObject loadSkin(TextureManager texMan, TardisTileEntity tte)
+	{
+		if(tte.owner == null)
+			return null;
+		texMan = Minecraft.getMinecraft().getTextureManager();
+		skin = new ResourceLocation("tardismod","textures/tardis/" + StringUtils.stripControlCodes(tte.owner) +".png");
+		ITextureObject object = texMan.getTexture(skin);
+		if(object == null)
+		{
+			TardisOutput.print("TTE", "Downloading " + tte.owner + " skin");
+			object = new ThreadDownloadTardisData(null, tte.baseURL+tte.owner+".png", defaultSkin, new ImageBufferDownload());
+		}
+		texMan.loadTexture(skin, object);
+		return object;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public ResourceLocation getSkin(TextureManager texMan,TardisTileEntity tte)
+	{
+		if(skin == null)
+			loadSkin(texMan,tte);
+		return skin == null ? defaultSkin : skin;
 	}
 }
