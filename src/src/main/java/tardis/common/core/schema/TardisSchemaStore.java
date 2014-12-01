@@ -69,7 +69,6 @@ public class TardisSchemaStore
 			nbtStore.setInteger("y", y);
 			nbtStore.setInteger("z", z);
 			TileEntity newTileEntity = TileEntity.createAndLoadEntity(nbtStore);
-			//newTileEntity.invalidate();
 			if(newTileEntity != null)
 			{
 				newTileEntity.setWorldObj(w);
@@ -115,7 +114,6 @@ public class TardisSchemaStore
 			Block nbid = getBlockFromName(name);
 			if(nbid != null)
 			{
-				TardisOutput.print("TSS", "loading " + nbid.getUnlocalizedName());
 				newStore.block = nbid;
 			}
 			else
@@ -150,6 +148,9 @@ public class TardisSchemaStore
 
 	private static String getNameFromBlock(Block id)
 	{
+		String blockName = GameData.getBlockRegistry().getNameForObject(id);
+		if(blockName != null)
+			return blockName;
 		if(id != null)
 			return id.getUnlocalizedName();
 		return null;
@@ -157,26 +158,22 @@ public class TardisSchemaStore
 	
 	private static Block getBlockFromName(String name)
 	{
-		//TardisOutput.print("TSS", "Seaching for " + name);
 		Block b = null;
-		b = GameData.getBlockRegistry().get(name);
+		b = GameData.getBlockRegistry().getObject(name);
 		if(b != null && !b.equals(Blocks.air))
 			return b;
 		else
 		{
-			//TardisOutput.print("TSS", "Null, searching cache");
 			if(blockCache.containsKey(name))
 				return blockCache.get(name);
 			else
 			{
-				Iterator<Block> blockIter = GameData.blockRegistry.iterator();
-				boolean found = false;
+				Iterator<Block> blockIter = GameData.getBlockRegistry().iterator();
 				while(blockIter.hasNext())
 				{
 					b = blockIter.next();
 					if(b.getUnlocalizedName().equals(name))
 					{
-						//TardisOutput.print("TSS", "Matching " + name + " to " + b.getUnlocalizedName());
 						blockCache.put(name, b);
 						return b;
 					}

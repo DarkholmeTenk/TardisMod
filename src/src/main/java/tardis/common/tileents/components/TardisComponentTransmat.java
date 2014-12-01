@@ -2,7 +2,6 @@ package tardis.common.tileents.components;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 import tardis.api.IScrewable;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
@@ -12,11 +11,8 @@ import tardis.common.tileents.TardisCoreTileEntity;
 
 public class TardisComponentTransmat extends TardisAbstractComponent implements IScrewable
 {
-	private SimpleCoordStore myCoord;
-	
 	protected TardisComponentTransmat()
 	{
-		
 	}
 	
 	public TardisComponentTransmat(TardisComponentTileEntity parent)
@@ -65,7 +61,7 @@ public class TardisComponentTransmat extends TardisAbstractComponent implements 
 	protected void parentAdded(TardisComponentTileEntity parent)
 	{
 		super.parentAdded(parent);
-		myCoord = new SimpleCoordStore(world,xCoord,yCoord,zCoord);
+		new SimpleCoordStore(world,xCoord,yCoord,zCoord);
 	}
 
 	@Override

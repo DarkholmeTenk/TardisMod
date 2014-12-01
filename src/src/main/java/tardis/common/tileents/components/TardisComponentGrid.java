@@ -7,7 +7,6 @@ import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
-import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
@@ -18,7 +17,6 @@ public class TardisComponentGrid extends TardisAbstractComponent implements IGri
 {
 	private boolean inited = false;
 	private SimpleCoordStore myCoords = null;
-	private boolean powered = false;
 	
 	protected TardisComponentGrid()	{	}
 	public TardisComponentGrid(TardisComponentTileEntity parent)

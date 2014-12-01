@@ -30,8 +30,7 @@ public class ThreadDownloadTardisData extends SimpleTexture
     private BufferedImage bufferedImage;
     private Thread imageThread;
     private boolean textureUploaded;
-    private static final String __OBFID = "CL_00001049";
-
+    
     public ThreadDownloadTardisData(File p_i1049_1_, String p_i1049_2_, ResourceLocation p_i1049_3_, IImageBuffer p_i1049_4_)
     {
         super(p_i1049_3_);
@@ -107,7 +106,6 @@ public class ThreadDownloadTardisData extends SimpleTexture
     {
         this.imageThread = new Thread("Texture Downloader #" + threadDownloadCounter.incrementAndGet())
         {
-            private static final String __OBFID = "CL_00001050";
             public void run()
             {
                 HttpURLConnection httpurlconnection = null;

@@ -2,7 +2,6 @@ package tardis.common.blocks;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import tardis.TardisMod;
 import tardis.common.tileents.TardisSchemaCoreTileEntity;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;

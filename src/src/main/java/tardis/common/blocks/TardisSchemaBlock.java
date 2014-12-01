@@ -1,6 +1,5 @@
 package tardis.common.blocks;
 
-import tardis.TardisMod;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;

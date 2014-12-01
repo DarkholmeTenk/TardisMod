@@ -4,7 +4,6 @@ import java.util.List;
 
 import tardis.TardisMod;
 import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisEngineTileEntity;
@@ -16,11 +15,6 @@ import net.minecraft.world.World;
 
 public class TardisSchemaComponentBlock extends TardisAbstractBlock
 {
-
-	public TardisSchemaComponentBlock()
-	{
-		super();
-	}
 
 	@Override
 	public void initData()

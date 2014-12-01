@@ -12,11 +12,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TardisTopBlock extends TardisAbstractBlock
 {
 
-	public TardisTopBlock()
-	{
-		super();
-	}
-
 	@Override
 	public void initData()
 	{

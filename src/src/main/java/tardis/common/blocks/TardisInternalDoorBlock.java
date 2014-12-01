@@ -28,11 +28,6 @@ import net.minecraft.world.World;
 
 public class TardisInternalDoorBlock extends TardisAbstractBlock
 {
-	public TardisInternalDoorBlock()
-	{
-		super();
-	}
-
 	@Override
 	public void initData()
 	{

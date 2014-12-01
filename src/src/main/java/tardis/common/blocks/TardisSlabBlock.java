@@ -16,11 +16,6 @@ public class TardisSlabBlock extends TardisAbstractBlock
 	private final static String[] names		= {"Console","Corridor","Walkway","Glass"};
 	private final static String[] suffixes	= {"topbottom", "side"};
 
-	public TardisSlabBlock()
-	{
-		super();
-	}
-
 	@Override
 	public void initData()
 	{
