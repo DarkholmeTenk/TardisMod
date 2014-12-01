@@ -571,7 +571,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		int[] xCont = getControlsFromDest(x);
 		int[] yCont = getYControls(y);
 		int[] zCont = getControlsFromDest(z);
-		if((allowNearest || (getFromControls(xCont) == x && getFromControls(zCont) == z)) && (dCont == dim))
+		if((allowNearest || (getFromControls(xCont) == x && getFromControls(zCont) == z)) && (TardisMod.otherDims.getDimFromControl(dCont) == dim))
 		{
 			relativeCoords = false;
 			dimControl = dCont;
