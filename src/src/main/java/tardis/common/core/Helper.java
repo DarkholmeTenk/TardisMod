@@ -35,6 +35,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -597,5 +598,10 @@ public class Helper
 			return w.provider.getDimensionName();
 		}
 		return "Unknown";
+	}
+
+	public static void sendString(EntityPlayer pl, String source,String s)
+	{
+		pl.addChatMessage(new ChatComponentText("["+source+"] " + s));
 	}
 }

@@ -31,7 +31,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	private int   facing    = 0;
 	private int   dimControl = 0;
-	private float dimControlState = 0;
 	private int[] xControls = new int[6];
 	private int[] zControls = new int[6];
 	private int[] yControls = new int[4];
@@ -57,13 +56,15 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	private static String[] schemaList = null;
 	
 	private int schemaNum = 0;
-	private int screwMode = 0;
+	private NBTTagCompound screwNBT = null;
 	
 	private int unstableControl = -1;
 	private boolean unstablePressed = false;
 	
 	public String schemaChooserString = "";
-	
+	private float dimControlState = 0;
+	private int screwMode = 0;
+
 	{
 		for(int i = 0;i<6;i++)
 		{
@@ -434,11 +435,17 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			{
 				setScrewdriver(slot,false);
 				ItemStack toGive = new ItemStack(TardisMod.screwItem,1,0);
-				toGive.stackTagCompound = new NBTTagCompound();
+				if(screwNBT != null)
+					toGive.stackTagCompound = (NBTTagCompound) screwNBT.copy();
+				else
+				{
+					toGive.stackTagCompound = new NBTTagCompound();
+					toGive.stackTagCompound.setInteger("scMo", 0);
+				}
 				toGive.stackTagCompound.setString("schemaName", schemaChooserString);
-				toGive.stackTagCompound.setInteger("screwdriverMode", screwMode);
 				toGive.stackTagCompound.setInteger("linkedTardis", Helper.getWorldID(worldObj));
-				TardisMod.screwItem.notifyMode(toGive,pl);
+				screwNBT = null;
+				TardisMod.screwItem.notifyMode(toGive,pl,false);
 				Helper.giveItemStack((EntityPlayerMP) pl, toGive);
 			}
 			else
@@ -449,9 +456,11 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 					Item item = held.getItem();
 					if(item instanceof TardisSonicScrewdriverItem)
 					{
+						if(hasScrewdriver(1 - slot))
+							return;
 						InventoryPlayer inv = pl.inventory;
+						screwNBT = held.stackTagCompound;
 						inv.mainInventory[inv.currentItem] = null;
-						screwMode = TardisSonicScrewdriverItem.getMode(held).ordinal();
 						setScrewdriver(slot,true);
 					}
 				}
@@ -962,6 +971,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		int dC = nbt.getInteger("dC");
 		TardisOutput.print("TConTE", "Attempting to set dim controls to dim: " + dC);
 		dimControl = TardisMod.otherDims.getControlFromDim(dC);
+		if(nbt.hasKey("scNBT"))
+			screwNBT = nbt.getCompoundTag("scNBT");
 		for(int i = 0;i<20;i++)
 		{
 			if(nbt.hasKey("css"+i))
@@ -982,6 +993,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		int dimID = getDimFromControls();
 		TardisOutput.print("TConTE", "Saving dim as :" + dimID);
 		nbt.setInteger("dC", dimID);
+		if(screwNBT != null)
+			nbt.setTag("scNBT", screwNBT);
 		for(int i = 0;i<20;i++)
 		{
 			if(states.containsKey(i))
@@ -1012,7 +1025,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		uncoordinated	= nbt.getBoolean("uncoordinated");
 		relativeCoords  = nbt.getBoolean("relativeCoords");
 		dayNightControl = nbt.getBoolean("dayNightControl");
-		screwMode = nbt.getInteger("screwMode");
 		roomDeletePrepare = nbt.getBoolean("rdp");
 		tickTimer = nbt.getInteger("tickTimer");
 		hasScrewdriver = nbt.getInteger("hasScrewdriver");
@@ -1025,9 +1037,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		saveCoords = nbt.getBoolean("saveCoords");
 		landGroundControl = nbt.getBoolean("landGroundControl");
 		unstableControl = nbt.getInteger("unstableControl");
-		schemaChooserString = nbt.getString("schemaChooserString");
-		lastButton = nbt.getInteger("lastButton");
-		lastButtonTT = nbt.getInteger("lastButtonTT");
 		clampControls();
 	}
 	
@@ -1051,20 +1060,26 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		nbt.setBoolean("saveCoords",saveCoords);
 		nbt.setBoolean("landGroundControl", landGroundControl);
 		nbt.setInteger("unstableControl",unstableControl);
-		nbt.setString("schemaChooserString", schemaChooserString);
-		nbt.setInteger("lastButton",lastButton);
-		nbt.setInteger("lastButtonTT",lastButtonTT);
 	}
 	
 	@Override
 	public void writeTransmittableOnly(NBTTagCompound nbt)
 	{
+		nbt.setString("schemaChooserString", schemaChooserString);
 		nbt.setFloat("dCS",((float) dimControl) / (TardisMod.otherDims.numDims() - 1f));
+		if(screwNBT != null)
+			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
+		nbt.setInteger("lastButton",lastButton);
+		nbt.setInteger("lastButtonTT",lastButtonTT);
 	}
 	
 	@Override
 	public void readTransmittableOnly(NBTTagCompound nbt)
 	{
+		schemaChooserString = nbt.getString("schemaChooserString");
 		dimControlState = nbt.getFloat("dCS");
+		screwMode = nbt.getInteger("scMo");
+		lastButton = nbt.getInteger("lastButton");
+		lastButtonTT = nbt.getInteger("lastButtonTT");
 	}
 }
