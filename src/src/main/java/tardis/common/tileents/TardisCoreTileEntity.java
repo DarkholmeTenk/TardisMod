@@ -1287,6 +1287,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		}
 		List<String> string = new ArrayList<String>();
 		TardisTileEntity ext = getExterior();
+		if(ext == null)
+			return;
 		World w = ext.getWorldObj();
 		int dx = 0;
 		int dz = 0;
