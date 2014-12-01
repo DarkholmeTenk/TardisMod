@@ -1193,7 +1193,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				if(desStrs!= null && desStrs.length == 4)
 					send = desStrs;
 				
-				send[0] = "The TARDIS will materialize in dimension " + getDimensionName(dD) + " near:";
+				send[0] = "The TARDIS will materialize in dimension " + getDimensionName(dD) + "["+dD+"] near:";
 				if(dX != desX || send[1] == null)
 					send[1] = "x = " + (dX + (rand.nextInt(2 * instability) - instability));
 				if(dY != desY || send[2] == null)
@@ -1224,7 +1224,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	 */
 	private boolean[] getObstructData(World w, int x, int y, int z)
 	{
-		boolean[] data = new boolean[4];
+		boolean[] data = new boolean[5];
 		data[0] = data[1] = data[2] = data[3] = data[4] = false;
 		TardisOutput.print("TCTE", "Checking for air @ " + x + "," + y + "," + z,TardisOutput.Priority.DEBUG);
 		if(softBlock(w,x, y, z) && softBlock(w, x, y+1, z))
@@ -1282,7 +1282,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		World w = ext.getWorldObj();
 		int dx = 0;
 		int dz = 0;
-		string.add("Current position: Dimension " + getDimensionName(exteriorWorld) + " : " + exteriorX+","+exteriorY+","+exteriorZ);
+		string.add("Current position: Dimension " + getDimensionName(exteriorWorld) + "["+exteriorWorld+"] : " + exteriorX+","+exteriorY+","+exteriorZ);
 		int facing = w.getBlockMetadata(exteriorX, exteriorY, exteriorZ);
 		for(int i=0;i<4;i++)
 		{
