@@ -487,7 +487,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			int dZ = con.getZFromControls(exteriorZ);
 			
 			int distance = Math.abs(dX - exteriorX) + Math.abs(dY - exteriorY) + Math.abs(dZ - exteriorZ) + (dDim != exteriorWorld ? energyCostDimChange : 0);
-			int enCost = (int) Helper.clamp(distance, 1, energyCostFlightMax);
+			double speedMod = Math.max(1,getSpeed(true)*3/getMaxSpeed());
+			int enCost = (int) Helper.clamp(distance*(int)Math.round(speedMod), 1, energyCostFlightMax);
 			if(takeEnergy(enCost,false))
 			{
 				instability = 0;
