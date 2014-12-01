@@ -113,6 +113,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private static int maxEnergyInc = 1000;
 	private static int energyPerSecond = 1;
 	private static int energyPerSecondInc = 1;
+	private static int energyCostDimChange = 2000;
+	private static int energyCostFlightMax = 3000;
 
 	static
 	{
@@ -135,6 +137,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		maxShieldsInc		= config.getInt("max shields inc per level", 500);
 		maxEnergyInc		= config.getInt("max energy inc per level", 1000);
 		energyPerSecondInc	= config.getInt("energy per second inc per level",1);
+		energyCostDimChange	= config.getInt("energy cost to change dims",2000);
+		energyCostFlightMax	= config.getInt("max flight energy cost",3000);
 		shields		= maxShields;
 		hull		= maxHull;
 		
@@ -161,17 +165,18 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			int takenTimeTwo = flightTimer - timeTillTakenOff;
 			if(!worldObj.isRemote && !forcedFlight && !con.isStable() && takenTimeTwo % buttonTime == 0 && (getButtonTime() * numButtons) >= takenTime)
 			{
+				double speedMod = Math.max(1,getSpeed(true)*3/getMaxSpeed());
 				if(takenTimeTwo > 0)
 				{
 					TardisOutput.print("TCTE", "Working out what to do!");
 					if(con.unstableControlPressed())
 					{
-						instability -= 0.5;
-						addXP(inCoordinatedFlight() ? 3 : 2);
+						instability -= 0.5 * speedMod;
+						addXP(speedMod * (inCoordinatedFlight() ? 3 : 2));
 					}
 					else
 					{
-						instability+=Math.max(1,getSpeed(true)*3/getMaxSpeed());
+						instability+= speedMod;
 						if(shouldExplode())
 							explode = true;
 						sendUpdate();
@@ -481,8 +486,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			int dY = con.getYFromControls(exteriorY);
 			int dZ = con.getZFromControls(exteriorZ);
 			
-			int distance = Math.abs(dX - exteriorX) + Math.abs(dY - exteriorY) + Math.abs(dZ - exteriorZ) + (dDim != exteriorWorld ? 300 : 0);
-			int enCost = (int) Helper.clamp(distance, 1, 500);
+			int distance = Math.abs(dX - exteriorX) + Math.abs(dY - exteriorY) + Math.abs(dZ - exteriorZ) + (dDim != exteriorWorld ? energyCostDimChange : 0);
+			int enCost = (int) Helper.clamp(distance, 1, energyCostFlightMax);
 			if(takeEnergy(enCost,false))
 			{
 				instability = 0;
@@ -589,8 +594,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(inFlight)
 		{
+			TardisConsoleTileEntity con = getConsole();
 			forcedFlight = false;
-			addXP(30);
+			addXP(con != null && con.isStable()?15:(30-instability));
 			inFlight = false;
 			sendUpdate();
 			worldObj.playSound(xCoord, yCoord, zCoord, "engineDrum", 0.75F, 1, true);
@@ -603,7 +609,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					if(e instanceof EntityLivingBase)
 						enterTardis((EntityLivingBase) e);
 			}
-			TardisConsoleTileEntity con = getConsole();
 			if(con != null)
 				con.land();
 		}
