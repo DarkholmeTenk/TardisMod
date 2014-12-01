@@ -180,6 +180,8 @@ public class TardisMod
 		aeAPI = AEApi.instance();
 		keyItem.initRecipes();
 		componentItem.initRecipes();
+		FMLCommonHandler.instance().bus().register(dimEventHandler);
+		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		inited = true;
 	}
 	
@@ -260,11 +262,11 @@ public class TardisMod
 		
 		if(chunkManager != null)
 		{
-			MinecraftForge.EVENT_BUS.unregister(dimEventHandler);
+			MinecraftForge.EVENT_BUS.unregister(chunkManager);
 			FMLCommonHandler.instance().bus().unregister(chunkManager);
 		}
 		chunkManager = new TardisChunkLoadingManager();
-		MinecraftForge.EVENT_BUS.register(dimEventHandler);
+		MinecraftForge.EVENT_BUS.register(chunkManager);
 		FMLCommonHandler.instance().bus().register(chunkManager);
 		ForgeChunkManager.setForcedChunkLoadingCallback(this, chunkManager);
 	}

@@ -1,8 +1,10 @@
 package tardis.common.dimension;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import tardis.TardisMod;
 import tardis.api.IChunkLoader;
@@ -38,18 +40,11 @@ public class TardisChunkLoadingManager implements LoadingCallback
 				SimpleCoordStore pos = SimpleCoordStore.readFromNBT(t.getModData().getCompoundTag("coords"));
 				if(monitorableChunkLoaders.containsKey(pos))
 				{
-					Ticket oT = monitorableChunkLoaders.get(pos);
-					if(oT == null)
-					{
-						monitorableChunkLoaders.put(pos, t);
-						continue;
-					}
+					Ticket x = monitorableChunkLoaders.get(pos);
+					if(x != null)
+						ForgeChunkManager.releaseTicket(x);
 				}
-				else
-				{
-					monitorableChunkLoaders.put(pos, t);
-					continue;
-				}
+				monitorableChunkLoaders.put(pos, null);
 			}
 			ForgeChunkManager.releaseTicket(t);
 		}
@@ -83,8 +78,6 @@ public class TardisChunkLoadingManager implements LoadingCallback
 	private Ticket getTicket(IChunkLoader te,World world)
 	{
 		Ticket t = ForgeChunkManager.requestTicket(TardisMod.i, world, ForgeChunkManager.Type.NORMAL);
-		if(t != null)
-			loadLoadables(t,te);
 		return t;
 	}
 	
@@ -92,7 +85,9 @@ public class TardisChunkLoadingManager implements LoadingCallback
 	{
 		if(!ticked)
 			return;
-		Iterator<SimpleCoordStore> keyIter = monitorableChunkLoaders.keySet().iterator();
+		HashSet<SimpleCoordStore> keys = new HashSet<SimpleCoordStore>();
+		keys.addAll(monitorableChunkLoaders.keySet());
+		Iterator<SimpleCoordStore> keyIter = keys.iterator();
 		while(keyIter.hasNext())
 		{
 			SimpleCoordStore pos = keyIter.next();
@@ -102,7 +97,10 @@ public class TardisChunkLoadingManager implements LoadingCallback
 			{
 				Ticket t = monitorableChunkLoaders.get(pos);
 				if(t != null && !((IChunkLoader)te).shouldChunkload())
+				{
 					ForgeChunkManager.releaseTicket(t);
+					monitorableChunkLoaders.put(pos, null);
+				}
 				else if(t == null && ((IChunkLoader)te).shouldChunkload())
 					monitorableChunkLoaders.put(pos, getTicket(((IChunkLoader)te),w));
 				else if(t != null && ((IChunkLoader)te).shouldChunkload())
