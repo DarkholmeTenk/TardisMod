@@ -583,4 +583,19 @@ public class Helper
 			e.printStackTrace();
 		}
 	}
+
+	public static String getDimensionName(int worldID)
+	{
+		World w = getWorld(worldID);
+		return getDimensionName(w);
+	}
+	
+	public static String getDimensionName(World w)
+	{
+		if(w != null)
+		{
+			return w.provider.getDimensionName();
+		}
+		return "Unknown";
+	}
 }

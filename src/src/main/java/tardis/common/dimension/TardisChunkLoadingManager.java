@@ -26,6 +26,7 @@ public class TardisChunkLoadingManager implements LoadingCallback
 	HashMap<SimpleCoordStore,Ticket> monitorableChunkLoaders = new HashMap<SimpleCoordStore,Ticket>();
 	private int tickCount=0;
 	private boolean forceCheck = false;
+	private boolean ticked = false;
 
 	@Override
 	public void ticketsLoaded(List<Ticket> tickets, World world)
@@ -89,6 +90,8 @@ public class TardisChunkLoadingManager implements LoadingCallback
 	
 	private void validateChunkLoaders()
 	{
+		if(!ticked)
+			return;
 		Iterator<SimpleCoordStore> keyIter = monitorableChunkLoaders.keySet().iterator();
 		while(keyIter.hasNext())
 		{
@@ -130,6 +133,7 @@ public class TardisChunkLoadingManager implements LoadingCallback
 			forceCheck = false;
 			validateChunkLoaders();
 		}
+		ticked = true;
 	}
 
 }

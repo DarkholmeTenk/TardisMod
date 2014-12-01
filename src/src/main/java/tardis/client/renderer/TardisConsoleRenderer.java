@@ -148,8 +148,6 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		{
 			TardisConsoleTileEntity tce = (TardisConsoleTileEntity)te;
 			TardisCoreTileEntity core = tce.getCore();
-			if(core == null)
-				TardisOutput.print("TConR", "No core?");
 			renderFrontPanel(tess,tce,core);
 			renderRightPanel(tess,tce,core);
 			renderBackPanel( tess,tce,core);
