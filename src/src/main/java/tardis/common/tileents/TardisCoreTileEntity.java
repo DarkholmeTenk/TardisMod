@@ -531,6 +531,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(forcedFlight)
 			return 0;
+		if(instability == 0)
+			return 0;
 		return rand.nextInt(Math.max(0,2 * instability)) - instability;
 	}
 	
