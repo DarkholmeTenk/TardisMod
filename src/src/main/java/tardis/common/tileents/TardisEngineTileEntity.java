@@ -258,8 +258,14 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			else if(control >= 40 && control < 50)
 			{
 				validateScrewNBT();
-				if(hasScrew && core.canModify(pl))
-					TardisSonicScrewdriverItem.togglePermission(screwNBT, TardisSonicScrewdriverItem.getMode(control-40));
+				if(hasScrew)
+				{
+					if(core.canModify(pl))
+						TardisSonicScrewdriverItem.togglePermission(screwNBT, TardisSonicScrewdriverItem.getMode(control-40));
+					else
+						Helper.sendString(pl, TardisCoreTileEntity.cannotModifyMessage);
+				}
+				
 			}
 			else if(control >= 50 && control < 60)
 			{
@@ -384,10 +390,14 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			if(screwNBT == null)
 			{
 				TardisOutput.print("TETE", "New NBT For Screw");
-				screwNBT = new NBTTagCompound();
-				screwNBT.setInteger("scMo", 0);
+				screwNBT = TardisSonicScrewdriverItem.getNewNBT();
 				screwNBT.setInteger("linkedTardis", Helper.getWorldID(this));
-				screwNBT.setInteger("perm",0xFF);
+			}
+			else
+			{
+				int dim = TardisSonicScrewdriverItem.getLinkedDim(screwNBT);
+				if(dim != 0 && dim != Helper.getWorldID(this))
+					screwNBT.setInteger("perm", TardisSonicScrewdriverItem.minPerms);
 			}
 			screwNBT.setInteger("linkedTardis",Helper.getWorldID(this));
 		}
