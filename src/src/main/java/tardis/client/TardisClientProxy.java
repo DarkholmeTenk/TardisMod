@@ -1,5 +1,7 @@
 package tardis.client;
 
+import java.util.HashMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ImageBufferDownload;
 import net.minecraft.client.renderer.texture.ITextureObject;
@@ -31,8 +33,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TardisClientProxy extends TardisProxy
 {
-	private ResourceLocation skin = null;
 	private ResourceLocation defaultSkin = new ResourceLocation("tardismod","textures/models/Tardis.png");
+	public HashMap<String,ResourceLocation> skins = new HashMap<String,ResourceLocation>();
 	public static World cWorld = null;
 	public TardisClientProxy()
 	{
@@ -79,7 +81,7 @@ public class TardisClientProxy extends TardisProxy
 		if(tte.owner == null)
 			return null;
 		texMan = Minecraft.getMinecraft().getTextureManager();
-		skin = new ResourceLocation("tardismod","textures/tardis/" + StringUtils.stripControlCodes(tte.owner) +".png");
+		ResourceLocation skin = new ResourceLocation("tardismod","textures/tardis/" + StringUtils.stripControlCodes(tte.owner) +".png");
 		ITextureObject object = texMan.getTexture(skin);
 		if(object == null)
 		{
@@ -87,14 +89,15 @@ public class TardisClientProxy extends TardisProxy
 			object = new ThreadDownloadTardisData(null, TardisTileEntity.baseURL+tte.owner+".png", defaultSkin, new ImageBufferDownload());
 		}
 		texMan.loadTexture(skin, object);
+		skins.put(tte.owner, skin);
 		return object;
 	}
 	
 	@SideOnly(Side.CLIENT)
 	public ResourceLocation getSkin(TextureManager texMan,TardisTileEntity tte)
 	{
-		if(skin == null)
+		if(!skins.containsKey(tte.owner))
 			loadSkin(texMan,tte);
-		return skin == null ? defaultSkin : skin;
+		return skins.containsKey(tte.owner) ? skins.get(tte.owner) : defaultSkin;
 	}
 }
