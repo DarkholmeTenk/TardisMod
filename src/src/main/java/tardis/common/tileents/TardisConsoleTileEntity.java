@@ -399,7 +399,14 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				else if(controlID == 53)
 					relativeCoords = !relativeCoords;
 				else if(controlID == 55)
-					uncoordinated  = !uncoordinated;
+				{
+					if(((!uncoordinated) || (!core.inFlight())) || core.takeOffEnergy(pl))
+					{
+						uncoordinated  = !uncoordinated;
+					}
+					else
+						Helper.sendString(pl,"TARDIS","Not enough energy to take off");
+				}
 				else if(controlID == 60)
 				{
 					int newDimControl = dimControl + (pl.isSneaking() ? -1 : 1);
