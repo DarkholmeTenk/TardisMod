@@ -10,7 +10,7 @@ public class TardisOutput
 	
 	private static boolean shouldDisplay(String descriptor)
 	{
-		if (!(descriptor.equals("CF") || descriptor.equals("TCH")))
+		if (!(descriptor.equals("CF") || descriptor.equals("TCH") || descriptor.equals("TM")))
 		{
 			if(configFile == null)
 			{

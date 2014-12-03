@@ -58,6 +58,8 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
@@ -66,7 +68,7 @@ import cpw.mods.fml.common.network.FMLEventChannel;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid="TardisMod",name="Tardis Mod",version="0.025",dependencies="required-after:FML; after:appliedenergistics2")
+@Mod(modid="TardisMod",name="Tardis Mod",version="0.025",dependencies="required-after:FML; after:appliedenergistics2; after:Waila")
 public class TardisMod
 {
 	@Instance
@@ -175,8 +177,15 @@ public class TardisMod
 	}
 	
 	@EventHandler
+	public void doingInit(FMLInitializationEvent event)
+	{
+		proxy.init();
+	}
+	
+	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
+		System.out.println("POSTINIT");
 		aeAPI = AEApi.instance();
 		keyItem.initRecipes();
 		componentItem.initRecipes();
