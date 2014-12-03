@@ -3,6 +3,9 @@ package tardis.common.tileents;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.TardisFunction;
@@ -21,6 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.Vec3;
 
 public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements IControlMatrix
 {
@@ -170,7 +174,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			
 			float delta = activatedDelta(hitAway,j,distanceAway,(float) (pl.posY + pl.eyeHeight - yCoord));
 			float hitX = activatedX(hitAway,distanceAway,delta);
-	//		float hitY = activatedY(j,pl.eyeHeight,delta);
 			float hitZ = activatedZ(hitSide,distanceSide, delta);
 			if((hitZ < 1 && (1-hitX) >= hitZ) || (hitZ > 2 && (1-hitX) > (3-hitZ)))
 				return null;
@@ -200,6 +203,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	public int getControlFromHit(HitPosition hit)
 	{
+		TardisCoreTileEntity core = getCore();
+		if(core == null)
+			return -1;
 		if(hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
 			return 6;
 		if(hit.within(2, 1.214, 0.581, 1.338, 0.669))
@@ -268,11 +274,11 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			return 52;
 		if(hit.within(0, 1.760, 0.172, 1.914, 0.265))
 			return 53;
-		if(hit.within(1, 1.013, 0.493, 1.194, 0.624))
+		if(hit.within(1, 1.013, 0.493, 1.194, 0.624) && core.hasFunction(TardisFunction.SENSORS))
 			return 54;
 		if(hit.within(3, 0.701, 0.703, 0.823, 0.792))
 			return 55;
-		if(hit.within(3, 0.701, 0.807, 0.823, 0.903))
+		if(hit.within(3, 0.701, 0.807, 0.823, 0.903) && core.hasFunction(TardisFunction.STABILISE))
 			return 56;
 		if(hit.within(2, 0.971, 0.598, 1.138, 0.941))
 			return 60;
@@ -300,11 +306,40 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		return -1;
 	}
 	
+	public int getControlFromHit(int blockX, int blockY, int blockZ, Vec3 hit, EntityPlayer pl)
+	{
+		/*int blockX = (int) Math.floor(hit.xCoord) - xCoord;
+		int blockZ = (int) Math.floor(hit.zCoord) - zCoord;
+		int blockY = (int) Math.floor(hit.yCoord);
+		if(blockY == hit.yCoord)
+			blockY--;
+		if((hit.xCoord - xCoord) == 2)
+			blockX = 1;
+		if((hit.zCoord - zCoord) == 2)
+			blockZ = 1;*/
+		float i = (float) (hit.xCoord - blockX - xCoord);
+		float j = (float) (hit.yCoord - blockY);
+		float k = (float) (hit.zCoord - blockZ - zCoord);
+		//TardisOutput.print("TConTE", String.format("x: %d, y %d, z %d : %f, %f, %f",blockX,blockY,blockZ,i,j,k));
+		HitPosition hitPos = null;
+		for(int cnt=0;cnt<4&&hitPos==null;cnt++)
+			hitPos = activateSide(pl,blockX, blockY, blockZ, i, j, k, cnt);
+		if(hitPos != null)
+		{
+			//TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
+			int controlHit = getControlFromHit(hitPos);
+			if(controlHit >= 0)
+				return controlHit;
+		}
+		return -1;
+	}
+	
 	public boolean activate(EntityPlayer pl, int blockX,int blockY,int blockZ, float i, float j, float k)
 	{
 		if(Helper.isServer())
 			return true;
 		HitPosition hit = null;
+		TardisOutput.print("TConTE", String.format("x: %d, y %d, z %d : %f, %f, %f",blockX,blockY,blockZ,i,j,k));
 		for(int cnt=0;cnt<4&&hit==null;cnt++)
 			hit = activateSide(pl,blockX, blockY, blockZ, i, j, k, cnt);
 		if(hit != null)
@@ -843,6 +878,32 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			return (((tickTimer + (controlID * 20)) % cycleLength) / cycleLength);
 		}
 		return 0;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public String[] getExtraInfo(int controlID)
+	{
+		TardisCoreTileEntity core = Helper.getTardisCore(this);
+		if(core != null)
+		{
+			if(controlID == 0)
+				return new String[] {"Energy: " + core.getEnergy() + "/" + core.getMaxEnergy()};
+			else if(controlID == 1)
+				return new String[] {"Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms()};
+			else if(controlID == 2)
+				return new String[] {String.format("Speed: %.1f/%.1f", core.getSpeed(true),core.getMaxSpeed())};
+			else if(controlID == 8)
+			{
+				return new String[] {"XP:     " + core.getXP() + "/" + core.getXPNeeded(),"Level: " + core.getLevel()};
+			}
+			if(controlID >= 10 && controlID < 16)
+				return new String[] {"Set to " + xControls[controlID-10]};
+			if(controlID >= 20 && controlID < 26)
+				return new String[] {"Set to " + zControls[controlID-20]};
+			if(controlID >= 30 && controlID < 34)
+				return new String[] {"Set to " + yControls[controlID-30]};
+		}
+		return null;
 	}
 	
 	@Override

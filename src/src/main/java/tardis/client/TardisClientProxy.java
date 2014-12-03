@@ -28,6 +28,7 @@ import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisEngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -50,6 +51,12 @@ public class TardisClientProxy extends TardisProxy
 	{
 		WorldServer world = MinecraftServer.getServer().worldServerForDimension(worldID);
 		world.markBlockRangeForRenderUpdate(x, y, z, x, y, z);
+	}
+	
+	public void init()
+	{
+		TardisOutput.print("TM", "Sending message to WAILA");
+		FMLInterModComms.sendMessage("Waila","register","tardis.common.integration.waila.TardisWailaCallback.wailaRegister");
 	}
 	
 	@Override
