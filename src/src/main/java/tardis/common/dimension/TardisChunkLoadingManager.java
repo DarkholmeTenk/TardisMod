@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableSet;
+
 import tardis.TardisMod;
 import tardis.api.IChunkLoader;
 import tardis.common.core.store.SimpleCoordStore;
@@ -60,11 +62,15 @@ public class TardisChunkLoadingManager implements LoadingCallback
 	{
 		if(t == null || te == null)
 			return;
+		ImmutableSet<ChunkCoordIntPair> alreadyLoaded = t.getChunkList();
 		ChunkCoordIntPair[] loadable = te.loadable();
 		if(loadable != null)
 		{
 			for(ChunkCoordIntPair load : loadable)
-				ForgeChunkManager.forceChunk(t, load);
+			{
+				if(alreadyLoaded == null || !alreadyLoaded.contains(load))
+					ForgeChunkManager.forceChunk(t, load);
+			}
 			NBTTagCompound nbt = t.getModData();
 			if(nbt != null)
 			{
@@ -108,7 +114,7 @@ public class TardisChunkLoadingManager implements LoadingCallback
 			}
 			else
 			{
-				if(monitorableChunkLoaders.get(pos) != null)
+				if(monitorableChunkLoaders.containsKey(pos))
 					ForgeChunkManager.releaseTicket(monitorableChunkLoaders.get(pos));
 				keyIter.remove();
 			}
