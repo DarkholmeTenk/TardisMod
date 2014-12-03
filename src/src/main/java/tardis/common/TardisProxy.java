@@ -1,8 +1,6 @@
 package tardis.common;
 
-import cpw.mods.fml.common.event.FMLInterModComms;
 import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import net.minecraft.world.World;
 
 public class TardisProxy

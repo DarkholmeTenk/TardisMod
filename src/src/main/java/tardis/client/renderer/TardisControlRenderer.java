@@ -22,7 +22,6 @@ import tardis.client.renderer.model.console.SonicScrewdriverHolderModel;
 import tardis.client.renderer.model.console.SpecialLeverModel;
 import tardis.client.renderer.model.console.TardisLightModel;
 import tardis.client.renderer.model.console.ValveWheelModel;
-import tardis.common.core.TardisOutput;
 import tardis.common.items.TardisSonicScrewdriverItem;
 
 public class TardisControlRenderer

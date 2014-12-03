@@ -9,7 +9,6 @@ import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.client.renderer.model.TardisConsoleModel;
 import tardis.common.blocks.TardisAbstractBlock;
-import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 
