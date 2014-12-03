@@ -470,6 +470,24 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return true;
 	}
 	
+	public boolean takeOffEnergy(EntityPlayer pl)
+	{
+		TardisConsoleTileEntity con = getConsole();
+		if(con != null)
+		{
+			int dDim = con.getDimFromControls();
+			int dX = con.getXFromControls(exteriorX);
+			int dY = con.getYFromControls(exteriorY);
+			int dZ = con.getZFromControls(exteriorZ);
+			
+			int distance = Math.abs(dX - exteriorX) + Math.abs(dY - exteriorY) + Math.abs(dZ - exteriorZ) + (dDim != exteriorWorld ? energyCostDimChange : 0);
+			double speedMod = Math.max(1,getSpeed(true)*3/getMaxSpeed());
+			int enCost = (int) Helper.clamp(distance*(int)Math.round(speedMod), 1, energyCostFlightMax);
+			return takeEnergy(enCost,false);
+		}
+		return false;
+	}
+	
 	public boolean takeOff(boolean forced,EntityPlayer pl)
 	{
 		forcedFlight = forced;
@@ -481,15 +499,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(!inFlight)
 		{
 			TardisConsoleTileEntity con = getConsole();
-			int dDim = con.getDimFromControls();
-			int dX = con.getXFromControls(exteriorX);
-			int dY = con.getYFromControls(exteriorY);
-			int dZ = con.getZFromControls(exteriorZ);
-			
-			int distance = Math.abs(dX - exteriorX) + Math.abs(dY - exteriorY) + Math.abs(dZ - exteriorZ) + (dDim != exteriorWorld ? energyCostDimChange : 0);
-			double speedMod = Math.max(1,getSpeed(true)*3/getMaxSpeed());
-			int enCost = (int) Helper.clamp(distance*(int)Math.round(speedMod), 1, energyCostFlightMax);
-			if(takeEnergy(enCost,false))
+			if((!con.shouldLand()) || takeOffEnergy(pl))
 			{
 				instability = 0;
 				inFlight = true;
@@ -508,8 +518,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				sendUpdate();
 				return true;
 			}
-			else if(pl != null)
-				pl.addChatMessage(new ChatComponentText("Not enough energy"));
+			else
+				Helper.sendMessage("TARDIS","Not enough energy to take off");
 		}
 		return false;
 	}
