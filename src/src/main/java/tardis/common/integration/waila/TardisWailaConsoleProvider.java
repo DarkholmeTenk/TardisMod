@@ -113,7 +113,6 @@ public class TardisWailaConsoleProvider implements IWailaDataProvider
 						TardisOutput.print("TWCP", "Control not found:" + control);
 				}
 			}
-			currenttip.add("CONSOLAS!");
 		}
 		return currenttip;
 	}
