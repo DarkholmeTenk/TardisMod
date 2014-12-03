@@ -29,6 +29,8 @@ import net.minecraft.world.World;
 
 public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IToolHammer
 {
+	public static final int maxPerms = 0xFF;
+	public static final int minPerms = 0xCD;
 
 	public TardisSonicScrewdriverItem()
 	{
@@ -278,7 +280,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 	
 	public static boolean hasPermission(NBTTagCompound nbt, TardisScrewdriverMode mode)
 	{
-		int permissions = 0xff;
+		int permissions = maxPerms;
 		if(nbt.hasKey("perm"))
 			permissions = nbt.getInteger("perm");
 		else
@@ -300,7 +302,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 	public static void setPermission(NBTTagCompound nbt, TardisScrewdriverMode mode, boolean value)
 	{
 		TardisOutput.print("TSSI", "Setting permission " + mode.name()  +" to "+ value);
-		int permissions = 0xff;
+		int permissions = maxPerms;
 		if(nbt.hasKey("perm"))
 			permissions = nbt.getInteger("perm");
 		int toCheck = (int) Math.pow(2, mode.ordinal());
@@ -315,6 +317,14 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 	{
 		TardisOutput.print("TSSI", "Toggling permission " + mode.name());
 		setPermission(nbt,mode,!hasPermission(nbt,mode));
+	}
+	
+	public static NBTTagCompound getNewNBT()
+	{
+		NBTTagCompound temp = new NBTTagCompound();
+		temp.setInteger("scMo", 0);
+		temp.setInteger("perm", maxPerms);
+		return temp;
 	}
 	
 	private void switchMode(ItemStack is, World world, EntityPlayer player, TardisScrewdriverMode mode)

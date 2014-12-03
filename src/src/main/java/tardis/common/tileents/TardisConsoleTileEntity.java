@@ -430,10 +430,15 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		{
 			lastButton = 5;
 			lastButtonTT = tickTimer;
-			if(!hasScrewdriver(0) && core.takeEnergy(500,false))
-				setScrewdriver(0,true);
-			else if(hasScrewdriver(0) && core.addEnergy(400, false))
-				setScrewdriver(0,false);
+			if(core.canModify(pl))
+			{
+				if(!hasScrewdriver(0) && core.takeEnergy(500,false))
+					setScrewdriver(0,true);
+				else if(hasScrewdriver(0) && core.addEnergy(400, false))
+					setScrewdriver(0,false);
+			}
+			else
+				Helper.sendString(pl, TardisCoreTileEntity.cannotModifyMessage);
 		}
 		else if(controlID == 6 || controlID == 7) // Screwdriver slot 0/1
 		{
@@ -467,6 +472,11 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 							return;
 						InventoryPlayer inv = pl.inventory;
 						screwNBT = held.stackTagCompound;
+						if(screwNBT == null)
+							screwNBT = TardisSonicScrewdriverItem.getNewNBT();
+						int linked = TardisSonicScrewdriverItem.getLinkedDim(screwNBT);
+						if(linked!= 0 && linked != Helper.getWorldID(this))
+							screwNBT.setInteger("perm", TardisSonicScrewdriverItem.minPerms);
 						inv.mainInventory[inv.currentItem] = null;
 						setScrewdriver(slot,true);
 					}

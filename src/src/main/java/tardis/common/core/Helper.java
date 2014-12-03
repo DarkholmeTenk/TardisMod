@@ -602,6 +602,11 @@ public class Helper
 
 	public static void sendString(EntityPlayer pl, String source,String s)
 	{
-		pl.addChatMessage(new ChatComponentText("["+source+"] " + s));
+		sendString(pl, new ChatComponentText("["+source+"] " + s));
+	}
+
+	public static void sendString(EntityPlayer pl, ChatComponentText message)
+	{
+		pl.addChatMessage(message);
 	}
 }
