@@ -519,7 +519,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				return true;
 			}
 			else
-				Helper.sendMessage("TARDIS","Not enough energy to take off");
+				Helper.sendString(pl,"TARDIS","Not enough energy to take off");
 		}
 		return false;
 	}

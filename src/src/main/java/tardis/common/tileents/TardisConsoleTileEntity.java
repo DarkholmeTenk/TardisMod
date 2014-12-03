@@ -405,7 +405,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 						uncoordinated  = !uncoordinated;
 					}
 					else
-						Helper.sendMessage("TARDIS","Not enough energy to take off");
+						Helper.sendString(pl,"TARDIS","Not enough energy to take off");
 				}
 				else if(controlID == 60)
 				{
