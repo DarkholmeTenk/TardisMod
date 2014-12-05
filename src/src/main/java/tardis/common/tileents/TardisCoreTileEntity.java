@@ -43,6 +43,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private static TardisConfigFile config;
 	public static final ChatComponentText cannotModifyMessage	= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS");
 	public static final ChatComponentText cannotUpgradeMessage	= new ChatComponentText("[TARDIS] You do not have enough upgrade points");
+	private int oldExteriorWorld = 0;
 	private int exteriorWorld;
 	private int exteriorX;
 	private int exteriorY;
@@ -199,9 +200,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 						w.setBlockToAir(exteriorX, exteriorY+1, exteriorZ);
 						TardisOutput.print("TCTE", "Blanking exterior");
 						exteriorWorld = 10000;
-						exteriorX = 0;
-						exteriorY = 0;
-						exteriorZ = 0;
+						//exteriorX = 0;
+						//exteriorY = 0;
+						//exteriorZ = 0;
 					} 	
 				}
 			}
@@ -445,7 +446,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		
 		TardisOutput.print("TCTE", "Changing lock");
 		if(!hasKey(pl,true))
-			return false;
+		{
+			if(!inside)
+				return false;
+		}
 		
 		if(lockState.equals(LockState.Locked) && !inside)
 			return false;
@@ -477,12 +481,13 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		{
 			int dDim = con.getDimFromControls();
 			int dX = con.getXFromControls(exteriorX);
-			int dY = con.getYFromControls(exteriorY);
 			int dZ = con.getZFromControls(exteriorZ);
 			
-			int distance = Math.abs(dX - exteriorX) + Math.abs(dY - exteriorY) + Math.abs(dZ - exteriorZ) + (dDim != exteriorWorld ? energyCostDimChange : 0);
-			double speedMod = Math.max(1,getSpeed(true)*3/getMaxSpeed());
-			int enCost = (int) Helper.clamp(distance*(int)Math.round(speedMod), 1, energyCostFlightMax);
+			int extW = inFlight() ? oldExteriorWorld : exteriorWorld;
+			int distance = (int) Math.round(Math.pow(Math.abs(dX - exteriorX) + Math.abs(dZ - exteriorZ),0.5));
+			distance +=  (dDim != extW ? energyCostDimChange : 0);
+			double speedMod = Math.max(0.5,getSpeed(true)*3/getMaxSpeed());
+			int enCost = (int) Helper.clamp((int)Math.round(distance * speedMod), 1, energyCostFlightMax);
 			return takeEnergy(enCost,false);
 		}
 		return false;
@@ -512,6 +517,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				timeTillLandingInt	= timeTillLanding + (isFastLanding() ? 20 * 5 : 20 * 17);
 				timeTillLanded		= timeTillLanding + (isFastLanding() ? 20 * 5 : 20 * 22);
 				numButtons = (timeTillLanding - timeTillTakenOff) / getButtonTime();
+				oldExteriorWorld = exteriorWorld;
 				
 				if(te != null)
 					te.takeoff();
@@ -593,6 +599,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		w.setBlock(dX, dY+1, dZ, TardisMod.tardisTopBlock, facing, 3);
 		
 		setExterior(w,dX,dY,dZ);
+		oldExteriorWorld = 0;
 		TileEntity te = w.getTileEntity(dX,dY,dZ);
 		if(te != null && te instanceof TardisTileEntity)
 		{
@@ -1359,6 +1366,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		super.readFromNBT(nbt);
+		oldExteriorWorld = nbt.getInteger("oExW");
 		forcedFlight = nbt.getBoolean("fF");
 		lockState = LockState.values()[nbt.getInteger("lS")];
 		rfStored  = nbt.getInteger("rS");
@@ -1431,6 +1439,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
+		nbt.setInteger("oExW", oldExteriorWorld);
 		nbt.setBoolean("fF", forcedFlight);
 		nbt.setInteger("lS", lockState.ordinal());
 		nbt.setInteger("rS",rfStored);
