@@ -1261,7 +1261,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				data[1] = true;
 			else
 			{
-				for(int i = 1;i<=2;i++)
+				for(int i = 0;i<=2;i++)
 				{
 					if((y-i) < 1)
 					{
@@ -1276,7 +1276,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				if(data[2])
 				{
 					boolean g = true;
-					for(int i = y-3;i>0 && g;i--)
+					for(int i = y-2;i>0 && g;i--)
 					{
 						if(!softBlock(w,x,i,z))
 							g = true;
