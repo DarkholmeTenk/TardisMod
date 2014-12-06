@@ -64,6 +64,12 @@ public class TardisKeyItem extends TardisAbstractItem
 	}
 	
 	@Override
+	public boolean doesSneakBypassUse(World w, int x, int y, int z,EntityPlayer player)
+	{
+		return true;
+	}
+	
+	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
     {
 		if(is!= null && getOwnerName(is) == null)

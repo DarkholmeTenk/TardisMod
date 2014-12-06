@@ -445,10 +445,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			return false;
 		
 		TardisOutput.print("TCTE", "Changing lock");
-		if(!hasKey(pl,true))
+		if(!hasKey(pl,true) && !inside)
 		{
-			if(!inside)
-				return false;
+			return false;
 		}
 		
 		if(lockState.equals(LockState.Locked) && !inside)
@@ -456,12 +455,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		
 		int num = LockState.values().length;
 		lockState = LockState.values()[((lockState.ordinal() + 1)%num)];
-		if((!inside) && lockState.equals(LockState.Locked))
-		{
-			TardisOutput.print("TCTE", "Changing from locked because outside");
-			lockState = LockState.values()[((lockState.ordinal() + 1)%num)];
-		}
-			
+		
+		if(!pl.isSneaking())
+			return false;
+		
 		TardisOutput.print("TTE", "Lockstate:"+lockState.toString());
 		if(lockState.equals(LockState.KeyOnly))
 			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will only open with the key"));

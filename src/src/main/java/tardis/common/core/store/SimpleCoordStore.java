@@ -70,23 +70,34 @@ public class SimpleCoordStore
 	@Override
 	public int hashCode()
 	{
-		return toString().hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + world;
+		result = prime * result + x;
+		result = prime * result + y;
+		result = prime * result + z;
+		return result;
 	}
-	
+
 	@Override
-	public boolean equals(Object other)
+	public boolean equals(Object obj)
 	{
-		if(this == other)
+		if (this == obj)
 			return true;
-		if(other != null && other instanceof SimpleCoordStore)
-		{
-			SimpleCoordStore o = (SimpleCoordStore)other;
-			if(o.world == world && o.x == x && o.y == y && o.z == z)
-				return true;
-		}
-		return false;
+		if (!(obj instanceof SimpleCoordStore))
+			return false;
+		SimpleCoordStore other = (SimpleCoordStore) obj;
+		if (world != other.world)
+			return false;
+		if (x != other.x)
+			return false;
+		if (y != other.y)
+			return false;
+		if (z != other.z)
+			return false;
+		return true;
 	}
-	
+
 	public NBTTagCompound writeToNBT()
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
