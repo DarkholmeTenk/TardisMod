@@ -114,7 +114,7 @@ public class TardisChunkLoadingManager implements LoadingCallback
 			{
 				if(monitorableChunkLoaders.containsKey(pos))
 					ForgeChunkManager.releaseTicket(monitorableChunkLoaders.get(pos));
-				keyIter.remove();
+				monitorableChunkLoaders.remove(pos);
 			}
 		}
 	}
