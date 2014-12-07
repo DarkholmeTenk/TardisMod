@@ -254,7 +254,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		{
 			double xO = (rand.nextDouble()*3) - 1.5;
 			double zO = (rand.nextDouble()*3) - 1.5;
-			worldObj.playSound(xCoord, yCoord, zCoord, "random.explosion", 0.5F, 1, true);
+			Helper.playSound(this, "minecraft:random.explosion", 0.5F);
 			worldObj.createExplosion(null, xCoord+0.5+xO, yCoord-0.5, zCoord+0.5+zO, 1F, true);
 			explode = false;
 		}
@@ -300,10 +300,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			if(tickCount % 80 == 0)
 			{
 				if(worldObj.playerEntities != null && worldObj.playerEntities.size() > 0)
-				{
-					worldObj.setBlock(xCoord, yCoord+1, zCoord, TardisMod.schemaComponentBlock, 8, 3);
 					sendUpdate();
-				}
 			}
 		}
 	}
@@ -461,6 +458,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			
 		int num = LockState.values().length;
 		lockState = LockState.values()[((lockState.ordinal() + 1)%num)];
+		if(lockState.equals(LockState.Locked) && !inside)
+			lockState = LockState.values()[((lockState.ordinal() + 1)%num)];
 		TardisOutput.print("TTE", "Lockstate:"+lockState.toString());
 		if(lockState.equals(LockState.KeyOnly))
 			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will only open with the key"));
@@ -618,7 +617,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			addXP(con != null && con.isStable()?15:(30-instability));
 			inFlight = false;
 			sendUpdate();
-			worldObj.playSound(xCoord, yCoord, zCoord, "engineDrum", 0.75F, 1, true);
+			Helper.playSound(this, "engineDrum", 0.75F);
 			TardisTileEntity ext = getExterior();
 			if(ext != null)
 			{
