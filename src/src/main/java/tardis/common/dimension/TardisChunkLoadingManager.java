@@ -60,6 +60,8 @@ public class TardisChunkLoadingManager implements LoadingCallback
 	{
 		if(t == null || te == null)
 			return;
+		if(t.world == null)
+			return;
 		ImmutableSet<ChunkCoordIntPair> alreadyLoaded = t.getChunkList();
 		ChunkCoordIntPair[] loadable = te.loadable();
 		if(loadable != null)
@@ -67,7 +69,16 @@ public class TardisChunkLoadingManager implements LoadingCallback
 			for(ChunkCoordIntPair load : loadable)
 			{
 				if(alreadyLoaded == null || !alreadyLoaded.contains(load))
-					ForgeChunkManager.forceChunk(t, load);
+				{
+					try
+					{
+						ForgeChunkManager.forceChunk(t, load);
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
 			}
 			NBTTagCompound nbt = t.getModData();
 			if(nbt != null)
