@@ -13,6 +13,7 @@ import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
+import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
@@ -164,7 +165,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 		}
 	}
 	
-	public boolean isValidMode(ItemStack is, TardisScrewdriverMode mode)
+	public boolean isValidMode(EntityPlayer pl, ItemStack is, TardisScrewdriverMode mode)
 	{
 		if(!hasPermission(is,mode))
 			return false;
@@ -176,13 +177,22 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 			return false;
 		if(!core.hasFunction(mode.requiredFunction))
 			return false;
+		if(pl != null)
+		{
+			boolean isInTardis = false;
+			isInTardis = pl.worldObj.provider instanceof TardisWorldProvider;
+			if(isInTardis && mode.equals(TardisScrewdriverMode.Locate))
+				return false;
+			if(!isInTardis && mode.equals(TardisScrewdriverMode.Schematic))
+				return false;
+		}
 		return true;
 	}
 	
 	public void notifyMode(ItemStack is, EntityPlayer player, boolean override)
 	{
 		TardisScrewdriverMode mode = getMode(is);
-		if(override || isValidMode(is,mode))
+		if(override || isValidMode(player, is,mode))
 		{
 			ArrayList<Object> list = new ArrayList<Object>();
 			addInfo(is,player,list);
@@ -337,7 +347,7 @@ public class TardisSonicScrewdriverItem extends TardisAbstractItem implements IT
 			first = true;
 			newValue = (newValue + 1) % TardisScrewdriverMode.values().length;
 			TardisScrewdriverMode m = getMode(newValue);
-			valid = isValidMode(is,m);
+			valid = isValidMode(player, is,m);
 			TardisOutput.print("TSSI", "V:"+valid);
 		}
 		is.stackTagCompound.setInteger("scMo", newValue);
