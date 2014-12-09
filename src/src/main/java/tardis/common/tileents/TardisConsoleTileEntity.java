@@ -104,7 +104,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			if(shouldGoUp)
 			{
 				lastButton = -1;
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				sendUpdate();
 			}
 		}
 			
@@ -130,9 +130,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 					schemaList = null;
 			}
 			if(tickTimer % 80 == 0)
-			{
-				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			}
+				sendUpdate();
 		}
 	}
 	
@@ -639,7 +637,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			xControls = xCont;
 			yControls = yCont;
 			zControls = zCont;
-			worldObj.markBlockForUpdate(xCoord,yCoord,zCoord);
+			sendUpdate();
 			return allowNearest ? (getFromControls(xCont) == x && getFromControls(zCont) == z) : true;
 		}
 		return false;
@@ -659,7 +657,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			xControls = xCont;
 			yControls = yCont;
 			zControls = zCont;
-			worldObj.markBlockForUpdate(xCoord,yCoord,zCoord);
+			sendUpdate();
 			set = allowNearest ? (getFromControls(xCont) == x && getFromControls(zCont) == z) : true;
 		}
 		if(!set)
@@ -808,7 +806,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			landGroundControl = state.landGroundControl;
 			relativeCoords = state.relative;
 			clampControls();
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			sendUpdate();
 		}
 	}
 	
@@ -996,7 +994,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			ran = rand.nextInt(1 + max - min);
 		unstableControl = min+ran;
 		unstablePressed = false;
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		sendUpdate();
 	}
 	
 	public void clearUnstableControl()

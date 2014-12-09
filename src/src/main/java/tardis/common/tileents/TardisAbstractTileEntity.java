@@ -39,6 +39,8 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	
 	public void sendUpdate()
 	{
+		if(worldObj.playerEntities == null || worldObj.playerEntities.size() == 0)
+			return;
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 	

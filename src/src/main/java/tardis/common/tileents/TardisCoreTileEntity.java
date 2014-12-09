@@ -708,7 +708,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		exteriorY = y;
 		exteriorZ = z;
 		TardisOutput.print("TCTE", "Exterior placed @ " + x + ","+ y +","+z+","+exteriorWorld +","+worldObj.isRemote);
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		sendUpdate();
 	}
 	
 	public TardisTileEntity getExterior()
@@ -850,7 +850,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(!inFlight)
 			speed = speed + a;
 		speed = Helper.clamp(speed, 0, getMaxSpeed());
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		sendUpdate();
 		return speed;
 	}
 	
@@ -1156,7 +1156,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(trans)
 		{
 			Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "transmat", 0.6F);
-			Helper.teleportEntity(ent, Helper.getWorldID(worldObj), to.x+0.5, to.y+1, to.z+0.5,90);
+			Helper.teleportEntity(ent, Helper.getWorldID(worldObj), to.x+0.5, to.y+1, to.z+0.5,9);
 			Helper.playSound(worldObj, to.x, to.y+1, to.z, "tardismod:transmat", 0.6F);
 			return true;
 		}
