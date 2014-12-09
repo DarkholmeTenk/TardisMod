@@ -116,6 +116,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private static int energyPerSecondInc = 1;
 	private static int energyCostDimChange = 2000;
 	private static int energyCostFlightMax = 3000;
+	private static double energyCostPower  = 0.8;
 
 	static
 	{
@@ -140,6 +141,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		energyPerSecondInc	= config.getInt("energy per second inc per level",1);
 		energyCostDimChange	= config.getInt("energy cost to change dims",2000);
 		energyCostFlightMax	= config.getInt("max flight energy cost",3000);
+		energyCostPower		= config.getDouble("energy distance cost power", 0.8);
 		shields		= maxShields;
 		hull		= maxHull;
 		
@@ -482,7 +484,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			int dZ = con.getZFromControls(exteriorZ);
 			
 			int extW = inFlight() ? oldExteriorWorld : exteriorWorld;
-			int distance = (int) Math.round(Math.pow(Math.abs(dX - exteriorX) + Math.abs(dZ - exteriorZ),0.5));
+			int distance = (int) Math.round(Math.pow(Math.abs(dX - exteriorX) + Math.abs(dZ - exteriorZ),energyCostPower));
 			distance +=  (dDim != extW ? energyCostDimChange : 0);
 			double speedMod = Math.max(0.5,getSpeed(true)*3/getMaxSpeed());
 			int enCost = (int) Helper.clamp((int)Math.round(distance * speedMod), 1, energyCostFlightMax);
