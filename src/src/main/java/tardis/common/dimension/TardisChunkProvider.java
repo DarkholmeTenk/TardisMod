@@ -6,6 +6,7 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 
@@ -28,6 +29,9 @@ public class TardisChunkProvider implements IChunkProvider
 	public Chunk provideChunk(int i, int j)
 	{
 		Chunk c = new Chunk(worldObj, i, j);
+		byte[] biomeArray = c.getBiomeArray();
+		for(int k = 0;i<biomeArray.length;i++)
+			biomeArray[k] = (byte) BiomeGenBase.sky.biomeID;
 		c.generateSkylightMap();
 		return c;
 	}

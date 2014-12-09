@@ -626,15 +626,15 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		return false;
 	}
 	
-	public boolean setControls(int dim, int x, int y, int z, boolean allowNearest)
+	public boolean setControls(int dim, int exX, int exZ, int x, int y, int z, boolean allowNearest)
 	{
 		int dCont   = TardisMod.otherDims.getControlFromDim(dim);
-		int[] xCont = getControlsFromDest(x);
+		int[] xCont = getControlsFromDest(x-exX);
 		int[] yCont = getYControls(y);
-		int[] zCont = getControlsFromDest(z);
+		int[] zCont = getControlsFromDest(z-exZ);
 		if((allowNearest || (getFromControls(xCont) == x && getFromControls(zCont) == z)) && (TardisMod.otherDims.getDimFromControl(dCont) == dim))
 		{
-			relativeCoords = false;
+			relativeCoords = true;
 			dimControl = dCont;
 			xControls = xCont;
 			yControls = yCont;
@@ -643,6 +643,38 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			return allowNearest ? (getFromControls(xCont) == x && getFromControls(zCont) == z) : true;
 		}
 		return false;
+	}
+
+	public boolean setControls(int dim, int x, int y, int z, boolean allowNearest)
+	{
+		int dCont   = TardisMod.otherDims.getControlFromDim(dim);
+		int[] xCont = getControlsFromDest(x);
+		int[] yCont = getYControls(y);
+		int[] zCont = getControlsFromDest(z);
+		boolean set = false;
+		if((allowNearest || (getFromControls(xCont) == x && getFromControls(zCont) == z)) && (TardisMod.otherDims.getDimFromControl(dCont) == dim))
+		{
+			relativeCoords = false;
+			dimControl = dCont;
+			xControls = xCont;
+			yControls = yCont;
+			zControls = zCont;
+			worldObj.markBlockForUpdate(xCoord,yCoord,zCoord);
+			set = allowNearest ? (getFromControls(xCont) == x && getFromControls(zCont) == z) : true;
+		}
+		if(!set)
+		{
+			TardisCoreTileEntity c = getCore();
+			if(c != null)
+			{
+				TardisTileEntity e = c.getExterior();
+				if(e != null)
+				{
+					return setControls(dim, e.xCoord, e.zCoord, x, y,z, allowNearest);
+				}
+			}
+		}
+		return set;
 	}
 	
 	public boolean setControls(TardisTileEntity ext, boolean allowNearest)
@@ -741,7 +773,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	public int getYFromControls(int extY)
 	{
-		return getYFromControls(yControls) + (relativeCoords ? extY : 0);
+		return getYFromControls(yControls);
 	}
 	
 	public boolean getLandFromControls()

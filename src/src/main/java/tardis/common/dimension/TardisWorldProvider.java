@@ -1,8 +1,10 @@
 package tardis.common.dimension;
 
 import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -43,7 +45,9 @@ public class TardisWorldProvider extends WorldProvider
 	@Override
 	public void updateWeather()
 	{
+		worldObj.prevRainingStrength = 0;
 		worldObj.rainingStrength = 0;
+		worldObj.prevRainingStrength = 0;
 		worldObj.thunderingStrength = 0;
 		worldObj.updateWeatherBody();
 		if(worldObj.isRaining())
@@ -66,6 +70,17 @@ public class TardisWorldProvider extends WorldProvider
 	public BiomeGenBase getBiomeGenForCoords(int x, int z)
     {
 		return BiomeGenBase.plains;
+    }
+	
+	@Override
+	public float getSunBrightnessFactor(float par1)
+	{
+		return isDaytime() ? 1.0f : 0.0f;
+	}
+	
+	public float calculateCelestialAngle(long p_76563_1_, float p_76563_3_)
+    {
+        return isDaytime() ? 0.5f : 0f;
     }
 	
 	@Override
