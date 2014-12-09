@@ -8,6 +8,7 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
+import tardis.common.blocks.LabBlock;
 import tardis.common.blocks.TardisAbstractBlock;
 import tardis.common.blocks.TardisBlock;
 import tardis.common.blocks.TardisComponentBlock;
@@ -46,6 +47,7 @@ import tardis.common.items.TardisKeyItem;
 import tardis.common.items.TardisSchemaItem;
 import tardis.common.items.TardisSonicScrewdriverItem;
 import tardis.common.network.TardisPacketHandler;
+import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
@@ -109,6 +111,8 @@ public class TardisMod
 	public static TardisAbstractBlock debugBlock;
 	public static TardisStairBlock	  stairBlock;
 	public static TardisSlabBlock	  slabBlock;
+	
+	public static LabBlock	labBlock;
 	
 	public static TardisAbstractItem schemaItem;
 	public static TardisAbstractItem componentItem;
@@ -234,6 +238,10 @@ public class TardisMod
 		
 		slabBlock = new TardisSlabBlock();
 		GameRegistry.registerBlock(slabBlock,TardisSlabItemBlock.class,slabBlock.getUnlocalizedName());
+		
+		labBlock	= new LabBlock();
+		GameRegistry.registerBlock(labBlock, labBlock.getUnlocalizedName());
+		GameRegistry.registerTileEntity(LabTileEntity.class, labBlock.getUnlocalizedName());
 	}
 	
 	private void initItems()
