@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
+import tardis.client.renderer.LabRenderer;
 import tardis.client.renderer.TardisComponentRenderer;
 import tardis.client.renderer.TardisConsoleRenderer;
 import tardis.client.renderer.TardisCoreRenderer;
@@ -21,6 +22,7 @@ import tardis.client.renderer.TardisRenderer;
 import tardis.client.renderer.TardisSonicScrewdriverRenderer;
 import tardis.common.TardisProxy;
 import tardis.common.core.Helper;
+import tardis.common.tileents.LabTileEntity;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
@@ -39,11 +41,6 @@ public class TardisClientProxy extends TardisProxy
 	public static World cWorld = null;
 	public TardisClientProxy()
 	{
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisTileEntity.class, new TardisRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisCoreTileEntity.class, new TardisCoreRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisConsoleTileEntity.class, new TardisConsoleRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisComponentTileEntity.class, new TardisComponentRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisEngineTileEntity.class, new TardisEngineRenderer());
 	}
 
 	@Override
@@ -62,6 +59,12 @@ public class TardisClientProxy extends TardisProxy
 	@Override
 	public void postAssignment()
 	{
+		ClientRegistry.bindTileEntitySpecialRenderer(TardisTileEntity.class, new TardisRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TardisCoreTileEntity.class, new TardisCoreRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TardisConsoleTileEntity.class, new TardisConsoleRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TardisComponentTileEntity.class, new TardisComponentRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TardisEngineTileEntity.class, new TardisEngineRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(LabTileEntity.class, new LabRenderer());
 		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, new TardisSonicScrewdriverRenderer());
 	}
 	
