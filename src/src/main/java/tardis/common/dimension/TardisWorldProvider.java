@@ -1,5 +1,7 @@
 package tardis.common.dimension;
 
+import java.util.List;
+
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisConsoleTileEntity;
@@ -88,11 +90,27 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		if(dimensionId != 0)
 		{
-			TardisConsoleTileEntity con = Helper.getTardisConsole(worldObj);
+			TardisConsoleTileEntity con = getConsole();
+			//TardisConsoleTileEntity con = Helper.getTardisConsole(worldObj);
 			if(con != null)
 				return con.getDaytimeSetting();
 		}
 		return true;
+	}
+	
+	public TardisConsoleTileEntity getConsole()
+	{
+		if(worldObj == null)
+			return null;
+		List<Object> ents = worldObj.loadedTileEntityList;
+		if(ents == null)
+			return null;
+		for(Object o : ents)
+		{
+			if(o instanceof TardisConsoleTileEntity)
+				return ((TardisConsoleTileEntity)o);
+		}
+		return null;
 	}
 	
 	@Override
