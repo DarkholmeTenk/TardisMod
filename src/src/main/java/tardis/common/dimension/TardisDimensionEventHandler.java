@@ -32,7 +32,7 @@ public class TardisDimensionEventHandler
 		if(ent instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer)ent;
-			TardisOutput.print("TDEH", "Handling hurt event");
+			//TardisOutput.print("TDEH", "Handling hurt event");
 			if(player.getHealth() <= event.ammount)
 			{
 				World w = player.worldObj;

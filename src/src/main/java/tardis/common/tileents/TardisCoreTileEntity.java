@@ -377,9 +377,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		else if(lockState.equals(LockState.Locked))
 			return false;
 		else if(lockState.equals(LockState.OwnerOnly))
-			return player.getCommandSenderName().equals(ownerName);
+			return isOwner(Helper.getUsername(player));
 		else if(lockState.equals(LockState.KeyOnly))
-			return hasKey(player,false);
+			return isOwner(Helper.getUsername(player)) || hasKey(player,false);
 		return false;
 	}
 	
@@ -464,7 +464,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			lockState = LockState.values()[((lockState.ordinal() + 1)%num)];
 		TardisOutput.print("TTE", "Lockstate:"+lockState.toString());
 		if(lockState.equals(LockState.KeyOnly))
-			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will only open with the key"));
+			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will open for its owner and people with keys"));
 		else if(lockState.equals(LockState.Locked))
 			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will not open"));
 		else if(lockState.equals(LockState.Open))
