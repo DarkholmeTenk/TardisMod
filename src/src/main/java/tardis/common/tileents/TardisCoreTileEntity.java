@@ -1,20 +1,14 @@
 package tardis.common.tileents;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import appeng.api.networking.GridFlags;
-import appeng.api.networking.GridNotification;
-import appeng.api.networking.IGrid;
-import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
-import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
 
 import cpw.mods.fml.relauncher.Side;
@@ -1588,6 +1582,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	@Override
 	public IGridNode getGridNode(ForgeDirection dir)
 	{
+		if(dir != ForgeDirection.UNKNOWN)
+			return null;
 		return getNode();
 	}
 

@@ -2,9 +2,6 @@ package tardis.common.tileents.components;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
-
-import appeng.api.exceptions.FailedConnection;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.GridNotification;
 import appeng.api.networking.IGrid;
