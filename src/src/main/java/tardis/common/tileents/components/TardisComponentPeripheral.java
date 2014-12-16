@@ -18,8 +18,7 @@ public class TardisComponentPeripheral extends TardisAbstractComponent
 	@Override
 	public ITardisComponent create(TardisComponentTileEntity parent)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new TardisComponentPeripheral();
 	}
 
 }
