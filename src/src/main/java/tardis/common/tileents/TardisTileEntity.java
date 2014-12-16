@@ -5,9 +5,11 @@ import java.util.List;
 
 import tardis.TardisMod;
 import tardis.api.IChunkLoader;
+import tardis.api.IWatching;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,7 +19,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
-public class TardisTileEntity extends TardisAbstractTileEntity implements IChunkLoader
+public class TardisTileEntity extends TardisAbstractTileEntity implements IChunkLoader, IWatching
 {
 	private int fadeTimer = 0;
 	
@@ -295,5 +297,12 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 		ChunkCoordIntPair[] loadable = new ChunkCoordIntPair[1];
 		loadable[0] = coords().toChunkCoords();
 		return loadable;
+	}
+
+	@Override
+	public void neighbourUpdated(Block neighbourBlockID)
+	{
+		if((!takingOff) && worldObj.getBlock(xCoord, yCoord+1, zCoord) != TardisMod.tardisTopBlock)
+			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.tardisTopBlock, worldObj.getBlockMetadata(xCoord, yCoord, zCoord),3);
 	}
 }
