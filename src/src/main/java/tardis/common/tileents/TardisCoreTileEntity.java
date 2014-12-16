@@ -1156,7 +1156,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(trans)
 		{
 			Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "transmat", 0.6F);
-			Helper.teleportEntity(ent, Helper.getWorldID(worldObj), to.x+0.5, to.y+1, to.z+0.5,9);
+			Helper.teleportEntity(ent, Helper.getWorldID(worldObj), to.x+0.5, to.y+1, to.z+0.5,90);
 			Helper.playSound(worldObj, to.x, to.y+1, to.z, "tardismod:transmat", 0.6F);
 			return true;
 		}
