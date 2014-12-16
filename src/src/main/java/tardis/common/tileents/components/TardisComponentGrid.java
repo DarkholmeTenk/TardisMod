@@ -203,11 +203,16 @@ public class TardisComponentGrid extends TardisAbstractComponent implements IGri
 		return EnumSet.of(GridFlags.DENSE_CAPACITY);
 	}
 	
-	@Override
 	public boolean isWorldAccessable()
 	{
 		return true;
 	}
+	
+	public boolean isWorldAccessible()
+	{
+		return isWorldAccessable();
+	}
+	
 	@Override
 	public DimensionalCoord getLocation()
 	{

@@ -37,10 +37,14 @@ public class TardisCoreGrid implements IGridBlock
 		return EnumSet.of(GridFlags.DENSE_CAPACITY);
 	}
 
-	@Override
 	public boolean isWorldAccessable()
 	{
 		return false;
+	}
+	
+	public boolean isWorldAccessible()
+	{
+		return isWorldAccessable();
 	}
 
 	@Override
