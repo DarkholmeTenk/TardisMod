@@ -476,7 +476,9 @@ public class Helper
 
 	public static TardisCoreTileEntity getTardisCore(int dimensionID)
 	{
-		World tardisWorld = Helper.getWorld(dimensionID);
+		if(dimensionID == 0)
+			return null;
+		World tardisWorld = getWorld(dimensionID);
 		if(tardisWorld != null)
 			return getTardisCore(tardisWorld);
 		else

@@ -40,10 +40,16 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 		super.updateEntity();
 		if(baseURL == null)
 			baseURL = TardisMod.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
-		if(linkedDimension != null && linkedDimension != 0 && linkedCore == null)
-			linkedCore = Helper.getTardisCore(linkedDimension);
-		if(linkedCore != null && owner == null)
-			owner = linkedCore.getOwner();
+		if(Helper.isServer())
+		{
+			if(linkedDimension != null && linkedDimension != 0 && linkedCore == null)
+				linkedCore = Helper.getTardisCore(linkedDimension);
+			if(linkedCore != null && owner == null)
+			{
+				owner = linkedCore.getOwner();
+				sendUpdate();
+			}
+		}
 		if(linkedDimension != null && tt % 20 == 0)
 		{
 			TardisCoreTileEntity core = Helper.getTardisCore(linkedDimension);
