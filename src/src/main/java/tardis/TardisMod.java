@@ -14,9 +14,9 @@ import tardis.common.blocks.TardisComponentBlock;
 import tardis.common.blocks.TardisComponentItemBlock;
 import tardis.common.blocks.TardisConsoleBlock;
 import tardis.common.blocks.TardisCoreBlock;
-import tardis.common.blocks.TardisDarkDecoItemBlock;
 import tardis.common.blocks.TardisDebugBlock;
 import tardis.common.blocks.TardisDecoBlock;
+import tardis.common.blocks.TardisDecoDarkItemBlock;
 import tardis.common.blocks.TardisDecoItemBlock;
 import tardis.common.blocks.TardisEngineBlock;
 import tardis.common.blocks.TardisInternalDoorBlock;
@@ -226,7 +226,7 @@ public class TardisMod
 		GameRegistry.registerBlock(decoBlock, TardisDecoItemBlock.class, decoBlock.getUnlocalizedName());
 		
 		darkDecoBlock = new TardisDecoBlock(false);
-		GameRegistry.registerBlock(darkDecoBlock, TardisDarkDecoItemBlock.class, decoBlock.getUnlocalizedName()+"Dark");
+		GameRegistry.registerBlock(darkDecoBlock, TardisDecoDarkItemBlock.class, decoBlock.getUnlocalizedName()+"Dark");
 		
 		stairBlock = new TardisStairBlock();
 		GameRegistry.registerBlock(stairBlock,stairBlock.getUnlocalizedName());

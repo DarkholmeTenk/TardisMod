@@ -1,45 +1,43 @@
 package tardis.common.tileents.components;
 
-import io.netty.buffer.ByteBuf;
-
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Random;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import appeng.api.events.LocatableEventAnnounce;
-import appeng.api.features.ILocatable;
+import appeng.api.exceptions.FailedConnection;
+import appeng.api.networking.GridFlags;
+import appeng.api.networking.GridNotification;
+import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridBlock;
+import appeng.api.networking.IGridConnection;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
-import appeng.api.parts.BusSupport;
-import appeng.api.parts.IPart;
-import appeng.api.parts.IPartCollsionHelper;
-import appeng.api.parts.IPartHost;
-import appeng.api.parts.IPartRenderHelper;
-import appeng.api.parts.PartItemStack;
 import appeng.api.util.AECableType;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import appeng.api.util.AEColor;
+import appeng.api.util.DimensionalCoord;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import scala.actors.threadpool.Arrays;
+import tardis.TardisMod;
+import tardis.api.IWatching;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 
-public class TardisComponentGrid extends TardisAbstractComponent implements IPart, IGridHost, ILocatable
+public class TardisComponentGrid extends TardisAbstractComponent implements IGridHost, IGridBlock, IWatching
 {
 	private boolean inited = false;
 	private SimpleCoordStore myCoords = null;
+	private IGridNode node = null;
+	
+	private ArrayList<IGridConnection> connections = new ArrayList<IGridConnection>();
+	
+	private static EnumSet validDirs = EnumSet.copyOf(Arrays.asList(ForgeDirection.VALID_DIRECTIONS));
 	
 	protected TardisComponentGrid()	{	}
 	public TardisComponentGrid(TardisComponentTileEntity parent)
@@ -77,215 +75,196 @@ public class TardisComponentGrid extends TardisAbstractComponent implements IPar
 	@Override
 	public void revive(TardisComponentTileEntity parent)
 	{
-		TardisOutput.print("TCG", "Reviving TCG");
 		super.revive(parent);
-		MinecraftForge.EVENT_BUS.post(new LocatableEventAnnounce(this,LocatableEventAnnounce.LocatableEvent.Register));
+		createNode();
 	}
 	
 	@Override
 	public void die()
 	{
-		if(parentObj != null && parentObj.getWorldObj() != null)
-			MinecraftForge.EVENT_BUS.post(new LocatableEventAnnounce(this,LocatableEventAnnounce.LocatableEvent.Unregister));
+		if(node != null)
+		{
+			node.destroy();
+			node = null;
+		}
 		super.die();
 	}
-	@Override
-	public long getLocatableSerial()
-	{
-		if(myCoords == null)
-			myCoords = new SimpleCoordStore(parentObj);
-		return myCoords.hashCode();
-	}
+	
 	@Override
 	public IGridNode getGridNode(ForgeDirection dir)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
-		if(core != null)
-		{
-			//if(core.grid == null)
-			//	core.grid = TardisMod.aeAPI.createGridNode(this);
-		}
-		return null;
+		TardisOutput.print("TCG", "Attempted node get! " + node);
+		createNode();
+		return node;
 	}
+	
 	@Override
 	public AECableType getCableConnectionType(ForgeDirection dir)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return AECableType.SMART;
 	}
+	
 	@Override
 	public void securityBreak()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void getBoxes(IPartCollsionHelper bch)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public ItemStack getItemStack(PartItemStack type)
-	{
-		return new ItemStack(TardisMod.tardisCoreBlock,1);
-	}
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void renderInventory(IPartRenderHelper rh, RenderBlocks renderer)
-	{
-	}
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void renderStatic(int x, int y, int z, IPartRenderHelper rh, RenderBlocks renderer)
-	{
-	}
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void renderDynamic(double x, double y, double z, IPartRenderHelper rh, RenderBlocks renderer)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getBreakingTexture()
-	{
-		return null;
-	}
-	@Override
-	public boolean requireDynamicRender()
-	{
-		return false;
-	}
-	@Override
-	public boolean isSolid()
-	{
-		return false;
-	}
-	@Override
-	public boolean canConnectRedstone()
-	{
-		return false;
-	}
-	@Override
-	public int getLightLevel()
-	{
-		return 0;
-	}
-	@Override
-	public boolean isLadder(EntityLivingBase entity)
-	{
-		return false;
-	}
-	@Override
-	public void onNeighborChanged()
-	{
-	}
-	@Override
-	public int isProvidingStrongPower()
-	{
-		return 0;
-	}
-	@Override
-	public int isProvidingWeakPower()
-	{
-		return 0;
-	}
-	@Override
-	public void writeToStream(ByteBuf data) throws IOException
-	{
-	}
-	@Override
-	public boolean readFromStream(ByteBuf data) throws IOException
-	{
-		return false;
-	}
-	@Override
-	public IGridNode getGridNode()
-	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj.getWorldObj());
-		if(core != null)
-		{
-			if(core.grid == null)
-				core.grid = TardisMod.aeAPI.createGridNode(core);
-			return core.grid;
-		}
-		return null;
-	}
-	@Override
-	public void onEntityCollision(Entity entity)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void removeFromWorld()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void addToWorld()
 	{
 		
 	}
 	
-	@Override
-	public IGridNode getExternalFacingNode()
+	private void createNode()
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj.getWorldObj());
-		if(core != null)
-			return core.grid;
-		return null;
+		if(node == null && Helper.isServer())
+		{
+			node = TardisMod.aeAPI.createGridNode(this);
+			node.updateState();
+			connections.clear();
+		}
+		if(parentObj != null)
+		{
+			TardisCoreTileEntity core = parentObj.getCore();
+			if(core != null)
+			{
+				addConnection(core.getNode());
+			}
+		}
 	}
-	@Override
-	public void setPartHostInfo(ForgeDirection side, IPartHost host, TileEntity tile)
+	
+	private boolean doesConnectionExist(IGridNode aNode, IGridNode oNode)
 	{
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public boolean onActivate(EntityPlayer player, Vec3 pos)
-	{
-		// TODO Auto-generated method stub
+		if(aNode == null || oNode == null)
+			return false;
+		for(IGridConnection c : connections)
+		{
+			if((c.a().equals(oNode) && c.b().equals(aNode)) || (c.a().equals(aNode) && c.b().equals(oNode)))
+				return true;
+		}
+		if(oNode.getConnections().contains(aNode) || aNode.getConnections().contains(oNode))
+			return true;
 		return false;
 	}
-	@Override
-	public boolean onShiftActivate(EntityPlayer player, Vec3 pos)
+	
+	private boolean addConnection(IGridNode otherNode)
 	{
-		// TODO Auto-generated method stub
+		if(!Helper.isServer())
+			return true;
+		try
+		{
+			if(otherNode != null)
+			{
+				if(!doesConnectionExist(node, otherNode))
+				{
+					IGridConnection con = TardisMod.aeAPI.createGridConnection(node, otherNode);
+					otherNode.updateState();
+					connections.add(con);
+					return true;
+				}
+			}
+		}
+		catch(Exception c)
+		{
+			
+		}
 		return false;
 	}
-	@Override
-	public void getDrops(List<ItemStack> drops, boolean wrenched)
+	
+	private void scan()
 	{
-		// TODO Auto-generated method stub
-		
+		if(parentObj == null)
+			return;
+		World w = parentObj.getWorldObj();
+		if(w == null)
+			return;
+		boolean upd = false;
+		for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
+		{
+			TileEntity te = w.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
+			if(te instanceof IGridHost)
+			{
+				IGridHost host = (IGridHost)te;
+				IGridNode otherNode = host.getGridNode(dir.getOpposite());
+				if(!doesConnectionExist(node,otherNode))
+					upd = true;
+			}
+		}
+		if(upd)
+			parentObj.sendUpdate();
 	}
+	
 	@Override
-	public int cableConnectionRenderTo()
+	public void neighbourUpdated(Block neighbourBlockID)
 	{
-		// TODO Auto-generated method stub
+		scan();
+	}
+	
+	@Override
+	public double getIdlePowerUsage()
+	{
 		return 0;
 	}
 	@Override
-	public void randomDisplayTick(World world, int x, int y, int z, Random r)
+	public EnumSet<GridFlags> getFlags()
 	{
-		// TODO Auto-generated method stub
-		
+		return EnumSet.of(GridFlags.DENSE_CAPACITY);
+	}
+	
+	@Override
+	public boolean isWorldAccessable()
+	{
+		return true;
 	}
 	@Override
-	public void onPlacement(EntityPlayer player, ItemStack held, ForgeDirection side)
+	public DimensionalCoord getLocation()
 	{
-		// TODO Auto-generated method stub
-		
+		return new DimensionalCoord(parentObj);
 	}
 	@Override
-	public boolean canBePlacedOn(BusSupport what)
+	public AEColor getGridColor()
 	{
 		// TODO Auto-generated method stub
-		return false;
+		return AEColor.Transparent;
+	}
+	@Override
+	public void onGridNotification(GridNotification notification)
+	{
+		TardisOutput.print("TCG", "Grid note");
+	}
+	@Override
+	public void setNetworkStatus(IGrid grid, int channelsInUse)
+	{
+	}
+	
+	@Override
+	public EnumSet<ForgeDirection> getConnectableSides()
+	{
+		if(parentObj == null)
+			return validDirs;
+		World w = parentObj.getWorldObj();
+		if(w == null)
+			return validDirs;
+		ArrayList<ForgeDirection> dirs = new ArrayList<ForgeDirection>(6);
+		dirs.addAll(validDirs);
+		for(ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
+		{
+			if(w.getTileEntity(xCoord+d.offsetX, yCoord+d.offsetY, zCoord+d.offsetZ) instanceof TardisComponentTileEntity)
+				dirs.remove(d);
+		}
+		return EnumSet.copyOf(dirs);
+	}
+	
+	@Override
+	public IGridHost getMachine()
+	{
+		return parentObj;
+	}
+	@Override
+	public void gridChanged()
+	{
+		TardisOutput.print("TCG", "Grid changed!");
+	}
+	
+	@Override
+	public ItemStack getMachineRepresentation()
+	{
+		return new ItemStack(TardisMod.componentBlock);
 	}
 
 }

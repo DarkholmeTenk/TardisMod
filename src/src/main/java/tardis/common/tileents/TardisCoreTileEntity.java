@@ -13,6 +13,7 @@ import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
+import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
 
@@ -30,6 +31,7 @@ import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.items.TardisKeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
+import tardis.common.tileents.core.TardisCoreGrid;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
 import net.minecraft.entity.Entity;
@@ -46,7 +48,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
-public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable, IChunkLoader, IGridBlock
+public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable, IChunkLoader, IGridHost
 {
 	private static TardisConfigFile config;
 	public static final ChatComponentText cannotModifyMessage	= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS");
@@ -106,7 +108,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private boolean forcedFlight = false;
 	
 	private ArrayList<SimpleCoordStore> gridLinks = new ArrayList<SimpleCoordStore>();
-	public IGridNode grid = null;
 	private int rfStored;
 	private ItemStack[] items;
 	private FluidStack[] fluids;
@@ -125,6 +126,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private static int energyCostDimChange = 2000;
 	private static int energyCostFlightMax = 3000;
 	private static double energyCostPower  = 0.8;
+	private static IGridNode node = null;
 	
 	static
 	{
@@ -1573,76 +1575,32 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		return loadable;
 	}
-
 	
-	//ME STUFF
-	@Override
-	public double getIdlePowerUsage()
+	public IGridNode getNode()
 	{
-		return 0;
+		if(TardisMod.aeAPI == null)
+			return null;
+		if(node == null)
+			node = TardisMod.aeAPI.createGridNode(new TardisCoreGrid(this));
+		return node;
 	}
 
 	@Override
-	public EnumSet<GridFlags> getFlags()
+	public IGridNode getGridNode(ForgeDirection dir)
 	{
-		EnumSet<GridFlags> flags = EnumSet.of(GridFlags.COMPRESSED_CHANNEL,GridFlags.CANNOT_CARRY_COMPRESSED,GridFlags.DENSE_CAPACITY);
-		return flags;
+		return getNode();
 	}
 
 	@Override
-	public boolean isWorldAccessable()
-	{
-		return false;
-	}
-
-	@Override
-	public DimensionalCoord getLocation()
-	{
-		return new DimensionalCoord(worldObj,xCoord,yCoord,zCoord);
-	}
-
-	@Override
-	public AEColor getGridColor()
-	{
-		return AEColor.Transparent;
-	}
-
-	@Override
-	public void onGridNotification(GridNotification notification)
-	{
-		
-	}
-
-	@Override
-	public void setNetworkStatus(IGrid grid, int channelsInUse)
+	public AECableType getCableConnectionType(ForgeDirection dir)
 	{
 		// TODO Auto-generated method stub
-		
+		return AECableType.NONE;
 	}
 
 	@Override
-	public EnumSet<ForgeDirection> getConnectableSides()
+	public void securityBreak()
 	{
-		return EnumSet.noneOf(ForgeDirection.class);
-	}
-
-	@Override
-	public IGridHost getMachine()
-	{
-		return null;
-	}
-
-	@Override
-	public void gridChanged()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public ItemStack getMachineRepresentation()
-	{
-		return new ItemStack(TardisMod.tardisCoreBlock,1);
 	}
 
 }

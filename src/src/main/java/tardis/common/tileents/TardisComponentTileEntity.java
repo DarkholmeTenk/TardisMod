@@ -306,6 +306,12 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 		}
 	}
 	
+	public TardisCoreTileEntity getCore()
+	{
+		TardisCoreTileEntity core = Helper.getTardisCore(this);
+		return core;
+	}
+	
 	public boolean isValid()
 	{
 		return valid && !compAdded;
@@ -595,7 +601,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 				if(comp instanceof IGridHost)
 					return ((IGridHost)comp).getCableConnectionType(dir);
 			}
-		return AECableType.SMART;
+		return AECableType.NONE;
 	}
 
 	@Override
