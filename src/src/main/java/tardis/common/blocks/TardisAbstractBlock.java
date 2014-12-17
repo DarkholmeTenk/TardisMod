@@ -51,11 +51,7 @@ public abstract class TardisAbstractBlock extends Block
 	
 	private void setIconArray(int length)
 	{
-		String[] suffixes = getIconSuffix();
-		if(suffixes == null)
-			subIcons = new IIcon[length];
-		else
-			subIcons = new IIcon[length * suffixes.length];
+		setIconArray(length,getIconSuffixes());
 	}
 	
 	public void setIconArray(int names, int suffixes)
@@ -63,9 +59,22 @@ public abstract class TardisAbstractBlock extends Block
 		subIcons = new IIcon[names * suffixes];
 	}
 	
+	public String[] getIconSuffix(int damage)
+	{
+		return getIconSuffix();
+	}
+	
 	public String[] getIconSuffix()
 	{
 		return null;
+	}
+	
+	public int getIconSuffixes()
+	{
+		String[] suffixes = getIconSuffix();
+		if(suffixes == null)
+			return 1;
+		return suffixes.length;
 	}
 	
 	@Override
@@ -103,6 +112,11 @@ public abstract class TardisAbstractBlock extends Block
 	public String getUnlocalizedName()
 	{
 		return "tile.TardisMod." + unlocalizedFragment;
+	}
+	
+	public String getUnlocalizedNameForIcon()
+	{
+		return unlocalizedFragment;
 	}
 	
 	@Override
@@ -150,29 +164,30 @@ public abstract class TardisAbstractBlock extends Block
 	{
 		if(subIcons != null)
 		{
-			String[] suffixes = getIconSuffix();
+			int suffixCount = getIconSuffixes();
 			for(int i = 0; i < subNames.length; i++)
 			{
+				String[] suffixes = getIconSuffix(i);
 				if(suffixes == null)
 				{
 					TardisOutput.print("TAB", "Registering icon " + i + ":" + "tardismod:" + unlocalizedFragment + "." + subNames[i]);
-					subIcons[i] = register.registerIcon("tardismod:" + unlocalizedFragment + "." + subNames[i]);
+					subIcons[i*suffixCount] = register.registerIcon("tardismod:" + getUnlocalizedNameForIcon() + "." + subNames[i]);
 				}
 				else
 				{
 					for(int j = 0;j<suffixes.length;j++)
 					{
-						String iconToReg = "tardismod:" + unlocalizedFragment + "." + subNames[i] +"."+ suffixes[j];
+						String iconToReg = "tardismod:" + getUnlocalizedNameForIcon() + "." + subNames[i] +"."+ suffixes[j];
 						TardisOutput.print("TAB", "Registering icon " + i + ":" + iconToReg);
-						subIcons[(i*suffixes.length) + j] = register.registerIcon(iconToReg);
+						subIcons[(i*suffixCount) + j] = register.registerIcon(iconToReg);
 					}
 				}
 			}
 		}
 		else
 		{
-			TardisOutput.print("TAB", "Registering icon:" + "tardismod:" + unlocalizedFragment);
-			iconBuffer = register.registerIcon("tardismod:" + unlocalizedFragment);
+			TardisOutput.print("TAB", "Registering icon:" + "tardismod:" + getUnlocalizedNameForIcon());
+			iconBuffer = register.registerIcon("tardismod:" + getUnlocalizedNameForIcon());
 		}
 	}
 	
@@ -203,18 +218,19 @@ public abstract class TardisAbstractBlock extends Block
 	@Override
 	public IIcon getIcon(int side, int metadata)
     {
+		int suffixCount = getIconSuffixes();
 		if(subIcons != null)
 		{
-			String[] suffixes = getIconSuffix();
+			String[] suffixes = getIconSuffix(metadata);
 			if(suffixes == null)
 			{
 				if(metadata >= 0 && metadata < subIcons.length)
-					return subIcons[metadata];
+					return subIcons[metadata*suffixCount];
 				return subIcons[0];
 			}
 			else
 			{
-				int metaBase = metadata * suffixes.length;
+				int metaBase = metadata * suffixCount;
 				int metaAdd  = 0;
 				for(int j = 0;j<suffixes.length;j++)
 				{
