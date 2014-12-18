@@ -611,4 +611,18 @@ public class Helper
 	{
 		pl.addChatMessage(message);
 	}
+
+	public static boolean isTardisWorld(World worldObj)
+	{
+		if(worldObj != null)
+		{
+			return worldObj.provider instanceof TardisWorldProvider;
+		}
+		return false;
+	}
+
+	public static void sendString(EntityPlayer pl, String string)
+	{
+		sendString(pl, new ChatComponentText(string));
+	}
 }

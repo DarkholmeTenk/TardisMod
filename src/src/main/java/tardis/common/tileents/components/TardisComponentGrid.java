@@ -31,6 +31,7 @@ public class TardisComponentGrid extends TardisAbstractComponent implements IGri
 	private boolean inited = false;
 	private SimpleCoordStore myCoords = null;
 	private IGridNode node = null;
+	private boolean linkedToCore = false;
 	
 	private ArrayList<IGridConnection> connections = new ArrayList<IGridConnection>();
 	
@@ -54,12 +55,14 @@ public class TardisComponentGrid extends TardisAbstractComponent implements IGri
 		if(!inited && parentObj != null)
 		{
 			inited = true;
-			TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
+			TardisCoreTileEntity core = getCore();
 			if(core != null)
 			{
 				core.addGridLink(myCoords);
 			}
 		}
+		if(!linkedToCore)
+			linkToCore();
 	}
 	
 	@Override
@@ -107,22 +110,27 @@ public class TardisComponentGrid extends TardisAbstractComponent implements IGri
 		
 	}
 	
+	private void linkToCore()
+	{
+		TardisCoreTileEntity core = getCore();
+		if(core != null)
+		{
+			linkedToCore = true;
+			addConnection(core.getNode());
+		}
+	}
+	
 	private void createNode()
 	{
 		if(node == null && Helper.isServer())
 		{
+			TardisOutput.print("TCG","Grid node creation! " + Helper.getWorldID(parentObj));
 			node = TardisMod.aeAPI.createGridNode(this);
 			node.updateState();
+			linkedToCore = false;
 			connections.clear();
 		}
-		if(parentObj != null)
-		{
-			TardisCoreTileEntity core = parentObj.getCore();
-			if(core != null)
-			{
-				addConnection(core.getNode());
-			}
-		}
+		linkToCore();
 	}
 	
 	private boolean doesConnectionExist(IGridNode aNode, IGridNode oNode)
@@ -227,8 +235,9 @@ public class TardisComponentGrid extends TardisAbstractComponent implements IGri
 	@Override
 	public void onGridNotification(GridNotification notification)
 	{
-		TardisOutput.print("TCG", "Grid note");
+		//TardisOutput.print("TCG", "Grid note " + parentObj.getWorldObj().provider.dimensionId);
 	}
+	
 	@Override
 	public void setNetworkStatus(IGrid grid, int channelsInUse)
 	{
@@ -260,7 +269,6 @@ public class TardisComponentGrid extends TardisAbstractComponent implements IGri
 	@Override
 	public void gridChanged()
 	{
-		TardisOutput.print("TCG", "Grid changed!");
 	}
 	
 	@Override

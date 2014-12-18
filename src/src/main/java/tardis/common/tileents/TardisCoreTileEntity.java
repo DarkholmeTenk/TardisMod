@@ -55,8 +55,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private float lastProximity = 0;
 	private double lastSpin = 0;
 	
-	private int tickCount = 0;
-	
 	private double speed = 4;
 	private static double maxSpeed;
 	
@@ -254,7 +252,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void updateEntity()
 	{
 		super.updateEntity();
-		tickCount++;
+		tt++;
 		
 		if(explode)
 		{
@@ -265,7 +263,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			explode = false;
 		}
 		
-		if(tickCount % 20 == 0)
+		if(tt % 20 == 0)
 		{
 			addEnergy(getEnergyPerSecond(getLevel(TardisUpgradeMode.REGEN)),false);
 			safetyTick();
@@ -276,7 +274,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		
 		if(!worldObj.isRemote)
 		{
-			if(tickCount % 100 == 0 && TardisMod.plReg != null)
+			if(tt % 100 == 0 && TardisMod.plReg != null)
 			{
 				if(!TardisMod.plReg.hasTardis(ownerName))
 					TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
@@ -303,7 +301,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					numRooms = 0;
 				}
 			}
-			if(tickCount % 80 == 0)
+			if(tt % 80 == 0)
 			{
 				if(worldObj.playerEntities != null && worldObj.playerEntities.size() > 0)
 					sendUpdate();
@@ -608,7 +606,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(te != null && te instanceof TardisTileEntity)
 		{
 			TardisTileEntity tardis = (TardisTileEntity) te;
-			tardis.linkedCore = this;
 			tardis.linkedDimension = worldObj.provider.dimensionId;
 			tardis.land(isFastLanding());
 		}
@@ -683,7 +680,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(inFlight)
 		{
 			int rate = 40;
-			double val = Math.abs((tickCount % rate) - (rate / 2));
+			double val = Math.abs((tt % rate) - (rate / 2));
 			double max = 0.4;
 			lastProximity = (float) (max * 2 * (val / rate));
 			return lastProximity;
@@ -1568,6 +1565,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public ChunkCoordIntPair[] loadable()
 	{
 		return loadable;
+	}
+	
+	public boolean canBeAccessedExternally()
+	{
+		return true;
 	}
 	
 	public IGridNode getNode()

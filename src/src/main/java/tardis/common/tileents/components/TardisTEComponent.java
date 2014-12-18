@@ -2,24 +2,38 @@ package tardis.common.tileents.components;
 
 public enum TardisTEComponent
 {
-		TRANSMAT	("Transmat","stickTrans",new TardisComponentTransmat()),
-		GRID		("Mass-Energy","stickGrid",new TardisComponentGrid()),
-		ENERGY		("RF","stickEnergy",new TardisComponentEnergy()),
-		INVENTORY	("Inv","stickInv",new TardisComponentInventory()),
-		FLUID		("Fluid","stickFlu",new TardisComponentFluid()),
-		CHUNK		("ChunkLoader","stickChLo", new TardisComponentChunkLoader()),
-		COMPUTER	("Peripheral","stickPer", new TardisComponentPeripheral());
+		TRANSMAT	("Transmat","stickTrans",new TardisComponentTransmat(),ValPos.INSIDE),
+		GRID		("Mass-Energy","stickGrid",new TardisComponentGrid(),ValPos.BOTH),
+		ENERGY		("RF","stickEnergy",new TardisComponentEnergy(),ValPos.BOTH),
+		INVENTORY	("Inv","stickInv",new TardisComponentInventory(),ValPos.BOTH),
+		FLUID		("Fluid","stickFlu",new TardisComponentFluid(),ValPos.BOTH),
+		CHUNK		("ChunkLoader","stickChLo", new TardisComponentChunkLoader(),ValPos.BOTH),
+		COMPUTER	("Peripheral","stickPer", new TardisComponentPeripheral(),ValPos.BOTH);
+		
+		public enum ValPos
+		{
+			INSIDE, OUTSIDE, BOTH;
+		}
 		
 		private static String[] stringArray = null;
+		public final ValPos valPos;
 		public final String componentName;
 		public final String tex;
 		
 		public ITardisComponent baseObj;
-		TardisTEComponent(String name, String _tex, ITardisComponent comp)
+		TardisTEComponent(String name, String _tex, ITardisComponent comp, ValPos validPosition)
 		{
 			tex = _tex;
 			baseObj = comp;
 			componentName = name;
+			valPos = validPosition;
+		}
+		
+		public boolean isValid(boolean inside)
+		{
+			if(inside)
+				return valPos!=ValPos.OUTSIDE;
+			return valPos!=ValPos.INSIDE;
 		}
 		
 		public static String[] getStrings()

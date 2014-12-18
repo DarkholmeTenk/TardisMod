@@ -40,14 +40,18 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	private boolean valid = false;
 	private boolean inited = false;
 	private boolean compAdded = false;
+	private boolean inside = false;
 	
 	public boolean addComponent(TardisTEComponent comp)
 	{
 		if(!hasComponent(comp))
 		{
-			compAdded = true;
-			comps.put(comp.ordinal(), comp.baseObj.create(this));
-			return true;
+			if(comp.isValid(inside))
+			{
+				compAdded = true;
+				comps.put(comp.ordinal(), comp.baseObj.create(this));
+				return true;
+			}
 		}
 		return false;
 		
@@ -83,7 +87,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 		return retIS;
 	}
 	
-	private void reviveComps()
+	protected void reviveComps()
 	{
 		if(comps.size() > 0)
 		{
@@ -95,12 +99,31 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 		}
 	}
 	
+	protected void killComps()
+	{
+		if(comps.size() > 0)
+		{
+			for(ITardisComponent comp : comps.values())
+			{
+				if(comp != null)
+					comp.die();
+			}
+		}
+	}
+	
+	protected void restart()
+	{
+		killComps();
+		reviveComps();
+	}
+	
 	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
 		if(!inited || compAdded)
 		{
+			inside = Helper.isTardisWorld(worldObj);
 			compAdded = false;
 			reviveComps();
 			inited = true;
@@ -118,12 +141,18 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 		}
 	}
 	
+	protected void dismantle(EntityPlayer pl)
+	{
+		int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
+		worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.decoBlock, d == 0 ? 2 : 4, 3);
+	}
+	
 	@Override
 	public boolean screw(TardisScrewdriverMode mode, EntityPlayer player)
 	{
 		if(mode == TardisScrewdriverMode.Dismantle)
 		{
-			TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
+			TardisCoreTileEntity core = getCore();
 			if(core == null || core.canModify(player))
 			{
 				ItemStack[] contained = getComponentItems();
@@ -132,8 +161,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 					for(ItemStack is : contained)
 						Helper.giveItemStack(player, is);
 				}
-				int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-				worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.decoBlock, d == 0 ? 2 : 4, 3);
+				dismantle(player);
 				return true;
 			}
 			else
@@ -161,8 +189,8 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 			Item i = is.getItem();
 			if(i instanceof TardisComponentItem)
 			{
-				TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
-				if(core.canModify(pl))
+				TardisCoreTileEntity core = getCore();
+				if(core == null || core.canModify(pl))
 				{
 					int dam = is.getItemDamage();
 					TardisTEComponent[] possComps = TardisTEComponent.values();
@@ -183,7 +211,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 					}
 				}
 				else
-					pl.addChatMessage(new ChatComponentText("You do not have permission to modify this TARDIS"));
+					pl.addChatMessage(new ChatComponentText("You do not have permission to modify this"));
 			}
 		}
 		boolean activated = false;

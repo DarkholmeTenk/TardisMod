@@ -44,6 +44,8 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 	
+	public void init() {}
+	
 	@Override
 	public void updateEntity()
 	{

@@ -8,7 +8,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import cofh.api.energy.IEnergyHandler;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 
@@ -74,7 +73,7 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
+		TardisCoreTileEntity core = getCore();
 		if(core != null)
 		{
 			int rec = core.addRF(maxReceive,simulate);
@@ -88,7 +87,7 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	@Override
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
+		TardisCoreTileEntity core = getCore();
 		if(core != null)
 			return core.remRF(maxExtract,simulate);
 		return 0;
@@ -97,14 +96,14 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	@Override
 	public boolean canConnectEnergy(ForgeDirection from)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
+		TardisCoreTileEntity core = getCore();
 		return core != null;
 	}
 
 	@Override
 	public int getEnergyStored(ForgeDirection from)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
+		TardisCoreTileEntity core = getCore();
 		if(core != null)
 			return core.getRF();
 		return 0;
@@ -113,7 +112,7 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	@Override
 	public int getMaxEnergyStored(ForgeDirection from)
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(parentObj);
+		TardisCoreTileEntity core = getCore();
 		if(core != null)
 			return core.getMaxRF();
 		return 0;

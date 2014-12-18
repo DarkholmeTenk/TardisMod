@@ -14,6 +14,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
 import tardis.client.renderer.LabRenderer;
+import tardis.client.renderer.LandingPadRenderer;
 import tardis.client.renderer.TardisComponentRenderer;
 import tardis.client.renderer.TardisConsoleRenderer;
 import tardis.client.renderer.TardisCoreRenderer;
@@ -24,6 +25,7 @@ import tardis.common.TardisProxy;
 import tardis.common.core.Helper;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.core.TardisOutput;
+import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
@@ -65,6 +67,7 @@ public class TardisClientProxy extends TardisProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(TardisComponentTileEntity.class, new TardisComponentRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TardisEngineTileEntity.class, new TardisEngineRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(LabTileEntity.class, new LabRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(LandingPadTileEntity.class, new LandingPadRenderer());
 		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, new TardisSonicScrewdriverRenderer());
 	}
 	

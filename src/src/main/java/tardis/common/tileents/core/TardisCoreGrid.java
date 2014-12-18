@@ -83,7 +83,6 @@ public class TardisCoreGrid implements IGridBlock
 	@Override
 	public IGridHost getMachine()
 	{
-		TardisOutput.print("TCoreG", "Core get");
 		return Helper.getTardisCore(coreCoords.getWorld());
 	}
 

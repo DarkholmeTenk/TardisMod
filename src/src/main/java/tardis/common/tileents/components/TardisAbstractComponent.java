@@ -3,6 +3,7 @@ package tardis.common.tileents.components;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.common.core.Helper;
 import tardis.common.tileents.TardisComponentTileEntity;
+import tardis.common.tileents.TardisCoreTileEntity;
 
 public abstract class TardisAbstractComponent implements ITardisComponent
 {
@@ -42,6 +43,13 @@ public abstract class TardisAbstractComponent implements ITardisComponent
 	public void revive(TardisComponentTileEntity parent)
 	{
 		parentAdded(parent);
+	}
+	
+	public TardisCoreTileEntity getCore()
+	{
+		if(parentObj != null)
+			return parentObj.getCore();
+		return null;
 	}
 	
 	@Override
