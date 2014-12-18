@@ -25,7 +25,7 @@ import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.items.TardisKeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
-import tardis.common.tileents.core.TardisCoreGrid;
+import tardis.common.tileents.extensions.TardisCoreGrid;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
 import net.minecraft.entity.Entity;

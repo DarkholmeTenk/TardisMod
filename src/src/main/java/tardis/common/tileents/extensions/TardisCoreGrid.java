@@ -1,4 +1,4 @@
-package tardis.common.tileents.core;
+package tardis.common.tileents.extensions;
 
 import java.util.EnumSet;
 
