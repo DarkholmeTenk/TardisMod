@@ -3,7 +3,6 @@ package tardis.common.tileents.extensions;
 import java.util.EnumSet;
 
 import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisCoreTileEntity;
 
 import net.minecraft.item.ItemStack;

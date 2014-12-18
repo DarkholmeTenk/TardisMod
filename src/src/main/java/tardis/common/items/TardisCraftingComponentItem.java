@@ -1,26 +1,23 @@
 package tardis.common.items;
 
+import java.util.EnumSet;
+
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import tardis.common.tileents.LabTileEntity;
+import tardis.common.tileents.extensions.CraftingComponentType;
+import tardis.common.tileents.extensions.LabFlag;
+import tardis.common.tileents.extensions.LabRecipe;
 
 public class TardisCraftingComponentItem extends TardisAbstractItem
 {
-	enum ComponentType {
-		CHRONOSTEEL("IngotChronosteel"),
-		DALEKANIUM("IngotDalek");
-		
-		public final String name;
-		ComponentType(String passedName)
-		{
-			name=passedName;
-		}
-	}
 	
 	private static String[] names;
 	
 	static
 	{
-		names = new String[ComponentType.values().length];
-		ComponentType[] types = ComponentType.values();
+		names = new String[CraftingComponentType.values().length];
+		CraftingComponentType[] types = CraftingComponentType.values();
 		for(int i = 0;i<names.length;i++)
 			names[i] = types[i].name;
 	}
@@ -30,16 +27,22 @@ public class TardisCraftingComponentItem extends TardisAbstractItem
 		setUnlocalizedName("CraftingComponent");
 		setSubNames(names);
 	}
-	
-	public ItemStack getIS(ComponentType type, int amount)
-	{
-		return new ItemStack(this,amount,type.ordinal());
-	}
 
 	@Override
 	public void initRecipes()
 	{
-		
+		LabRecipe currentRecipe = new LabRecipe(
+				new ItemStack[] { new ItemStack(Items.iron_ingot)},
+				new ItemStack[]{CraftingComponentType.CHRONOSTEEL.getIS(1)},
+				EnumSet.of(LabFlag.INFLIGHT),
+				100);
+		LabTileEntity.addRecipe(currentRecipe);
+		currentRecipe = new LabRecipe(
+				new ItemStack[] { new ItemStack(Items.gold_ingot) },
+				new ItemStack[] { CraftingComponentType.DALEKANIUM.getIS(1) },
+				EnumSet.noneOf(LabFlag.class),
+				100);
+		LabTileEntity.addRecipe(currentRecipe);
 	}
 
 }

@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ImageBufferDownload;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
@@ -68,6 +69,7 @@ public class TardisClientProxy extends TardisProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(TardisEngineTileEntity.class, new TardisEngineRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(LabTileEntity.class, new LabRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(LandingPadTileEntity.class, new LandingPadRenderer());
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.labBlock), new LabRenderer());
 		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, new TardisSonicScrewdriverRenderer());
 	}
 	
