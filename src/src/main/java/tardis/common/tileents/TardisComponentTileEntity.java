@@ -89,6 +89,8 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	
 	protected void reviveComps()
 	{
+		if(!Helper.isServer())
+			return;
 		if(comps.size() > 0)
 		{
 			for(ITardisComponent comp : comps.values())
