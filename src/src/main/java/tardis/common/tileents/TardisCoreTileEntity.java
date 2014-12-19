@@ -536,7 +536,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				TardisTileEntity te = getExterior();
 				
 				timeTillTakenOff	= (20 * 11);
-				if(isMoving())
+				if(isFastLanding())
 					timeTillLanding		= timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
 				else
 					timeTillLanding		= timeTillTakenOff;
