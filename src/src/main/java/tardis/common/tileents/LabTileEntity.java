@@ -150,7 +150,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 						inventory[i] = is.copy();
 						break;
 					}
-					else if(inventory[i].getItem().equals(is.getItem()))
+					else if(Helper.sameItem(inventory[i], is))
 					{
 						if(inventory[i].stackSize + is.stackSize <= inventory[i].getMaxStackSize())
 						{
@@ -354,7 +354,6 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 	@Override
 	public boolean canExtractItem(int slot, ItemStack item, int side)
 	{
-		TardisOutput.print("LTE","Extraction attempt:" + side);
 		if(side < 0 || side >= 2 || item == null)
 			return false;
 		return slot >= 5;

@@ -2,6 +2,7 @@ package tardis.common.tileents.extensions;
 
 import net.minecraft.item.ItemStack;
 import tardis.TardisMod;
+import tardis.common.core.TardisOutput;
 
 public enum CraftingComponentType {
 	CHRONOSTEEL("IngotChronosteel"),
@@ -15,6 +16,7 @@ public enum CraftingComponentType {
 	
 	public ItemStack getIS(int amount)
 	{
-		return new ItemStack(TardisMod.craftingComponentItem,1,ordinal());
+		TardisOutput.print("CCT", "Getting IS for :" + name + " returning " + ordinal());
+		return new ItemStack(TardisMod.craftingComponentItem,amount,ordinal());
 	}
 }

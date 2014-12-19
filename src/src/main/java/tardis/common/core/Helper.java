@@ -160,10 +160,10 @@ public class Helper
 	
 	public static boolean sameItem(ItemStack a, ItemStack b)
 	{
-		if(a == null || b == null)
+		if(a == null ^ b == null)
 			return false;
 		if(a.getItem() != null)
-			return a.getItem().equals(b.getItem());
+			return a.getItem().equals(b.getItem()) && a.getItemDamage() == b.getItemDamage();
 		return false;
 	}
 	
