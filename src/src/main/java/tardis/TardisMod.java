@@ -73,7 +73,7 @@ import cpw.mods.fml.common.network.FMLEventChannel;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid="TardisMod",name="Tardis Mod",version="0.031",dependencies="required-after:FML; after:appliedenergistics2; after:Waila")
+@Mod(modid="TardisMod",name="Tardis Mod",version="0.035",dependencies="required-after:FML; after:appliedenergistics2; after:Waila")
 public class TardisMod
 {
 	@Instance
