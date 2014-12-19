@@ -33,6 +33,8 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 	private int preparingToUpgradeTT = -1;
 	private boolean litUp = false;
 	
+	private boolean internalOnly = false;
+	
 	private boolean hasScrew = false;
 	private NBTTagCompound screwNBT = null;
 	private int screwMode = 0;
@@ -143,6 +145,8 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			return 54;
 		else if(hit.within(3, 0.560, 0.360, 0.640, 0.438))
 			return 55;
+		else if(hit.within(3, 0.743, 0.254, 0.876, 0.375))
+			return 60;
 		else
 			TardisOutput.print("TETE", hit.toString());
 		return -1;
@@ -287,6 +291,8 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 					Helper.sendString(pl,"[ENGINE]",s);
 				}
 			}
+			else if(control == 60)
+				internalOnly = !internalOnly;
 		}
 		sendUpdate();
 	}
@@ -352,8 +358,15 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 					return 0.2;
 				}
 			}
+			if(cID == 60)
+				return internalOnly ? 1 : 0;
 		}
 		return (float)(((tt+cID) % 40) / 39.0);
+	}
+	
+	public boolean getInternalOnly()
+	{
+		return internalOnly;
 	}
 
 	@Override
@@ -446,6 +459,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 			nbt.setInteger("ptU", preparingToUpgrade.ordinal());
 		else
 			nbt.setBoolean("ptUN", false);
+		nbt.setBoolean("io", internalOnly);
 		nbt.setBoolean("hS", hasScrew);
 		nbt.setInteger("lB"			, lastButton);
 		nbt.setBoolean("lU", core.canModify(currentPerson));
@@ -462,6 +476,7 @@ public class TardisEngineTileEntity extends TardisAbstractTileEntity implements 
 		lastButtonTT	= tt;
 		litUp			= nbt.getBoolean("lU");
 		preparingToUpgradeTT = tt;
+		internalOnly = nbt.getBoolean("io");
 		if(nbt.hasKey("ptU"))
 		{
 			preparingToUpgrade = TardisUpgradeMode.getUpgradeMode(nbt.getInteger("ptU"));

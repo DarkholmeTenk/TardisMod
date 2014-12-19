@@ -123,6 +123,7 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 		compRender.renderLever(tess, tce, 1021, 1.36, -0.15, 0.4, 0, 0, 45, 0.5, 0.5, 0.5);
 		compRender.renderLever(tess, tce, 1022, 1.36, -0.15, 0.9, 0, 0, 45, 0.5, 0.5, 0.5);
 		compRender.renderButton(tess, tce, 52, 1.36, -0.15, -1.15, 0, 0, 45, 0.6, 0.6, 0.6);
+		compRender.renderPushSwitch(tess,tce, 904, 0.81, -0.68, -0.45,-45,90, 0, 0.5,  0.5,  0.5);
 	}
 	
 	@Override

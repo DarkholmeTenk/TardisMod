@@ -1,7 +1,6 @@
 package tardis.common.tileents.components;
 
 import tardis.TardisMod;
-import tardis.common.core.Helper;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -29,7 +28,7 @@ public class TardisComponentFluid extends TardisAbstractComponent implements IFl
 	{
 		if(parentObj != null && parentObj.getWorldObj() != null)
 		{
-			TardisCoreTileEntity core = Helper.getTardisCore(parentObj.getWorldObj());
+			TardisCoreTileEntity core = getCore();
 			if(core != null)
 				return core.getTanks();
 		}

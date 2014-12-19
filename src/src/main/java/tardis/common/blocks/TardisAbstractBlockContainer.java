@@ -22,6 +22,12 @@ public abstract class TardisAbstractBlockContainer extends TardisAbstractBlock i
 		this.isBlockContainer = true;
 	}
 	
+	public TardisAbstractBlockContainer(boolean b)
+	{
+		super(b);
+		this.isBlockContainer = true;
+	}
+
 	@Override
     public void onBlockAdded(World par1World, int par2, int par3, int par4)
     {

@@ -52,6 +52,7 @@ public class TardisWailaConsoleProvider implements IWailaDataProvider
 		controlNames.put(new TwoIntStore(901), "Room Deletion Control");
 		controlNames.put(new TwoIntStore(902), "Last Coordinates Store");
 		controlNames.put(new TwoIntStore(903), "Current Coordinates Store");
+		controlNames.put(new TwoIntStore(904), "Landing Pad Control");
 		controlNames.put(new TwoIntStore(1000,1019), "Save Slots");
 		controlNames.put(new TwoIntStore(1020,1022), "Flight Controls");
 	}

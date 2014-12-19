@@ -43,6 +43,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	private boolean relativeCoords    = false;
 	private boolean uncoordinated	  = false;
 	private boolean stable			  = false;
+	private boolean landOnPad		  = true;
 	
 	private boolean saveCoords = false;
 	private HashMap<Integer,ControlStateStore> states = new HashMap<Integer,ControlStateStore>();
@@ -288,6 +289,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			return 902;
 		if(hit.within(1, 2.375, 0.610, 2.497, 0.701))
 			return 903;
+		if(hit.within(2, 0.967, 0.269, 1.100, 0.368))
+			return 904;
 		if(hit.within(1, 1.700, 0.513, 2.355, 0.898))
 		{
 			int jx = (int)(5*(hit.posZ - 1.700) / (2.355 - 1.700));
@@ -337,15 +340,16 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		if(Helper.isServer())
 			return true;
 		HitPosition hit = null;
-		TardisOutput.print("TConTE", String.format("x: %d, y %d, z %d : %f, %f, %f",blockX,blockY,blockZ,i,j,k));
 		for(int cnt=0;cnt<4&&hit==null;cnt++)
 			hit = activateSide(pl,blockX, blockY, blockZ, i, j, k, cnt);
 		if(hit != null)
 		{
-			//TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
+			//
 			int controlHit = getControlFromHit(hit);
 			if(controlHit >= 0)
 				Helper.activateControl(this, pl,controlHit);
+			else
+				TardisOutput.print("TConTE", "H:" + hit.toString(),TardisOutput.Priority.DEBUG);
 		}
 		else
 			TardisOutput.print("TConTE", "No hit");
@@ -376,6 +380,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		}
 		else if(controlID == 100)
 			core.sendDestinationStrings(pl);
+		else if(controlID == 904)
+			landOnPad = !landOnPad;
 		else if(!core.inCoordinatedFlight())
 		{
 			if(isMovementControl(controlID) && (!core.inFlight() || !core.inCoordinatedFlight()))
@@ -438,7 +444,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 						uncoordinated  = !uncoordinated;
 					}
 					else
-						Helper.sendString(pl,"TARDIS","Not enough energy to take off");
+						Helper.sendString(pl,"TARDIS","Not enough energy to land");
 				}
 				else if(controlID == 60)
 				{
@@ -774,9 +780,14 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		return getYFromControls(yControls);
 	}
 	
-	public boolean getLandFromControls()
+	public boolean getLandOnGroundFromControls()
 	{
 		return landGroundControl;
+	}
+	
+	public boolean getLandOnPadFromControls()
+	{
+		return landOnPad;
 	}
 	
 	public int getFacingFromControls()
@@ -920,6 +931,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				return saveCoords ? 1 : 0;
 			if(controlID == 901)
 				return roomDeletePrepare ? 1 : 0;
+			if(controlID == 904)
+				return landOnPad ? 1 : 0;
 			if(controlID >= 1000 && controlID < 1023)
 				return lastButton == controlID ? 1 : 0;
 			return (((tickTimer + (controlID * 20)) % cycleLength) / cycleLength);
@@ -1145,6 +1158,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		saveCoords = nbt.getBoolean("saveCoords");
 		landGroundControl = nbt.getBoolean("landGroundControl");
 		unstableControl = nbt.getInteger("unstableControl");
+		landOnPad		= nbt.getBoolean("lOP");
 		clampControls();
 	}
 	
@@ -1168,6 +1182,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		nbt.setBoolean("saveCoords",saveCoords);
 		nbt.setBoolean("landGroundControl", landGroundControl);
 		nbt.setInteger("unstableControl",unstableControl);
+		nbt.setBoolean("lOP", landOnPad);
 	}
 	
 	@Override

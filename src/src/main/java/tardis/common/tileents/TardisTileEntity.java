@@ -35,7 +35,6 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	public static String baseURL = null;
 	
 	Integer linkedDimension = null;
-	TardisCoreTileEntity linkedCore = null;
 	
 	public void updateEntity()
 	{
@@ -44,8 +43,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 			baseURL = TardisMod.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
 		if(Helper.isServer())
 		{
-			if(linkedDimension != null && linkedDimension != 0 && linkedCore == null)
-				linkedCore = Helper.getTardisCore(linkedDimension);
+			TardisCoreTileEntity linkedCore = getCore();
 			if(linkedCore != null && owner == null)
 			{
 				owner = linkedCore.getOwner();
@@ -222,6 +220,13 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 		}
 	}
 	
+	public TardisCoreTileEntity getCore()
+	{
+		if(linkedDimension != null && linkedDimension != 0)
+			return Helper.getTardisCore(linkedDimension);
+		return null;
+	}
+
 	@Override
 	public void readFromNBT(NBTTagCompound tag)
 	{

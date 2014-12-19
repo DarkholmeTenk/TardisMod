@@ -1,9 +1,8 @@
-package tardis.common.tileents.core;
+package tardis.common.tileents.extensions;
 
 import java.util.EnumSet;
 
 import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisCoreTileEntity;
 
 import net.minecraft.item.ItemStack;
@@ -83,7 +82,6 @@ public class TardisCoreGrid implements IGridBlock
 	@Override
 	public IGridHost getMachine()
 	{
-		TardisOutput.print("TCoreG", "Core get");
 		return Helper.getTardisCore(coreCoords.getWorld());
 	}
 

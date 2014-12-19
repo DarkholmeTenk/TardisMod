@@ -11,6 +11,7 @@ import tardis.client.TardisClientProxy;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -18,6 +19,7 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class TardisAbstractTileEntity extends TileEntity
 {
@@ -37,12 +39,25 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 		return p;
 	}
 	
+	public void updateNeighbours()
+	{
+		Block b = worldObj.getBlock(xCoord, yCoord, zCoord);
+		for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
+		{
+			Block d = worldObj.getBlock(xCoord+dir.offsetX,yCoord+dir.offsetY,zCoord+dir.offsetZ);
+			if(d != null)
+				d.onNeighborBlockChange(worldObj, xCoord+dir.offsetX,yCoord+dir.offsetY,zCoord+dir.offsetZ, b);
+		}
+	}
+	
 	public void sendUpdate()
 	{
 		if(worldObj.playerEntities == null || worldObj.playerEntities.size() == 0)
 			return;
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
+	
+	public void init() {}
 	
 	@Override
 	public void updateEntity()

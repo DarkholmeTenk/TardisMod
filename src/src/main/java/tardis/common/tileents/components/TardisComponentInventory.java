@@ -3,7 +3,6 @@ package tardis.common.tileents.components;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import tardis.common.core.Helper;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
 
@@ -20,13 +19,6 @@ public class TardisComponentInventory extends TardisAbstractComponent implements
 	public ITardisComponent create(TardisComponentTileEntity parent)
 	{
 		return new TardisComponentInventory(parent);
-	}
-	
-	private TardisCoreTileEntity getCore()
-	{
-		if(parentObj != null && parentObj.getWorldObj() != null)
-			return Helper.getTardisCore(parentObj.getWorldObj());
-		return null;
 	}
 
 	@Override
@@ -115,7 +107,9 @@ public class TardisComponentInventory extends TardisAbstractComponent implements
 	@Override
 	public void markDirty()
 	{
-		Helper.getTardisCore(parentObj.getWorldObj()).markDirty();
+		TardisCoreTileEntity core = getCore();
+		if(core != null)
+			core.markDirty();
 	}
 
 	@Override

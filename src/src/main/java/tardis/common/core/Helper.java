@@ -29,6 +29,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -156,6 +157,42 @@ public class Helper
 		}
 		return p;
 	}*/
+	
+	public static boolean sameItem(ItemStack a, ItemStack b)
+	{
+		if(a == null || b == null)
+			return false;
+		if(a.getItem() != null)
+			return a.getItem().equals(b.getItem());
+		return false;
+	}
+	
+	public static ItemStack transferItemStack(ItemStack is, IInventory dest)
+	{
+		int size = dest.getSizeInventory();
+		ItemStack remaining = is.copy();
+		for(int i = 0;i<size&&remaining.stackSize>0;i++)
+		{
+			if(dest.isItemValidForSlot(i, remaining))
+			{
+				ItemStack inSlot = dest.getStackInSlot(i);
+				if(inSlot == null)
+				{
+					dest.setInventorySlotContents(i, remaining);
+					return null;
+				}
+				else if(sameItem(remaining,inSlot))
+				{
+					int am = Math.min(remaining.stackSize, inSlot.getMaxStackSize()-inSlot.stackSize);
+					inSlot.stackSize+=am;
+					remaining.stackSize -= am;
+				}
+			}
+		}
+		if(remaining.stackSize > 0)
+			return remaining;
+		return null;
+	}
 	
 	public static void giveItemStack(EntityPlayer pl, ItemStack is)
 	{
@@ -610,5 +647,19 @@ public class Helper
 	public static void sendString(EntityPlayer pl, ChatComponentText message)
 	{
 		pl.addChatMessage(message);
+	}
+
+	public static boolean isTardisWorld(World worldObj)
+	{
+		if(worldObj != null)
+		{
+			return worldObj.provider instanceof TardisWorldProvider;
+		}
+		return false;
+	}
+
+	public static void sendString(EntityPlayer pl, String string)
+	{
+		sendString(pl, new ChatComponentText(string));
 	}
 }

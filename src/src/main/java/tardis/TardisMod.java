@@ -8,6 +8,8 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
+import tardis.common.blocks.LabBlock;
+import tardis.common.blocks.LandingPadBlock;
 import tardis.common.blocks.TardisAbstractBlock;
 import tardis.common.blocks.TardisBlock;
 import tardis.common.blocks.TardisComponentBlock;
@@ -44,10 +46,13 @@ import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.items.TardisAbstractItem;
 import tardis.common.items.TardisComponentItem;
+import tardis.common.items.TardisCraftingComponentItem;
 import tardis.common.items.TardisKeyItem;
 import tardis.common.items.TardisSchemaItem;
 import tardis.common.items.TardisSonicScrewdriverItem;
 import tardis.common.network.TardisPacketHandler;
+import tardis.common.tileents.LabTileEntity;
+import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.TardisComponentTileEntity;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import tardis.common.tileents.TardisCoreTileEntity;
@@ -113,11 +118,15 @@ public class TardisMod
 	public static TardisAbstractBlock schemaCoreBlock;
 	public static TardisAbstractBlock schemaComponentBlock;
 	public static TardisAbstractBlock debugBlock;
+	public static TardisAbstractBlock landingPad;
 	public static TardisStairBlock	  stairBlock;
 	public static TardisSlabBlock	  slabBlock;
 	
+	public static LabBlock	labBlock;
+	
 	public static TardisAbstractItem schemaItem;
 	public static TardisAbstractItem componentItem;
+	public static TardisCraftingComponentItem craftingComponentItem;
 	public static TardisKeyItem keyItem;
 	public static TardisSonicScrewdriverItem screwItem;
 	
@@ -187,8 +196,7 @@ public class TardisMod
 	{
 		System.out.println("POSTINIT");
 		aeAPI = AEApi.instance();
-		keyItem.initRecipes();
-		componentItem.initRecipes();
+		initRecipes();
 		FMLCommonHandler.instance().bus().register(dimEventHandler);
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		inited = true;
@@ -247,6 +255,14 @@ public class TardisMod
 		
 		slabBlock = new TardisSlabBlock();
 		GameRegistry.registerBlock(slabBlock,TardisSlabItemBlock.class,slabBlock.getUnlocalizedName());
+		
+		landingPad = new LandingPadBlock();
+		GameRegistry.registerBlock(landingPad, landingPad.getUnlocalizedName());
+		GameRegistry.registerTileEntity(LandingPadTileEntity.class, landingPad.getUnlocalizedName());
+		
+		labBlock	= new LabBlock();
+		GameRegistry.registerBlock(labBlock, labBlock.getUnlocalizedName());
+		GameRegistry.registerTileEntity(LabTileEntity.class, labBlock.getUnlocalizedName());
 	}
 	
 	private void initItems()
@@ -262,6 +278,18 @@ public class TardisMod
 		
 		componentItem = new TardisComponentItem();
 		GameRegistry.registerItem(componentItem, componentItem.getUnlocalizedName());
+		
+		craftingComponentItem = new TardisCraftingComponentItem();
+		GameRegistry.registerItem(craftingComponentItem, craftingComponentItem.getUnlocalizedName());
+		
+	}
+	
+	private void initRecipes()
+	{
+		keyItem.initRecipes();
+		componentItem.initRecipes();
+		landingPad.initRecipes();
+		craftingComponentItem.initRecipes();
 	}
 	
 	@EventHandler

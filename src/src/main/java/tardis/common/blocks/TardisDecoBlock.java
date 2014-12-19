@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 public class TardisDecoBlock extends TardisAbstractBlock
 {
 	private final boolean lit;
-	private static final String[] subs = {"Floor","Wall","Roundel","Corridor","CorridorRoundel","CorridorFloor","Glass", "WallPlain","Ladder"};
+	private static final String[] subs = {"Floor","Wall","Roundel","Corridor","CorridorRoundel","CorridorFloor","Glass", "WallPlain"};
 	private static String[] suffixes = {"topbottom","side"};
 	
 	public TardisDecoBlock(boolean light)
@@ -42,14 +42,12 @@ public class TardisDecoBlock extends TardisAbstractBlock
 	@Override
 	public String[] getIconSuffix()
 	{
-		return suffixes;
+		return null;
 	}
 	
 	@Override
 	public String[] getIconSuffix(int meta)
 	{
-		if(meta == 8)
-			return suffixes;
 		return null;
 	}
 	
