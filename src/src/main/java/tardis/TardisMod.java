@@ -288,6 +288,7 @@ public class TardisMod
 	{
 		keyItem.initRecipes();
 		componentItem.initRecipes();
+		labBlock.initRecipes();
 		landingPad.initRecipes();
 		craftingComponentItem.initRecipes();
 	}
