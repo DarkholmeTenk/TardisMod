@@ -476,6 +476,27 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return true;
 	}
 	
+	public boolean isMoving()
+	{
+		TardisConsoleTileEntity con = getConsole();
+		if(con == null)
+			return false;
+		int[] posArr = new int[] {
+				con.getXFromControls(exteriorX),
+				con.getYFromControls(exteriorY),
+				con.getZFromControls(exteriorZ)};
+		if(posArr[0] != exteriorX)
+			return true;
+		if(posArr[1] != exteriorY)
+			return true;
+		if(posArr[2] != exteriorZ)
+			return true;
+		int dim = con.getDimFromControls();
+		if(dim != exteriorWorld)
+			return true;
+		return false;
+	}
+	
 	public boolean takeOffEnergy(EntityPlayer pl)
 	{
 		TardisConsoleTileEntity con = getConsole();
@@ -515,7 +536,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				TardisTileEntity te = getExterior();
 				
 				timeTillTakenOff	= (20 * 11);
-				timeTillLanding		= timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
+				if(isMoving())
+					timeTillLanding		= timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
+				else
+					timeTillLanding		= timeTillTakenOff;
 				timeTillLandingInt	= timeTillLanding + (isFastLanding() ? 20 * 5 : 20 * 17);
 				timeTillLanded		= timeTillLanding + (isFastLanding() ? 20 * 5 : 20 * 22);
 				numButtons = (timeTillLanding - timeTillTakenOff) / getButtonTime();
@@ -884,7 +908,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public boolean isFastLanding()
 	{
-		return getSpeed(true) > 8;
+		if(isMoving())
+			return getSpeed(true) > 8;
+		return true;
 	}
 	
 	public double addSpeed(double a)
