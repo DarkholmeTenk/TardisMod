@@ -339,7 +339,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 	public int[] getAccessibleSlotsFromSide(int side)
 	{
 		if(side >= 0 && side < 2)
-			return sideAccessibility[side];
+			return sideAccessibility[2];
 		return new int[]{};
 	}
 

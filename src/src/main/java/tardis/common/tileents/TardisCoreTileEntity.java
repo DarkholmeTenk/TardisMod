@@ -1,6 +1,7 @@
 package tardis.common.tileents;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -478,23 +479,107 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return true;
 	}
 	
+	private int[] scanForValidPos(World w, int[] current)
+	{
+		int[] check = {0,1,-1,2,-2, 3,-3, 4,-4, 5,-5, 6,-6,7,-7,8,-8,9,-9};
+		for(int i=0;i<check.length;i++)
+		{
+			int yO = check[i];
+			for(int j=0;j<check.length;j++)
+			{
+				int xO = check[j];
+				for(int k=0;k<check.length;k++)
+				{
+					int zO = check[k];
+					if(isValidPos(w,current[0]+xO,current[1]+yO,current[2]+zO))
+					{
+						return new int[] { current[0]+xO,current[1]+yO,current[2]+zO };
+					}
+				} 
+			}
+		}
+		return current;
+	}
+
+	private int[] scanForLandingPad(World w, int[] current)
+	{
+		int[] check = { 0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, -6, 6 };
+		for(int i = 0;i<check.length;i++)
+		{
+			int xO = check[i];
+			for(int j = 0;j<check.length;j++)
+			{
+				int zO = check[j];
+				for(int k = 0;k<check.length;k++)
+				{
+					int yO = check[k];
+					TileEntity te = w.getTileEntity(current[0]+xO, current[1]+yO, current[2]+zO);
+					if(te instanceof LandingPadTileEntity)
+					{
+						if(((LandingPadTileEntity)te).isClear())
+						{
+							return new int[] { current[0]+xO, current[1]+yO+1, current[2]+zO };
+						}
+					}
+				}
+			}
+		}
+		return current;
+	}
+
+	public int[] findGround(World w, int[] curr)
+	{
+		if(softBlock(w,curr[0], curr[1]-1, curr[2]))
+		{
+			int newY = curr[1]-2;
+			while(newY > 0 && softBlock(w,curr[0],newY,curr[2]))
+				newY--;
+			return new int[] { curr[0], newY+1, curr[2] };
+		}
+		return curr;
+	}
+	
+	private int[] getModifiedControls(TardisConsoleTileEntity con, int[] posArr)
+	{
+		if(con== null)
+			return posArr;
+		World w = Helper.getWorld(con.getDimFromControls());
+		if(w == null)
+			return posArr;
+		
+		if(!(isValidPos(w,posArr[0], posArr[1], posArr[2])))
+		{
+			if(posArr[0] != exteriorX || posArr[1] != exteriorY || posArr[2] != exteriorZ)
+				posArr = scanForValidPos(w,posArr);
+		}
+		if(con.getLandOnGroundFromControls())
+			posArr = findGround(w, posArr);
+		if(con.getLandOnPadFromControls())
+			posArr = scanForLandingPad(w,posArr);
+		return posArr;
+	}
+
 	public boolean isMoving()
 	{
+		if(exteriorWorld == 10000)
+			return false;
 		TardisConsoleTileEntity con = getConsole();
 		if(con == null)
 			return false;
+		int dim = con.getDimFromControls();
+		if(dim != exteriorWorld)
+			return true;
 		int[] posArr = new int[] {
 				con.getXFromControls(exteriorX),
 				con.getYFromControls(exteriorY),
 				con.getZFromControls(exteriorZ)};
+		posArr = getModifiedControls(con,posArr);
+		TardisOutput.print("TCTE", "Moving to :" + Arrays.toString(posArr) + " from " + exteriorX +","+exteriorY+","+exteriorZ);
 		if(posArr[0] != exteriorX)
 			return true;
 		if(posArr[1] != exteriorY)
 			return true;
 		if(posArr[2] != exteriorZ)
-			return true;
-		int dim = con.getDimFromControls();
-		if(dim != exteriorWorld)
 			return true;
 		return false;
 	}
@@ -538,12 +623,12 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				TardisTileEntity te = getExterior();
 				fast = isFastLanding();
 				timeTillTakenOff	= (20 * 11);
-				if(fast)
+				if(!fast)
 					timeTillLanding		= timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
 				else
 					timeTillLanding		= timeTillTakenOff;
-				timeTillLandingInt	= timeTillLanding + (isFastLanding() ? 0 : 20 * 17);
-				timeTillLanded		= timeTillLanding + (isFastLanding() ? 20 * 5 : 20 * 22);
+				timeTillLandingInt	= timeTillLanding + (fast ? 0 : 20 * 17);
+				timeTillLanded		= timeTillLanding + (fast ? 20 * 5 : 20 * 22);
 				numButtons = (timeTillLanding - timeTillTakenOff) / getButtonTime();
 				oldExteriorWorld = exteriorWorld;
 				TardisOutput.print("TCTE","Flight times : " +(fast ? "FAST ": "SLOW ")+ timeTillTakenOff+ ">"+timeTillLanding+">" + timeTillLandingInt+">"+timeTillLanded);
@@ -580,66 +665,6 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return rand.nextInt(Math.max(0,2 * instability)) - instability;
 	}
 	
-	private int[] scanForValidPos(World w, int[] current)
-	{
-		int[] check = {0,1,-1,2,-2, 3,-3, 4,-4, 5,-5, 6,-6,7,-7,8,-8,9,-9};
-		for(int i=0;i<check.length;i++)
-		{
-			int yO = check[i];
-			for(int j=0;j<check.length;j++)
-			{
-				int xO = check[j];
-				for(int k=0;k<check.length;k++)
-				{
-					int zO = check[k];
-					if(isValidPos(w,current[0]+xO,current[1]+yO,current[2]+zO))
-					{
-						return new int[] { current[0]+xO,current[1]+yO,current[2]+zO };
-					}
-				} 
-			}
-		}
-		return current;
-	}
-	
-	private int[] scanForLandingPad(World w, int[] current)
-	{
-		int[] check = { 0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, -6, 6 };
-		for(int i = 0;i<check.length;i++)
-		{
-			int xO = check[i];
-			for(int j = 0;j<check.length;j++)
-			{
-				int zO = check[j];
-				for(int k = 0;k<check.length;k++)
-				{
-					int yO = check[k];
-					TileEntity te = w.getTileEntity(current[0]+xO, current[1]+yO, current[2]+zO);
-					if(te instanceof LandingPadTileEntity)
-					{
-						if(((LandingPadTileEntity)te).isClear())
-						{
-							return new int[] { current[0]+xO, current[1]+yO+1, current[2]+zO };
-						}
-					}
-				}
-			}
-		}
-		return current;
-	}
-	
-	public int[] findGround(World w, int[] curr)
-	{
-		if(softBlock(w,curr[0], curr[1]-1, curr[2]))
-		{
-			int newY = curr[1]-2;
-			while(newY > 0 && softBlock(w,curr[0],newY,curr[2]))
-				newY--;
-			return new int[] { curr[0], newY+1, curr[2] };
-		}
-		return curr;
-	}
-	
 	private void placeBox()
 	{
 		if(!Helper.isServer() || hasValidExterior())
@@ -656,14 +681,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				con.getYFromControls(exteriorY),
 				con.getZFromControls(exteriorZ) + getOffsetFromInstability() };
 		int facing = con.getFacingFromControls();
+		posArr = getModifiedControls(con,posArr);
 		World w = Helper.getWorld(con.getDimFromControls());
-		
-		if(!(isValidPos(w,posArr[0], posArr[1], posArr[2])))
-			posArr = scanForValidPos(w,posArr);
-		if(con.getLandOnGroundFromControls())
-			posArr = findGround(w, posArr);
-		if(con.getLandOnPadFromControls())
-			posArr = scanForLandingPad(w,posArr);
 		w.setBlock(posArr[0], posArr[1], posArr[2], TardisMod.tardisBlock, facing, 3);
 		w.setBlock(posArr[0], posArr[1]+1, posArr[2], TardisMod.tardisTopBlock, facing, 3);
 		
@@ -912,7 +931,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public boolean isFastLanding()
 	{
 		if(isMoving())
+		{
+			TardisOutput.print("TCTE", "Definitely moving?");
 			return getSpeed(true) > getMaxSpeed();
+		}
 		return true;
 	}
 	
