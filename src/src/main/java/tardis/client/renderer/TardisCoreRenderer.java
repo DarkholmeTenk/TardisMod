@@ -56,6 +56,7 @@ public class TardisCoreRenderer extends TardisAbstractBlockRenderer
 	{
 		GL11.glTranslated(0, 0.0675, 0);
 		GL11.glScaled(0.8, 0.65, 0.8);
+		GL11.glRotated(180, 0, 0, 1);
 		oct.renderAll();
 	}
 	

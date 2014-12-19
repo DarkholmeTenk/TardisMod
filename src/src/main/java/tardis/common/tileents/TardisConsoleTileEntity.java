@@ -35,8 +35,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	private int   facing    = 0;
 	private int   dimControl = 0;
-	private int[] xControls = new int[6];
-	private int[] zControls = new int[6];
+	private int[] xControls = new int[7];
+	private int[] zControls = new int[7];
 	private int[] yControls = new int[4];
 	private boolean landGroundControl = false;
 	private boolean dayNightControl   = false;
@@ -71,7 +71,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	private int screwMode = 0;
 
 	{
-		for(int i = 0;i<6;i++)
+		for(int i = 0;i<7;i++)
 		{
 			xControls[i] = 0;
 			zControls[i] = 0;
@@ -230,23 +230,26 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		if(hit.within(3, 1.361, 0.626, 1.634, 0.826))
 			return 11;
 		if(hit.within(3, 0.981, 0.626, 1.210, 0.826))
+			return 16;
+		if(hit.within(3, 1.513, 0.178, 1.681, 0.461))
 			return 12;
-		if(hit.within(3, 1.361, 0.268, 1.634, 0.431))
+		if(hit.within(3, 1.303, 0.178, 1.486, 0.461))
 			return 13;
 		if(hit.within(3, 1.694, 0.227, 1.951, 0.408))
 			return 14;
 		if(hit.within(3, 1.039, 0.257, 1.238, 0.417))
 			return 15;
-		if(hit.within(1, 1.145, 0.207, 1.259, 0.443))
+		//if(hit.within(1, 1.145, 0.207, 1.259, 0.443))
+		if(hit.within(1, 1.026, 0.207, 1.169, 0.443))
 			return 20;
-		if(hit.within(1, 1.333, 0.207, 1.465, 0.443))
+		if(hit.within(1, 1.221, 0.207, 1.379, 0.443))
 			return 21;
-		if(hit.within(1, 1.531, 0.207, 1.648, 0.443))
+		if(hit.within(1, 1.426, 0.207, 1.564, 0.443))
+			return 26;
+		if(hit.within(1, 1.638, 0.207, 1.769, 0.443))
 			return 22;
-		if(hit.within(1, 1.730, 0.207, 1.856, 0.443))
+		if(hit.within(1, 1.827, 0.207, 1.969, 0.443))
 			return 23;
-		if(hit.within(1, 0.650, 0.664, 0.943, 0.856))	//Z Wheel 1
-			return 24;
 		if(hit.within(1, 1.264, 0.664, 1.545, 0.856))	//Z Wheel 2
 			return 25;
 		if(hit.within(2, 1.730, 0.147, 1.859, 0.470))
@@ -393,7 +396,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				}
 				if(controlID == 3)
 					facing = Helper.cycle(facing+(pl.isSneaking()?-1:1), 0, 3);
-				else if(controlID >= 10 && controlID < 14)
+				else if(controlID >= 10 && controlID < 14 || controlID == 16)
 				{
 					if(pl.isSneaking())
 						xControls[controlID - 10] --;
@@ -409,7 +412,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 						xControls[controlID - 10] = Helper.cycle(xControls[controlID - 10] + 1,0,7);
 					clampControls(xControls);
 				}
-				else if(controlID >= 20 && controlID < 24)
+				else if(controlID >= 20 && controlID < 24 || controlID == 26)
 				{
 					if(pl.isSneaking())
 						zControls[controlID - 20] --;
@@ -703,7 +706,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	private static int[] getControlsFromDest(int dest)
 	{
-		int[] temp = new int[6];
+		int[] temp = new int[7];
 		int c = 0;
 		for(int i=-5;i<=5;i++)
 		{
@@ -733,6 +736,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				}
 			}
 		}
+		temp[6] = Helper.clamp((dest-c)/71, -6, 6);
+		c += (71 * temp[6]);
 		temp[2] = Helper.clamp((dest-c)/6,-5,5);
 		c += (6*temp[2]);
 		temp[3] = Helper.clamp(dest-c ,-5,5);
@@ -744,7 +749,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	{
 		int controlOne = control[0] * (int) Math.pow(4,control[4]+1);
 		int controlTwo = control[1] * (int) Math.pow(2,control[5]+1);
-		int controlThree = control[2] * 6 + control[3];
+		int controlThree = (71 * control[6]) + (control[2] * 6) + control[3];
 		return controlOne + controlTwo + controlThree;
 	}
 	
@@ -835,12 +840,12 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	private void clampControls()
 	{
-		if(xControls == null || xControls.length != 6)
-			xControls = new int[6];
+		if(xControls == null || xControls.length != 7)
+			xControls = ControlStateStore.fixControls(xControls);
 		if(yControls == null || yControls.length != 4)
 			yControls = new int[4];
-		if(zControls == null || zControls.length != 6)
-			zControls = new int[6];
+		if(zControls == null || zControls.length != 7)
+			zControls = ControlStateStore.fixControls(zControls);
 		clampControls(xControls);
 		clampControls(yControls);
 		clampControls(zControls);
@@ -848,7 +853,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	
 	private void clampControls(int[] controls)
 	{
-		if(controls.length == 6)
+		if(controls.length == 7)
 		{
 			controls[0] = Helper.clamp(controls[0], -5, 5);
 			controls[1] = Helper.clamp(controls[1], -5, 5);
@@ -856,6 +861,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			controls[3] = Helper.clamp(controls[3], -5, 5);
 			controls[4] = Helper.clamp(controls[4], 0, 7);
 			controls[5] = Helper.clamp(controls[5], 0, 7);
+			controls[6] = Helper.clamp(controls[6], -6, 6);
 		}
 		else if(controls.length == 4)
 		{
@@ -899,10 +905,14 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				return (core.getXP() / core.getXPNeeded());
 			if(controlID >= 10 && controlID < 14)
 				return ((double) (xControls[controlID-10] + 5) / 10);
+			if(controlID == 16)
+				return ((double) (xControls[6] + 6) / 12);
 			if(controlID >= 14 && controlID < 16)
 				return xControls[controlID - 10] / 8.0;
 			if(controlID >= 20 && controlID < 24)
 				return ((double) (zControls[controlID-20] + 5) / 10);
+			if(controlID == 26)
+				return ((double) (zControls[6] + 6) / 12);
 			if(controlID >= 24 && controlID < 26)
 				return zControls[controlID - 20] / 8.0;
 			if(controlID >= 30 && controlID < 34)
@@ -956,9 +966,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			{
 				return new String[] {"XP:     " + core.getXP() + "/" + core.getXPNeeded(),"Level: " + core.getLevel()};
 			}
-			if(controlID >= 10 && controlID < 16)
+			if(controlID >= 10 && controlID < 17)
 				return new String[] {"Set to " + xControls[controlID-10]};
-			if(controlID >= 20 && controlID < 26)
+			if(controlID >= 20 && controlID < 27)
 				return new String[] {"Set to " + zControls[controlID-20]};
 			if(controlID >= 30 && controlID < 34)
 				return new String[] {"Set to " + yControls[controlID-30]};
