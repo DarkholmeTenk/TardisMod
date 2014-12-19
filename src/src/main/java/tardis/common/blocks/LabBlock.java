@@ -37,7 +37,7 @@ public class LabBlock extends TardisAbstractBlockContainer
 	@Override
 	public void initRecipes()
 	{
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,1),true, "igi","ioi","iri",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.labBlock,1,0),true, "igi","ioi","iri",
 				'i', Items.iron_ingot,
 				'g', Blocks.glass,
 				'o', Items.gold_ingot,

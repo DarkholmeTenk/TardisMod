@@ -34,7 +34,6 @@ public abstract class TardisAbstractBlock extends Block
 		setHardness(-1.0f);
 		setCreativeTab(TardisMod.tab);
 		initData();
-		initRecipes();
 		renderIcon = true;
 		if(subNames == null)
 			setIconArray(1);
