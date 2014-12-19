@@ -50,6 +50,7 @@ public class TardisEngineRenderer extends TardisAbstractBlockRenderer
 	
 	private void renderLeft(Tessellator tess, TardisEngineTileEntity eng, TardisCoreTileEntity core)
 	{
+		comps.renderPushSwitch(tess, eng, 60, 0.3, 0.788, 1.045, -90, 0, 0, 0.5, 0.5, 0.5);
 		comps.renderScrewdriverHolder(tess, eng, 0.6, 0.5, 1.05, -90, 0, 0, 0.5, 0.5, 0.5);
 		comps.renderScrewdriver(tess, eng, 0, 0.6, 0.5, 1.1, -90, 0, 0, 0.5, 0.5, 0.5);
 		comps.renderButton(tess,eng, 41, 0.3, 0.388, 1.02, -90, 0, 0, 0.3, 0.3, 0.3);

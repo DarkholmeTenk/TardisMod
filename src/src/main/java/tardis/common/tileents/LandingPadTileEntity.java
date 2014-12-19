@@ -33,6 +33,11 @@ public class LandingPadTileEntity extends TardisComponentTileEntity
 		return null;
 	}
 	
+	public boolean hasTardis()
+	{
+		return getCore() != null;
+	}
+	
 	@Override
 	public void updateEntity()
 	{
@@ -50,5 +55,10 @@ public class LandingPadTileEntity extends TardisComponentTileEntity
 				restart();
 			}
 		}
+	}
+
+	public boolean isClear()
+	{
+		return worldObj.isAirBlock(xCoord, yCoord+1, zCoord) && worldObj.isAirBlock(xCoord, yCoord+2, zCoord);
 	}
 }

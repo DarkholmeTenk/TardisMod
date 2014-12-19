@@ -115,6 +115,7 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	{
 		killComps();
 		reviveComps();
+		updateNeighbours();
 	}
 	
 	@Override

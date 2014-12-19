@@ -60,21 +60,6 @@ public class TardisComponentRenderer extends TardisAbstractBlockRenderer
 		if(te instanceof TardisComponentTileEntity)
 		{
 			TardisComponentTileEntity tcte = ((TardisComponentTileEntity)te);
-			/*double ang = 360 / TardisTEComponent.values().length;
-			if(tcte.hasComponent(TardisTEComponent.GRID))
-				renderStick("stickGrid",0.1,0, 0*ang);
-			if(tcte.hasComponent(TardisTEComponent.TRANSMAT))
-				renderStick("stickTrans",0.1,0,1*ang);
-			if(tcte.hasComponent(TardisTEComponent.ENERGY))
-				renderStick("stickEnergy",0.1,0,2*ang);
-			if(tcte.hasComponent(TardisTEComponent.INVENTORY))
-				renderStick("stickInv",0.1,0,3*ang);
-			if(tcte.hasComponent(TardisTEComponent.FLUID))
-				renderStick("stickFlu",0.1,0,4*ang);
-			if(tcte.hasComponent(TardisTEComponent.CHUNK))
-				renderStick("stickChLo",0.1,0,4*ang);
-			if(tcte.hasComponent(TardisTEComponent.COMPUTER))
-				renderStick("stickPer",0.1,0,4*ang);*/
 			int count =0;
 			for(TardisTEComponent comp : TardisTEComponent.values())
 				if(tcte.hasComponent(comp))

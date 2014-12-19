@@ -96,8 +96,7 @@ public class TardisComponentEnergy extends TardisAbstractComponent implements IE
 	@Override
 	public boolean canConnectEnergy(ForgeDirection from)
 	{
-		TardisCoreTileEntity core = getCore();
-		return core != null;
+		return true;
 	}
 
 	@Override

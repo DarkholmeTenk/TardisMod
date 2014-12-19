@@ -10,9 +10,11 @@ import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.extensions.LabRecipe;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInventory, IActivatable
 {
@@ -185,6 +187,22 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 		}
 	}
 	
+	private void attemptToEmpty()
+	{
+		TileEntity out = worldObj.getTileEntity(xCoord, yCoord-1, zCoord);
+		if(out instanceof IInventory)
+		{
+			for(int i = 5;i<10;i++)
+			{
+				ItemStack is = inventory[i];
+				if(is != null)
+				{
+					inventory[i] = Helper.transferItemStack(is, (IInventory)out);
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void updateEntity()
 	{
@@ -194,6 +212,8 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 			sendUpdate();
 		if((!Helper.isServer()) && isGeneratingEnergy(null,null))
 			moveSticks();
+		if(Helper.isServer() && tt % 20 == 0)
+			attemptToEmpty();
 	}
 	
 	public boolean isPowered()
@@ -319,7 +339,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 	public int[] getAccessibleSlotsFromSide(int side)
 	{
 		if(side >= 0 && side < 2)
-			return sideAccessibility[2];
+			return sideAccessibility[side];
 		return new int[]{};
 	}
 
@@ -334,6 +354,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 	@Override
 	public boolean canExtractItem(int slot, ItemStack item, int side)
 	{
+		TardisOutput.print("LTE","Extraction attempt:" + side);
 		if(side < 0 || side >= 2 || item == null)
 			return false;
 		return slot >= 5;

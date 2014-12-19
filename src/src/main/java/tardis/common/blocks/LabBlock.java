@@ -10,6 +10,11 @@ import net.minecraft.world.World;
 public class LabBlock extends TardisAbstractBlockContainer
 {
 
+	public LabBlock()
+	{
+		super(false);
+	}
+	
 	@Override
 	public TileEntity createNewTileEntity(World w, int m)
 	{

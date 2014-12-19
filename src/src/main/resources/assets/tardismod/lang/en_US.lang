@@ -38,6 +38,8 @@ tile.TardisMod.SchemaComponent.TimeRotor.name=Time Rotor
 tile.TardisMod.StairBlock.name=Stair
 tile.TardisMod.TardisEngineBlock.name=Temporal Engine
 tile.TardisMod.SchemaComponent.Engine.name=Temporal Engine
+tile.TardisMod.Lab.name=Temporal Laboratory
+tile.TardisMod.LandingPad.name=TARDIS Landing Pad
 
 item.TardisMod.SonicScrewdriver.name=Sonic Screwdriver
 item.TardisMod.TardisKey.name=TARDIS Key
@@ -48,4 +50,8 @@ item.TardisMod.Component.Inv.name=TARDIS Cable Interface - Itemduct
 item.TardisMod.Component.Fluid.name=TARDIS Cable Interface - Fluiduct
 item.TardisMod.Component.RF.name=TARDIS Cable Interface - Energy Conduit
 item.TardisMod.Component.ChunkLoader.name=TARDIS Cable Interface - Chunk Loader
+
+item.TardisMod.CraftingComponent.IngotDalek.name=Dalekanium Ingot
+item.TardisMod.CraftingComponent.IngotChronosteel.name=Chronosteel Ingot
+
 itemGroup.TardisModTab=Tardis Mod

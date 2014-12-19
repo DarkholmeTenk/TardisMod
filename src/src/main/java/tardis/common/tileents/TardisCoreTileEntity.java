@@ -554,55 +554,96 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return rand.nextInt(Math.max(0,2 * instability)) - instability;
 	}
 	
-	private void placeBox()
+	private int[] scanForValidPos(World w, int[] current)
 	{
-		if(worldObj.isRemote || hasValidExterior())
-			return;
-		
-		TardisConsoleTileEntity con = getConsole();
-		int dX = con.getXFromControls(exteriorX) + getOffsetFromInstability();
-		int dY = con.getYFromControls(exteriorY);
-		int dZ = con.getZFromControls(exteriorZ) + getOffsetFromInstability();
-		int facing = con.getFacingFromControls();
-		World w = Helper.getWorld(con.getDimFromControls());
-		if(!(isValidPos(w,dX,dY,dZ)))
+		int[] check = {0,1,-1,2,-2, 3,-3, 4,-4, 5,-5, 6,-6,7,-7,8,-8,9,-9};
+		for(int i=0;i<check.length;i++)
 		{
-			boolean f = false;
-			int[] check = {0,1,-1,2,-2, 3,-3, 4,-4, 5,-5, 6,-6};
-			for(int i=0;i<check.length&&!f;i++)
+			int yO = check[i];
+			for(int j=0;j<check.length;j++)
 			{
-				int yO = check[i];
-				for(int j=0;j<5&&!f;j++)
+				int xO = check[j];
+				for(int k=0;k<check.length;k++)
 				{
-					int xO = check[j];
-					for(int k=0;k<5&&!f;k++)
+					int zO = check[k];
+					if(isValidPos(w,current[0]+xO,current[1]+yO,current[2]+zO))
 					{
-						int zO = check[k];
-						if(isValidPos(w,dX+xO,dY+yO,dZ+zO))
+						return new int[] { current[0]+xO,current[1]+yO,current[2]+zO };
+					}
+				} 
+			}
+		}
+		return current;
+	}
+	
+	private int[] scanForLandingPad(World w, int[] current)
+	{
+		int[] check = { 0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, -6, 6 };
+		for(int i = 0;i<check.length;i++)
+		{
+			int xO = check[i];
+			for(int j = 0;j<check.length;j++)
+			{
+				int zO = check[j];
+				for(int k = 0;k<check.length;k++)
+				{
+					int yO = check[k];
+					TileEntity te = w.getTileEntity(current[0]+xO, current[1]+yO, current[2]+zO);
+					if(te instanceof LandingPadTileEntity)
+					{
+						if(((LandingPadTileEntity)te).isClear())
 						{
-							dX += xO;
-							dY += yO;
-							dZ += zO;
-							f = true;
+							return new int[] { current[0]+xO, current[1]+yO+1, current[2]+zO };
 						}
-					} 
+					}
 				}
 			}
 		}
-		boolean landOnGround = con.getLandFromControls();
-		if(landOnGround)
+		return current;
+	}
+	
+	public int[] findGround(World w, int[] curr)
+	{
+		if(softBlock(w,curr[0], curr[1]-1, curr[2]))
 		{
-			int offset = 1;
-			while(dY - offset > 0 && softBlock(w,dX, dY-offset, dZ))
-				offset++;
-			dY = dY + 1 - offset;
+			int newY = curr[1]-2;
+			while(newY > 0 && softBlock(w,curr[0],newY,curr[2]))
+				newY--;
+			return new int[] { curr[0], newY+1, curr[2] };
 		}
-		w.setBlock(dX, dY, dZ, TardisMod.tardisBlock, facing, 3);
-		w.setBlock(dX, dY+1, dZ, TardisMod.tardisTopBlock, facing, 3);
+		return curr;
+	}
+	
+	private void placeBox()
+	{
+		if(!Helper.isServer() || hasValidExterior())
+			return;
 		
-		setExterior(w,dX,dY,dZ);
+		TardisConsoleTileEntity con = getConsole();
+		if(con == null)
+		{
+			flightTimer--;
+			return;
+		}
+		int[] posArr = new int[] {
+				con.getXFromControls(exteriorX) + getOffsetFromInstability(),
+				con.getYFromControls(exteriorY),
+				con.getZFromControls(exteriorZ) + getOffsetFromInstability() };
+		int facing = con.getFacingFromControls();
+		World w = Helper.getWorld(con.getDimFromControls());
+		
+		if(!(isValidPos(w,posArr[0], posArr[1], posArr[2])))
+			posArr = scanForValidPos(w,posArr);
+		if(con.getLandOnGroundFromControls())
+			posArr = findGround(w, posArr);
+		if(con.getLandOnPadFromControls())
+			posArr = scanForLandingPad(w,posArr);
+		w.setBlock(posArr[0], posArr[1], posArr[2], TardisMod.tardisBlock, facing, 3);
+		w.setBlock(posArr[0], posArr[1]+1, posArr[2], TardisMod.tardisTopBlock, facing, 3);
+		
+		setExterior(w,posArr[0], posArr[1], posArr[2]);
 		oldExteriorWorld = 0;
-		TileEntity te = w.getTileEntity(dX,dY,dZ);
+		TileEntity te = w.getTileEntity(posArr[0], posArr[1], posArr[2]);
 		if(te != null && te instanceof TardisTileEntity)
 		{
 			TardisTileEntity tardis = (TardisTileEntity) te;
@@ -1569,7 +1610,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	public boolean canBeAccessedExternally()
 	{
-		return true;
+		TardisEngineTileEntity engine = getEngine();
+		if(engine == null)
+			return false;
+		return !engine.getInternalOnly();
 	}
 	
 	public IGridNode getNode()
