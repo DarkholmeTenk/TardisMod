@@ -2,6 +2,7 @@ package tardis.common.tileents.extensions;
 
 import java.util.EnumSet;
 
+import tardis.common.core.Helper;
 import tardis.common.tileents.TardisCoreTileEntity;
 
 import net.minecraft.item.Item;
@@ -75,7 +76,7 @@ public class LabRecipe
 			{
 				if(compIS == null)
 					continue;
-				if(!compIS.getItem().equals(is.getItem()))
+				if(!Helper.sameItem(compIS, is))
 					continue;
 				if(compIS.stackSize >= is.stackSize)
 				{
