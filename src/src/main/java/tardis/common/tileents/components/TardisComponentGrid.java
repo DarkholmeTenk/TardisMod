@@ -112,6 +112,8 @@ public class TardisComponentGrid extends TardisAbstractComponent implements IGri
 	
 	private void linkToCore()
 	{
+		if(!Helper.isServer())
+			return;
 		TardisCoreTileEntity core = getCore();
 		if(core != null)
 		{
