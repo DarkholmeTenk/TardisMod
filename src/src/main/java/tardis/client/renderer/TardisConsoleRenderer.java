@@ -32,18 +32,20 @@ public class TardisConsoleRenderer extends TardisAbstractBlockRenderer
 	{
 		compRender.renderLever(tess, tce, 10, -0.4, -0.28, -1.23, -45, 180, 0, 0.6,0.6,0.6);	//x1
 		compRender.renderLever(tess, tce, 11, 0, -0.28, -1.23, -45, 180, 0, 0.6,0.6,0.6);			//x2
-		compRender.renderLever(tess, tce, 12, 0.4, -0.28, -1.23, -45, 180, 0, 0.6,0.6,0.6);	//x3
-		compRender.renderLever(tess, tce, 13, 0, -0.65, -0.82, -45, 180, 0, 0.6,0.6,0.6);		//x4
+		compRender.renderLever(tess, tce, 16, 0.4, -0.28, -1.23, -45, 180, 0, 0.6,0.6,0.6);	//x3
+		compRender.renderLever(tess, tce, 12, -0.09, -0.65, -0.82, -45, 180, 0, 0.35,0.5,0.45);		//x4
 		compRender.renderWheel(tess, tce, 14, -0.35, -0.67, -0.81, -45, 180, 0, 0.3,0.3,0.3);	//x5
 		compRender.renderWheel(tess, tce, 15, 0.35, -0.67, -0.81, -45, 180, 0, 0.3,0.3,0.3);	//x6
+		compRender.renderLever(tess, tce, 13, 0.09, -0.65, -0.82, -45, 180, 0, 0.35,0.5,0.45); //x7
 	}
 	
 	private void renderZControls(Tessellator tess, TardisConsoleTileEntity tce)
 	{
-		compRender.renderLever(tess, tce, 20, 0.3, -0.65, 0.78,   -45, 0, 0, 0.3,0.6,0.6);
-		compRender.renderLever(tess, tce, 21, 0.1, -0.65, 0.78,   -45, 0, 0, 0.3,0.6,0.6);
-		compRender.renderLever(tess, tce, 22, -0.1, -0.65, 0.78,  -45, 0, 0, 0.3,0.6,0.6);
-		compRender.renderLever(tess, tce, 23, -0.3, -0.65, 0.78,  -45, 0, 0, 0.3,0.6,0.6);
+		compRender.renderLever(tess, tce, 20, 0.4, -0.65, 0.78,   -45, 0, 0, 0.3,0.6,0.6);
+		compRender.renderLever(tess, tce, 21, 0.2, -0.65, 0.78,   -45, 0, 0, 0.3,0.6,0.6);
+		compRender.renderLever(tess, tce, 26, 0, -0.65, 0.78,  -45, 0, 0, 0.3,0.6,0.6);
+		compRender.renderLever(tess, tce, 22, -0.2, -0.65, 0.78,  -45, 0, 0, 0.3,0.6,0.6);
+		compRender.renderLever(tess, tce, 23, -0.4, -0.65, 0.78,	 -45, 0, 0, 0.3,0.6,0.6);
 		compRender.renderWheel(tess, tce, 24, 0.70, -0.28, 1.25,  -45, 0, 0, 0.35,0.3,0.35);
 		compRender.renderWheel(tess, tce, 25, 0.10, -0.28, 1.25, -45, 0, 0,  0.35,0.3,0.35);
 	}

@@ -32,8 +32,8 @@ public class TardisWailaConsoleProvider implements IWailaDataProvider
 		controlNames.put(new TwoIntStore(5), "Screwdriver Button");
 		controlNames.put(new TwoIntStore(6,7), "Screwdriver Slot");
 		controlNames.put(new TwoIntStore(8), "XP Gauge");
-		controlNames.put(new TwoIntStore(10,15), "X Control");
-		controlNames.put(new TwoIntStore(20,25), "Z Control");
+		controlNames.put(new TwoIntStore(10,16), "X Control");
+		controlNames.put(new TwoIntStore(20,26), "Z Control");
 		controlNames.put(new TwoIntStore(30,33), "Y Control");
 		controlNames.put(new TwoIntStore(34), "Land Ground Control");
 		controlNames.put(new TwoIntStore(40), "Temporal Primer");
