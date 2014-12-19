@@ -250,6 +250,8 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			return 22;
 		if(hit.within(1, 1.827, 0.207, 1.969, 0.443))
 			return 23;
+		if(hit.within(1, 0.650, 0.664, 0.943, 0.856)) //Z Wheel 1
+			return 24;
 		if(hit.within(1, 1.264, 0.664, 1.545, 0.856))	//Z Wheel 2
 			return 25;
 		if(hit.within(2, 1.730, 0.147, 1.859, 0.470))
