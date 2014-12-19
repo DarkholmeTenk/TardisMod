@@ -99,6 +99,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private static ChunkCoordIntPair[] loadable = null;
 	private boolean forcedFlight = false;
 	
+	private boolean fast = false;
+	
 	private ArrayList<SimpleCoordStore> gridLinks = new ArrayList<SimpleCoordStore>();
 	private int rfStored;
 	private ItemStack[] items;
@@ -534,17 +536,17 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				inFlightTimer = 0;
 				flightTimer = 0;
 				TardisTileEntity te = getExterior();
-				
+				fast = isFastLanding();
 				timeTillTakenOff	= (20 * 11);
-				if(isFastLanding())
+				if(fast)
 					timeTillLanding		= timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
 				else
 					timeTillLanding		= timeTillTakenOff;
-				timeTillLandingInt	= timeTillLanding + (isFastLanding() ? 20 * 5 : 20 * 17);
+				timeTillLandingInt	= timeTillLanding + (isFastLanding() ? 0 : 20 * 17);
 				timeTillLanded		= timeTillLanding + (isFastLanding() ? 20 * 5 : 20 * 22);
 				numButtons = (timeTillLanding - timeTillTakenOff) / getButtonTime();
 				oldExteriorWorld = exteriorWorld;
-				
+				TardisOutput.print("TCTE","Flight times : " +(fast ? "FAST ": "SLOW ")+ timeTillTakenOff+ ">"+timeTillLanding+">" + timeTillLandingInt+">"+timeTillLanded);
 				if(te != null)
 					te.takeoff();
 				sendUpdate();
@@ -672,7 +674,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		{
 			TardisTileEntity tardis = (TardisTileEntity) te;
 			tardis.linkedDimension = worldObj.provider.dimensionId;
-			tardis.land(isFastLanding());
+			tardis.land(fast);
 		}
 	}
 	
@@ -680,9 +682,10 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	{
 		if(inFlight)
 		{
+			fast=false;
 			TardisConsoleTileEntity con = getConsole();
 			forcedFlight = false;
-			addXP(con != null && con.isStable()?15:(30-instability));
+			addXP(con != null && con.isStable()?15:(45-instability));
 			inFlight = false;
 			sendUpdate();
 			Helper.playSound(this, "engineDrum", 0.75F);
@@ -899,7 +902,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public double getSpeed(boolean modified)
 	{
 		if(forcedFlight)
-			return getMaxSpeed();
+			return getMaxSpeed()+1;
 		if(!modified)
 			return speed;
 		double mod = ((double)getNumRooms()) / getMaxNumRooms();
@@ -909,7 +912,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public boolean isFastLanding()
 	{
 		if(isMoving())
-			return getSpeed(true) > 8;
+			return getSpeed(true) > getMaxSpeed();
 		return true;
 	}
 	
@@ -1434,6 +1437,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		super.readFromNBT(nbt);
+		fast = nbt.hasKey("fast") && nbt.getBoolean("fast");
 		oldExteriorWorld = nbt.getInteger("oExW");
 		forcedFlight = nbt.getBoolean("fF");
 		lockState = LockState.values()[nbt.getInteger("lS")];
@@ -1507,6 +1511,8 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
+		if(fast)
+			nbt.setBoolean("fast", fast);
 		nbt.setInteger("oExW", oldExteriorWorld);
 		nbt.setBoolean("fF", forcedFlight);
 		nbt.setInteger("lS", lockState.ordinal());

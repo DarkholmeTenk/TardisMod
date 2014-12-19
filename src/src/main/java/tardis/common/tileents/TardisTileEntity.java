@@ -74,7 +74,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 			else if(isTakingOff() && !takingOffSoundPlayed)
 				playTakeoffSound();
 			sendUpdate();
-			if(++fadeTimer >( !landFast && isLanding() ? 22 * 20 : 11 * 20))
+			if(++fadeTimer >( !landFast && isLanding() ? 22 * 20 : 5.5 * 20))
 			{
 				if(isLanding())
 					landed = true;
@@ -143,7 +143,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 		landing = true;
 		landFast = fast;
 		playLandSound();
-		TardisOutput.print("TTE", "LANDING!!!! " + (worldObj.isRemote?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
+		TardisOutput.print("TTE", "LANDING!!!! " + (fast ? "FAST " : "SLOW ") + (worldObj.isRemote?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
 		sendUpdate();
 	}
 	
@@ -178,8 +178,9 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 			double transVal;
 			if(isLanding())
 			{
-				remainder = ((fadeTimer - (80/2)) % 80);
-				transVal = multiplier * (Math.abs(1-((2*remainder)/80)));
+				int value = landFast ? 40 : 80;
+				remainder = ((fadeTimer - (value/2)) % value);
+				transVal = multiplier * (Math.abs(1-((2*remainder)/value)));
 			}
 			else
 			{
