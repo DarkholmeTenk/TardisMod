@@ -140,7 +140,6 @@ public class Helper
 					serv.getConfigurationManager().transferEntityToWorld(ent, 0, oW, nW);*/
 			}
 			((EntityLivingBase) ent).fallDistance = 0;
-			((EntityLivingBase) ent).setVelocity(0, 0, 0);
 			((EntityLivingBase) ent).setPositionAndRotation(x, y, z, (float) rot, 0F);
 			((EntityLivingBase) ent).setPositionAndUpdate(x, y, z);
 		}
