@@ -32,6 +32,7 @@ import net.minecraft.block.BlockFire;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -121,6 +122,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	private static int energyCostDimChange = 2000;
 	private static int energyCostFlightMax = 3000;
 	private static double energyCostPower  = 0.8;
+	private static int maxMoveForFast = 3;
 	private static IGridNode node = null;
 	
 	static
@@ -147,6 +149,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		energyCostDimChange	= config.getInt("energy cost to change dims",2000);
 		energyCostFlightMax	= config.getInt("max flight energy cost",3000);
 		energyCostPower		= config.getDouble("energy distance cost power", 0.8);
+		maxMoveForFast 		= config.getInt("max move for fast speed", 3);
 		shields		= maxShields;
 		hull		= maxHull;
 		
@@ -575,11 +578,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				con.getZFromControls(exteriorZ)};
 		posArr = getModifiedControls(con,posArr);
 		TardisOutput.print("TCTE", "Moving to :" + Arrays.toString(posArr) + " from " + exteriorX +","+exteriorY+","+exteriorZ);
-		if(posArr[0] != exteriorX)
+		if(Math.abs(posArr[0] - exteriorX) > maxMoveForFast)
 			return true;
-		if(posArr[1] != exteriorY)
+		if(Math.abs(posArr[1] - exteriorY) > maxMoveForFast)
 			return true;
-		if(posArr[2] != exteriorZ)
+		if(Math.abs(posArr[2] - exteriorZ) > maxMoveForFast)
 			return true;
 		return false;
 	}
@@ -1288,6 +1291,13 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(te != null && te instanceof TardisComponentTileEntity && ((TardisComponentTileEntity)te).hasComponent(TardisTEComponent.TRANSMAT))
 			return true;
 		return false;
+	}
+	
+	public void rescuePlayer(EntityPlayerMP pl)
+	{
+		if(pl == null || pl.worldObj==null || pl.worldObj.provider == null)
+			return;
+		int dim = pl.worldObj.provider.getRespawnDimension(pl);
 	}
 	
 	public void sendDestinationStrings(EntityPlayer pl)
