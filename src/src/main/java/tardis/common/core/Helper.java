@@ -24,6 +24,7 @@ import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisEngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,11 +35,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
@@ -124,14 +127,20 @@ public class Helper
 				MinecraftServer.getServer().getConfigurationManager().sendToAllNear(ent.posX, ent.posY, ent.posZ, 100, ent.worldObj.provider.dimensionId, dP);
 			}
 			
-			if(ent.worldObj.provider.dimensionId != worldID)
+			if(getWorldID(ent.worldObj) != worldID)
 			{
+				boolean fromTheEnd = ent.worldObj.provider instanceof WorldProviderEnd;
+				ent.travelToDimension(worldID);
+				if(ent instanceof EntityPlayerMP && fromTheEnd)
+					ent = MinecraftServer.getServer().getConfigurationManager().respawnPlayer((EntityPlayerMP)ent, worldID, true);
+				/*
 				if(ent instanceof EntityPlayer)
 					serv.getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) ent, worldID, TardisMod.teleporter);
 				else
-					serv.getConfigurationManager().transferEntityToWorld(ent, 0, oW, nW);
+					serv.getConfigurationManager().transferEntityToWorld(ent, 0, oW, nW);*/
 			}
 			((EntityLivingBase) ent).fallDistance = 0;
+			((EntityLivingBase) ent).setVelocity(0, 0, 0);
 			((EntityLivingBase) ent).setPositionAndRotation(x, y, z, (float) rot, 0F);
 			((EntityLivingBase) ent).setPositionAndUpdate(x, y, z);
 		}
