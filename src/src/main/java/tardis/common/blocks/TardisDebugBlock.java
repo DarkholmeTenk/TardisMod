@@ -1,7 +1,7 @@
 package tardis.common.blocks;
 
 import tardis.TardisMod;
-import tardis.common.core.Helper;
+import tardis.common.dimension.TardisTeleportHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
@@ -34,7 +34,7 @@ public class TardisDebugBlock extends TardisAbstractBlock
 		int dimID = DimensionManager.getNextFreeDimId();
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
 		MinecraftServer.getServer().worldServerForDimension(dimID).setBlock(0, 8, 0, Blocks.stone);
-		Helper.teleportEntity(player, dimID, 0, 10, 0);
+		TardisTeleportHelper.teleportEntity(player, dimID, 0, 10, 0);
 		return true;
 	}
 

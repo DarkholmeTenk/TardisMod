@@ -5,7 +5,6 @@ import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import tardis.common.items.TardisSonicScrewdriverItem;
 import tardis.common.tileents.TardisCoreTileEntity;
 import net.minecraft.entity.EntityLivingBase;

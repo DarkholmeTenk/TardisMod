@@ -5,6 +5,7 @@ import java.util.List;
 
 import tardis.TardisMod;
 import tardis.common.core.Helper;
+import tardis.common.dimension.TardisTeleportHelper;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -67,7 +68,7 @@ public class TardisTeleport extends TardisAbstractCommand
 						int y = Integer.parseInt(astring[2+offset]);
 						int z = Integer.parseInt(astring[3+offset]);
 						for(EntityPlayerMP plx : pls)
-							Helper.teleportEntity(plx,w,x,y,z);
+							TardisTeleportHelper.teleportEntity(plx,w,x,y,z);
 					}
 					catch(Exception e)
 					{
@@ -77,7 +78,7 @@ public class TardisTeleport extends TardisAbstractCommand
 						if(w == null)
 							w = Helper.toInt(astring[0+offset],0);
 						for(EntityPlayerMP plx : pls)
-							Helper.teleportEntity(plx,w);
+							TardisTeleportHelper.teleportEntity(plx,w);
 					}
 				}
 				else if(pls.size() > 0)
@@ -89,7 +90,7 @@ public class TardisTeleport extends TardisAbstractCommand
 					for(EntityPlayerMP plx : pls)
 					{
 						if(plx != dest)
-							Helper.teleportEntity(plx, dest.worldObj.provider.dimensionId,dest.posX,dest.posY,dest.posZ);
+							TardisTeleportHelper.teleportEntity(plx, dest.worldObj.provider.dimensionId,dest.posX,dest.posY,dest.posZ);
 					}
 				}
 				else

@@ -2,11 +2,8 @@ package tardis.common.dimension;
 
 import java.util.List;
 
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -80,9 +77,10 @@ public class TardisWorldProvider extends WorldProvider
 		return isDaytime() ? 1.0f : 0.0f;
 	}
 	
+	@Override
 	public float calculateCelestialAngle(long p_76563_1_, float p_76563_3_)
     {
-        return isDaytime() ? 0.5f : 0f;
+        return super.calculateCelestialAngle(getWorldTime(), 0);
     }
 	
 	@Override

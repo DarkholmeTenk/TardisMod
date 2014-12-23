@@ -16,6 +16,7 @@ import tardis.TardisMod;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.TardisPartBlueprint;
 import tardis.common.core.store.SimpleCoordStore;
+import tardis.common.dimension.TardisTeleportHelper;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.network.packet.TardisControlPacket;
 import tardis.common.network.packet.TardisSoundPacket;
@@ -24,24 +25,20 @@ import tardis.common.tileents.TardisCoreTileEntity;
 import tardis.common.tileents.TardisEngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
@@ -102,69 +99,12 @@ public class Helper
 				if(core != null)
 					core.enterTardis((EntityPlayer) ent,true);
 				else
-					teleportEntity(ent, 0, ent.posX, ent.posY, ent.posZ);
+					TardisTeleportHelper.teleportEntity(ent, 0, ent.posX, ent.posY, ent.posZ);
 			}
 			else
-				teleportEntity(ent, 0, ent.posX, ent.posY, ent.posZ);
+				TardisTeleportHelper.teleportEntity(ent, 0, ent.posX, ent.posY, ent.posZ);
 		}
 	}
-	
-	public static void teleportEntity(Entity ent, int worldID, double x, double y, double z)
-	{
-		teleportEntity(ent,worldID,x,y,z,0);
-	}
-	
-	public static void teleportEntity(Entity ent, int worldID, double x, double y, double z, double rot)
-	{
-		MinecraftServer serv = MinecraftServer.getServer();
-		if(Helper.isServer() && serv != null && ent instanceof EntityLivingBase)
-		{
-			WorldServer nW = Helper.getWorldServer(worldID);
-			WorldServer oW = Helper.getWorldServer(ent.worldObj.provider.dimensionId);
-			if(nW.provider instanceof TardisWorldProvider && isServer())
-			{
-				Packet dP = TardisDimensionRegistry.getPacket();
-				MinecraftServer.getServer().getConfigurationManager().sendToAllNear(ent.posX, ent.posY, ent.posZ, 100, ent.worldObj.provider.dimensionId, dP);
-			}
-			
-			if(getWorldID(ent.worldObj) != worldID)
-			{
-				boolean fromTheEnd = ent.worldObj.provider instanceof WorldProviderEnd;
-				ent.travelToDimension(worldID);
-				if(ent instanceof EntityPlayerMP && fromTheEnd)
-					ent = MinecraftServer.getServer().getConfigurationManager().respawnPlayer((EntityPlayerMP)ent, worldID, true);
-				/*
-				if(ent instanceof EntityPlayer)
-					serv.getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) ent, worldID, TardisMod.teleporter);
-				else
-					serv.getConfigurationManager().transferEntityToWorld(ent, 0, oW, nW);*/
-			}
-			((EntityLivingBase) ent).fallDistance = 0;
-			((EntityLivingBase) ent).setPositionAndRotation(x, y, z, (float) rot, 0F);
-			((EntityLivingBase) ent).setPositionAndUpdate(x, y, z);
-		}
-	}
-	
-	public static void teleportEntity(Entity ent, int worldID)
-	{
-		teleportEntity(ent,worldID,ent.posX,ent.posY,ent.posZ);
-	}
-	
-	/*public static FMLProxyPacket nbtPacket(String channel,NBTTagCompound nbt)
-	{
-		try
-		{
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream(bos);
-			NBTTagCompound.writeNamedTag(nbt, stream);
-			FMLProxyPacket p = new FMLProxyPacket(bos.toByteArray(),"tardis");
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return p;
-	}*/
 	
 	public static boolean sameItem(ItemStack a, ItemStack b)
 	{
@@ -475,6 +415,14 @@ public class Helper
 	{
 		return player.getCommandSenderName();
 	}
+	
+	public static ServerConfigurationManager getConfMan()
+	{
+		MinecraftServer serv = MinecraftServer.getServer();
+		if(serv != null)
+			return serv.getConfigurationManager();
+		return null;
+	}
 
 	public static World getWorld(int dimensionID)
 	{
@@ -504,10 +452,18 @@ public class Helper
 			return getWorldID(w);
 		return 0;
 	}
+	
+	public static int getWorldID(Entity ent)
+	{
+		World w = ent.worldObj;
+		if(w != null)
+			return getWorldID(w);
+		return 0;
+	}
 
 	public static EntityPlayerMP getPlayer(String username)
 	{
-		List playerEnts = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+		List playerEnts = getConfMan().playerEntityList;
 		for(Object o : playerEnts)
 		{
 			if(o instanceof EntityPlayerMP)

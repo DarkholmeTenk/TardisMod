@@ -24,6 +24,7 @@ import tardis.common.core.Helper;
 import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
+import tardis.common.dimension.TardisTeleportHelper;
 import tardis.common.items.TardisKeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.TardisCoreGrid;
@@ -393,7 +394,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 	
 	private void enterTardis(EntityLivingBase ent)
 	{
-		Helper.teleportEntity(ent, worldObj.provider.dimensionId, 13.5, 28.5, 0, 90);
+		TardisTeleportHelper.teleportEntity(ent, worldObj.provider.dimensionId, 13.5, 29, 0.5, 90);
 	}
 	
 	public void enterTardis(EntityPlayer player, boolean ignoreLock)
@@ -431,7 +432,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					
 					if(softBlock(ext,exteriorX+dx, exteriorY, exteriorZ+dz) && softBlock(ext,exteriorX+dx, exteriorY, exteriorZ+dz))
 					{
-						Helper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx), exteriorY, exteriorZ+0.5+(dz),rot);
+						TardisTeleportHelper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx), exteriorY, exteriorZ+0.5+(dz),rot);
 					}
 					else
 						player.addChatMessage(new ChatComponentText("[TARDIS]The door is obstructed"));
@@ -1252,7 +1253,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(trans)
 		{
 			Helper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "transmat", 0.6F);
-			Helper.teleportEntity(ent, Helper.getWorldID(worldObj), to.x+0.5, to.y+1, to.z+0.5,90);
+			TardisTeleportHelper.teleportEntity(ent, Helper.getWorldID(worldObj), to.x+0.5, to.y+1, to.z+0.5,90);
 			Helper.playSound(worldObj, to.x, to.y+1, to.z, "tardismod:transmat", 0.6F);
 			return true;
 		}
