@@ -1124,7 +1124,6 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		super.writeToNBT(nbt);
 		nbt.setInteger("schemaNum", schemaNum);
 		int dimID = getDimFromControls();
-		TardisOutput.print("TConTE", "Saving dim as :" + dimID);
 		nbt.setInteger("dC", dimID);
 		if(screwNBT != null)
 			nbt.setTag("scNBT", screwNBT);

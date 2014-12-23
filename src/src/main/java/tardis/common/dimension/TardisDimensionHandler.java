@@ -94,7 +94,6 @@ public class TardisDimensionHandler
 			return 0;
 		int index = Helper.clamp(control, 0, dimensionIDs.size() - 1);
 		int dim = dimensionIDs.get(index);
-		TardisOutput.print("TDimH", "Resolving " + control + " to " + dim);
 		return dim;
 	}
 }
