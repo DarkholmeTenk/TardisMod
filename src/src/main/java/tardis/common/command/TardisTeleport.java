@@ -59,9 +59,16 @@ public class TardisTeleport extends TardisAbstractCommand
 					
 					try
 					{
-						int w = 0;
+						Integer w = 0;
 						if(astring[0+offset].startsWith("#"))
+						{
 							w = TardisMod.plReg.getDimension(astring[0+offset].replaceFirst("#", ""));
+							if(w == null)
+							{
+								sendString(comSen,"Unable to identify dimension " + astring[offset]);
+								return;
+							}
+						}
 						else
 							w = Integer.parseInt(astring[0+offset]);
 						int x = Integer.parseInt(astring[1+offset]);
@@ -74,11 +81,29 @@ public class TardisTeleport extends TardisAbstractCommand
 					{
 						Integer w = null;
 						if(astring[0+offset].startsWith("#"))
+						{
 							w = TardisMod.plReg.getDimension(astring[0+offset].replaceFirst("#", ""));
-						if(w == null)
-							w = Helper.toInt(astring[0+offset],0);
-						for(EntityPlayerMP plx : pls)
-							TardisTeleportHelper.teleportEntity(plx,w);
+							if(w == null)
+							{
+								sendString(comSen,"Unable to identify dimension " + astring[offset]);
+								return;
+							}
+							for(EntityPlayerMP plx : pls)
+								TardisTeleportHelper.teleportEntity(plx,w,2,30,0);
+						}
+						else
+						{
+							try
+							{
+								w = Integer.parseInt(astring[0+offset]);
+								for(EntityPlayerMP plx : pls)
+									TardisTeleportHelper.teleportEntity(plx,w);
+							}
+							catch(Exception er)
+							{
+								sendString(comSen,"Unable to identify dimension");
+							}
+						}
 					}
 				}
 				else if(pls.size() > 0)
