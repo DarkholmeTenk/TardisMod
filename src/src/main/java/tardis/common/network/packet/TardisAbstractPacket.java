@@ -12,7 +12,7 @@ import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 public class TardisAbstractPacket extends FMLProxyPacket
 {
 	public enum PacketType {
-		DIMREG, SOUND, CONTROL;
+		DIMREG, SOUND, CONTROL, PARTICLE;
 		
 		public static PacketType find(int i)
 		{

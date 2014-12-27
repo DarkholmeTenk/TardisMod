@@ -35,7 +35,8 @@ public class TardisTeleportHelper
 		}
 		else
 		{
-			conf.transferEntityToWorld(ent, newDimension, source, dest, TardisMod.teleporter);
+			ent.travelToDimension(newDimension);
+			//conf.transferEntityToWorld(ent, newDimension, source, dest, TardisMod.teleporter);
 		}
 		Entity entity = EntityList.createEntityByName(EntityList.getEntityString(ent), dest);
 		if(entity != null)

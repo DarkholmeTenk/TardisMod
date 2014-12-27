@@ -13,6 +13,7 @@ public abstract class TardisAbstractComponent implements ITardisComponent
 	protected int xCoord;
 	protected int yCoord;
 	protected int zCoord;
+	protected int tt = 0;
 	
 	protected void parentAdded(TardisComponentTileEntity parent)
 	{
@@ -55,5 +56,6 @@ public abstract class TardisAbstractComponent implements ITardisComponent
 	@Override
 	public void updateTick()
 	{
+		tt++;
 	}
 }
