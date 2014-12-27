@@ -1232,6 +1232,11 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		return fluids;
 	}
 	
+	private int getMaxTransmatDistance()
+	{
+		return 250;
+	}
+	
 	public boolean transmatEntity(Entity ent)
 	{
 		if(!hasFunction(TardisFunction.TRANSMAT))
@@ -1247,7 +1252,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			distance		+= Math.pow(((exteriorY+0.5) - ent.posY), 2);
 			distance		+= Math.pow(((exteriorZ+0.5) - ent.posZ), 2);
 			distance		 = Math.pow(distance, 0.5);
-			if(distance <= 250)
+			if(distance <= getMaxTransmatDistance())
 				trans = true;
 		}
 		if(trans)
@@ -1288,9 +1293,9 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		if(transmatPoint == null)
 			return false;
 		World w= transmatPoint.getWorldObj();
-		TileEntity te = w.getTileEntity(transmatPoint.x,transmatPoint.y, transmatPoint.z);
-		if(te != null && te instanceof TardisComponentTileEntity && ((TardisComponentTileEntity)te).hasComponent(TardisTEComponent.TRANSMAT))
-			return true;
+		for(int i = 0;i<5;i++)
+			if(!w.isAirBlock(transmatPoint.x,transmatPoint.y-i,transmatPoint.z))
+				return true;
 		return false;
 	}
 	

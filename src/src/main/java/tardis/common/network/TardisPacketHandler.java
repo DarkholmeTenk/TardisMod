@@ -1,5 +1,6 @@
 package tardis.common.network;
 
+import tardis.common.network.packet.ParticlePacket;
 import tardis.common.network.packet.TardisAbstractPacket.PacketType;
 import tardis.common.network.packet.TardisControlPacket;
 import tardis.common.network.packet.TardisDimRegPacket;
@@ -40,5 +41,7 @@ public class TardisPacketHandler
 			new TardisDimRegPacket(p.payload()).registerDims();
 		else if(type == PacketType.CONTROL)
 			new TardisControlPacket(p.payload()).activate();
+		else if(type == PacketType.PARTICLE)
+			new ParticlePacket(p.payload()).spawn();
 	}
 }
