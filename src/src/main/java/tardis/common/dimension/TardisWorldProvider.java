@@ -74,7 +74,8 @@ public class TardisWorldProvider extends WorldProvider
 	@Override
 	public float getSunBrightnessFactor(float par1)
 	{
-		return isDaytime() ? 1.0f : 0.0f;
+		return super.getSunBrightnessFactor(getWorldTime());
+		//return isDaytime() ? 1.0f : 0.0f;
 	}
 	
 	@Override
