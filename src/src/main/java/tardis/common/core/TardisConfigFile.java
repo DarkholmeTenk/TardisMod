@@ -20,7 +20,6 @@ public class TardisConfigFile
 	{
 		confFile = fileLoc;
 		readFile();
-		dumpData();
 		read = true;
 	}
 	
