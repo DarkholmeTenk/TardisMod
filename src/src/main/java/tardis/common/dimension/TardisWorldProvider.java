@@ -2,6 +2,7 @@ package tardis.common.dimension;
 
 import java.util.List;
 
+import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.WorldProvider;
@@ -74,14 +75,14 @@ public class TardisWorldProvider extends WorldProvider
 	@Override
 	public float getSunBrightnessFactor(float par1)
 	{
-		return super.getSunBrightnessFactor(getWorldTime());
+		return super.getSunBrightnessFactor(par1);
 		//return isDaytime() ? 1.0f : 0.0f;
 	}
 	
 	@Override
-	public float calculateCelestialAngle(long p_76563_1_, float p_76563_3_)
+	public float calculateCelestialAngle(long par1, float par3)
     {
-        return super.calculateCelestialAngle(getWorldTime(), 0);
+		return isDaytime() ? 0 : 0.5F;
     }
 	
 	@Override
