@@ -40,12 +40,14 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	private boolean valid = false;
 	private boolean inited = false;
 	private boolean compAdded = false;
-	private boolean inside = false;
+	private Boolean inside = null;
 	
 	public boolean addComponent(TardisTEComponent comp)
 	{
 		if(!hasComponent(comp))
 		{
+			if(inside == null)
+				inside = Helper.isTardisWorld(worldObj);
 			if(comp.isValid(inside))
 			{
 				compAdded = true;
@@ -296,7 +298,6 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 		{
 			if(nbt.hasKey(comp.componentName))
 			{
-				TardisOutput.print("TCompTE", "Reading " + comp.componentName + " from nbt");
 				addComponent(comp);
 				ITardisComponent te = getComponent(comp);
 				if(te != null)
