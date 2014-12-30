@@ -388,7 +388,10 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 	public boolean activate(EntityPlayer pl, int side)
 	{
 		if(Helper.isServer())
-			active = !active;														
+		{
+			active = !active;
+			sendUpdate();
+		}
 		return true;
 	}
 

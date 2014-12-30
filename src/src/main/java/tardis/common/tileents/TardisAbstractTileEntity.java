@@ -25,6 +25,11 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 {
 	public boolean init = false;
 	public int tt = 0;
+	private int lastUpdateTT = 0;
+	private int updateCounter = 0;
+	private static int updateInterval = 0;
+	private static int updateCounterMax = 0;
+	private static boolean updateQueued = false;
 	public static Random rand = new Random();
 	public SimpleCoordStore coords = null;
 	
@@ -50,11 +55,30 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 		}
 	}
 	
+	private boolean canSendUpdate()
+	{
+		return lastUpdateTT + updateInterval <= tt && updateCounter < updateCounterMax;
+	}
+	
 	public void sendUpdate()
 	{
+		if(!Helper.isServer())
+			return;
 		if(worldObj.playerEntities == null || worldObj.playerEntities.size() == 0)
 			return;
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		if(canSendUpdate())
+		{
+			TardisOutput.print("TATE", "Sending update " + getClass().getSimpleName());
+			updateQueued = false;
+			updateCounter++;
+			lastUpdateTT = tt;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+		else
+		{
+			TardisOutput.print("TATE", "Update sending blocked to prevent spam " + getClass().getSimpleName());
+			updateQueued = true;
+		}
 	}
 	
 	public void init() {}
@@ -62,9 +86,22 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	@Override
 	public void updateEntity()
 	{
+		if(updateInterval == 0)
+		{
+			updateInterval = TardisMod.modConfig.getInt("updateInterval", 5);
+			updateCounterMax = TardisMod.modConfig.getInt("updateCounterMax", 20);
+		}
+		
 		if(coords == null)
 			coords = new SimpleCoordStore(this);
 		tt++;
+		
+		if(tt % 10 == 0 && updateCounter > 0)
+			updateCounter--;
+		
+		if(updateQueued && canSendUpdate())
+			sendUpdate();
+		
 		if(!init)
 		{
 			init = true;

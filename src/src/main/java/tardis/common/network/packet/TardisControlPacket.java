@@ -2,6 +2,7 @@ package tardis.common.network.packet;
 
 import tardis.api.IControlMatrix;
 import tardis.common.core.Helper;
+import tardis.common.tileents.TardisAbstractTileEntity;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,7 +50,10 @@ public class TardisControlPacket extends TardisAbstractPacket
 					{
 						int controlID = data.getInteger("cID");
 						((IControlMatrix)te).activateControl(player, controlID);
-						w.markBlockForUpdate(x, y, z);
+						if(te instanceof TardisAbstractTileEntity)
+							((TardisAbstractTileEntity)te).sendUpdate();
+						//else
+						//	w.markBlockForUpdate(x, y, z);
 					}
 				}
 			}
