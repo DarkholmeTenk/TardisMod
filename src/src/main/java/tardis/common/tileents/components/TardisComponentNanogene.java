@@ -6,6 +6,7 @@ import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 
+import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.Helper;
 import tardis.common.entities.particles.ParticleType;
 import tardis.common.tileents.TardisComponentTileEntity;
@@ -63,8 +64,8 @@ public class TardisComponentNanogene extends TardisAbstractComponent
 			ArrayList<EntityPlayerMP> players = getNearbyPlayers();
 			for(EntityPlayerMP pl : players)
 			{
-				TardisCoreTileEntity core = getCore();
-				if(core != null && core.takeEnergy(1, false))
+				IArtronEnergyProvider core = getArtronEnergyProvider();
+				if(core != null && core.takeArtronEnergy(1, false))
 				{
 					Helper.spawnParticle(ParticleType.NANOGENE, Helper.getWorldID(parentObj), pl.posX , pl.posY+1, pl.posZ,12,true);
 					if(pl.isBurning())

@@ -74,7 +74,7 @@ public class TardisRepairCoreCommand extends TardisAbstractCommand
 			if(tce != null)
 			{
 				numRooms = tce.getNumRooms();
-				energy   = tce.getEnergy();
+				energy   = tce.getArtronEnergy();
 			}
 		}
 		

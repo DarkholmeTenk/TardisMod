@@ -366,7 +366,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		TardisCoreTileEntity core = Helper.getTardisCore(worldObj);
 		TardisOutput.print("TConTE","Control:"+controlID,TardisOutput.Priority.DEBUG);
 		if(controlID == 0)
-			pl.addChatMessage(new ChatComponentText("Energy: " + core.getEnergy() + "/" + core.getMaxEnergy()));
+			pl.addChatMessage(new ChatComponentText("Energy: " + core.getArtronEnergy() + "/" + core.getMaxArtronEnergy()));
 		else if(controlID == 1)
 			pl.addChatMessage(new ChatComponentText("Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms()));
 		else if(controlID == 2)
@@ -476,9 +476,9 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 			lastButtonTT = tickTimer;
 			if(core.canModify(pl))
 			{
-				if(!hasScrewdriver(0) && core.takeEnergy(500,false))
+				if(!hasScrewdriver(0) && core.takeArtronEnergy(500,false))
 					setScrewdriver(0,true);
-				else if(hasScrewdriver(0) && core.addEnergy(400, false))
+				else if(hasScrewdriver(0) && core.addArtronEnergy(400, false))
 					setScrewdriver(0,false);
 			}
 			else
@@ -896,7 +896,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		if(core != null)
 		{
 			if(controlID == 0)
-				return ((double) core.getEnergy() / core.getMaxEnergy());
+				return ((double) core.getArtronEnergy() / core.getMaxArtronEnergy());
 			if(controlID == 1)
 				return ((double) core.getNumRooms() / core.getMaxNumRooms());
 			if(controlID == 2 || controlID == 4)
@@ -959,7 +959,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		if(core != null)
 		{
 			if(controlID == 0)
-				return new String[] {"Energy: " + core.getEnergy() + "/" + core.getMaxEnergy()};
+				return new String[] {"Energy: " + core.getArtronEnergy() + "/" + core.getMaxArtronEnergy()};
 			else if(controlID == 1)
 				return new String[] {"Rooms: " + core.getNumRooms() + "/" + core.getMaxNumRooms()};
 			else if(controlID == 2)

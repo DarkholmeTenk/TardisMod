@@ -17,6 +17,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import tardis.TardisMod;
 import tardis.api.IActivatable;
+import tardis.api.IArtronEnergyProvider;
 import tardis.api.IChunkLoader;
 import tardis.api.TardisFunction;
 import tardis.api.TardisUpgradeMode;
@@ -45,7 +46,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
-public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable, IChunkLoader, IGridHost
+public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider
 {
 	private static TardisConfigFile config;
 	public static final ChatComponentText cannotModifyMessage	= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS");
@@ -272,7 +273,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		
 		if(tt % 20 == 0)
 		{
-			addEnergy(getEnergyPerSecond(getLevel(TardisUpgradeMode.REGEN)),false);
+			addArtronEnergy(getEnergyPerSecond(getLevel(TardisUpgradeMode.REGEN)),false);
 			safetyTick();
 		}
 		
@@ -601,7 +602,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			distance +=  (dDim != extW ? energyCostDimChange : 0);
 			double speedMod = Math.max(0.5,getSpeed(true)*3/getMaxSpeed());
 			int enCost = (int) Helper.clamp((int)Math.round(distance * speedMod), 1, energyCostFlightMax);
-			return takeEnergy(enCost,false);
+			return takeArtronEnergy(enCost,false);
 		}
 		return false;
 	}
@@ -1088,35 +1089,39 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 		deletingRooms = true;
 	}
 	
-	public int getMaxEnergy(int level)
-	{
-		return maxEnergy + (maxEnergyInc * level);
-	}
-	
-	public int getMaxEnergy()
-	{
-		return getMaxEnergy(getLevel(TardisUpgradeMode.ENERGY));
-	}
-	
 	public int getEnergyPerSecond(int level)
 	{
 		return energyPerSecond + (energyPerSecondInc * level);
 	}
 	
-	public int getEnergy()
+	public int getMaxArtronEnergy(int level)
+	{
+		return maxEnergy + (maxEnergyInc * level);
+	}
+	
+	@Override
+	public int getMaxArtronEnergy()
+	{
+		return getMaxArtronEnergy(getLevel(TardisUpgradeMode.ENERGY));
+	}
+	
+	@Override
+	public int getArtronEnergy()
 	{
 		return energy;
 	}
 	
-	public boolean addEnergy(int amount, boolean sim)
+	@Override
+	public boolean addArtronEnergy(int amount, boolean sim)
 	{
 		if(!sim)
 			energy += amount;
-		energy = Helper.clamp(energy,0,getMaxEnergy(getLevel(TardisUpgradeMode.ENERGY)));
+		energy = Helper.clamp(energy,0,getMaxArtronEnergy(getLevel(TardisUpgradeMode.ENERGY)));
 		return true;
 	}
 	
-	public boolean takeEnergy(int amount, boolean sim)
+	@Override
+	public boolean takeArtronEnergy(int amount, boolean sim)
 	{
 		if(energy >= amount)
 		{
@@ -1124,7 +1129,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 				energy -= amount;
 			return true;
 		}
-		energy = Helper.clamp(energy,0,getMaxEnergy(getLevel(TardisUpgradeMode.ENERGY)));
+		energy = Helper.clamp(energy,0,getMaxArtronEnergy(getLevel(TardisUpgradeMode.ENERGY)));
 		return false;
 	}
 	

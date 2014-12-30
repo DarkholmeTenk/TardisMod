@@ -183,7 +183,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 			LabRecipe matchedRecipe = getMatchedRecipe();
 			if(isGeneratingEnergy(matchedRecipe,core))
 			{
-					chargedEnergy += core.takeEnergy(1, false) ? 1 : 0;
+					chargedEnergy += core.takeArtronEnergy(1, false) ? 1 : 0;
 					update(true);
 			}
 			else

@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
+import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisConfigFile;
 import tardis.common.tileents.TardisComponentTileEntity;
@@ -69,6 +70,13 @@ public abstract class TardisAbstractComponent implements ITardisComponent
 	{
 		if(parentObj != null)
 			return parentObj.getCore();
+		return null;
+	}
+	
+	public IArtronEnergyProvider getArtronEnergyProvider()
+	{
+		if(parentObj != null)
+			return parentObj.getArtronEnergyProvider();
 		return null;
 	}
 	
