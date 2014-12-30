@@ -710,7 +710,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	{
 		int[] temp = new int[7];
 		int c = 0;
-		for(int i=-5;i<=5;i++)
+		for(int i=-6;i<=6;i++)
 		{
 			for(int j=0;j<8;j++)
 			{
@@ -725,7 +725,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		}
 		
 		int d = c;
-		for(int i=-5;i<=5;i++)
+		for(int i=-6;i<=6;i++)
 		{
 			for(int j=0;j<8;j++)
 			{
@@ -740,10 +740,14 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 		}
 		temp[6] = Helper.clamp((dest-c)/71, -6, 6);
 		c += (71 * temp[6]);
-		temp[2] = Helper.clamp((dest-c)/6,-5,5);
+		temp[2] = Helper.clamp((dest-c)/6,-6,6);
 		c += (6*temp[2]);
-		temp[3] = Helper.clamp(dest-c ,-5,5);
-		TardisOutput.print("TConTE","Found coords for "+dest+":" + Arrays.toString(temp),TardisOutput.Priority.DEBUG);
+		temp[3] = Helper.clamp(dest-c ,-6,6);
+		c += temp[3];
+		if(c == dest)
+			TardisOutput.print("TConTE","Found coords for "+dest+": " + Arrays.toString(temp),TardisOutput.Priority.DEBUG);
+		else
+			TardisOutput.print("TConTE","Found nearest coords for "+dest+": " + c +": "  + Arrays.toString(temp),TardisOutput.Priority.DEBUG);
 		return temp;
 	}
 	
@@ -857,10 +861,10 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 	{
 		if(controls.length == 7)
 		{
-			controls[0] = Helper.clamp(controls[0], -5, 5);
-			controls[1] = Helper.clamp(controls[1], -5, 5);
-			controls[2] = Helper.clamp(controls[2], -5, 5);
-			controls[3] = Helper.clamp(controls[3], -5, 5);
+			controls[0] = Helper.clamp(controls[0], -6, 6);
+			controls[1] = Helper.clamp(controls[1], -6, 6);
+			controls[2] = Helper.clamp(controls[2], -6, 6);
+			controls[3] = Helper.clamp(controls[3], -6, 6);
 			controls[4] = Helper.clamp(controls[4], 0, 7);
 			controls[5] = Helper.clamp(controls[5], 0, 7);
 			controls[6] = Helper.clamp(controls[6], -6, 6);
@@ -905,16 +909,12 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				return facing/4.0;
 			if(controlID == 8)
 				return (core.getXP() / core.getXPNeeded());
-			if(controlID >= 10 && controlID < 14)
-				return ((double) (xControls[controlID-10] + 5) / 10);
-			if(controlID == 16)
-				return ((double) (xControls[6] + 6) / 12);
+			if((controlID >= 10 && controlID < 14) || controlID == 16)
+				return ((double) (xControls[controlID-10] + 6) / 12);
 			if(controlID >= 14 && controlID < 16)
 				return xControls[controlID - 10] / 8.0;
-			if(controlID >= 20 && controlID < 24)
-				return ((double) (zControls[controlID-20] + 5) / 10);
-			if(controlID == 26)
-				return ((double) (zControls[6] + 6) / 12);
+			if((controlID >= 20 && controlID < 24) || controlID == 26)
+				return ((double) (zControls[controlID-20] + 6) / 12);
 			if(controlID >= 24 && controlID < 26)
 				return zControls[controlID - 20] / 8.0;
 			if(controlID >= 30 && controlID < 34)
