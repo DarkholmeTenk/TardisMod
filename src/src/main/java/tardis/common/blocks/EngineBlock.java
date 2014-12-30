@@ -16,7 +16,7 @@ public class EngineBlock extends AbstractBlockContainer
 	@Override
 	public void initData()
 	{
-		setBlockName("EngineBlock");
+		setBlockName("TardisEngineBlock");
 		setLightLevel(0.8F);
 	}
 

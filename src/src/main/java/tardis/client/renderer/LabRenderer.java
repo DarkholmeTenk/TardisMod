@@ -58,7 +58,7 @@ public class LabRenderer extends AbstractObjRenderer implements IItemRenderer
 	{
 		if(model == null)
 			return;
-		if(te instanceof LabTileEntity && ((LabTileEntity)te).isGeneratingEnergy(null, null))
+		if(te instanceof LabTileEntity && ((LabTileEntity)te).isActive())
 			bindTexture(texOn);
 		else
 			bindTexture(texOff);
