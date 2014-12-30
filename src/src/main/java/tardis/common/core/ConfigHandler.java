@@ -66,6 +66,11 @@ public class ConfigHandler
 	
 	public String[] getSchemas()
 	{
+		return getSchemas(false);
+	}
+	
+	public String[] getSchemas(boolean consoleSchemas)
+	{
 		String[] fA = new String[0];
 		ArrayList<String> found = new ArrayList<String>();
 		try
@@ -76,7 +81,7 @@ public class ConfigHandler
 			while((l = r.readLine())!=null)
 			{
 				TardisOutput.print("TCH", "TCHSS:"+l);
-				if(l.endsWith(".schema") && !l.startsWith("tardis"))
+				if(l.endsWith(".schema") && (l.startsWith("tardis") == consoleSchemas))
 				{
 					String q = l.replace(".schema", "");
 					if(!found.contains(q))
