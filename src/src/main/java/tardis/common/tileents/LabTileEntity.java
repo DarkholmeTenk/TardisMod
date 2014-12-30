@@ -225,6 +225,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 	@Override
 	public void updateEntity()
 	{
+		super.updateEntity();
 		if(Helper.isServer())
 		{
 			if(isActive())
