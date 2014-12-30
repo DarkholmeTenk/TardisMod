@@ -18,6 +18,8 @@ import tardis.common.core.schema.TardisPartBlueprint;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.dimension.TardisTeleportHelper;
 import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.entities.particles.ParticleType;
+import tardis.common.network.packet.ParticlePacket;
 import tardis.common.network.packet.TardisControlPacket;
 import tardis.common.network.packet.TardisSoundPacket;
 import tardis.common.tileents.TardisConsoleTileEntity;
@@ -342,6 +344,37 @@ public class Helper
 	public static boolean isServer()
 	{
 		return !FMLCommonHandler.instance().getEffectiveSide().equals(Side.CLIENT);
+	}
+	
+	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z)
+	{
+		spawnParticle(type,dim,x,y,z,1,false);
+	}
+	
+	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z, int c)
+	{
+		spawnParticle(type,dim,x,y,z,c,false);
+	}
+	
+	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z, boolean b)
+	{
+		spawnParticle(type,dim,x,y,z,1,b);
+	}
+	
+	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z, int count, boolean rand)
+	{
+		if(!Helper.isServer())
+			return;
+		NBTTagCompound data = new NBTTagCompound();
+		data.setInteger("dim",dim);
+		data.setDouble("x", x);
+		data.setDouble("y", y);
+		data.setDouble("z", z);
+		data.setInteger("c", count);
+		data.setBoolean("r", rand);
+		data.setInteger("type",type.ordinal());
+		ParticlePacket packet = new ParticlePacket(Unpooled.buffer(),data);
+		TardisMod.networkChannel.sendToDimension(packet, dim);
 	}
 	
 	public static void playSound(TileEntity te, String sound, float vol)

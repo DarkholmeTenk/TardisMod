@@ -8,7 +8,8 @@ public enum TardisTEComponent
 		INVENTORY	("Inv","stickInv",new TardisComponentInventory(),ValPos.BOTH),
 		FLUID		("Fluid","stickFlu",new TardisComponentFluid(),ValPos.BOTH),
 		CHUNK		("ChunkLoader","stickChLo", new TardisComponentChunkLoader(),ValPos.BOTH),
-		COMPUTER	("Peripheral","stickPer", new TardisComponentPeripheral(),ValPos.BOTH);
+		COMPUTER	("Peripheral","stickPer", new TardisComponentPeripheral(),ValPos.BOTH),
+		NANOGENE	("Nanogene","stickNano", new TardisComponentNanogene(),ValPos.BOTH);
 		
 		public enum ValPos
 		{

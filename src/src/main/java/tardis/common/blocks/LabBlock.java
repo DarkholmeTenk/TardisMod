@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.TardisMod;
 import tardis.common.tileents.LabTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -61,6 +62,15 @@ public class LabBlock extends TardisAbstractBlockContainer
 	public boolean isOpaqueCube()
 	{
 	   return false;
+	}
+	
+	@Override
+	public void breakBlock(World w, int x, int y, int z, Block b, int m)
+	{
+		TileEntity te = w.getTileEntity(x, y, z);
+		if(te instanceof LabTileEntity)
+			((LabTileEntity)te).dropEverything();
+		super.breakBlock(w, x, y, z, b, m);
 	}
 
 }

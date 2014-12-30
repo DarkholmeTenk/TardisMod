@@ -9,12 +9,13 @@ import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
 import tardis.TardisMod;
 import tardis.api.IActivatable;
+import tardis.api.IArtronEnergyProvider;
 import tardis.api.IChunkLoader;
 import tardis.api.IScrewable;
 import tardis.api.IWatching;
 import tardis.api.TardisScrewdriverMode;
 import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
+import tardis.common.core.TardisConfigFile;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.items.TardisComponentItem;
 import tardis.common.tileents.components.ITardisComponent;
@@ -38,13 +39,21 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 {
 	private HashMap<Integer,ITardisComponent> comps = new HashMap<Integer,ITardisComponent>();
 	private boolean valid = false;
-	private boolean inited = false;
 	private boolean compAdded = false;
 	private Boolean inside = null;
 	
+	private static TardisConfigFile config = null;
+	private static int maxComponents = 6;
+	
+	static
+	{
+		config = TardisMod.configHandler.getConfigFile("Components");
+		maxComponents = config.getInt("max components", 6);
+	}
+	
 	public boolean addComponent(TardisTEComponent comp)
 	{
-		if(!hasComponent(comp))
+		if(!hasComponent(comp) && getNumComponents() < maxComponents)
 		{
 			if(inside == null)
 				inside = Helper.isTardisWorld(worldObj);
@@ -57,6 +66,14 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 		}
 		return false;
 		
+	}
+	
+	public int getNumComponents()
+	{
+		int c = 0;
+		for(TardisTEComponent comp : TardisTEComponent.values())
+			c += hasComponent(comp) ? 1 : 0;
+		return c;
 	}
 	
 	public boolean hasComponent(TardisTEComponent comp)
@@ -121,21 +138,25 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	}
 	
 	@Override
+	public void init()
+	{
+		inside = Helper.isTardisWorld(worldObj);
+		compAdded = false;
+		reviveComps();
+		if(Helper.isServer() && valid)
+		{
+			worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord,yCoord,zCoord));
+			sendUpdate();
+		}
+		
+	}
+	
+	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if(!inited || compAdded)
-		{
-			inside = Helper.isTardisWorld(worldObj);
-			compAdded = false;
-			reviveComps();
-			inited = true;
-			if(Helper.isServer() && valid)
-			{
-				worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord,yCoord,zCoord));
-				sendUpdate();
-			}
-		}
+		if(compAdded)
+			init();
 		
 		if(comps.size() > 0)
 		{
@@ -340,6 +361,14 @@ public class TardisComponentTileEntity extends TardisAbstractTileEntity implemen
 	{
 		TardisCoreTileEntity core = Helper.getTardisCore(this);
 		return core;
+	}
+	
+	public IArtronEnergyProvider getArtronEnergyProvider()
+	{
+		TardisCoreTileEntity core = getCore();
+		if(core != null)
+			return (IArtronEnergyProvider)core;
+		return null;
 	}
 	
 	public boolean isValid()

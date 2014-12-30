@@ -1,6 +1,7 @@
 package tardis.common.tileents;
 
 import tardis.TardisMod;
+import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.Helper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -20,6 +21,8 @@ public class LandingPadTileEntity extends TardisComponentTileEntity
 	@Override
 	public TardisCoreTileEntity getCore()
 	{
+		if(Helper.isTardisWorld(worldObj))
+			return super.getCore();
 		TileEntity te = worldObj.getTileEntity(xCoord, yCoord+1, zCoord);
 		if(te instanceof TardisTileEntity)
 		{
@@ -30,6 +33,18 @@ public class LandingPadTileEntity extends TardisComponentTileEntity
 					return core;
 			}
 		}
+		return null;
+	}
+	
+	@Override
+	public IArtronEnergyProvider getArtronEnergyProvider()
+	{
+		TardisCoreTileEntity core = getCore();
+		if(core != null)
+			return (IArtronEnergyProvider)core;
+		TileEntity te = worldObj.getTileEntity(xCoord, yCoord+1, zCoord);
+		if(te instanceof IArtronEnergyProvider)
+			return (IArtronEnergyProvider)te;
 		return null;
 	}
 	

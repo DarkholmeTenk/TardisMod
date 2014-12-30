@@ -2,7 +2,6 @@ package tardis.common.dimension;
 
 import java.util.List;
 
-import tardis.common.core.TardisOutput;
 import tardis.common.tileents.TardisConsoleTileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.WorldProvider;
@@ -15,7 +14,6 @@ public class TardisWorldProvider extends WorldProvider
 
 	public TardisWorldProvider()
 	{
-		worldChunkMgr = new TardisChunkManager();
 	}
 
 	@Override
@@ -34,6 +32,12 @@ public class TardisWorldProvider extends WorldProvider
 	public boolean canRespawnHere()
 	{
 		return true;
+	}
+	
+	@Override
+	protected void registerWorldChunkManager()
+	{
+		worldChunkMgr = new TardisChunkManager(worldObj);
 	}
 	
 	@Override
@@ -76,7 +80,6 @@ public class TardisWorldProvider extends WorldProvider
 	public float getSunBrightnessFactor(float par1)
 	{
 		return super.getSunBrightnessFactor(par1);
-		//return isDaytime() ? 1.0f : 0.0f;
 	}
 	
 	@Override

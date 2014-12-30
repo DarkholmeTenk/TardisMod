@@ -107,6 +107,7 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 			init = true;
 			if(Helper.isServer() && this instanceof IChunkLoader)
 				TardisMod.chunkManager.loadMe((IChunkLoader)this);
+			init();
 		}
 	}
 	

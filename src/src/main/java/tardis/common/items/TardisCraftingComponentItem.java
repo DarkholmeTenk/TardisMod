@@ -43,6 +43,12 @@ public class TardisCraftingComponentItem extends TardisAbstractItem
 				EnumSet.noneOf(LabFlag.class),
 				100);
 		LabTileEntity.addRecipe(currentRecipe);
+		currentRecipe = new LabRecipe(
+				new ItemStack[] { new ItemStack(Items.diamond), new ItemStack(Items.ender_pearl) },
+				new ItemStack[] { CraftingComponentType.KONTRON.getIS(1) },
+				EnumSet.noneOf(LabFlag.class),
+				100);
+		LabTileEntity.addRecipe(currentRecipe);
 	}
 
 }
