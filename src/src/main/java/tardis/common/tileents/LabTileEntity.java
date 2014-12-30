@@ -9,6 +9,7 @@ import tardis.common.core.Helper;
 import tardis.common.core.TardisConfigFile;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.extensions.LabRecipe;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -219,6 +220,17 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 					inventory[i] = Helper.transferItemStack(is, (IInventory)out);
 				}
 			}
+		}
+	}
+	
+	public void dropEverything()
+	{
+		for(ItemStack is : inventory)
+		{
+			if(is == null)
+				continue;
+			EntityItem ei = new EntityItem(worldObj,xCoord+0.5,yCoord+0.5,zCoord+0.5,is);
+			worldObj.spawnEntityInWorld(ei);
 		}
 	}
 	

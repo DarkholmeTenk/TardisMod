@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.FoodStats;
 
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.Helper;
@@ -28,6 +29,19 @@ public class TardisComponentNanogene extends TardisAbstractComponent
 		return new TardisComponentNanogene(parent);
 	}
 	
+	private boolean isPlayerInNeedOfHelp(EntityPlayerMP pl)
+	{
+		if(pl.getHealth() < pl.getMaxHealth())
+			return true;
+		if(nanogeneFeed)
+		{
+			FoodStats fs = pl.getFoodStats();
+			if(fs.needFood())
+				return true;
+		}
+		return false;
+	}
+	
 	private ArrayList<EntityPlayerMP> getNearbyPlayers()
 	{
 		ArrayList<EntityPlayerMP> list = new ArrayList<EntityPlayerMP>();
@@ -40,7 +54,7 @@ public class TardisComponentNanogene extends TardisAbstractComponent
 			if(o instanceof EntityPlayerMP)
 			{
 				EntityPlayerMP pl = (EntityPlayerMP)o;
-				if(pl.getHealth() < pl.getMaxHealth())
+				if(isPlayerInNeedOfHelp(pl))
 				{
 					double dist = ((pl.posX - x) * (pl.posX - x));
 					dist += ((pl.posY - y) * (pl.posY - y));
@@ -67,10 +81,15 @@ public class TardisComponentNanogene extends TardisAbstractComponent
 				IArtronEnergyProvider core = getArtronEnergyProvider();
 				if(core != null && core.takeArtronEnergy(1, false))
 				{
-					Helper.spawnParticle(ParticleType.NANOGENE, Helper.getWorldID(parentObj), pl.posX , pl.posY+1, pl.posZ,12,true);
+					Helper.spawnParticle(ParticleType.NANOGENE, Helper.getWorldID(parentObj), pl.posX , pl.posY+1, pl.posZ,20,true);
 					if(pl.isBurning())
 						pl.extinguish();
 					pl.heal(nanogeneHealAmount);
+					if(nanogeneFeed)
+					{
+						FoodStats fs = pl.getFoodStats();
+						fs.addStats(1, 1);
+					}
 				}
 			}
 		}

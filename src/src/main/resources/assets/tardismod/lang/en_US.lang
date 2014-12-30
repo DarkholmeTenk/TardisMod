@@ -50,6 +50,7 @@ item.TardisMod.Component.Inv.name=TARDIS Cable Interface - Itemduct
 item.TardisMod.Component.Fluid.name=TARDIS Cable Interface - Fluiduct
 item.TardisMod.Component.RF.name=TARDIS Cable Interface - Energy Conduit
 item.TardisMod.Component.ChunkLoader.name=TARDIS Cable Interface - Chunk Loader
+item.TardisMod.Component.Nanogene.name=Nanogene Canister
 
 item.TardisMod.CraftingComponent.IngotDalek.name=Dalekanium Ingot
 item.TardisMod.CraftingComponent.IngotChronosteel.name=Chronosteel Ingot

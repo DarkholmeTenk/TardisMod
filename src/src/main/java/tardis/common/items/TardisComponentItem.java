@@ -8,6 +8,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.components.TardisTEComponent;
+import tardis.common.tileents.extensions.CraftingComponentType;
 
 public class TardisComponentItem extends TardisAbstractItem
 {
@@ -53,6 +54,12 @@ public class TardisComponentItem extends TardisAbstractItem
 				'r', Items.ender_pearl,
 				'd', Items.diamond,
 				'i', Items.iron_ingot));
+		
+		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.NANOGENE), true, "grg", "cac", "grg",
+				'g', Items.gold_nugget,
+				'r', Items.redstone,
+				'c', CraftingComponentType.CHRONOSTEEL.getIS(1),
+				'a', Items.apple));
 		
 		if(TardisMod.aeAPI != null)
 		{

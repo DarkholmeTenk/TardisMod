@@ -25,6 +25,7 @@ public abstract class TardisAbstractComponent implements ITardisComponent
 	protected static double nanogeneTimer = 10;
 	protected static int nanogeneCost = 1;
 	protected static int nanogeneHealAmount = 2;
+	protected static boolean nanogeneFeed = true;
 	protected static Random rand = new Random();
 
 	static
@@ -34,6 +35,7 @@ public abstract class TardisAbstractComponent implements ITardisComponent
 		nanogeneTimer = config.getInt("nanogene timer", 10);
 		nanogeneCost = config.getInt("nanogene cost", 1);
 		nanogeneHealAmount = config.getInt("nanogene heal amount", 2);
+		nanogeneFeed = config.getBoolean("nanogene feed", true);
 	}
 	protected void parentAdded(TardisComponentTileEntity parent)
 	{
