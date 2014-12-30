@@ -31,6 +31,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 	private static TardisConfigFile config = null;
 	private static int maxSpeed = 5;
 
+	private boolean wasWorking = false;
 	private Boolean powered = null;
 	private boolean active = true;
 	public boolean generatingEnergy = false;
@@ -165,6 +166,15 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 		return false;
 	}
 	
+	private void update(boolean working)
+	{
+		if(working != wasWorking)
+		{
+			wasWorking = working;
+			sendUpdate();
+		}
+	}
+	
 	private void processTick()
 	{
 		TardisCoreTileEntity core = Helper.getTardisCore(this);
@@ -172,7 +182,12 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 		{
 			LabRecipe matchedRecipe = getMatchedRecipe();
 			if(isGeneratingEnergy(matchedRecipe,core))
+			{
 					chargedEnergy += core.takeEnergy(1, false) ? 1 : 0;
+					update(true);
+			}
+			else
+				update(false);
 			if(matchedRecipe != null)
 			{
 				if(chargedEnergy >= matchedRecipe.energyCost)
@@ -183,7 +198,11 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 						takeComponents(matchedRecipe.source);
 					}
 				}
+				else
+					update(false);
 			}
+			else
+				update(false);
 		}
 	}
 	
@@ -206,10 +225,15 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 	@Override
 	public void updateEntity()
 	{
-		if(isActive() && Helper.isServer())
-			processTick();
-		if(tt % 20 == 0)
-			sendUpdate();
+		if(Helper.isServer())
+		{
+			if(isActive())
+				processTick();
+			else
+				update(false);
+			if((tt % 1200) == 0)
+				sendUpdate();
+		}
 		if((!Helper.isServer()) && isGeneratingEnergy(null,null))
 			moveSticks();
 		if(Helper.isServer() && tt % 20 == 0)
@@ -246,7 +270,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 		if(result != generatingEnergy)
 		{
 			generatingEnergy = result;
-			sendUpdate();
+			update(generatingEnergy);
 		}
 		return result;
 	}

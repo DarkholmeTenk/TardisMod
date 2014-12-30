@@ -308,7 +308,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 					numRooms = 0;
 				}
 			}
-			if(tt % 80 == 0)
+			if(tt % 1200 == 0)
 			{
 				sendUpdate();
 			}

@@ -130,7 +130,7 @@ public class TardisConsoleTileEntity extends TardisAbstractTileEntity implements
 				else
 					schemaList = null;
 			}
-			if(tickTimer % 80 == 0)
+			if(tt % 1200 == 0)
 				sendUpdate();
 		}
 	}
