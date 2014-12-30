@@ -310,8 +310,7 @@ public class TardisCoreTileEntity extends TardisAbstractTileEntity implements IA
 			}
 			if(tt % 80 == 0)
 			{
-				if(worldObj.playerEntities != null && worldObj.playerEntities.size() > 0)
-					sendUpdate();
+				sendUpdate();
 			}
 		}
 	}

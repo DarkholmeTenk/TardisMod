@@ -31,7 +31,7 @@ public abstract class TardisAbstractTileEntity extends TileEntity
 	@Override
 	public Packet getDescriptionPacket()
 	{
-		TardisOutput.print("TATE","Compiling description packet",TardisOutput.Priority.OLDDEBUG);
+		TardisOutput.print("TATE","Compiling description packet @ "+xCoord + ","+yCoord+","+zCoord,TardisOutput.Priority.OLDDEBUG);
 		NBTTagCompound tag = new NBTTagCompound();
 		writeTransmittable(tag);
 		writeTransmittableOnly(tag);
