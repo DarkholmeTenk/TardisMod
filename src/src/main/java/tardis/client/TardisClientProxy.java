@@ -16,21 +16,21 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
 import tardis.client.renderer.LabRenderer;
 import tardis.client.renderer.LandingPadRenderer;
-import tardis.client.renderer.TardisComponentRenderer;
-import tardis.client.renderer.TardisConsoleRenderer;
-import tardis.client.renderer.TardisCoreRenderer;
-import tardis.client.renderer.TardisEngineRenderer;
+import tardis.client.renderer.ComponentRenderer;
+import tardis.client.renderer.ConsoleRenderer;
+import tardis.client.renderer.CoreRenderer;
+import tardis.client.renderer.EngineRenderer;
 import tardis.client.renderer.TardisRenderer;
-import tardis.client.renderer.TardisSonicScrewdriverRenderer;
+import tardis.client.renderer.SonicScrewdriverRenderer;
 import tardis.common.TardisProxy;
 import tardis.common.core.Helper;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.LandingPadTileEntity;
-import tardis.common.tileents.TardisComponentTileEntity;
-import tardis.common.tileents.TardisConsoleTileEntity;
-import tardis.common.tileents.TardisCoreTileEntity;
-import tardis.common.tileents.TardisEngineTileEntity;
+import tardis.common.tileents.ComponentTileEntity;
+import tardis.common.tileents.ConsoleTileEntity;
+import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInterModComms;
@@ -56,21 +56,21 @@ public class TardisClientProxy extends TardisProxy
 	public void init()
 	{
 		TardisOutput.print("TM", "Sending message to WAILA");
-		FMLInterModComms.sendMessage("Waila","register","tardis.common.integration.waila.TardisWailaCallback.wailaRegister");
+		FMLInterModComms.sendMessage("Waila","register","tardis.common.integration.waila.WailaCallback.wailaRegister");
 	}
 	
 	@Override
 	public void postAssignment()
 	{
 		ClientRegistry.bindTileEntitySpecialRenderer(TardisTileEntity.class, new TardisRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisCoreTileEntity.class, new TardisCoreRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisConsoleTileEntity.class, new TardisConsoleRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisComponentTileEntity.class, new TardisComponentRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisEngineTileEntity.class, new TardisEngineRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(CoreTileEntity.class, new CoreRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(ConsoleTileEntity.class, new ConsoleRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(ComponentTileEntity.class, new ComponentRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(EngineTileEntity.class, new EngineRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(LabTileEntity.class, new LabRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(LandingPadTileEntity.class, new LandingPadRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.labBlock), new LabRenderer());
-		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, new TardisSonicScrewdriverRenderer());
+		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, new SonicScrewdriverRenderer());
 	}
 	
 	@Override

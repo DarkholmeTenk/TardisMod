@@ -11,7 +11,7 @@ import tardis.common.core.Helper;
 import tardis.common.entities.particles.NanogeneParticleEntity;
 import tardis.common.entities.particles.ParticleType;
 
-public class ParticlePacket extends TardisAbstractPacket
+public class ParticlePacket extends AbstractPacket
 {
 	private static Random rand = new Random();
 	public ParticlePacket(ByteBuf payload, NBTTagCompound nbt)

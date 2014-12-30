@@ -2,7 +2,7 @@ package tardis.common.tileents;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-public class TardisDebugTileEntity extends TardisAbstractTileEntity
+public class TardisDebugTileEntity extends AbstractTileEntity
 {
 
 	@Override

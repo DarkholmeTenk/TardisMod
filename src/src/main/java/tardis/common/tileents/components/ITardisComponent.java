@@ -1,11 +1,11 @@
 package tardis.common.tileents.components;
 
 import net.minecraft.nbt.NBTTagCompound;
-import tardis.common.tileents.TardisComponentTileEntity;
+import tardis.common.tileents.ComponentTileEntity;
 
 public interface ITardisComponent
 {
-	public ITardisComponent create(TardisComponentTileEntity parent);
+	public ITardisComponent create(ComponentTileEntity parent);
 	
 	public void updateTick();
 	
@@ -13,6 +13,6 @@ public interface ITardisComponent
 	
 	public void writeToNBT(NBTTagCompound nbt);
 	
-	public void revive(TardisComponentTileEntity parent);
+	public void revive(ComponentTileEntity parent);
 	public void die();
 }

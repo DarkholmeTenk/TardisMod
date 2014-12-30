@@ -4,5 +4,5 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public interface IScrewable
 {
-	public boolean screw(TardisScrewdriverMode mode, EntityPlayer player);
+	public boolean screw(ScrewdriverMode mode, EntityPlayer player);
 }

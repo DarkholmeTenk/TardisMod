@@ -1,6 +1,6 @@
 package tardis.common.core.exception.schema;
 
-import tardis.common.core.schema.TardisPartBlueprint;
+import tardis.common.core.schema.PartBlueprint;
 
 public class UnmatchingSchemaException extends SchemaException
 {
@@ -13,10 +13,10 @@ public class UnmatchingSchemaException extends SchemaException
 	private boolean dF = false;
 	private boolean dB = false;
 	private boolean dD = false;
-	private TardisPartBlueprint t;
-	private TardisPartBlueprint f;
+	private PartBlueprint t;
+	private PartBlueprint f;
 	
-	public UnmatchingSchemaException(TardisPartBlueprint to,TardisPartBlueprint from,boolean diffFacing, boolean diffBounds, boolean diffDoor)
+	public UnmatchingSchemaException(PartBlueprint to,PartBlueprint from,boolean diffFacing, boolean diffBounds, boolean diffDoor)
 	{
 		dF = diffFacing;
 		dB = diffBounds;

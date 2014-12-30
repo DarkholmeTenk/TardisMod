@@ -5,14 +5,14 @@ import org.lwjgl.opengl.GL11;
 import tardis.TardisMod;
 import tardis.client.TardisClientProxy;
 import tardis.client.renderer.model.TardisModel;
-import tardis.common.blocks.TardisAbstractBlock;
+import tardis.common.blocks.AbstractBlock;
 import tardis.common.tileents.TardisTileEntity;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class TardisRenderer extends TardisAbstractBlockRenderer
+public class TardisRenderer extends AbstractBlockRenderer
 {
 	TardisModel model;
 	
@@ -45,7 +45,7 @@ public class TardisRenderer extends TardisAbstractBlockRenderer
 	}
 
 	@Override
-	public TardisAbstractBlock getBlock()
+	public AbstractBlock getBlock()
 	{
 		return TardisMod.tardisBlock;
 	}

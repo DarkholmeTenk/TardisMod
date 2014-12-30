@@ -13,7 +13,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ServerConnectionFromClientEvent;
 
 import tardis.TardisMod;
-import tardis.common.network.packet.TardisDimRegPacket;
+import tardis.common.network.packet.DimRegPacket;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -118,11 +118,11 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 		nbt.setIntArray("registeredDimensions", dims);
 	}
 	
-	public static TardisDimRegPacket getPacket()
+	public static DimRegPacket getPacket()
 	{
 		NBTTagCompound t = new NBTTagCompound();
 		TardisMod.dimReg.writeToNBT(t);
-		return new TardisDimRegPacket(Unpooled.buffer(),t);
+		return new DimRegPacket(Unpooled.buffer(),t);
 	}
 	
 	@SubscribeEvent

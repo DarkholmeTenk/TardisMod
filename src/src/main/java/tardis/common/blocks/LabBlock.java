@@ -14,7 +14,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-public class LabBlock extends TardisAbstractBlockContainer
+public class LabBlock extends AbstractBlockContainer
 {
 
 	public LabBlock()

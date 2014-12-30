@@ -6,7 +6,7 @@ public class TardisOutput
 {
 	public enum Priority { NONE, ERROR, WARNING, INFO, DEBUG, OLDDEBUG }
 	public static Priority defaultPriority = Priority.INFO;
-	public static TardisConfigFile configFile = null;
+	public static ConfigFile configFile = null;
 	
 	private static boolean shouldDisplay(String descriptor)
 	{

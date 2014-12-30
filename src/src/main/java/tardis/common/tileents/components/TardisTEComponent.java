@@ -2,14 +2,14 @@ package tardis.common.tileents.components;
 
 public enum TardisTEComponent
 {
-		TRANSMAT	("Transmat","stickTrans",new TardisComponentTransmat(),ValPos.INSIDE),
-		GRID		("Mass-Energy","stickGrid",new TardisComponentGrid(),ValPos.BOTH),
-		ENERGY		("RF","stickEnergy",new TardisComponentEnergy(),ValPos.BOTH),
-		INVENTORY	("Inv","stickInv",new TardisComponentInventory(),ValPos.BOTH),
-		FLUID		("Fluid","stickFlu",new TardisComponentFluid(),ValPos.BOTH),
-		CHUNK		("ChunkLoader","stickChLo", new TardisComponentChunkLoader(),ValPos.BOTH),
-		COMPUTER	("Peripheral","stickPer", new TardisComponentPeripheral(),ValPos.BOTH),
-		NANOGENE	("Nanogene","stickNano", new TardisComponentNanogene(),ValPos.BOTH);
+		TRANSMAT	("Transmat","stickTrans",new ComponentTransmat(),ValPos.INSIDE),
+		GRID		("Mass-Energy","stickGrid",new ComponentGrid(),ValPos.BOTH),
+		ENERGY		("RF","stickEnergy",new ComponentEnergy(),ValPos.BOTH),
+		INVENTORY	("Inv","stickInv",new ComponentInventory(),ValPos.BOTH),
+		FLUID		("Fluid","stickFlu",new ComponentFluid(),ValPos.BOTH),
+		CHUNK		("ChunkLoader","stickChLo", new ComponentChunkLoader(),ValPos.BOTH),
+		COMPUTER	("Peripheral","stickPer", new ComponentPeripheral(),ValPos.BOTH),
+		NANOGENE	("Nanogene","stickNano", new ComponentNanogene(),ValPos.BOTH);
 		
 		public enum ValPos
 		{

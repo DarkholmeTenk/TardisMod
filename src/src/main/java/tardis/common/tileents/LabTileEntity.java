@@ -6,7 +6,7 @@ import java.util.Iterator;
 import tardis.TardisMod;
 import tardis.api.IActivatable;
 import tardis.common.core.Helper;
-import tardis.common.core.TardisConfigFile;
+import tardis.common.core.ConfigFile;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.extensions.LabRecipe;
 import net.minecraft.entity.item.EntityItem;
@@ -17,7 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInventory, IActivatable
+public class LabTileEntity extends AbstractTileEntity implements ISidedInventory, IActivatable
 {
 	private static final int[][] sideAccessibility = new int[][] { new int[] {5,6,7,8,9},new int[]{0,1,2,3,4}, new int[]{0,1,2,3,4,5,6,7,8,9}};
 	private static ArrayList<LabRecipe> recipes = new ArrayList<LabRecipe>();
@@ -29,7 +29,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 		}
 	}
 	
-	private static TardisConfigFile config = null;
+	private static ConfigFile config = null;
 	private static int maxSpeed = 5;
 
 	private boolean wasWorking = false;
@@ -178,7 +178,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 	
 	private void processTick()
 	{
-		TardisCoreTileEntity core = Helper.getTardisCore(this);
+		CoreTileEntity core = Helper.getTardisCore(this);
 		if(core != null)
 		{
 			LabRecipe matchedRecipe = getMatchedRecipe();
@@ -270,7 +270,7 @@ public class LabTileEntity extends TardisAbstractTileEntity implements ISidedInv
 		return active && isPowered();
 	}
 	
-	public boolean isGeneratingEnergy(LabRecipe rec,TardisCoreTileEntity core)
+	public boolean isGeneratingEnergy(LabRecipe rec,CoreTileEntity core)
 	{
 		if(!Helper.isServer())
 			return isActive() && generatingEnergy;

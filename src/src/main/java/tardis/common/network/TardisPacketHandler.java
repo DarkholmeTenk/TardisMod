@@ -1,10 +1,10 @@
 package tardis.common.network;
 
 import tardis.common.network.packet.ParticlePacket;
-import tardis.common.network.packet.TardisAbstractPacket.PacketType;
-import tardis.common.network.packet.TardisControlPacket;
-import tardis.common.network.packet.TardisDimRegPacket;
-import tardis.common.network.packet.TardisSoundPacket;
+import tardis.common.network.packet.AbstractPacket.PacketType;
+import tardis.common.network.packet.ControlPacket;
+import tardis.common.network.packet.DimRegPacket;
+import tardis.common.network.packet.SoundPacket;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
@@ -36,11 +36,11 @@ public class TardisPacketHandler
 		p.payload().discardReadBytes();
 		PacketType type = PacketType.find(discriminator);
 		if(type == PacketType.SOUND)
-			new TardisSoundPacket(p.payload()).play();
+			new SoundPacket(p.payload()).play();
 		else if(type == PacketType.DIMREG)
-			new TardisDimRegPacket(p.payload()).registerDims();
+			new DimRegPacket(p.payload()).registerDims();
 		else if(type == PacketType.CONTROL)
-			new TardisControlPacket(p.payload()).activate();
+			new ControlPacket(p.payload()).activate();
 		else if(type == PacketType.PARTICLE)
 			new ParticlePacket(p.payload()).spawn();
 	}
