@@ -3,7 +3,7 @@ package tardis.common.tileents.extensions;
 import java.util.EnumSet;
 
 import tardis.common.core.Helper;
-import tardis.common.tileents.TardisCoreTileEntity;
+import tardis.common.tileents.CoreTileEntity;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -90,7 +90,7 @@ public class LabRecipe
 		return true;
 	}
 	
-	public boolean flagsSatisfied(TardisCoreTileEntity core)
+	public boolean flagsSatisfied(CoreTileEntity core)
 	{
 		if(core == null)
 			return false;

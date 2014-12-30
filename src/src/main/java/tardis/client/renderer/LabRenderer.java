@@ -11,14 +11,14 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import tardis.TardisMod;
-import tardis.client.renderer.model.TardisStickModel;
-import tardis.common.blocks.TardisAbstractBlock;
+import tardis.client.renderer.model.StickModel;
+import tardis.common.blocks.AbstractBlock;
 import tardis.common.tileents.LabTileEntity;
 
-public class LabRenderer extends TardisAbstractObjRenderer implements IItemRenderer
+public class LabRenderer extends AbstractObjRenderer implements IItemRenderer
 {
 	private static IModelCustom model = null;
-	private static TardisStickModel stickModel = new TardisStickModel();
+	private static StickModel stickModel = new StickModel();
 	private static ResourceLocation texOff	= new ResourceLocation("tardismod","textures/models/lab/off.png");
 	private static ResourceLocation texOn	= new ResourceLocation("tardismod","textures/models/lab/on.png");
 	private static ResourceLocation stickOff = new ResourceLocation("tardismod","textures/models/lab/stickOff.png"); 
@@ -33,7 +33,7 @@ public class LabRenderer extends TardisAbstractObjRenderer implements IItemRende
 	}
 	
 	@Override
-	public TardisAbstractBlock getBlock()
+	public AbstractBlock getBlock()
 	{
 		return TardisMod.labBlock;
 	}

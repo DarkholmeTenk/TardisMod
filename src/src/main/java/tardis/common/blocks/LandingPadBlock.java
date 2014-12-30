@@ -10,7 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-public class LandingPadBlock extends TardisAbstractBlockContainer
+public class LandingPadBlock extends AbstractBlockContainer
 {
 
 	@Override

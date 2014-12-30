@@ -16,5 +16,5 @@ public interface IControlMatrix
 	
 	public void activateControl(EntityPlayer player, int controlID);
 	
-	public TardisScrewdriverMode getScrewMode(int slot);
+	public ScrewdriverMode getScrewMode(int slot);
 }

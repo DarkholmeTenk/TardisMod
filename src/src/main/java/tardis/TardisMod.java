@@ -10,54 +10,54 @@ import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
 import tardis.common.blocks.LabBlock;
 import tardis.common.blocks.LandingPadBlock;
-import tardis.common.blocks.TardisAbstractBlock;
+import tardis.common.blocks.AbstractBlock;
 import tardis.common.blocks.TardisBlock;
-import tardis.common.blocks.TardisComponentBlock;
-import tardis.common.blocks.TardisComponentItemBlock;
-import tardis.common.blocks.TardisConsoleBlock;
-import tardis.common.blocks.TardisCoreBlock;
-import tardis.common.blocks.TardisDebugBlock;
-import tardis.common.blocks.TardisDecoBlock;
-import tardis.common.blocks.TardisDecoDarkItemBlock;
-import tardis.common.blocks.TardisDecoItemBlock;
-import tardis.common.blocks.TardisEngineBlock;
-import tardis.common.blocks.TardisInternalDoorBlock;
-import tardis.common.blocks.TardisInternalDoorItemBlock;
-import tardis.common.blocks.TardisSchemaBlock;
-import tardis.common.blocks.TardisSchemaComponentBlock;
-import tardis.common.blocks.TardisSchemaComponentItemBlock;
-import tardis.common.blocks.TardisSchemaCoreBlock;
-import tardis.common.blocks.TardisSlabBlock;
-import tardis.common.blocks.TardisSlabItemBlock;
-import tardis.common.blocks.TardisStairBlock;
-import tardis.common.blocks.TardisTopBlock;
-import tardis.common.command.TardisCommandRegister;
+import tardis.common.blocks.ComponentBlock;
+import tardis.common.blocks.ComponentItemBlock;
+import tardis.common.blocks.ConsoleBlock;
+import tardis.common.blocks.CoreBlock;
+import tardis.common.blocks.DebugBlock;
+import tardis.common.blocks.DecoBlock;
+import tardis.common.blocks.DecoDarkItemBlock;
+import tardis.common.blocks.DecoItemBlock;
+import tardis.common.blocks.EngineBlock;
+import tardis.common.blocks.InternalDoorBlock;
+import tardis.common.blocks.InternalDoorItemBlock;
+import tardis.common.blocks.SchemaBlock;
+import tardis.common.blocks.SchemaComponentBlock;
+import tardis.common.blocks.SchemaComponentItemBlock;
+import tardis.common.blocks.SchemaCoreBlock;
+import tardis.common.blocks.SlabBlock;
+import tardis.common.blocks.SlabItemBlock;
+import tardis.common.blocks.StairBlock;
+import tardis.common.blocks.TopBlock;
+import tardis.common.command.CommandRegister;
+import tardis.common.core.DimensionEventHandler;
 import tardis.common.core.Helper;
-import tardis.common.core.TardisConfigFile;
-import tardis.common.core.TardisConfigHandler;
-import tardis.common.core.TardisCreativeTab;
+import tardis.common.core.ConfigFile;
+import tardis.common.core.ConfigHandler;
+import tardis.common.core.CreativeTab;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
-import tardis.common.core.TardisPlayerRegistry;
+import tardis.common.core.TardisOwnershipRegistry;
 import tardis.common.core.TardisTeleporter;
-import tardis.common.dimension.TardisChunkLoadingManager;
-import tardis.common.dimension.TardisDimensionEventHandler;
+import tardis.common.dimension.ChunkLoadingManager;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
-import tardis.common.items.TardisAbstractItem;
-import tardis.common.items.TardisComponentItem;
-import tardis.common.items.TardisCraftingComponentItem;
-import tardis.common.items.TardisKeyItem;
-import tardis.common.items.TardisSchemaItem;
-import tardis.common.items.TardisSonicScrewdriverItem;
+import tardis.common.items.AbstractItem;
+import tardis.common.items.ComponentItem;
+import tardis.common.items.CraftingComponentItem;
+import tardis.common.items.KeyItem;
+import tardis.common.items.SchemaItem;
+import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.network.TardisPacketHandler;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.LandingPadTileEntity;
-import tardis.common.tileents.TardisComponentTileEntity;
-import tardis.common.tileents.TardisConsoleTileEntity;
-import tardis.common.tileents.TardisCoreTileEntity;
-import tardis.common.tileents.TardisEngineTileEntity;
-import tardis.common.tileents.TardisSchemaCoreTileEntity;
+import tardis.common.tileents.ComponentTileEntity;
+import tardis.common.tileents.ConsoleTileEntity;
+import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.EngineTileEntity;
+import tardis.common.tileents.SchemaCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -82,53 +82,53 @@ public class TardisMod
 	
 	@SidedProxy(clientSide="tardis.client.TardisClientProxy", serverSide="tardis.common.TardisProxy")
 	public static TardisProxy proxy;
-	public static TardisDimensionEventHandler dimEventHandler = new TardisDimensionEventHandler();
+	public static DimensionEventHandler dimEventHandler = new DimensionEventHandler();
 	public static TardisPacketHandler packetHandler = new TardisPacketHandler();
 	public static FMLEventChannel networkChannel;
 	
 	public static IAppEngApi aeAPI = null;
 	
-	public static TardisConfigFile modConfig;
-	public static TardisConfigFile blockConfig;
-	public static TardisConfigFile itemConfig;
+	public static ConfigFile modConfig;
+	public static ConfigFile blockConfig;
+	public static ConfigFile itemConfig;
 	
 	public static TardisTeleporter teleporter = null;
-	public static TardisConfigHandler configHandler;
+	public static ConfigHandler configHandler;
 	public static TardisDimensionHandler otherDims;
 	public static TardisDimensionRegistry dimReg;
-	public static TardisPlayerRegistry plReg;
-	public static TardisChunkLoadingManager chunkManager;
-	public static TardisCreativeTab tab = null;
+	public static TardisOwnershipRegistry plReg;
+	public static ChunkLoadingManager chunkManager;
+	public static CreativeTab tab = null;
 	
 	public static TardisOutput.Priority priorityLevel = TardisOutput.Priority.INFO;
 	public static int providerID = 54;
 	public static boolean tardisLoaded = true;
 	public static boolean keyInHand = true;
 	
-	public static TardisAbstractBlock tardisBlock;
-	public static TardisAbstractBlock tardisTopBlock;
-	public static TardisAbstractBlock tardisCoreBlock;
-	public static TardisAbstractBlock tardisConsoleBlock;
-	public static TardisAbstractBlock tardisEngineBlock;
-	public static TardisAbstractBlock componentBlock;
-	public static TardisAbstractBlock internalDoorBlock;
-	public static TardisAbstractBlock decoBlock;
-	public static TardisAbstractBlock darkDecoBlock;
-	public static TardisAbstractBlock schemaBlock;
-	public static TardisAbstractBlock schemaCoreBlock;
-	public static TardisAbstractBlock schemaComponentBlock;
-	public static TardisAbstractBlock debugBlock;
-	public static TardisAbstractBlock landingPad;
-	public static TardisStairBlock	  stairBlock;
-	public static TardisSlabBlock	  slabBlock;
+	public static AbstractBlock tardisBlock;
+	public static AbstractBlock tardisTopBlock;
+	public static AbstractBlock tardisCoreBlock;
+	public static AbstractBlock tardisConsoleBlock;
+	public static AbstractBlock tardisEngineBlock;
+	public static AbstractBlock componentBlock;
+	public static AbstractBlock internalDoorBlock;
+	public static AbstractBlock decoBlock;
+	public static AbstractBlock darkDecoBlock;
+	public static AbstractBlock schemaBlock;
+	public static AbstractBlock schemaCoreBlock;
+	public static AbstractBlock schemaComponentBlock;
+	public static AbstractBlock debugBlock;
+	public static AbstractBlock landingPad;
+	public static StairBlock	  stairBlock;
+	public static SlabBlock	  slabBlock;
 	
 	public static LabBlock	labBlock;
 	
-	public static TardisAbstractItem schemaItem;
-	public static TardisAbstractItem componentItem;
-	public static TardisCraftingComponentItem craftingComponentItem;
-	public static TardisKeyItem keyItem;
-	public static TardisSonicScrewdriverItem screwItem;
+	public static AbstractItem schemaItem;
+	public static AbstractItem componentItem;
+	public static CraftingComponentItem craftingComponentItem;
+	public static KeyItem keyItem;
+	public static SonicScrewdriverItem screwItem;
 	
 	public static float tardisVol = 1f;
 	public static boolean deathTransmatLive		= true;
@@ -144,9 +144,9 @@ public class TardisMod
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
 	{
-		configHandler = new TardisConfigHandler(event.getModConfigurationDirectory());
+		configHandler = new ConfigHandler(event.getModConfigurationDirectory());
 		configHandler.getSchemas();
-		tab = new TardisCreativeTab();
+		tab = new CreativeTab();
 		
 		modConfig   = configHandler.getConfigFile("Mod");
 		int prioLevel = Helper.clamp(modConfig.getInt("Debug Level", priorityLevel.ordinal()),0,TardisOutput.Priority.values().length);
@@ -174,7 +174,7 @@ public class TardisMod
 		itemConfig = configHandler.getConfigFile("Items");
 		initItems();
 		
-		//MinecraftForge.EVENT_BUS.register(new TardisSoundHandler());
+		//MinecraftForge.EVENT_BUS.register(new SoundHandler());
 		
 		proxy.postAssignment();
 	}
@@ -208,53 +208,53 @@ public class TardisMod
 		GameRegistry.registerBlock(tardisBlock,tardisBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(TardisTileEntity.class, tardisBlock.getUnlocalizedName());
 		
-		tardisTopBlock = new TardisTopBlock();
+		tardisTopBlock = new TopBlock();
 		GameRegistry.registerBlock(tardisTopBlock,tardisTopBlock.getUnlocalizedName());
 		
-		tardisCoreBlock = new TardisCoreBlock();
+		tardisCoreBlock = new CoreBlock();
 		GameRegistry.registerBlock(tardisCoreBlock,tardisCoreBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(TardisCoreTileEntity.class, tardisCoreBlock.getUnlocalizedName());
+		GameRegistry.registerTileEntity(CoreTileEntity.class, tardisCoreBlock.getUnlocalizedName());
 		
-		tardisConsoleBlock = new TardisConsoleBlock();
+		tardisConsoleBlock = new ConsoleBlock();
 		GameRegistry.registerBlock(tardisConsoleBlock, tardisConsoleBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(TardisConsoleTileEntity.class,tardisConsoleBlock.getUnlocalizedName());
+		GameRegistry.registerTileEntity(ConsoleTileEntity.class,tardisConsoleBlock.getUnlocalizedName());
 		
-		tardisEngineBlock = new TardisEngineBlock();
+		tardisEngineBlock = new EngineBlock();
 		GameRegistry.registerBlock(tardisEngineBlock, tardisEngineBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(TardisEngineTileEntity.class, tardisEngineBlock.getUnlocalizedName());
+		GameRegistry.registerTileEntity(EngineTileEntity.class, tardisEngineBlock.getUnlocalizedName());
 		
-		componentBlock = new TardisComponentBlock();
-		GameRegistry.registerBlock(componentBlock,TardisComponentItemBlock.class,componentBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(TardisComponentTileEntity.class, componentBlock.getUnlocalizedName());
+		componentBlock = new ComponentBlock();
+		GameRegistry.registerBlock(componentBlock,ComponentItemBlock.class,componentBlock.getUnlocalizedName());
+		GameRegistry.registerTileEntity(ComponentTileEntity.class, componentBlock.getUnlocalizedName());
 		
-		internalDoorBlock = new TardisInternalDoorBlock();
-		GameRegistry.registerBlock(internalDoorBlock,TardisInternalDoorItemBlock.class,internalDoorBlock.getUnlocalizedName());
+		internalDoorBlock = new InternalDoorBlock();
+		GameRegistry.registerBlock(internalDoorBlock,InternalDoorItemBlock.class,internalDoorBlock.getUnlocalizedName());
 		
-		decoBlock = new TardisDecoBlock(true);
-		GameRegistry.registerBlock(decoBlock, TardisDecoItemBlock.class, decoBlock.getUnlocalizedName());
+		decoBlock = new DecoBlock(true);
+		GameRegistry.registerBlock(decoBlock, DecoItemBlock.class, decoBlock.getUnlocalizedName());
 		
-		darkDecoBlock = new TardisDecoBlock(false);
-		GameRegistry.registerBlock(darkDecoBlock, TardisDecoDarkItemBlock.class, decoBlock.getUnlocalizedName()+"Dark");
+		darkDecoBlock = new DecoBlock(false);
+		GameRegistry.registerBlock(darkDecoBlock, DecoDarkItemBlock.class, decoBlock.getUnlocalizedName()+"Dark");
 		
-		stairBlock = new TardisStairBlock();
+		stairBlock = new StairBlock();
 		GameRegistry.registerBlock(stairBlock,stairBlock.getUnlocalizedName());
 		
-		debugBlock = new TardisDebugBlock();
+		debugBlock = new DebugBlock();
 		GameRegistry.registerBlock(debugBlock, debugBlock.getUnlocalizedName());
 		
 		boolean visibleSchema = modConfig.getBoolean("Visible schematic boundaries", false);
-		schemaBlock = new TardisSchemaBlock(visibleSchema);
+		schemaBlock = new SchemaBlock(visibleSchema);
 		GameRegistry.registerBlock(schemaBlock, schemaBlock.getUnlocalizedName());
 		
-		schemaCoreBlock = new TardisSchemaCoreBlock(visibleSchema);
+		schemaCoreBlock = new SchemaCoreBlock(visibleSchema);
 		GameRegistry.registerBlock(schemaCoreBlock,schemaCoreBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(TardisSchemaCoreTileEntity.class, schemaCoreBlock.getUnlocalizedName());
+		GameRegistry.registerTileEntity(SchemaCoreTileEntity.class, schemaCoreBlock.getUnlocalizedName());
 		
-		schemaComponentBlock = new TardisSchemaComponentBlock();
-		GameRegistry.registerBlock(schemaComponentBlock, TardisSchemaComponentItemBlock.class, schemaComponentBlock.getUnlocalizedName());
+		schemaComponentBlock = new SchemaComponentBlock();
+		GameRegistry.registerBlock(schemaComponentBlock, SchemaComponentItemBlock.class, schemaComponentBlock.getUnlocalizedName());
 		
-		slabBlock = new TardisSlabBlock();
-		GameRegistry.registerBlock(slabBlock,TardisSlabItemBlock.class,slabBlock.getUnlocalizedName());
+		slabBlock = new SlabBlock();
+		GameRegistry.registerBlock(slabBlock,SlabItemBlock.class,slabBlock.getUnlocalizedName());
 		
 		landingPad = new LandingPadBlock();
 		GameRegistry.registerBlock(landingPad, landingPad.getUnlocalizedName());
@@ -267,19 +267,19 @@ public class TardisMod
 	
 	private void initItems()
 	{
-		schemaItem = new TardisSchemaItem();
+		schemaItem = new SchemaItem();
 		GameRegistry.registerItem(schemaItem, schemaItem.getUnlocalizedName());
 		
-		screwItem = new TardisSonicScrewdriverItem();
+		screwItem = new SonicScrewdriverItem();
 		GameRegistry.registerItem(screwItem, screwItem.getUnlocalizedName());
 		
-		keyItem = new TardisKeyItem();
+		keyItem = new KeyItem();
 		GameRegistry.registerItem(keyItem, keyItem.getUnlocalizedName());
 		
-		componentItem = new TardisComponentItem();
+		componentItem = new ComponentItem();
 		GameRegistry.registerItem(componentItem, componentItem.getUnlocalizedName());
 		
-		craftingComponentItem = new TardisCraftingComponentItem();
+		craftingComponentItem = new CraftingComponentItem();
 		GameRegistry.registerItem(craftingComponentItem, craftingComponentItem.getUnlocalizedName());
 		
 	}
@@ -306,7 +306,7 @@ public class TardisMod
 			MinecraftForge.EVENT_BUS.unregister(chunkManager);
 			FMLCommonHandler.instance().bus().unregister(chunkManager);
 		}
-		chunkManager = new TardisChunkLoadingManager();
+		chunkManager = new ChunkLoadingManager();
 		MinecraftForge.EVENT_BUS.register(chunkManager);
 		FMLCommonHandler.instance().bus().register(chunkManager);
 		ForgeChunkManager.setForcedChunkLoadingCallback(this, chunkManager);
@@ -319,9 +319,9 @@ public class TardisMod
 		dimReg.registerDims();
 		FMLCommonHandler.instance().bus().register(dimReg);
 		MinecraftForge.EVENT_BUS.register(dimReg);
-		plReg  = TardisPlayerRegistry.load();
-		TardisPlayerRegistry.save();
+		plReg  = TardisOwnershipRegistry.load();
+		TardisOwnershipRegistry.save();
 		teleporter = new TardisTeleporter(event.getServer().worldServerForDimension(0));
-		TardisCommandRegister.registerCommands(event);
+		CommandRegister.registerCommands(event);
 	}
 }

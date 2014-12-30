@@ -2,7 +2,7 @@ package tardis.common.dimension;
 
 import java.util.List;
 
-import tardis.common.tileents.TardisConsoleTileEntity;
+import tardis.common.tileents.ConsoleTileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -93,15 +93,15 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		if(dimensionId != 0)
 		{
-			TardisConsoleTileEntity con = getConsole();
-			//TardisConsoleTileEntity con = Helper.getTardisConsole(worldObj);
+			ConsoleTileEntity con = getConsole();
+			//ConsoleTileEntity con = Helper.getTardisConsole(worldObj);
 			if(con != null)
 				return con.getDaytimeSetting();
 		}
 		return true;
 	}
 	
-	public TardisConsoleTileEntity getConsole()
+	public ConsoleTileEntity getConsole()
 	{
 		if(worldObj == null)
 			return null;
@@ -110,8 +110,8 @@ public class TardisWorldProvider extends WorldProvider
 			return null;
 		for(Object o : ents)
 		{
-			if(o instanceof TardisConsoleTileEntity)
-				return ((TardisConsoleTileEntity)o);
+			if(o instanceof ConsoleTileEntity)
+				return ((ConsoleTileEntity)o);
 		}
 		return null;
 	}

@@ -14,17 +14,17 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import tardis.TardisMod;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
-import tardis.common.core.schema.TardisPartBlueprint;
+import tardis.common.core.schema.PartBlueprint;
 import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.dimension.TardisTeleportHelper;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.entities.particles.ParticleType;
 import tardis.common.network.packet.ParticlePacket;
-import tardis.common.network.packet.TardisControlPacket;
-import tardis.common.network.packet.TardisSoundPacket;
-import tardis.common.tileents.TardisConsoleTileEntity;
-import tardis.common.tileents.TardisCoreTileEntity;
-import tardis.common.tileents.TardisEngineTileEntity;
+import tardis.common.network.packet.ControlPacket;
+import tardis.common.network.packet.SoundPacket;
+import tardis.common.tileents.ConsoleTileEntity;
+import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -97,7 +97,7 @@ public class Helper
 		{
 			if(ent instanceof EntityPlayer)
 			{
-				TardisCoreTileEntity core = getTardisCore(ent.worldObj);
+				CoreTileEntity core = getTardisCore(ent.worldObj);
 				if(core != null)
 					core.enterTardis((EntityPlayer) ent,true);
 				else
@@ -169,7 +169,7 @@ public class Helper
 			tardisWorld.setBlock(tardisCoreX, tardisCoreY-2, tardisCoreZ, TardisMod.tardisConsoleBlock);
 			tardisWorld.setBlock(tardisCoreX, tardisCoreY-5, tardisCoreZ, TardisMod.tardisEngineBlock);
 		}
-		TardisCoreTileEntity te = getTardisCore(dimID);
+		CoreTileEntity te = getTardisCore(dimID);
 		if(te != null)
 		{
 			te.setOwner(ownerName);
@@ -193,7 +193,7 @@ public class Helper
 	public static int generateTardisInterior(EntityPlayer player,TardisTileEntity exterior)
 	{
 		int dimID = generateTardisInterior(player.getCommandSenderName(),exterior);
-		TardisCoreTileEntity te = getTardisCore(dimID);
+		CoreTileEntity te = getTardisCore(dimID);
 		if(te != null)
 			te.enterTardis(player, true);
 		return dimID;
@@ -209,7 +209,7 @@ public class Helper
 		{
 			int dimID = generateTardisInterior(player.getCommandSenderName(),te);
 			te.linkToDimension(dimID);
-			TardisConsoleTileEntity con = getTardisConsole(dimID);
+			ConsoleTileEntity con = getTardisConsole(dimID);
 			if(con != null)
 				con.setControls(te, true);
 		}
@@ -225,7 +225,7 @@ public class Helper
 		if(te != null)
 		{
 			te.linkToDimension(dim);
-			TardisConsoleTileEntity con = getTardisConsole(dim);
+			ConsoleTileEntity con = getTardisConsole(dim);
 			if(con != null)
 				con.setControls(te, true);
 		}
@@ -293,7 +293,7 @@ public class Helper
 	
 	public static void loadSchema(File schemaFile, World w, int x, int y, int z, int facing)
 	{
-		TardisPartBlueprint pb = new TardisPartBlueprint(schemaFile);
+		PartBlueprint pb = new PartBlueprint(schemaFile);
 		pb.reconstitute(w, x, y, z, facing);
 	}
 
@@ -310,21 +310,21 @@ public class Helper
 		
 		long mstime = System.currentTimeMillis();
 		File schemaDiff = TardisMod.configHandler.getSchemaFile(toName+"."+fromName+".diff");
-		TardisPartBlueprint diff = null;
+		PartBlueprint diff = null;
 		if(schemaDiff.exists())
 		{
 			TardisOutput.print("TH", "Loading diff from file");
-			diff = new TardisPartBlueprint(schemaDiff);
+			diff = new PartBlueprint(schemaDiff);
 		}
 		else
 		{
 			File fromFile	= TardisMod.configHandler.getSchemaFile(fromName);
 			File toFile		= TardisMod.configHandler.getSchemaFile(toName);
-			TardisPartBlueprint fromPB	= new TardisPartBlueprint(fromFile);
-			TardisPartBlueprint toPB	= new TardisPartBlueprint(toFile);
+			PartBlueprint fromPB	= new PartBlueprint(fromFile);
+			PartBlueprint toPB	= new PartBlueprint(toFile);
 			try
 			{
-				diff = new TardisPartBlueprint(toPB,fromPB);
+				diff = new PartBlueprint(toPB,fromPB);
 				diff.saveTo(schemaDiff);
 			}
 			catch (UnmatchingSchemaException e)
@@ -424,7 +424,7 @@ public class Helper
 		data.setFloat("vol",vol);
 		if(speed != 1)
 			data.setFloat("spe", speed);
-		TardisSoundPacket packet = new TardisSoundPacket(Unpooled.buffer(),data);
+		SoundPacket packet = new SoundPacket(Unpooled.buffer(),data);
 		TardisMod.networkChannel.sendToDimension(packet, dim);
 		//MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayersInDimension(packet, dim);
 	}
@@ -440,7 +440,7 @@ public class Helper
 		data.setInteger("x", te.xCoord);
 		data.setInteger("y", te.yCoord);
 		data.setInteger("z", te.zCoord);
-		TardisControlPacket p = new TardisControlPacket(data);
+		ControlPacket p = new ControlPacket(data);
 		TardisMod.networkChannel.sendToServer(p);
 	}
 	
@@ -508,7 +508,7 @@ public class Helper
 		return null;
 	}
 
-	public static TardisCoreTileEntity getTardisCore(int dimensionID)
+	public static CoreTileEntity getTardisCore(int dimensionID)
 	{
 		if(dimensionID == 0)
 			return null;
@@ -520,14 +520,14 @@ public class Helper
 		return null;
 	}
 	
-	public static TardisCoreTileEntity getTardisCore(IBlockAccess tardisWorld)
+	public static CoreTileEntity getTardisCore(IBlockAccess tardisWorld)
 	{
 		if(tardisWorld != null)
 		{
 			TileEntity te = tardisWorld.getTileEntity(tardisCoreX, tardisCoreY, tardisCoreZ);
-			if(te instanceof TardisCoreTileEntity)
+			if(te instanceof CoreTileEntity)
 			{
-				return (TardisCoreTileEntity)te;
+				return (CoreTileEntity)te;
 			}
 		}
 		else
@@ -537,7 +537,7 @@ public class Helper
 		return null;
 	}
 	
-	public static TardisCoreTileEntity getTardisCore(TileEntity te)
+	public static CoreTileEntity getTardisCore(TileEntity te)
 	{
 		if(te != null)
 		{
@@ -548,20 +548,20 @@ public class Helper
 		return null;
 	}
 	
-	public static TardisEngineTileEntity getTardisEngine(int dim)
+	public static EngineTileEntity getTardisEngine(int dim)
 	{
 		return getTardisEngine(Helper.getWorld(dim));
 	}
 	
-	public static TardisEngineTileEntity getTardisEngine(IBlockAccess w)
+	public static EngineTileEntity getTardisEngine(IBlockAccess w)
 	{
-		TardisCoreTileEntity core = getTardisCore(w);
+		CoreTileEntity core = getTardisCore(w);
 		if(core != null)
 			return core.getEngine();
 		return null;
 	}
 	
-	public static TardisConsoleTileEntity getTardisConsole(int dimID)
+	public static ConsoleTileEntity getTardisConsole(int dimID)
 	{
 		World w = getWorldServer(dimID);
 		if(w != null)
@@ -569,9 +569,9 @@ public class Helper
 		return null;
 	}
 	
-	public static TardisConsoleTileEntity getTardisConsole(IBlockAccess tardisWorld)
+	public static ConsoleTileEntity getTardisConsole(IBlockAccess tardisWorld)
 	{
-		TardisCoreTileEntity core = getTardisCore(tardisWorld);
+		CoreTileEntity core = getTardisCore(tardisWorld);
 		if(core != null)
 			return core.getConsole();
 		return null;

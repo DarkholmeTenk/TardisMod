@@ -19,7 +19,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 
-public class TardisTileEntity extends TardisAbstractTileEntity implements IChunkLoader, IWatching
+public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IWatching
 {
 	private int fadeTimer = 0;
 	
@@ -43,7 +43,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 			baseURL = TardisMod.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
 		if(Helper.isServer())
 		{
-			TardisCoreTileEntity linkedCore = getCore();
+			CoreTileEntity linkedCore = getCore();
 			if(linkedCore != null && owner == null)
 			{
 				owner = linkedCore.getOwner();
@@ -52,7 +52,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 		}
 		if(linkedDimension != null && tt % 20 == 0)
 		{
-			TardisCoreTileEntity core = Helper.getTardisCore(linkedDimension);
+			CoreTileEntity core = Helper.getTardisCore(linkedDimension);
 			if(core != null)
 			{
 				TardisTileEntity ext = core.getExterior();
@@ -155,7 +155,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 	public void linkToDimension(int dimID)
 	{
 		linkedDimension = dimID;
-		TardisCoreTileEntity te = Helper.getTardisCore(dimID);
+		CoreTileEntity te = Helper.getTardisCore(dimID);
 		if(te != null)
 		{
 			te.linkToExterior(this);
@@ -210,7 +210,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 			}
 			else
 			{
-				TardisCoreTileEntity te = Helper.getTardisCore(linkedDimension);
+				CoreTileEntity te = Helper.getTardisCore(linkedDimension);
 				if(te != null)
 				{
 					te.linkToExterior(this);
@@ -221,7 +221,7 @@ public class TardisTileEntity extends TardisAbstractTileEntity implements IChunk
 		}
 	}
 	
-	public TardisCoreTileEntity getCore()
+	public CoreTileEntity getCore()
 	{
 		if(linkedDimension != null && linkedDimension != 0)
 			return Helper.getTardisCore(linkedDimension);

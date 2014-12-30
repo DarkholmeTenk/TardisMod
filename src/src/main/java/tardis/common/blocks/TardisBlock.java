@@ -12,7 +12,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class TardisBlock extends TardisAbstractBlockContainer
+public class TardisBlock extends AbstractBlockContainer
 {
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)

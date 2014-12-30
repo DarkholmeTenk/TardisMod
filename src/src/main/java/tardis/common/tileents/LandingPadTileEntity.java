@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-public class LandingPadTileEntity extends TardisComponentTileEntity
+public class LandingPadTileEntity extends ComponentTileEntity
 {
 	boolean hadCore = false;
 	
@@ -19,7 +19,7 @@ public class LandingPadTileEntity extends TardisComponentTileEntity
 	}
 	
 	@Override
-	public TardisCoreTileEntity getCore()
+	public CoreTileEntity getCore()
 	{
 		if(Helper.isTardisWorld(worldObj))
 			return super.getCore();
@@ -28,7 +28,7 @@ public class LandingPadTileEntity extends TardisComponentTileEntity
 		{
 			if(!((TardisTileEntity)te).inFlight())
 			{
-				TardisCoreTileEntity core = ((TardisTileEntity)te).getCore();
+				CoreTileEntity core = ((TardisTileEntity)te).getCore();
 				if(core != null && core.canBeAccessedExternally())
 					return core;
 			}
@@ -39,7 +39,7 @@ public class LandingPadTileEntity extends TardisComponentTileEntity
 	@Override
 	public IArtronEnergyProvider getArtronEnergyProvider()
 	{
-		TardisCoreTileEntity core = getCore();
+		CoreTileEntity core = getCore();
 		if(core != null)
 			return (IArtronEnergyProvider)core;
 		TileEntity te = worldObj.getTileEntity(xCoord, yCoord+1, zCoord);
