@@ -348,6 +348,21 @@ public class Helper
 	
 	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z)
 	{
+		spawnParticle(type,dim,x,y,z,1,false);
+	}
+	
+	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z, int c)
+	{
+		spawnParticle(type,dim,x,y,z,c,false);
+	}
+	
+	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z, boolean b)
+	{
+		spawnParticle(type,dim,x,y,z,1,b);
+	}
+	
+	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z, int count, boolean rand)
+	{
 		if(!Helper.isServer())
 			return;
 		NBTTagCompound data = new NBTTagCompound();
@@ -355,6 +370,8 @@ public class Helper
 		data.setDouble("x", x);
 		data.setDouble("y", y);
 		data.setDouble("z", z);
+		data.setInteger("c", count);
+		data.setBoolean("r", rand);
 		data.setInteger("type",type.ordinal());
 		ParticlePacket packet = new ParticlePacket(Unpooled.buffer(),data);
 		TardisMod.networkChannel.sendToDimension(packet, dim);
