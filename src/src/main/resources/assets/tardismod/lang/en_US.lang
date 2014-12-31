@@ -54,5 +54,6 @@ item.TardisMod.Component.Nanogene.name=Nanogene Canister
 
 item.TardisMod.CraftingComponent.IngotDalek.name=Dalekanium Ingot
 item.TardisMod.CraftingComponent.IngotChronosteel.name=Chronosteel Ingot
+item.TardisMod.CraftingComponent.CrystalKontron.name=Kontron Crystal
 
 itemGroup.TardisModTab=Tardis Mod
