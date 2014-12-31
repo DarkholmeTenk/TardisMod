@@ -174,6 +174,8 @@ public class SchemaStore
 					b = blockIter.next();
 					if(b.getUnlocalizedName().equals(name))
 					{
+						if(name == TardisMod.decoBlock.getUnlocalizedName() && b != TardisMod.decoBlock)
+							continue;
 						blockCache.put(name, b);
 						return b;
 					}
