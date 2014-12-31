@@ -7,6 +7,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.extensions.CraftingComponentType;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -98,8 +99,9 @@ public class KeyItem extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem,1),true, " i "," i "," ii",
-				'i', Items.iron_ingot));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem,1),true, " i "," ik"," ii",
+				'i', Items.iron_ingot,
+				'k', CraftingComponentType.KONTRON.getIS(1)));
 	}
 
 }
