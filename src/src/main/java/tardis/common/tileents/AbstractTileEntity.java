@@ -96,7 +96,7 @@ public abstract class AbstractTileEntity extends TileEntity
 			coords = new SimpleCoordStore(this);
 		tt++;
 		
-		if(tt % 10 == 0 && updateCounter > 0)
+		if(tt % 11 == 0 && updateCounter > 0)
 			updateCounter--;
 		
 		if(updateQueued && canSendUpdate())

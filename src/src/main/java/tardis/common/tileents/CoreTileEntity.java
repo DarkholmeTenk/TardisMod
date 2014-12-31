@@ -260,7 +260,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public void updateEntity()
 	{
 		super.updateEntity();
-		tt++;
 		
 		if(explode)
 		{
@@ -625,13 +624,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				inFlightTimer = 0;
 				flightTimer = 0;
 				TardisTileEntity te = getExterior();
-				fast = isFastLanding();
+				fast = isFastLanding() && con.shouldLand();
 				timeTillTakenOff	= (20 * 11);
 				if(!fast)
 					timeTillLanding		= timeTillTakenOff +  (int) (((2+(2*getMaxSpeed())) - (2*getSpeed(true))) * 69);
 				else
-					timeTillLanding		= timeTillTakenOff;
-				timeTillLandingInt	= timeTillLanding + (fast ? 0 : 20 * 17);
+					timeTillLanding		= timeTillTakenOff+1;
+				timeTillLandingInt	= timeTillLanding + (fast ? 1 : 20 * 17);
 				timeTillLanded		= timeTillLanding + (fast ? 20 * 5 : 20 * 22);
 				numButtons = (timeTillLanding - timeTillTakenOff) / getButtonTime();
 				oldExteriorWorld = exteriorWorld;
@@ -710,7 +709,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			forcedFlight = false;
 			addXP(con != null && con.isStable()?15:(45-instability));
 			inFlight = false;
-			sendUpdate();
 			Helper.playSound(this, "engineDrum", 0.75F);
 			TardisTileEntity ext = getExterior();
 			if(ext != null)
@@ -723,6 +721,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			}
 			if(con != null)
 				con.land();
+			sendUpdate();
 		}
 	}
 	
