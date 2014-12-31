@@ -244,7 +244,8 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 			{
 				if(hitPos != null)
 				{
-					if(w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ) == TardisMod.decoBlock)
+					Block b = w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+					if(b == TardisMod.decoBlock || b == TardisMod.darkDecoBlock)
 					{
 						int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 						if(m == 2 || m == 4)
