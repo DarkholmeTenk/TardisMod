@@ -1,10 +1,20 @@
 package tardis.common.core;
 
 import tardis.TardisMod;
+import tardis.common.core.TardisOutput.Priority;
 
 public class TardisOutput
 {
-	public enum Priority { NONE, ERROR, WARNING, INFO, DEBUG, OLDDEBUG }
+	public enum Priority {
+		NONE, ERROR, WARNING, INFO, DEBUG, OLDDEBUG;
+		public static Priority get(int a)
+		{
+			Priority[] vals = values();
+			if(a >= 0 && a < vals.length)
+				return vals[a];
+			return TardisMod.priorityLevel;
+		}
+	}
 	public static Priority defaultPriority = Priority.INFO;
 	public static ConfigFile configFile = null;
 	

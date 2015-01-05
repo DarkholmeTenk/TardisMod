@@ -1088,6 +1088,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		deletingRooms = true;
 	}
 	
+	public int getEnergyPerSecond()
+	{
+		return getEnergyPerSecond(getLevel(TardisUpgradeMode.REGEN));
+	}
+	
 	public int getEnergyPerSecond(int level)
 	{
 		return energyPerSecond + (energyPerSecondInc * level);

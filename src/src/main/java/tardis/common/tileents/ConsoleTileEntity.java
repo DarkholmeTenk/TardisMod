@@ -1053,6 +1053,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		currentLanding = getCurrentControlState();
 		primed = false;
 		regulated = false;
+		sendUpdate();
 	}
 	
 	public static void refreshSchemas()

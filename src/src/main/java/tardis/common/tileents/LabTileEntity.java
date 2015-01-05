@@ -145,11 +145,13 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		{
 			for(ItemStack is : results)
 			{
+				boolean outputted = false;
 				for(int i = 5;i<10;i++)
 				{
 					if(inventory[i] == null)
 					{
 						inventory[i] = is.copy();
+						outputted = true;
 						break;
 					}
 					else if(Helper.sameItem(inventory[i], is))
@@ -157,9 +159,15 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 						if(inventory[i].stackSize + is.stackSize <= inventory[i].getMaxStackSize())
 						{
 							inventory[i].stackSize += is.stackSize;
+							outputted = true;
+							break;
 						}
 					}
 				}
+				if(outputted)
+					TardisOutput.print("LTE", "Outputted " + is.getDisplayName());
+				else
+					TardisOutput.print("LTE", "Failed to output " + is.getDisplayName());
 			}
 			TardisOutput.print("LTE", "Outputted results");
 			return true;
@@ -199,8 +207,6 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 						takeComponents(matchedRecipe.source);
 					}
 				}
-				else
-					update(false);
 			}
 			else
 				update(false);
