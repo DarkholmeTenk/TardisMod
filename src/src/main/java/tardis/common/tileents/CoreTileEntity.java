@@ -408,7 +408,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
 	{
-		if(!inFlight && hasValidExterior())
+		if(!inFlight() && hasValidExterior())
 		{
 			if(ignoreLock || canOpenLock(player,true))
 			{
@@ -434,16 +434,18 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 						TardisTeleportHelper.teleportEntity(player, exteriorWorld, exteriorX+0.5+(dx), exteriorY, exteriorZ+0.5+(dz),rot);
 					}
 					else
-						player.addChatMessage(new ChatComponentText("[TARDIS]The door is obstructed"));
+						Helper.sendString(player, "TARDIS", "The door is obstructed");
 				}
 				else
-					player.addChatMessage(new ChatComponentText("[TARDIS]The door refuses to open"));
+					Helper.sendString(player, "TARDIS", "The door refuses to open");
 			}
 			else
-				player.addChatMessage(new ChatComponentText("[TARDIS]The door is locked"));
+				Helper.sendString(player, "TARDIS", "The door is locked");
 		}
+		else if(inFlight())
+			Helper.sendString(player, "TARDIS", "The door won't open in flight");
 		else
-			player.addChatMessage(new ChatComponentText("[TARDIS]The door won't open in flight"));
+			Helper.sendString(player, "TARDIS", "The door refuses to open for some reason");
 	}
 	
 	public boolean changeLock(EntityPlayer pl,boolean inside)
@@ -453,23 +455,24 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		
 		TardisOutput.print("TCTE", "Changing lock");
 		if(!hasKey(pl,true) && !inside)
-		{
-			return false;
-		}
-		
-		if(lockState.equals(LockState.Locked) && !inside)
 			return false;
 		
-		//
-		//
+		if(lockState.equals(LockState.Locked) && !inside) //If you're outside, you can't unlock a "Locked" door
+			return false;
+		if(lockState.equals(LockState.OwnerOnly) && !(inside || isOwner(pl))) //If you're not the owner/not inside, you can't unlock an owner only door
+			return false;
 		
 		if(!pl.isSneaking())
 			return false;
 			
 		int num = LockState.values().length;
-		lockState = LockState.values()[((lockState.ordinal() + 1)%num)];
-		if(lockState.equals(LockState.Locked) && !inside)
-			lockState = LockState.values()[((lockState.ordinal() + 1)%num)];
+		LockState[] states = LockState.values();
+		lockState = states[((lockState.ordinal() + 1)%num)];
+		if(lockState.equals(LockState.Locked) && !inside) //If you're not inside, you can't put the door in locked mode
+			lockState = states[((lockState.ordinal() + 1)%num)];
+		if(lockState.equals(LockState.OwnerOnly) && !isOwner(pl)) //If you're not the owner, you can't put the door in owner only mode
+			lockState = states[((lockState.ordinal() + 1)%num)];
+		
 		TardisOutput.print("TTE", "Lockstate:"+lockState.toString());
 		if(lockState.equals(LockState.KeyOnly))
 			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will open for its owner and people with keys"));
@@ -565,7 +568,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public boolean isMoving()
 	{
 		if(exteriorWorld == 10000)
-			return false;
+			return true;
 		ConsoleTileEntity con = getConsole();
 		if(con == null)
 			return false;
@@ -651,7 +654,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		Block b = w.getBlock(x,y,z);
 		if(b == null)
 			return w.isAirBlock(x, y, z);
-		return w.isAirBlock(x, y, z) || b.isFoliage(w, x, y, z) || b.isReplaceable(w, x, y, z) || b instanceof BlockFire;
+		Boolean valid = w.isAirBlock(x, y, z) || b.isFoliage(w, x, y, z) || b.isReplaceable(w, x, y, z) || b instanceof BlockFire;
+		if(valid)
+			return valid;
+		if(b.getCollisionBoundingBoxFromPool(w, x, y, z) == null)
+			return true;
+		return false;
+		
 	}
 	
 	private boolean isValidPos(World w, int x, int y, int z)
@@ -843,15 +852,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		String fullName = "tardisConsole" + sub;
 		SchemaCoreTileEntity schemaCore = getSchemaCore();
 		if(schemaCore != null)
-		{
-			//schemaCore.remove();
-			//Helper.loadSchema(fullName, worldObj, xCoord, yCoord - 10, zCoord, 0);
 			Helper.loadSchemaDiff(schemaCore.getName(),fullName,worldObj, xCoord,yCoord-10,zCoord,0);
-		}
 		else
-		{
 			Helper.loadSchema(fullName, worldObj, xCoord, yCoord - 10, zCoord, 0);
-		}
 	}
 
 	public boolean canModify(EntityPlayer player)
@@ -880,6 +883,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			modder.addChatMessage(cannotModifyMessage);
 	}
 	
+	private boolean isOwner(EntityPlayer pl)
+	{
+		if(pl == null)
+			return false;
+		return isOwner(Helper.getUsername(pl));
+	}
+
 	public boolean isOwner(String name)
 	{
 		if(ownerName != null)

@@ -50,9 +50,7 @@ public class SwitchConsoleCommand extends AbstractCommand
 		String name = astring.length == 2 ? astring[1] : astring[0];
 		CoreTileEntity core = Helper.getTardisCore(w);
 		if(core != null)
-		{
 			core.loadConsoleRoom(name);
-		}
 	}
 
 }

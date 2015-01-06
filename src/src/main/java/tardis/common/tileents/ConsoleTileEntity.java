@@ -455,7 +455,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				{
 					int newDimControl = dimControl + (pl.isSneaking() ? -1 : 1);
 					newDimControl = Helper.clamp(newDimControl, 0, TardisMod.otherDims.numDims()-1);
-					TardisOutput.print("TConTE", "Setting dim control to " + newDimControl +" / " + TardisMod.otherDims.numDims());
 					dimControl = newDimControl;
 				}
 			}

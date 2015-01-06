@@ -39,12 +39,18 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	private NBTTagCompound screwNBT = null;
 	private int screwMode = 0;
 	
+	private String currentConsoleRoom = "tardisConsoleMain";
+	private String consoleSettingString = "tardisConsoleMain"; //The string displayed on the console room selection screen.
+	private static String[] availableConsoleRooms = null;
+	
 	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
 		if(tt % 40 == 1 && Helper.isServer())
 		{
+			if(availableConsoleRooms == null)
+				refreshAvailableConsoleRooms();
 			verifyEngineBlocks();
 			getUsernames();
 		}
@@ -368,6 +374,30 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	{
 		return internalOnly;
 	}
+	
+	public static void refreshAvailableConsoleRooms()
+	{
+		String[] rooms = TardisMod.configHandler.getSchemas(true);
+		ArrayList<String> validRooms = new ArrayList<String>(rooms.length);
+		for(String room : rooms)
+		{
+			if(room.startsWith("tardisConsole"))
+			{
+				validRooms.add(sanitiseConsole(room));
+			}
+		}
+		availableConsoleRooms = validRooms.toArray(new String[validRooms.size()]);
+	}
+	
+	private static String sanitiseConsole(String c)
+	{
+		return c.substring(13);
+	}
+	
+	private static String unsanitiseConsole(String c)
+	{
+		return "tardisConsole" + c;
+	}
 
 	@Override
 	public double[] getColorRatio(int controlID)
@@ -478,9 +508,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		preparingToUpgradeTT = tt;
 		internalOnly = nbt.getBoolean("io");
 		if(nbt.hasKey("ptU"))
-		{
 			preparingToUpgrade = TardisUpgradeMode.getUpgradeMode(nbt.getInteger("ptU"));
-		}
 		else if(nbt.hasKey("ptUN"))
 			preparingToUpgrade = null;
 	}
@@ -488,12 +516,15 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	@Override
 	public void readTransmittableOnly(NBTTagCompound nbt)
 	{
+		if(nbt.hasKey("css"))
+			consoleSettingString = nbt.getString("css");
 		screwMode = nbt.getInteger("scMo");
 	}
 	
 	@Override
 	public void writeTransmittableOnly(NBTTagCompound nbt)
 	{
+		nbt.setString("css", consoleSettingString);
 		if(screwNBT != null)
 			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 	}
