@@ -25,11 +25,11 @@ public abstract class AbstractTileEntity extends TileEntity
 {
 	public boolean init = false;
 	public int tt = 0;
-	private int lastUpdateTT = 0;
-	private int updateCounter = 0;
 	private static int updateInterval = 0;
 	private static int updateCounterMax = 0;
-	private static boolean updateQueued = false;
+	private volatile int updateCounter = 0;
+	private volatile int lastUpdateTT = 0;
+	private volatile boolean updateQueued = false;
 	public static Random rand = new Random();
 	public SimpleCoordStore coords = null;
 	
