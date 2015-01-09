@@ -12,6 +12,7 @@ import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.SimpleCoordStore;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFire;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -19,6 +20,7 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class AbstractTileEntity extends TileEntity
@@ -32,6 +34,19 @@ public abstract class AbstractTileEntity extends TileEntity
 	private volatile boolean updateQueued = false;
 	public static Random rand = new Random();
 	public SimpleCoordStore coords = null;
+	
+	protected boolean softBlock(World w, int x, int y, int z)
+	{
+		Block b = w.getBlock(x,y,z);
+		if(b == null)
+			return w.isAirBlock(x, y, z);
+		Boolean valid = w.isAirBlock(x, y, z) || b.isFoliage(w, x, y, z) || b.isReplaceable(w, x, y, z) || b instanceof BlockFire;
+		if(valid)
+			return valid;
+		if(b.getCollisionBoundingBoxFromPool(w, x, y, z) == null)
+			return true;
+		return false;
+	}
 	
 	@Override
 	public Packet getDescriptionPacket()

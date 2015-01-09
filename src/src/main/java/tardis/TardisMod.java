@@ -8,6 +8,10 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
+import tardis.common.blocks.ForceFieldBlock;
+import tardis.common.blocks.ForceFieldItemBlock;
+import tardis.common.blocks.GravityLiftBlock;
+import tardis.common.blocks.GravityLiftItemBlock;
 import tardis.common.blocks.LabBlock;
 import tardis.common.blocks.LandingPadBlock;
 import tardis.common.blocks.AbstractBlock;
@@ -51,6 +55,7 @@ import tardis.common.items.KeyItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.network.TardisPacketHandler;
+import tardis.common.tileents.GravityLiftTileEntity;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.ComponentTileEntity;
@@ -119,6 +124,8 @@ public class TardisMod
 	public static AbstractBlock schemaComponentBlock;
 	public static AbstractBlock debugBlock;
 	public static AbstractBlock landingPad;
+	public static AbstractBlock gravityLift;
+	public static AbstractBlock forcefield;
 	public static StairBlock	  stairBlock;
 	public static SlabBlock	  slabBlock;
 	
@@ -263,6 +270,13 @@ public class TardisMod
 		labBlock	= new LabBlock();
 		GameRegistry.registerBlock(labBlock, labBlock.getUnlocalizedName());
 		GameRegistry.registerTileEntity(LabTileEntity.class, labBlock.getUnlocalizedName());
+		
+		gravityLift = new GravityLiftBlock();
+		GameRegistry.registerBlock(gravityLift, GravityLiftItemBlock.class, gravityLift.getUnlocalizedName());
+		GameRegistry.registerTileEntity(GravityLiftTileEntity.class, gravityLift.getUnlocalizedName());
+		
+		forcefield = new ForceFieldBlock();
+		GameRegistry.registerBlock(forcefield, ForceFieldItemBlock.class, forcefield.getUnlocalizedName());
 	}
 	
 	private void initItems()

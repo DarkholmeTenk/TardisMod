@@ -9,11 +9,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class SchemaBlock extends AbstractBlock 
 {
 	private final boolean visible;
-	private IIcon blankIcon;
+	
 	
 	public SchemaBlock(boolean vis)
 	{
-		super();
+		super(vis);
 		visible = vis;
 	}
 
@@ -36,12 +36,12 @@ public class SchemaBlock extends AbstractBlock
 		return visible;
 	}
 	
-	@SideOnly(Side.CLIENT)
+	/*@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister register)
 	{
-		super.registerBlockIcons(register);
-		blankIcon = register.registerIcon("tardismod:blank");
+		if(visible)
+			super.registerBlockIcons(register);
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class SchemaBlock extends AbstractBlock
 		if(visible)
 			return super.getIcon(s, d);
 		return blankIcon;
-	}
+	}*/
 	
 	@Override
 	@SideOnly(Side.CLIENT)

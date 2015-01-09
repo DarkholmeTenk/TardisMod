@@ -2,7 +2,6 @@ package tardis.common.blocks;
 
 import java.util.List;
 
-import tardis.common.core.TardisOutput;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
