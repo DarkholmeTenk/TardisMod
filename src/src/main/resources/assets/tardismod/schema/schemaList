@@ -4,8 +4,9 @@ corridor4Way.schema
 corridorShort.schema
 mediumChamber.schema
 mediumFarm.schema
-stairs.schema
-stairsUp.schema
-stairsDown.schema
+liftDown.schema
+liftDown2.schema
+liftUp.schema
+liftUp2.schema
 tardisConsoleMain.schema
 tardisConsoleWalkway.schema

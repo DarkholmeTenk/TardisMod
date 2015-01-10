@@ -56,32 +56,41 @@ public class PartBlueprint
 		Block schemaBlock = TardisMod.schemaBlock;
 		int tmp = 1;
 		boolean cont = true;
+		boolean[] scanning = new boolean[] {true,true,true,true};
 		while(cont)
 		{
 			cont = false;
-			if(world.getBlock(x - tmp, y, z) == schemaBlock)
+			if(world.getBlock(x - tmp, y, z) == schemaBlock && scanning[0])
 			{
 				cont = true;
 				bounds[0] = tmp;
 			}
+			else
+				scanning[0] = false;
 			
-			if(world.getBlock(x, y, z - tmp) == schemaBlock)
+			if(world.getBlock(x, y, z - tmp) == schemaBlock && scanning[1])
 			{
 				cont = true;
 				bounds[1] = tmp;
 			}
+			else
+				scanning[1] = false;
 			
-			if(world.getBlock(x + tmp, y, z) == schemaBlock)
+			if(world.getBlock(x + tmp, y, z) == schemaBlock && scanning[2])
 			{
 				cont = true;
 				bounds[2] = tmp;
 			}
+			else
+				scanning[2] = false;
 			
-			if(world.getBlock(x, y, z + tmp) == schemaBlock)
+			if(world.getBlock(x, y, z + tmp) == schemaBlock && scanning[3])
 			{
 				cont = true;
 				bounds[3] = tmp;
 			}
+			else
+				scanning[3] = false;
 			tmp++;
 		}
 		
