@@ -304,6 +304,8 @@ public class TardisMod
 		componentItem.initRecipes();
 		labBlock.initRecipes();
 		landingPad.initRecipes();
+		forcefield.initRecipes();
+		gravityLift.initRecipes();
 		craftingComponentItem.initRecipes();
 	}
 	

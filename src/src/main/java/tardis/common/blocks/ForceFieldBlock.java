@@ -2,11 +2,17 @@ package tardis.common.blocks;
 
 import java.util.List;
 
+import tardis.common.tileents.extensions.CraftingComponentType;
+
+import cpw.mods.fml.common.registry.GameRegistry;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ForceFieldBlock extends AbstractBlock
 {
@@ -25,6 +31,9 @@ public class ForceFieldBlock extends AbstractBlock
 	@Override
 	public void initRecipes()
 	{
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,9,1), false, "ggg","gcg","ggg",
+				'g', "blockGlass",
+				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 	}
 
 	@Override

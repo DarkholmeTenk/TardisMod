@@ -1,8 +1,12 @@
 package tardis.common.blocks;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.common.tileents.GravityLiftTileEntity;
+import tardis.common.tileents.extensions.CraftingComponentType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class GravityLiftBlock extends AbstractBlockContainer
 {
@@ -24,6 +28,10 @@ public class GravityLiftBlock extends AbstractBlockContainer
 	@Override
 	public void initRecipes()
 	{
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,1,1), false, "ddd", "ici", "iii",
+				'd', CraftingComponentType.DALEKANIUM.getIS(1),
+				'i', "ingotIron",
+				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 	}
 	
 	@Override

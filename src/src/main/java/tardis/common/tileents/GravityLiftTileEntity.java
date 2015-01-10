@@ -19,8 +19,8 @@ import net.minecraft.util.AxisAlignedBB;
 public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewable
 {
 	private static ConfigFile config = null;
-	private static int maxDistance = 27;
-	private static int scanCeilingInterval = 4;
+	private static int maxDistance = 64;
+	private static int scanCeilingInterval = 20;
 	private static int scanPlayerInterval = 2;
 	private static double movePerTick = 0.25;
 	
@@ -133,8 +133,8 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		if(config == null)
 		{
 			config = TardisMod.configHandler.getConfigFile("GravityLift");
-			maxDistance = config.getInt("max distance", 27);
-			scanCeilingInterval = config.getInt("interval for ceiling scan", 4);
+			maxDistance = config.getInt("max distance", 64);
+			scanCeilingInterval = config.getInt("interval for ceiling scan", 20);
 			scanPlayerInterval = config.getInt("interval for player scan", 2);
 			movePerTick = config.getDouble("move per tick", 0.25);
 		}
