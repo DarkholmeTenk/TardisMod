@@ -18,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public abstract class AbstractBlock extends Block
 {
@@ -225,6 +226,8 @@ public abstract class AbstractBlock extends Block
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess w, int x, int y, int z, int s)
     {
+		if(!renderIcon)
+			return false;
         int mX = x;
         int mY = y;
         int mZ = z;
