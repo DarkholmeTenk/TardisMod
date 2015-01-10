@@ -83,7 +83,11 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	
 	private void movePlayer(EntityPlayerMP pl, boolean up)
 	{
-		double dir = up ? movePerTick : -movePerTick;
+		double dir = 0;
+		if(up)
+			dir = Math.min(movePerTick, yCoord+distance+1.25 - pl.posY);
+		else
+			dir = Math.max(-movePerTick, (yCoord + 1.5) - pl.posY);
 		pl.fallDistance = 0;
 		pl.motionY = dir;
 		pl.velocityChanged = true;
@@ -107,13 +111,13 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 				}
 				else
 				{
-					TardisOutput.print("GLTE", "moving up " + Helper.getUsername(pl));
+					//TardisOutput.print("GLTE", "moving up " + Helper.getUsername(pl));
 					movePlayer(pl,true);
 				}
 			}
 			else
 			{
-				TardisOutput.print("GLTE", "moving down " + Helper.getUsername(pl));
+				//TardisOutput.print("GLTE", "moving down " + Helper.getUsername(pl));
 				if(pl.posY < yCoord + 1.5)
 				{
 					iter.remove();
