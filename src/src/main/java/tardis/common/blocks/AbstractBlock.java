@@ -25,6 +25,7 @@ public abstract class AbstractBlock extends Block
 	private String unlocalizedFragment = "";
 	private String[] subNames = null;
 	private IIcon[] subIcons = null;
+	protected static IIcon blankIcon = null;
 	private boolean renderIcon;
 
 	public AbstractBlock(Material blockMaterial)
@@ -171,6 +172,8 @@ public abstract class AbstractBlock extends Block
 	@Override
 	public void registerBlockIcons(IIconRegister register)
 	{
+		if(blankIcon == null)
+			blankIcon = register.registerIcon("tardismod:blank");
 		if(!renderIcon)
 			return;
 		if(subIcons != null)
@@ -190,6 +193,7 @@ public abstract class AbstractBlock extends Block
 						for(int j = 0;j<suffixes.length;j++)
 						{
 							String iconToReg = "tardismod:" + getUnlocalizedNameForIcon() + "." + subNames[i] +"."+ suffixes[j];
+							TardisOutput.print("AB", "Registering " + iconToReg + " in slot " + ((i*suffixCount)+j));
 							subIcons[(i*suffixCount) + j] = register.registerIcon(iconToReg);
 						}
 					}
@@ -246,7 +250,7 @@ public abstract class AbstractBlock extends Block
 	public IIcon getIcon(int side, int metadata)
     {
 		if(!renderIcon)
-			return null;
+			return blankIcon;
 		int suffixCount = getIconSuffixes();
 		if(subIcons != null)
 		{
@@ -263,9 +267,9 @@ public abstract class AbstractBlock extends Block
 				int metaAdd  = 0;
 				for(int j = 0;j<suffixes.length;j++)
 				{
-					if(suffixes[j].contains("top") && side == 0)
-						metaAdd = j;
-					else if(suffixes[j].contains("bottom") && side == 1)
+					if(suffixes[j].contains("top") && side == 1)
+						return subIcons[metaBase + j];
+					else if(suffixes[j].contains("bottom") && side == 0)
 						metaAdd = j;
 					else if(suffixes[j].contains("side") && side > 1)
 						metaAdd = j;

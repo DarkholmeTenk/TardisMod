@@ -41,6 +41,11 @@ tile.TardisMod.SchemaComponent.Engine.name=Temporal Engine
 tile.TardisMod.Lab.name=Temporal Laboratory
 tile.TardisMod.LandingPad.name=TARDIS Landing Pad
 
+tile.TardisMod.GravityLift.Normal.name=Solid Gravity Lift
+tile.TardisMod.GravityLift.Craftable.name=Gravity Lift
+tile.TardisMod.ForceField.Normal.name=Solid Force Field
+tile.TardisMod.ForceField.Craftable.name=Force Field
+
 item.TardisMod.SonicScrewdriver.name=Sonic Screwdriver
 item.TardisMod.TardisKey.name=TARDIS Key
 

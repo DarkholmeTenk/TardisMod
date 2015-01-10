@@ -30,7 +30,6 @@ import tardis.common.items.KeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CoreGrid;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFire;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -647,20 +646,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				Helper.sendString(pl,"TARDIS","Not enough energy to take off");
 		}
 		return false;
-	}
-	
-	private boolean softBlock(World w, int x, int y, int z)
-	{
-		Block b = w.getBlock(x,y,z);
-		if(b == null)
-			return w.isAirBlock(x, y, z);
-		Boolean valid = w.isAirBlock(x, y, z) || b.isFoliage(w, x, y, z) || b.isReplaceable(w, x, y, z) || b instanceof BlockFire;
-		if(valid)
-			return valid;
-		if(b.getCollisionBoundingBoxFromPool(w, x, y, z) == null)
-			return true;
-		return false;
-		
 	}
 	
 	private boolean isValidPos(World w, int x, int y, int z)
