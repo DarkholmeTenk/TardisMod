@@ -2,9 +2,8 @@ package tardis.common.tileents.extensions;
 
 import java.util.EnumSet;
 
+import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.Helper;
-import tardis.common.tileents.CoreTileEntity;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -90,18 +89,13 @@ public class LabRecipe
 		return true;
 	}
 	
-	public boolean flagsSatisfied(CoreTileEntity core)
+	public boolean flagsSatisfied(IArtronEnergyProvider core)
 	{
 		if(core == null)
 			return false;
-		if(flags.contains(LabFlag.NOTINFLIGHT))
-			return !core.inFlight();
-		if(flags.contains(LabFlag.INFLIGHT))
-			return core.inFlight();
-		if(flags.contains(LabFlag.INCOORDINATEDFLIGHT))
-			return core.inCoordinatedFlight();
-		if(flags.contains(LabFlag.INUNCOORDINATEDFLIGHT))
-			return core.inFlight() && !core.inCoordinatedFlight();
-		return true;
+		boolean sat = true;
+		for(LabFlag flag: flags)
+			sat = sat && core.doesSatisfyFlag(flag);
+		return sat;
 	}
 }

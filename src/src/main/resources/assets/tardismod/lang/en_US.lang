@@ -46,6 +46,10 @@ tile.TardisMod.GravityLift.Craftable.name=Gravity Lift
 tile.TardisMod.ForceField.Normal.name=Solid Force Field
 tile.TardisMod.ForceField.Craftable.name=Force Field
 
+tile.TardisMod.Battery.Basic.name=Basic Artron Battery
+tile.TardisMod.Battery.Advanced.name=Advanced Artron Battery
+tile.TardisMod.Battery.Temporal.name=Temporal Artron Battery
+
 item.TardisMod.SonicScrewdriver.name=Sonic Screwdriver
 item.TardisMod.TardisKey.name=TARDIS Key
 

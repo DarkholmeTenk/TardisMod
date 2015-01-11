@@ -13,6 +13,7 @@ import java.util.zip.ZipException;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import tardis.TardisMod;
+import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.PartBlueprint;
 import tardis.common.core.store.SimpleCoordStore;
@@ -43,6 +44,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class Helper
 {
@@ -575,6 +577,23 @@ public class Helper
 		if(core != null)
 			return core.getConsole();
 		return null;
+	}
+	
+	public static IArtronEnergyProvider getArtronProvider(TileEntity source, boolean search)
+	{
+		World w = source.getWorldObj();
+		if(w == null)
+			return null;
+		int x=  source.xCoord;
+		int y = source.yCoord;
+		int z = source.zCoord;
+		for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
+		{
+			TileEntity te = w.getTileEntity(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
+			if(te instanceof IArtronEnergyProvider)
+				return (IArtronEnergyProvider)te;
+		}
+		return getTardisCore(w);
 	}
 	
 	public static NBTTagCompound readNBT(InputStream in)

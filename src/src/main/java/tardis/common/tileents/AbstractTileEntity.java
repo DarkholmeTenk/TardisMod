@@ -1,4 +1,4 @@
-package tardis.common.tileents;
+	package tardis.common.tileents;
 
 import java.util.Random;
 
@@ -165,7 +165,8 @@ public abstract class AbstractTileEntity extends TileEntity
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
 	{
-		super.readFromNBT(nbt);
+		if(!nbt.hasKey("placed"))
+			super.readFromNBT(nbt);
 		readTransmittable(nbt);
 	}
 	

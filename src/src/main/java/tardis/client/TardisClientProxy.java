@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
+import tardis.client.renderer.BatteryRenderer;
 import tardis.client.renderer.LabRenderer;
 import tardis.client.renderer.LandingPadRenderer;
 import tardis.client.renderer.ComponentRenderer;
@@ -26,6 +27,7 @@ import tardis.common.TardisProxy;
 import tardis.common.core.Helper;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.core.TardisOutput;
+import tardis.common.tileents.BatteryTileEntity;
 import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.ConsoleTileEntity;
@@ -69,8 +71,10 @@ public class TardisClientProxy extends TardisProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(EngineTileEntity.class, new EngineRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(LabTileEntity.class, new LabRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(LandingPadTileEntity.class, new LandingPadRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(BatteryTileEntity.class, new BatteryRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.labBlock), new LabRenderer());
 		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, new SonicScrewdriverRenderer());
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.battery), new BatteryRenderer());
 	}
 	
 	@Override

@@ -8,6 +8,8 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
+import tardis.common.blocks.BatteryBlock;
+import tardis.common.blocks.BatteryBlockItemBlock;
 import tardis.common.blocks.ForceFieldBlock;
 import tardis.common.blocks.ForceFieldItemBlock;
 import tardis.common.blocks.GravityLiftBlock;
@@ -55,6 +57,7 @@ import tardis.common.items.KeyItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.network.TardisPacketHandler;
+import tardis.common.tileents.BatteryTileEntity;
 import tardis.common.tileents.GravityLiftTileEntity;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.LandingPadTileEntity;
@@ -126,6 +129,7 @@ public class TardisMod
 	public static AbstractBlock landingPad;
 	public static AbstractBlock gravityLift;
 	public static AbstractBlock forcefield;
+	public static AbstractBlock battery;
 	public static StairBlock	  stairBlock;
 	public static SlabBlock	  slabBlock;
 	
@@ -277,6 +281,10 @@ public class TardisMod
 		
 		forcefield = new ForceFieldBlock();
 		GameRegistry.registerBlock(forcefield, ForceFieldItemBlock.class, forcefield.getUnlocalizedName());
+		
+		battery = new BatteryBlock();
+		GameRegistry.registerBlock(battery, BatteryBlockItemBlock.class, battery.getUnlocalizedName());
+		GameRegistry.registerTileEntity(BatteryTileEntity.class, battery.getUnlocalizedName());
 	}
 	
 	private void initItems()
@@ -306,6 +314,7 @@ public class TardisMod
 		landingPad.initRecipes();
 		forcefield.initRecipes();
 		gravityLift.initRecipes();
+		battery.initRecipes();
 		craftingComponentItem.initRecipes();
 	}
 	

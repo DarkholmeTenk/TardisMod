@@ -23,6 +23,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	private static int scanCeilingInterval = 20;
 	private static int scanPlayerInterval = 2;
 	private static double movePerTick = 0.25;
+	private static double bevel = 0.5;
 	
 	private int distance = -1;
 	private HashMap<EntityPlayerMP,Boolean> goingUp = new HashMap<EntityPlayerMP,Boolean>();
@@ -37,7 +38,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	
 	private void scanForPlayers()
 	{
-		List<Object> baseList = worldObj.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox(xCoord-1, yCoord+1, zCoord-1, xCoord+2, yCoord+1+distance, zCoord+2));
+		List<Object> baseList = worldObj.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox(xCoord-1+bevel, yCoord+1, zCoord-1+bevel, xCoord+2-bevel, yCoord+1+distance, zCoord+2-bevel));
 		for(Object o : baseList)
 		{
 			if(!(o instanceof EntityPlayerMP))
@@ -72,9 +73,9 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 				iter.remove();
 			else if(pl.posY > yCoord + 0.5 + distance)
 				iter.remove();
-			else if(pl.posX < xCoord - 1 || pl.posX > xCoord + 2)
+			else if(pl.posX < xCoord - 1 + bevel || pl.posX > xCoord + 2 - bevel)
 				iter.remove();
-			else if(pl.posZ < zCoord - 1 || pl.posZ > zCoord + 2)
+			else if(pl.posZ < zCoord - 1 + bevel || pl.posZ > zCoord + 2 - bevel)
 				iter.remove();
 			else if(pl.capabilities.isFlying)
 				iter.remove();

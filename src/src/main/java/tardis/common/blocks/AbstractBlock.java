@@ -52,6 +52,11 @@ public abstract class AbstractBlock extends Block
 		this(Material.iron);
 	}
 	
+	public ItemStack getIS(int am,int dam)
+	{
+		return new ItemStack(this,am,dam);
+	}
+	
 	public void setSubNames(String... subnames)
 	{
 		if(subnames.length == 0)
@@ -221,6 +226,12 @@ public abstract class AbstractBlock extends Block
 		{
 			iconBuffer = register.registerIcon("tardismod:" + getUnlocalizedNameForIcon());
 		}
+	}
+	
+	@Override
+	public boolean isOpaqueCube()
+	{
+		return renderIcon;
 	}
 	
 	@Override

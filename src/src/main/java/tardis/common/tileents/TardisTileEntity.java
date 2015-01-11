@@ -73,7 +73,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 				playLandSound();
 			else if(isTakingOff() && !takingOffSoundPlayed)
 				playTakeoffSound();
-			sendUpdate();
+			//sendUpdate();
 			if(++fadeTimer >( !landFast && isLanding() ? 22 * 20 : 5.5 * 20))
 			{
 				if(isLanding())
