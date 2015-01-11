@@ -31,8 +31,14 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	private void scanForCeiling()
 	{
 		for(distance = 3; distance<maxDistance+3;distance++)
-			if(!softBlock(worldObj,xCoord,yCoord+distance,zCoord) && worldObj.getBlock(xCoord, yCoord+distance, zCoord)!=TardisMod.forcefield)
+		{
+			if(!softBlock(worldObj,xCoord,yCoord+distance,zCoord))
+			{
+				if(worldObj.getBlock(xCoord, yCoord+distance, zCoord)!=TardisMod.forcefield)
+					distance +=3;
 				break;
+			}
+		}
 		distance -= 3;
 	}
 	

@@ -20,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.Vec3;
 
 public class EngineTileEntity extends AbstractTileEntity implements IControlMatrix
 {
@@ -39,9 +40,14 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	private NBTTagCompound screwNBT = null;
 	private int screwMode = 0;
 	
-	private String currentConsoleRoom = "tardisConsoleMain";
-	private String consoleSettingString = "tardisConsoleMain"; //The string displayed on the console room selection screen.
+	private int consoleSettingControl = 0;
+	private String consoleSettingString = "Main"; //The string displayed on the console room selection screen.
 	private static String[] availableConsoleRooms = null;
+	
+	public static void updateConsoleRooms()
+	{
+		availableConsoleRooms = TardisMod.configHandler.getSchemas(true);
+	}
 	
 	@Override
 	public void updateEntity()
@@ -55,7 +61,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			getUsernames();
 		}
 		
-		if(lastButtonTT != -1 && tt > (lastButtonTT + 15))
+		if(lastButtonTT != -1 && tt > (lastButtonTT + 20))
 		{
 			lastButton = -1;
 			lastButtonTT = -1;
@@ -111,7 +117,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	public int getControlFromHit(HitPosition hit)
 	{
-		if(hit.within(2, 0.558, 0.685, 0.660, 0.768))
+		if(hit.within(2, 2.318, 0.170, 2.432, 0.830))
+			return 0;
+		else if(hit.within(2, 0.558, 0.685, 0.660, 0.768))
 			return 4;
 		else if(hit.within(2, 0.488, 0.685, 0.564, 0.768))
 			return 5;
@@ -153,9 +161,24 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			return 55;
 		else if(hit.within(3, 0.743, 0.254, 0.876, 0.375))
 			return 60;
-		else
-			TardisOutput.print("TETE", hit.toString());
+		else if(hit.within(2, 0.716, 0.036, 0.832, 0.674))
+			return 70;
+		else if(hit.within(2, 0.783, 0.687, 0.859, 0.769))
+			return 71;
+		else if(hit.within(2, 0.691, 0.687, 0.768, 0.769))
+			return 72;
+		else if(hit.within(2, 0.735, 0.782, 0.813, 0.859))
+			return 73;
 		return -1;
+	}
+	
+	public int getControlFromHit(int blockX, int blockY, int blockZ, Vec3 hitPos, EntityPlayer pl)
+	{
+		int side = hitPos.xCoord == 0 ? 4 : (hitPos.xCoord == 1 ? 5 : (hitPos.zCoord == 0 ? 2 : 3));
+		float relativeY = (float) (hitPos.yCoord - blockY);
+		float relativeX = (float) ((side >= 4) ? hitPos.zCoord : hitPos.xCoord);
+		HitPosition hit = new HitPosition(relativeX, relativeY, side);
+		return getControlFromHit(hit);
 	}
 	
 	public boolean activate(EntityPlayer pl, int side, int blockY, float x, float y, float z)
@@ -167,15 +190,15 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		HitPosition hit = new HitPosition(relativeX, relativeY, side);
 		int control = getControlFromHit(hit);
 		if(control != -1)
-		{
 			Helper.activateControl(this, pl, control);
-			//activateControl(pl,control);
-		}
+		else
+			TardisOutput.print("TETE", hit.toString());
 		return true;
 	}
 	
 	public void activateControl(EntityPlayer pl, int control)
 	{
+		int prevLastButton = lastButton;
 		lastButton = control;
 		lastButtonTT = tt;
 		TardisOutput.print("TETE","Control activated:" + control);
@@ -294,11 +317,41 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					{
 						s += "does not have " + modeString + " functionality";
 					}
-					Helper.sendString(pl,"[ENGINE]",s);
+					Helper.sendString(pl,"ENGINE",s);
 				}
 			}
 			else if(control == 60)
 				internalOnly = !internalOnly;
+			else if(control == 71 || control == 72)
+			{
+				if(availableConsoleRooms == null)
+					updateConsoleRooms();
+				consoleSettingControl = Helper.cycle(consoleSettingControl+(control == 71 ? -1 : 1), 0, availableConsoleRooms.length-1);
+				consoleSettingString = availableConsoleRooms[consoleSettingControl];
+			}
+			else if(control == 73)
+			{
+				if(core.canModify(pl))
+				{
+					if(prevLastButton != 73 && pl.isSneaking())
+						lastButton = -1;
+					else if(prevLastButton == 73 && !pl.isSneaking())
+						lastButton = -1;
+					else if(prevLastButton != 73)
+					{
+						Helper.sendString(pl, "ENGINE", "Warning: Performing this function may cause loss of items. Please right click, then sneak-right click this button to proceed");
+					}
+					else
+					{
+						core.loadConsoleRoom(sanitiseConsole(consoleSettingString));
+					}
+				}
+				else
+				{
+					lastButton = -1;
+					Helper.sendString(pl, "ENGINE",CoreTileEntity.cannotModifyMessage.getFormattedText());
+				}
+			}
 		}
 		sendUpdate();
 	}
@@ -326,7 +379,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
 		if(core != null)
 		{
-			if(cID == 4 || cID == 5 || cID == 7 || cID >= 10 && cID < 20)
+			if(cID == 4 || cID == 5 || cID == 7 || (cID >= 10 && cID < 20) || (cID >= 71 && cID <= 73))
 				return (lastButton == cID) ? 1.0 : 0;
 			if(cID == 6)
 				return litUp ? 1 : 0.2;
@@ -370,6 +423,11 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		return (float)(((tt+cID) % 40) / 39.0);
 	}
 	
+	public String getConsoleSetting()
+	{
+		return consoleSettingString;
+	}
+	
 	public boolean getInternalOnly()
 	{
 		return internalOnly;
@@ -391,7 +449,10 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	
 	private static String sanitiseConsole(String c)
 	{
-		return c.substring(13);
+		if(c == null || c.length() < 13)
+			return c;
+		return c.replace("tardisConsole", "");
+		//return c.substring(13);
 	}
 	
 	private static String unsanitiseConsole(String c)
@@ -518,13 +579,16 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	{
 		if(nbt.hasKey("css"))
 			consoleSettingString = nbt.getString("css");
+		else
+			consoleSettingString = "Main";
 		screwMode = nbt.getInteger("scMo");
 	}
 	
 	@Override
 	public void writeTransmittableOnly(NBTTagCompound nbt)
 	{
-		nbt.setString("css", consoleSettingString);
+		if(!consoleSettingString.equals("tardisConsoleMain"))
+			nbt.setString("css", sanitiseConsole(consoleSettingString));
 		if(screwNBT != null)
 			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 	}

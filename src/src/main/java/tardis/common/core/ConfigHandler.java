@@ -69,6 +69,11 @@ public class ConfigHandler
 		return getSchemas(false);
 	}
 	
+	public boolean addSchema(String l, boolean consoleSchemas)
+	{
+		return (l.endsWith(".schema") && !l.contains(".diff") && (l.startsWith("tardisConsole") == consoleSchemas) && !l.startsWith("tardisHidden"));
+	}
+	
 	public String[] getSchemas(boolean consoleSchemas)
 	{
 		String[] fA = new String[0];
@@ -81,8 +86,9 @@ public class ConfigHandler
 			while((l = r.readLine())!=null)
 			{
 				TardisOutput.print("TCH", "TCHSS:"+l);
-				if(l.endsWith(".schema") && (l.startsWith("tardis") == consoleSchemas))
+				if(addSchema(l,consoleSchemas))
 				{
+					TardisOutput.print("CH", "Added schema " + l +" " + consoleSchemas);
 					String q = l.replace(".schema", "");
 					if(!found.contains(q))
 						found.add(q);
@@ -98,7 +104,7 @@ public class ConfigHandler
 		for(String s:files)
 		{
 			TardisOutput.print("TCH", "TCHSS:"+s);
-			if(s.endsWith(".schema") && !s.startsWith("tardis"))
+			if(addSchema(s,consoleSchemas))
 			{
 				String q = s.replace(".schema", "");
 				if(!found.contains(q))
