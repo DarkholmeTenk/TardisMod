@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import tardis.TardisMod;
 import tardis.api.IActivatable;
+import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.Helper;
 import tardis.common.core.ConfigFile;
 import tardis.common.core.TardisOutput;
@@ -186,17 +187,22 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	
 	private void processTick()
 	{
-		CoreTileEntity core = Helper.getTardisCore(this);
+		IArtronEnergyProvider core = Helper.getArtronProvider(this,true);
 		if(core != null)
 		{
 			LabRecipe matchedRecipe = getMatchedRecipe();
 			if(isGeneratingEnergy(matchedRecipe,core))
 			{
-					chargedEnergy += core.takeArtronEnergy(1, false) ? 1 : 0;
-					update(true);
+				TardisOutput.print("LTE", "#03");
+				chargedEnergy += core.takeArtronEnergy(1, false) ? 1 : 0;
+				update(true);
 			}
 			else
+			{
+				TardisOutput.print("LTE", "#02");
 				update(false);
+			}
+			
 			if(matchedRecipe != null)
 			{
 				if(chargedEnergy >= matchedRecipe.energyCost)
@@ -209,7 +215,10 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 				}
 			}
 			else
+			{
+				TardisOutput.print("LTE", "#01");
 				update(false);
+			}
 		}
 	}
 	
@@ -256,7 +265,15 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		if((!Helper.isServer()) && isGeneratingEnergy(null,null))
 			moveSticks();
 		if(Helper.isServer() && tt % 20 == 0)
+		{
+			powered = Helper.getArtronProvider(this, true) != null;
+			if(!powered && active)
+			{
+				active = false;
+				sendUpdate();
+			}
 			attemptToEmpty();
+		}
 	}
 	
 	public boolean isPowered()
@@ -264,7 +281,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		if(powered == null)
 		{
 			if(Helper.isServer())
-				powered = Helper.isTardisWorld(worldObj);
+				powered = Helper.getArtronProvider(this, true) != null;
 			else
 				return false;
 		}
@@ -276,7 +293,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		return active && isPowered();
 	}
 	
-	public boolean isGeneratingEnergy(LabRecipe rec,CoreTileEntity core)
+	public boolean isGeneratingEnergy(LabRecipe rec,IArtronEnergyProvider core)
 	{
 		if(!Helper.isServer())
 			return isActive() && generatingEnergy;
@@ -285,13 +302,19 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		{
 			if(chargedEnergy < rec.energyCost && rec.flagsSatisfied(core))
 				result = true;
+			if(result != generatingEnergy)
+			{
+				generatingEnergy = result;
+				update(generatingEnergy);
+			}
 		}
-		if(result != generatingEnergy)
+		else if(core != null)
 		{
-			generatingEnergy = result;
-			update(generatingEnergy);
+			generatingEnergy = false;
+			update(false);
 		}
-		return result;
+		
+		return generatingEnergy;
 	}
 	
 	@Override
@@ -320,6 +343,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 				toPull.stackSize -= amToRem;
 				if(toPull.stackSize == 0)
 					inventory[slot] = null;
+				return pulled;
 			}
 		}
 		return null;
@@ -408,6 +432,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		if(Helper.isServer())
 		{
 			active = !active;
+			powered = Helper.getArtronProvider(this, true) != null;
 			sendUpdate();
 		}
 		return true;

@@ -32,20 +32,20 @@ public class TardisTeleportHelper
 			if(source.provider instanceof WorldProviderEnd)
 				ent = Helper.getConfMan().respawnPlayer(pl, newDimension, true);
 			pl.playerNetServerHandler.sendPacket(new S1FPacketSetExperience(pl.experience, pl.experienceTotal, pl.experienceLevel));
+			Entity entity = EntityList.createEntityByName(EntityList.getEntityString(ent), dest);
+			if(entity != null)
+			{
+				entity.copyDataFrom(ent, true);
+				dest.spawnEntityInWorld(entity);
+				ent.isDead = true;
+	            source.resetUpdateEntityTick();
+	            dest.resetUpdateEntityTick();
+			}
 		}
 		else
 		{
 			ent.travelToDimension(newDimension);
 			//conf.transferEntityToWorld(ent, newDimension, source, dest, TardisMod.teleporter);
-		}
-		Entity entity = EntityList.createEntityByName(EntityList.getEntityString(ent), dest);
-		if(entity != null)
-		{
-			entity.copyDataFrom(ent, true);
-			dest.spawnEntityInWorld(entity);
-			ent.isDead = true;
-            source.resetUpdateEntityTick();
-            dest.resetUpdateEntityTick();
 		}
 	}
 

@@ -18,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public abstract class AbstractBlock extends Block
 {
@@ -49,6 +50,11 @@ public abstract class AbstractBlock extends Block
 	public AbstractBlock()
 	{
 		this(Material.iron);
+	}
+	
+	public ItemStack getIS(int am,int dam)
+	{
+		return new ItemStack(this,am,dam);
 	}
 	
 	public void setSubNames(String... subnames)
@@ -220,6 +226,12 @@ public abstract class AbstractBlock extends Block
 		{
 			iconBuffer = register.registerIcon("tardismod:" + getUnlocalizedNameForIcon());
 		}
+	}
+	
+	@Override
+	public boolean isOpaqueCube()
+	{
+		return renderIcon;
 	}
 	
 	@Override

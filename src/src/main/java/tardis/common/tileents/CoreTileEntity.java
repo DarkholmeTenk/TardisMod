@@ -29,6 +29,7 @@ import tardis.common.dimension.TardisTeleportHelper;
 import tardis.common.items.KeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CoreGrid;
+import tardis.common.tileents.extensions.LabFlag;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -1132,6 +1133,19 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return false;
 	}
 	
+	@Override
+	public boolean doesSatisfyFlag(LabFlag flag)
+	{
+		switch(flag)
+		{
+			case NOTINFLIGHT: return !inFlight();
+			case INFLIGHT: return inFlight();
+			case INCOORDINATEDFLIGHT: return inCoordinatedFlight();
+			case INUNCOORDINATEDFLIGHT: return inFlight() && !inCoordinatedFlight();
+			default: return false;
+		}
+	}
+
 	public int getShields()
 	{
 		return shields;
@@ -1307,6 +1321,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if(pl == null || pl.worldObj==null || pl.worldObj.provider == null)
 			return;
 		int dim = pl.worldObj.provider.getRespawnDimension(pl);
+		pl.getBedLocation(dim);
 	}
 	
 	public void sendDestinationStrings(EntityPlayer pl)
