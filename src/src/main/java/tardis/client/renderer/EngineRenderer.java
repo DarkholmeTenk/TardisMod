@@ -29,6 +29,11 @@ public class EngineRenderer extends AbstractBlockRenderer
 		comps.renderButton(tess,eng,5, 0.72,0.535,-0.0125, 90,0,0, 0.3,0.3,0.3);
 		comps.renderLight( tess,eng,6, 0.82,0.6155,-0.0125, 90,0,0, 0.3,0.3,0.3);
 		comps.renderButton(tess,eng,7, 0.81,0.535,-0.0125, 90,0,0, 0.3,0.3,0.3);
+		
+		comps.renderTextScreen(tess, eng, eng.getConsoleSetting(), 70,  0.65, 0.8, -0.02, 0, 0, 180,  0.3, 0.3, 0.3);
+		comps.renderButton(tess,eng,71, 0.72,0.825,-0.0125, 90,0,0, 0.3,0.3,0.3);
+		comps.renderButton(tess,eng,72, 0.72,0.735,-0.0125, 90,0,0, 0.3,0.3,0.3);
+		comps.renderButton(tess,eng,73, 0.81,0.780,-0.0125, 90,0,0, 0.3,0.3,0.3);
 	}
 	
 	private void renderFront(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)

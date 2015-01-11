@@ -1,28 +1,17 @@
 package tardis.common.integration.waila;
 
-import java.util.HashMap;
-import java.util.List;
-
 import tardis.TardisMod;
 import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.ConsoleTileEntity;
 
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
-import mcp.mobius.waila.api.IWailaDataProvider;
 
-public class WailaConsoleProvider implements IWailaDataProvider
+public class WailaConsoleProvider extends AbstractWailaProvider
 {
-	
-	private static HashMap<TwoIntStore,String> controlNames = new HashMap<TwoIntStore,String>();
-
-	static
 	{
 		controlNames.put(new TwoIntStore(0), "Energy Gauge");
 		controlNames.put(new TwoIntStore(1), "Rooms Counter");
@@ -57,12 +46,6 @@ public class WailaConsoleProvider implements IWailaDataProvider
 		controlNames.put(new TwoIntStore(1020,1022), "Flight Controls");
 	}
 	
-	@Override
-	public ItemStack getWailaStack(IWailaDataAccessor accessor, IWailaConfigHandler config)
-	{
-		return null;
-	}
-	
 	private boolean isConsole(IWailaDataAccessor accessor)
 	{
 		Block b = accessor.getBlock();
@@ -75,13 +58,7 @@ public class WailaConsoleProvider implements IWailaDataProvider
 	}
 
 	@Override
-	public List<String> getWailaHead(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config)
-	{
-		return currenttip;
-	}
-
-	@Override
-	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config)
+	public int getControlHit(IWailaDataAccessor accessor)
 	{
 		if(isConsole(accessor))
 		{
@@ -90,39 +67,23 @@ public class WailaConsoleProvider implements IWailaDataProvider
 			if(con != null)
 			{
 				MovingObjectPosition pos = accessor.getPosition();
-				if(pos.hitVec.yCoord > con.yCoord+1.5)
-					return currenttip;
-				int control = con.getControlFromHit(pos.blockX,pos.blockY,pos.blockZ,pos.hitVec, accessor.getPlayer());
-				if(control != -1)
-				{
-					boolean f = false;
-					for(TwoIntStore store : controlNames.keySet())
-					{
-						if(store.within(control))
-						{
-							f = true;
-							currenttip.add("Control: "+controlNames.get(store));
-						}
-					}
-					String[] extra = con.getExtraInfo(control);
-					if(extra != null)
-					{
-						for(String extraString : extra)
-							currenttip.add(extraString);
-					}
-					if(!f)
-						TardisOutput.print("TWCP", "Control not found:" + control);
-				}
+				if(pos.hitVec.yCoord <= con.yCoord+1.5)
+					return con.getControlFromHit(pos.blockX,pos.blockY,pos.blockZ,pos.hitVec, accessor.getPlayer());
 			}
 		}
-		return currenttip;
+		return -1;
 	}
 
 	@Override
-	public List<String> getWailaTail(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config)
+	public String[] extraInfo(IWailaDataAccessor accessor, int control)
 	{
-		// TODO Auto-generated method stub
-		return currenttip;
+		if(isConsole(accessor))
+		{
+			World w = accessor.getWorld();
+			ConsoleTileEntity con = Helper.getTardisConsole(w);
+			if(con != null)
+				return con.getExtraInfo(control);
+		}
+		return null;
 	}
-
 }

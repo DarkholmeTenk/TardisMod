@@ -3,6 +3,7 @@ package tardis.common.command;
 import java.util.List;
 
 import tardis.common.tileents.ConsoleTileEntity;
+import tardis.common.tileents.EngineTileEntity;
 
 import net.minecraft.command.ICommandSender;
 
@@ -34,5 +35,6 @@ public class SchemaReloadCommand extends AbstractCommand
 	public void commandBody(ICommandSender icommandsender, String[] astring)
 	{
 		ConsoleTileEntity.refreshSchemas();
+		EngineTileEntity.refreshAvailableConsoleRooms();
 	}
 }
