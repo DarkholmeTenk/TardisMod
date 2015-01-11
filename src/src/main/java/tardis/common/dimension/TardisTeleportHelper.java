@@ -44,7 +44,8 @@ public class TardisTeleportHelper
 		}
 		else
 		{
-			ent.travelToDimension(newDimension);
+			Helper.getConfMan().transferEntityToWorld(ent, newDimension, source, dest);
+			//ent.travelToDimension(newDimension);
 			//conf.transferEntityToWorld(ent, newDimension, source, dest, TardisMod.teleporter);
 		}
 	}
