@@ -543,7 +543,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	{
 		if(screwNBT != null)
 			nbt.setTag("sNBT", screwNBT);
-		CoreTileEntity core = Helper.getTardisCore(worldObj);
 		if(currentPerson != null)
 			nbt.setString("cP", currentPerson);
 		if(preparingToUpgrade != null)
@@ -553,7 +552,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		nbt.setBoolean("io", internalOnly);
 		nbt.setBoolean("hS", hasScrew);
 		nbt.setInteger("lB"			, lastButton);
-		nbt.setBoolean("lU", core.canModify(currentPerson));
+		CoreTileEntity core = Helper.getTardisCore(worldObj);
+		if(core != null)
+			nbt.setBoolean("lU", core.canModify(currentPerson));
 	}
 
 	@Override
