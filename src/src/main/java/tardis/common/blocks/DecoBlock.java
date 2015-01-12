@@ -1,7 +1,9 @@
 package tardis.common.blocks;
 
 import java.util.List;
+import java.util.Random;
 
+import tardis.TardisMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
@@ -18,18 +20,19 @@ public class DecoBlock extends AbstractBlock
 	{
 		super();
 		lit = light;
+		initData();
 	}
 
 	@Override
 	public void initData()
 	{
-		setBlockName("DecoBlock");
-		//setBlockName(lit ? "DecoBlock" : "DarkDecoBlock");
+		setBlockName("DecoBlock" + (lit ? "" : "Dark"));
 		setSubNames(subs);
 		if(lit)
 			setLightLevel(1F);
 		else
 			setLightLevel(0F);
+		setTickRandomly(!lit);
 	}
 	
 	@Override
@@ -98,4 +101,21 @@ public class DecoBlock extends AbstractBlock
 		//TardisOutput.print("TDB", "Ladder?" + w.getBlockMetadata(x, y, z));
 		return w.getBlockMetadata(x, y, z) == 8;
 	}
+	
+	@Override
+	public void updateTick(World w, int x, int y, int z, Random p_149674_5_)
+	{
+		if(this == TardisMod.darkDecoBlock)
+		{
+			w.setBlock(x, y, z, TardisMod.decoBlock,w.getBlockMetadata(x, y,z),3);
+		}
+	}
+	
+	@Override
+	public int tickRate(World p_149738_1_)
+    {
+		if(this == TardisMod.decoBlock)
+			return -1;
+        return (int) Math.round((Math.random() * 360) + 360);
+    }
 }

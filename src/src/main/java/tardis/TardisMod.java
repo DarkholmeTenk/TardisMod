@@ -245,7 +245,7 @@ public class TardisMod
 		GameRegistry.registerBlock(decoBlock, DecoItemBlock.class, decoBlock.getUnlocalizedName());
 		
 		darkDecoBlock = new DecoBlock(false);
-		GameRegistry.registerBlock(darkDecoBlock, DecoDarkItemBlock.class, decoBlock.getUnlocalizedName()+"Dark");
+		GameRegistry.registerBlock(darkDecoBlock, DecoDarkItemBlock.class, darkDecoBlock.getUnlocalizedName()+"Dark");
 		
 		stairBlock = new StairBlock();
 		GameRegistry.registerBlock(stairBlock,stairBlock.getUnlocalizedName());

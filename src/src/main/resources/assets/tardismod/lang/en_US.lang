@@ -10,6 +10,15 @@ tile.TardisMod.DecoBlock.CorridorRoundel.name=White Roundel
 tile.TardisMod.DecoBlock.CorridorFloor.name=White Floor
 tile.TardisMod.DecoBlock.Glass.name=Glass
 
+tile.TardisMod.DecoBlockDark.Floor.name=Floor
+tile.TardisMod.DecoBlockDark.Wall.name=Wall
+tile.TardisMod.DecoBlockDark.WallPlain.name=Wall
+tile.TardisMod.DecoBlockDark.Roundel.name=Roundel
+tile.TardisMod.DecoBlockDark.Corridor.name=White Wall
+tile.TardisMod.DecoBlockDark.CorridorRoundel.name=White Roundel
+tile.TardisMod.DecoBlockDark.CorridorFloor.name=White Floor
+tile.TardisMod.DecoBlockDark.Glass.name=Glass
+
 tile.TardisMod.Component.Roundel.name=Open Roundel
 tile.TardisMod.Component.CorridorRoundel.name=Open White Roundel
 
