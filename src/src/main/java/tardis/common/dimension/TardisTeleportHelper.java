@@ -73,6 +73,10 @@ public class TardisTeleportHelper
 				transferEntityToDimension(ent,worldID,x,y,z);
 			}
 			((EntityLivingBase) ent).fallDistance = 0;
+			((EntityLivingBase) ent).motionX = 0;
+			((EntityLivingBase) ent).motionY = 0;
+			((EntityLivingBase) ent).motionZ = 0;
+			((EntityLivingBase) ent).velocityChanged = true;
 			((EntityLivingBase) ent).setPositionAndRotation(x, y, z, (float) rot, 0F);
 			((EntityLivingBase) ent).setPositionAndUpdate(x, y, z);
 		}

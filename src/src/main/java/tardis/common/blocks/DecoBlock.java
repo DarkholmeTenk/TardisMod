@@ -1,9 +1,11 @@
 package tardis.common.blocks;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import tardis.TardisMod;
+import tardis.common.core.Helper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
@@ -15,6 +17,7 @@ public class DecoBlock extends AbstractBlock
 	private final boolean lit;
 	private static final String[] subs = {"Floor","Wall","Roundel","Corridor","CorridorRoundel","CorridorFloor","Glass", "WallPlain"};
 	private static String[] suffixes = {"topbottom","side"};
+	public HashMap<Integer,Boolean> litUpDim = new HashMap<Integer,Boolean>();
 	
 	public DecoBlock(boolean light)
 	{
@@ -105,17 +108,19 @@ public class DecoBlock extends AbstractBlock
 	@Override
 	public void updateTick(World w, int x, int y, int z, Random p_149674_5_)
 	{
-		if(this == TardisMod.darkDecoBlock)
+		if(litUpDim.containsKey(Helper.getWorldID(w)))
 		{
-			w.setBlock(x, y, z, TardisMod.decoBlock,w.getBlockMetadata(x, y,z),3);
+			boolean b = litUpDim.get(Helper.getWorldID(w));
+			if(b && !lit)
+				w.setBlock(x, y, z, TardisMod.decoBlock, w.getBlockMetadata(x, y, z), 3);
+			else if(!b && lit)
+				w.setBlock(x, y, z, TardisMod.darkDecoBlock, w.getBlockMetadata(x, y, z), 3);
 		}
 	}
 	
 	@Override
 	public int tickRate(World p_149738_1_)
     {
-		if(this == TardisMod.decoBlock)
-			return -1;
         return (int) Math.round((Math.random() * 360) + 360);
     }
 }
