@@ -1,13 +1,15 @@
 package tardis.common.blocks;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import tardis.common.tileents.SchemaCoreTileEntity;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.tileents.SchemaCoreTileEntity;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class SchemaCoreBlock extends AbstractBlockContainer
 {
@@ -16,7 +18,7 @@ public class SchemaCoreBlock extends AbstractBlockContainer
 	
 	public SchemaCoreBlock(boolean vis)
 	{
-		super();
+		super(TardisMod.modName);
 		visible = vis;
 	}
 
@@ -67,5 +69,11 @@ public class SchemaCoreBlock extends AbstractBlockContainer
 	public boolean shouldSideBeRendered(IBlockAccess w, int x, int y, int z, int s)
 	{
 		return visible;
+	}
+
+	@Override
+	public Class<? extends TileEntity> getTEClass()
+	{
+		return SchemaCoreTileEntity.class;
 	}
 }

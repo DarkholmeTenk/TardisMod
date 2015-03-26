@@ -1,10 +1,10 @@
 package tardis.common.integration.waila;
 
+import mcp.mobius.waila.api.IWailaDataProvider;
+import mcp.mobius.waila.api.IWailaRegistrar;
 import tardis.common.blocks.EngineBlock;
 import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.core.TardisOutput;
-import mcp.mobius.waila.api.IWailaDataProvider;
-import mcp.mobius.waila.api.IWailaRegistrar;
 
 public class WailaCallback
 {

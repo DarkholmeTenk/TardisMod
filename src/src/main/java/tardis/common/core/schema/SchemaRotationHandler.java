@@ -1,9 +1,9 @@
 package tardis.common.core.schema;
 
-import tardis.common.core.TardisOutput;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.init.Blocks;
+import tardis.common.core.TardisOutput;
 
 public class SchemaRotationHandler
 {

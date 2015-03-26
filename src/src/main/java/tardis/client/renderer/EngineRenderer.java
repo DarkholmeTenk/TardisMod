@@ -1,9 +1,10 @@
 package tardis.client.renderer;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import tardis.TardisMod;
-import tardis.common.blocks.AbstractBlock;
 import tardis.common.core.Helper;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;

@@ -1,16 +1,19 @@
 package tardis.common.tileents;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import tardis.api.IScrewable;
-import tardis.api.ScrewdriverMode;
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import tardis.api.IScrewable;
+import tardis.api.ScrewdriverMode;
+import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 
 public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewable
 {
@@ -74,7 +77,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if(Helper.isServer() && !addedToCore)
+		if(ServerHelper.isServer() && !addedToCore)
 		{
 			CoreTileEntity core = Helper.getTardisCore(worldObj);
 			if(core != null && name!=null && !name.startsWith("tardis"))

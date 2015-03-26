@@ -6,10 +6,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import cofh.api.energy.IEnergyHandler;
 import tardis.TardisMod;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
+import cofh.api.energy.IEnergyHandler;
 
 public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 {

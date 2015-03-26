@@ -1,24 +1,34 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+
 import java.util.EnumSet;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import tardis.common.tileents.BatteryTileEntity;
-import tardis.common.tileents.LabTileEntity;
-import tardis.common.tileents.extensions.CraftingComponentType;
-import tardis.common.tileents.extensions.LabFlag;
-import tardis.common.tileents.extensions.LabRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.TardisMod;
+import tardis.common.tileents.BatteryTileEntity;
+import tardis.common.tileents.LabTileEntity;
+import tardis.common.tileents.extensions.CraftingComponentType;
+import tardis.common.tileents.extensions.LabFlag;
+import tardis.common.tileents.extensions.LabRecipe;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class BatteryBlock extends AbstractBlockContainer
 {
 	public BatteryBlock()
 	{
-		super(false,true);
+		super(false,true,TardisMod.modName);
+	}
+	
+	@Override
+	public Class<? extends AbstractItemBlock> getIB()
+	{
+		return BatteryBlockItemBlock.class;
 	}
 
 	@Override
@@ -56,6 +66,12 @@ public class BatteryBlock extends AbstractBlockContainer
 				'd', CraftingComponentType.DALEKANIUM.getIS(1),
 				'k', getIS(1,0)));
 		LabTileEntity.addRecipe(new LabRecipe(new ItemStack[] { getIS(1,1) }, new ItemStack[] { getIS(1,2) }, EnumSet.of(LabFlag.INFLIGHT),200));
+	}
+
+	@Override
+	public Class<? extends TileEntity> getTEClass()
+	{
+		return BatteryTileEntity.class;
 	}
 
 }

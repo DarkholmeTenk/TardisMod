@@ -1,11 +1,12 @@
 package tardis.common.tileents.extensions;
 
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import java.util.EnumSet;
 
-import tardis.api.IArtronEnergyProvider;
-import tardis.common.core.Helper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import tardis.api.IArtronEnergyProvider;
 
 public class LabRecipe
 {
@@ -75,7 +76,7 @@ public class LabRecipe
 			{
 				if(compIS == null)
 					continue;
-				if(!Helper.sameItem(compIS, is))
+				if(!WorldHelper.sameItem(compIS, is))
 					continue;
 				if(compIS.stackSize >= is.stackSize)
 				{

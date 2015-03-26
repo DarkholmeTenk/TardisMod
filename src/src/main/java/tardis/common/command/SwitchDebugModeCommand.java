@@ -2,10 +2,9 @@ package tardis.common.command;
 
 import java.util.List;
 
+import net.minecraft.command.ICommandSender;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
-
-import net.minecraft.command.ICommandSender;
 
 public class SwitchDebugModeCommand extends AbstractCommand
 {

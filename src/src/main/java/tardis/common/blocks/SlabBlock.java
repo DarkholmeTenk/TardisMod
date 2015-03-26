@@ -1,5 +1,7 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+
 import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
@@ -10,12 +12,18 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.TardisMod;
 
 public class SlabBlock extends AbstractBlock
 {
 	private final static String[] names		= {"Console","Corridor","Walkway","Glass"};
 	private final static String[] suffixes	= {"topbottom", "side"};
 
+	public SlabBlock()
+	{
+		super(TardisMod.modName);
+	}
+	
 	@Override
 	public void initData()
 	{

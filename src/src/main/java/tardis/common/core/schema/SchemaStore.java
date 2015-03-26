@@ -4,16 +4,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import cpw.mods.fml.common.registry.GameData;
-
-import net.minecraft.init.Blocks;
-
-import tardis.TardisMod;
-import tardis.common.core.TardisOutput;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.core.TardisOutput;
+import cpw.mods.fml.common.registry.GameData;
 
 public class SchemaStore
 {	
@@ -168,6 +166,8 @@ public class SchemaStore
 				return blockCache.get(name);
 			else
 			{
+				if(name.equals("TardisMod:tile.TardisMod.DecoBlockDark"))
+					return TardisMod.decoBlock;
 				Iterator<Block> blockIter = GameData.getBlockRegistry().iterator();
 				while(blockIter.hasNext())
 				{

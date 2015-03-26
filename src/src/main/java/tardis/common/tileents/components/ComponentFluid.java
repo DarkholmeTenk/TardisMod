@@ -1,13 +1,13 @@
 package tardis.common.tileents.components;
 
-import tardis.TardisMod;
-import tardis.common.tileents.ComponentTileEntity;
-import tardis.common.tileents.CoreTileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import tardis.TardisMod;
+import tardis.common.tileents.ComponentTileEntity;
+import tardis.common.tileents.CoreTileEntity;
 
 public class ComponentFluid extends AbstractComponent implements IFluidHandler
 {

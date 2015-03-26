@@ -1,13 +1,14 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import java.util.List;
 
-import tardis.TardisMod;
-import tardis.common.core.Helper;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import tardis.TardisMod;
 
 public class SchemaGiveCommand extends AbstractCommand
 {
@@ -46,7 +47,7 @@ public class SchemaGiveCommand extends AbstractCommand
 					if(is.stackTagCompound == null)
 						is.stackTagCompound = new NBTTagCompound();
 					is.stackTagCompound.setString("schemaName",name);
-					Helper.giveItemStack(pl, is);
+					WorldHelper.giveItemStack(pl, is);
 				}
 				else
 				{

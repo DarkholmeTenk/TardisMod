@@ -1,17 +1,23 @@
 package tardis.common.blocks;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import tardis.common.tileents.LandingPadTileEntity;
-import tardis.common.tileents.extensions.CraftingComponentType;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.TardisMod;
+import tardis.common.tileents.LandingPadTileEntity;
+import tardis.common.tileents.extensions.CraftingComponentType;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class LandingPadBlock extends AbstractBlockContainer
 {
+	public LandingPadBlock()
+	{
+		super(TardisMod.modName);
+	}
 
 	@Override
 	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_)
@@ -46,6 +52,12 @@ public class LandingPadBlock extends AbstractBlockContainer
 				'r', Blocks.redstone_block,
 				'd', CraftingComponentType.DALEKANIUM.getIS(1),
 				'g', Items.diamond));
+	}
+
+	@Override
+	public Class<? extends TileEntity> getTEClass()
+	{
+		return LandingPadTileEntity.class;
 	}
 
 }

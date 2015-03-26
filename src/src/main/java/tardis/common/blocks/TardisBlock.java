@@ -1,9 +1,6 @@
 package tardis.common.blocks;
 
-import tardis.TardisMod;
-import tardis.common.tileents.TardisTileEntity;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -11,9 +8,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.tileents.TardisTileEntity;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TardisBlock extends AbstractBlockContainer
 {
+	public TardisBlock()
+	{
+		super(TardisMod.modName);
+	}
+	
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{
@@ -113,6 +119,12 @@ public class TardisBlock extends AbstractBlockContainer
 				return false;
 		}
 		return true;
+	}
+
+	@Override
+	public Class<? extends TileEntity> getTEClass()
+	{
+		return TardisTileEntity.class;
 	}
 
 }

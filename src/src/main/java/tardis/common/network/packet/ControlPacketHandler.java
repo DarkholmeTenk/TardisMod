@@ -1,48 +1,31 @@
 package tardis.common.network.packet;
 
-import tardis.api.IControlMatrix;
-import tardis.common.core.Helper;
-import tardis.common.tileents.AbstractTileEntity;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IDataPacketHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import tardis.api.IControlMatrix;
 
-public class ControlPacket extends AbstractPacket
+public class ControlPacketHandler implements IDataPacketHandler
 {
-	public ControlPacket(ByteBuf payload)
+	@Override
+	public void handleData(NBTTagCompound data)
 	{
-		super(payload);
-	}
-	
-	public ControlPacket(NBTTagCompound nbt)
-	{
-		this(Unpooled.buffer(),nbt);
-	}
-	
-	public ControlPacket(ByteBuf payload, NBTTagCompound nbt)
-	{
-		super(payload,nbt,(byte) AbstractPacket.PacketType.CONTROL.ordinal());
-	}
-	
-	public void activate()
-	{
-		if(!Helper.isServer())
-			return;
-		NBTTagCompound data = getNBT();
 		if(data != null)
 		{
 			String playerName = data.getString("pl");
-			EntityPlayer player = Helper.getPlayer(playerName);
+			EntityPlayer player = ServerHelper.getPlayer(playerName);
 			if(player != null)
 			{
 				int dim = data.getInteger("dim");
 				int x = data.getInteger("x");
 				int y = data.getInteger("y");
 				int z = data.getInteger("z");
-				World w = Helper.getWorld(dim);
+				World w = WorldHelper.getWorld(dim);
 				if(w != null)
 				{
 					TileEntity te = w.getTileEntity(x, y, z);

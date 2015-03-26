@@ -1,14 +1,14 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import tardis.TardisMod;
-import tardis.common.core.Helper;
-import tardis.common.dimension.TardisTeleportHelper;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
+import tardis.TardisMod;
 
 public class TeleportCommand extends AbstractCommand
 {
@@ -43,7 +43,7 @@ public class TeleportCommand extends AbstractCommand
 				ArrayList<EntityPlayerMP> pls = new ArrayList<EntityPlayerMP>();
 				for(int i = 0;i<astring.length&&!nonPlayerFound;i++)
 				{
-					EntityPlayerMP plx = Helper.getPlayer(astring[i]);
+					EntityPlayerMP plx = ServerHelper.getPlayer(astring[i]);
 					if(plx != null)
 					{
 						pls.add(plx);
@@ -75,7 +75,7 @@ public class TeleportCommand extends AbstractCommand
 						int y = Integer.parseInt(astring[2+offset]);
 						int z = Integer.parseInt(astring[3+offset]);
 						for(EntityPlayerMP plx : pls)
-							TardisTeleportHelper.teleportEntity(plx,w,x,y,z);
+							TeleportHelper.teleportEntity(plx,w,x,y,z);
 					}
 					catch(Exception e)
 					{
@@ -89,7 +89,7 @@ public class TeleportCommand extends AbstractCommand
 								return;
 							}
 							for(EntityPlayerMP plx : pls)
-								TardisTeleportHelper.teleportEntity(plx,w,2,30,0);
+								TeleportHelper.teleportEntity(plx,w,2,30,0);
 						}
 						else
 						{
@@ -97,7 +97,7 @@ public class TeleportCommand extends AbstractCommand
 							{
 								w = Integer.parseInt(astring[0+offset]);
 								for(EntityPlayerMP plx : pls)
-									TardisTeleportHelper.teleportEntity(plx,w);
+									TeleportHelper.teleportEntity(plx,w);
 							}
 							catch(Exception er)
 							{
@@ -115,7 +115,7 @@ public class TeleportCommand extends AbstractCommand
 					for(EntityPlayerMP plx : pls)
 					{
 						if(plx != dest)
-							TardisTeleportHelper.teleportEntity(plx, dest.worldObj.provider.dimensionId,dest.posX,dest.posY,dest.posZ);
+							TeleportHelper.teleportEntity(plx, dest.worldObj.provider.dimensionId,dest.posX,dest.posY,dest.posZ);
 					}
 				}
 				else

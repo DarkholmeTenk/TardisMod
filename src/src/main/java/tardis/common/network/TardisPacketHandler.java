@@ -1,47 +1,24 @@
 package tardis.common.network;
 
-import tardis.common.network.packet.ParticlePacket;
-import tardis.common.network.packet.AbstractPacket.PacketType;
-import tardis.common.network.packet.ControlPacket;
-import tardis.common.network.packet.DimRegPacket;
-import tardis.common.network.packet.SoundPacket;
-
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.CustomPacketEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ServerCustomPacketEvent;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
+import io.darkcraft.darkcore.mod.DarkcoreMod;
+import io.darkcraft.darkcore.mod.interfaces.IDataPacketHandler;
+import tardis.common.network.packet.ControlPacketHandler;
+import tardis.common.network.packet.DimRegPacketHandler;
+import tardis.common.network.packet.ParticlePacketHandler;
 
 public class TardisPacketHandler
 {
-	
-	@SubscribeEvent
-	public void handleCustomClientPacket(ClientCustomPacketEvent event)
+	public static final byte				controlFlag		= 10;
+	public static final byte				dimRegFlag		= 11;
+	public static final byte				particleFlag	= 12;
+	public static final IDataPacketHandler	controlHandler	= new ControlPacketHandler();
+	public static final IDataPacketHandler	dimRegHandler	= new DimRegPacketHandler();
+	public static final IDataPacketHandler	particleHandler	= new ParticlePacketHandler();
+
+	public static void registerHandlers()
 	{
-		handleCustomPacket(event);
-	}
-	
-	@SubscribeEvent
-	public void handleCustomServerPacket(ServerCustomPacketEvent event)
-	{
-		handleCustomPacket(event);
-	}
-	
-	@SubscribeEvent
-	public void handleCustomPacket(CustomPacketEvent event)
-	{
-		FMLProxyPacket p = event.packet;
-		int discriminator = p.payload().getByte(0);
-		p.payload().readerIndex(1);
-		p.payload().discardReadBytes();
-		PacketType type = PacketType.find(discriminator);
-		if(type == PacketType.SOUND)
-			new SoundPacket(p.payload()).play();
-		else if(type == PacketType.DIMREG)
-			new DimRegPacket(p.payload()).registerDims();
-		else if(type == PacketType.CONTROL)
-			new ControlPacket(p.payload()).activate();
-		else if(type == PacketType.PARTICLE)
-			new ParticlePacket(p.payload()).spawn();
+		DarkcoreMod.packetHandler.registerHandler(controlFlag, controlHandler);
+		DarkcoreMod.packetHandler.registerHandler(dimRegFlag, dimRegHandler);
+		DarkcoreMod.packetHandler.registerHandler(particleFlag, particleHandler);
 	}
 }

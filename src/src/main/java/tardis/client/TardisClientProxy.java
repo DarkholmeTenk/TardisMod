@@ -1,5 +1,7 @@
 package tardis.client;
 
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
@@ -15,24 +17,23 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
 import tardis.client.renderer.BatteryRenderer;
-import tardis.client.renderer.LabRenderer;
-import tardis.client.renderer.LandingPadRenderer;
 import tardis.client.renderer.ComponentRenderer;
 import tardis.client.renderer.ConsoleRenderer;
 import tardis.client.renderer.CoreRenderer;
 import tardis.client.renderer.EngineRenderer;
-import tardis.client.renderer.TardisRenderer;
+import tardis.client.renderer.LabRenderer;
+import tardis.client.renderer.LandingPadRenderer;
 import tardis.client.renderer.SonicScrewdriverRenderer;
+import tardis.client.renderer.TardisRenderer;
 import tardis.common.TardisProxy;
-import tardis.common.core.Helper;
-import tardis.common.tileents.LabTileEntity;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.BatteryTileEntity;
-import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
+import tardis.common.tileents.LabTileEntity;
+import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInterModComms;
@@ -80,7 +81,7 @@ public class TardisClientProxy extends TardisProxy
 	@Override
 	public World getWorld(int id)
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 		{
 			if(Minecraft.getMinecraft() != null)
 			{

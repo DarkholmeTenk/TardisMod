@@ -1,16 +1,19 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import tardis.TardisMod;
-import tardis.common.core.Helper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.TardisMod;
 
 public class DecoBlock extends AbstractBlock
 {
@@ -21,9 +24,15 @@ public class DecoBlock extends AbstractBlock
 	
 	public DecoBlock(boolean light)
 	{
-		super();
+		super(TardisMod.modName);
 		lit = light;
 		initData();
+	}
+	
+	@Override
+	public Class<? extends AbstractItemBlock> getIB()
+	{
+		return DecoItemBlock.class;
 	}
 
 	@Override
@@ -108,9 +117,9 @@ public class DecoBlock extends AbstractBlock
 	@Override
 	public void updateTick(World w, int x, int y, int z, Random p_149674_5_)
 	{
-		if(litUpDim.containsKey(Helper.getWorldID(w)))
+		if(litUpDim.containsKey(WorldHelper.getWorldID(w)))
 		{
-			boolean b = litUpDim.get(Helper.getWorldID(w));
+			boolean b = litUpDim.get(WorldHelper.getWorldID(w));
 			if(b && !lit)
 				w.setBlock(x, y, z, TardisMod.decoBlock, w.getBlockMetadata(x, y, z), 3);
 			else if(!b && lit)

@@ -1,25 +1,16 @@
 package tardis.common.tileents;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
+import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
+import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+
 import java.util.HashMap;
 
-import cofh.api.energy.IEnergyHandler;
-
-import appeng.api.networking.IGridHost;
-import appeng.api.networking.IGridNode;
-import appeng.api.util.AECableType;
-import tardis.TardisMod;
-import tardis.api.IActivatable;
-import tardis.api.IArtronEnergyProvider;
-import tardis.api.IChunkLoader;
-import tardis.api.IScrewable;
-import tardis.api.IWatching;
-import tardis.api.ScrewdriverMode;
-import tardis.common.core.Helper;
-import tardis.common.core.ConfigFile;
-import tardis.common.core.store.SimpleCoordStore;
-import tardis.common.items.ComponentItem;
-import tardis.common.tileents.components.ITardisComponent;
-import tardis.common.tileents.components.TardisTEComponent;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -33,31 +24,44 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import tardis.TardisMod;
+import tardis.api.IArtronEnergyProvider;
+import tardis.api.IScrewable;
+import tardis.api.ScrewdriverMode;
+import tardis.common.core.ConfigFile;
+import tardis.common.core.Helper;
+import tardis.common.items.ComponentItem;
+import tardis.common.tileents.components.ITardisComponent;
+import tardis.common.tileents.components.TardisTEComponent;
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
+import appeng.api.util.AECableType;
+import cofh.api.energy.IEnergyHandler;
 
-public class ComponentTileEntity extends AbstractTileEntity implements IScrewable, IActivatable, IWatching,
-																		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
+public class ComponentTileEntity extends AbstractTileEntity implements IScrewable, IActivatable, IBlockUpdateDetector,
+		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
 {
-	private HashMap<Integer,ITardisComponent> comps = new HashMap<Integer,ITardisComponent>();
-	private boolean valid = false;
-	private boolean compAdded = false;
-	private Boolean inside = null;
-	
-	private static ConfigFile config = null;
-	private static int maxComponents = 6;
-	
+	private HashMap<Integer, ITardisComponent>	comps			= new HashMap<Integer, ITardisComponent>();
+	private boolean								valid			= false;
+	private boolean								compAdded		= false;
+	private Boolean								inside			= null;
+
+	private static ConfigFile					config			= null;
+	private static int							maxComponents	= 6;
+
 	static
 	{
 		config = TardisMod.configHandler.getConfigFile("Components");
 		maxComponents = config.getInt("max components", 6);
 	}
-	
+
 	public boolean addComponent(TardisTEComponent comp)
 	{
-		if(!hasComponent(comp) && getNumComponents() < maxComponents)
+		if (!hasComponent(comp) && getNumComponents() < maxComponents)
 		{
-			if(inside == null)
+			if (inside == null)
 				inside = Helper.isTardisWorld(worldObj);
-			if(comp.isValid(inside))
+			if (comp.isValid(inside))
 			{
 				compAdded = true;
 				comps.put(comp.ordinal(), comp.baseObj.create(this));
@@ -65,125 +69,125 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 			}
 		}
 		return false;
-		
+
 	}
-	
+
 	public int getNumComponents()
 	{
 		int c = 0;
-		for(TardisTEComponent comp : TardisTEComponent.values())
+		for (TardisTEComponent comp : TardisTEComponent.values())
 			c += hasComponent(comp) ? 1 : 0;
 		return c;
 	}
-	
+
 	public boolean hasComponent(TardisTEComponent comp)
 	{
-		if(comps != null)
+		if (comps != null)
 			return comps.containsKey(comp.ordinal());
 		return false;
 	}
-	
+
 	public ITardisComponent getComponent(TardisTEComponent comp)
 	{
-		if(hasComponent(comp))
+		if (hasComponent(comp))
 			return comps.get(comp.ordinal());
 		return null;
 	}
-	
+
 	public ItemStack[] getComponentItems()
 	{
 		ItemStack[] retIS = new ItemStack[comps.size()];
-		if(retIS.length > 0)
+		if (retIS.length > 0)
 		{
 			int i = 0;
-			for(Integer compVal : comps.keySet())
+			for (Integer compVal : comps.keySet())
 			{
-				ItemStack is = new ItemStack(TardisMod.componentItem,1,compVal);
+				ItemStack is = new ItemStack(TardisMod.componentItem, 1, compVal);
 				retIS[i] = is;
 				i++;
 			}
 		}
 		return retIS;
 	}
-	
+
 	protected void reviveComps()
 	{
-		if(comps.size() > 0)
+		if (comps.size() > 0)
 		{
-			for(ITardisComponent comp : comps.values())
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp != null)
+				if (comp != null)
 					comp.revive(this);
 			}
 		}
 	}
-	
+
 	protected void killComps()
 	{
-		if(comps.size() > 0)
+		if (comps.size() > 0)
 		{
-			for(ITardisComponent comp : comps.values())
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp != null)
+				if (comp != null)
 					comp.die();
 			}
 		}
 	}
-	
+
 	protected void restart()
 	{
 		killComps();
 		reviveComps();
 		updateNeighbours();
 	}
-	
+
 	@Override
 	public void init()
 	{
 		inside = Helper.isTardisWorld(worldObj);
 		compAdded = false;
 		reviveComps();
-		if(Helper.isServer() && valid)
+		if (ServerHelper.isServer() && valid)
 		{
-			worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord,yCoord,zCoord));
+			worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, worldObj.getBlock(xCoord, yCoord, zCoord));
 			sendUpdate();
 		}
-		
+
 	}
-	
+
 	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if(compAdded)
+		if (compAdded)
 			init();
-		
-		if(comps.size() > 0)
+
+		if (comps.size() > 0)
 		{
-			for(ITardisComponent comp : comps.values())
+			for (ITardisComponent comp : comps.values())
 				comp.updateTick();
 		}
 	}
-	
+
 	protected void dismantle(EntityPlayer pl)
 	{
 		int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 		worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.decoBlock, d == 0 ? 2 : 4, 3);
 	}
-	
+
 	@Override
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
-		if(mode == ScrewdriverMode.Dismantle)
+		if (mode == ScrewdriverMode.Dismantle)
 		{
 			CoreTileEntity core = getCore();
-			if(core == null || core.canModify(player))
+			if (core == null || core.canModify(player))
 			{
 				ItemStack[] contained = getComponentItems();
-				if(contained.length > 0)
+				if (contained.length > 0)
 				{
-					for(ItemStack is : contained)
-						Helper.giveItemStack(player, is);
+					for (ItemStack is : contained)
+						WorldHelper.giveItemStack(player, is);
 				}
 				dismantle(player);
 				return true;
@@ -191,14 +195,14 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 			else
 				player.addChatMessage(CoreTileEntity.cannotModifyMessage);
 		}
-		
+
 		boolean screwed = false;
-		if(comps.size() > 0)
+		if (comps.size() > 0)
 		{
-			for(ITardisComponent te : comps.values())
+			for (ITardisComponent te : comps.values())
 			{
-				if(te instanceof IScrewable)
-					screwed = ((IScrewable)te).screw(mode, player) || screwed;
+				if (te instanceof IScrewable)
+					screwed = ((IScrewable) te).screw(mode, player) || screwed;
 			}
 		}
 		return screwed;
@@ -208,25 +212,26 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	public boolean activate(EntityPlayer pl, int side)
 	{
 		ItemStack is = pl.getHeldItem();
-		if(is != null)
+		if (is != null)
 		{
 			Item i = is.getItem();
-			if(i instanceof ComponentItem)
+			if (i instanceof ComponentItem)
 			{
 				CoreTileEntity core = getCore();
-				if(core == null || core.canModify(pl))
+				if (core == null || core.canModify(pl))
 				{
 					int dam = is.getItemDamage();
 					TardisTEComponent[] possComps = TardisTEComponent.values();
-					if(dam >= 0 && dam < possComps.length)
+					if (dam >= 0 && dam < possComps.length)
 					{
 						TardisTEComponent rel = possComps[dam];
-						if(addComponent(rel))
+						if (addComponent(rel))
 						{
-							if(!pl.capabilities.isCreativeMode)
+							if (!pl.capabilities.isCreativeMode)
 							{
 								pl.inventory.decrStackSize(pl.inventory.currentItem, 1);
-								//pl.inventory.setInventorySlotContents(pl.inventory.currentItem, null);
+								// pl.inventory.setInventorySlotContents(pl.inventory.currentItem,
+								// null);
 								pl.inventory.markDirty();
 							}
 						}
@@ -239,30 +244,30 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 			}
 		}
 		boolean activated = false;
-		if(comps.size() > 0)
+		if (comps.size() > 0)
 		{
-			for(ITardisComponent te : comps.values())
+			for (ITardisComponent te : comps.values())
 			{
-				if(te instanceof IActivatable)
-					activated = ((IActivatable)te).activate(pl, side) || activated;
+				if (te instanceof IActivatable)
+					activated = ((IActivatable) te).activate(pl, side) || activated;
 			}
 		}
 		return activated;
 	}
 
 	@Override
-	public void neighbourUpdated(Block neighbourBlock)
+	public void blockUpdated(Block neighbourBlock)
 	{
-		if(comps.size() > 0)
+		if (comps.size() > 0)
 		{
-			for(ITardisComponent te : comps.values())
+			for (ITardisComponent te : comps.values())
 			{
-				if(te instanceof IWatching)
-					((IWatching)te).neighbourUpdated(neighbourBlock);
+				if (te instanceof IBlockUpdateDetector)
+					((IBlockUpdateDetector) te).blockUpdated(neighbourBlock);
 			}
 		}
 	}
-	
+
 	@Override
 	public void validate()
 	{
@@ -270,38 +275,39 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 		compAdded = true;
 		valid = true;
 	}
-	
+
 	@Override
 	public void invalidate()
 	{
 		super.invalidate();
-		if(comps.size() > 0)
+		if (comps.size() > 0)
 		{
-			for(ITardisComponent comp : comps.values())
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp != null)
+				if (comp != null)
 					comp.die();
 			}
 		}
 		comps = null;
 		valid = false;
 	}
-	
+
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
 		TardisTEComponent[] possibleComps = TardisTEComponent.values();
-		for(Integer key: comps.keySet())
+		for (Integer key : comps.keySet())
 		{
-			if(key >= 0 && key < possibleComps.length)
+			if (key >= 0 && key < possibleComps.length)
 			{
 				TardisTEComponent relevantComp = possibleComps[key];
 				NBTTagCompound compNBT = new NBTTagCompound();
 				ITardisComponent te = comps.get(key);
-				if(te != null)
+				if (te != null)
 				{
-					//TardisOutput.print("TCompTE", "Writing " + relevantComp.componentName + " to nbt");
+					// TardisOutput.print("TCompTE", "Writing " +
+					// relevantComp.componentName + " to nbt");
 					compNBT.setBoolean("exists", true);
 					te.writeToNBT(compNBT);
 					nbt.setTag(relevantComp.componentName, compNBT);
@@ -309,19 +315,19 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 			}
 		}
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		super.readFromNBT(nbt);
 		TardisTEComponent[] possibleComps = TardisTEComponent.values();
-		for(TardisTEComponent comp : possibleComps)
+		for (TardisTEComponent comp : possibleComps)
 		{
-			if(nbt.hasKey(comp.componentName))
+			if (nbt.hasKey(comp.componentName))
 			{
 				addComponent(comp);
 				ITardisComponent te = getComponent(comp);
-				if(te != null)
+				if (te != null)
 				{
 					te.readFromNBT(nbt.getCompoundTag(comp.componentName));
 				}
@@ -333,7 +339,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
 		String c = "";
-		for(Integer i : comps.keySet())
+		for (Integer i : comps.keySet())
 			c += i + ",";
 		nbt.setString("c", c);
 	}
@@ -343,34 +349,34 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	{
 		String c = nbt.getString("c");
 		String[] d = c.split(",");
-		if(d.length > 0)
+		if (d.length > 0)
 		{
 			TardisTEComponent[] vals = TardisTEComponent.values();
-			for(String e : d)
+			for (String e : d)
 			{
-				int i = Helper.toInt(e, -1);
-				if(i != -1)
+				int i = MathHelper.toInt(e, -1);
+				if (i != -1)
 				{
 					addComponent(vals[i]);
 				}
 			}
 		}
 	}
-	
+
 	public CoreTileEntity getCore()
 	{
 		CoreTileEntity core = Helper.getTardisCore(this);
 		return core;
 	}
-	
+
 	public IArtronEnergyProvider getArtronEnergyProvider()
 	{
 		CoreTileEntity core = getCore();
-		if(core != null)
-			return (IArtronEnergyProvider)core;
+		if (core != null)
+			return (IArtronEnergyProvider) core;
 		return null;
 	}
-	
+
 	public boolean isValid()
 	{
 		return valid && !compAdded;
@@ -379,10 +385,10 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
 	{
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IEnergyHandler)
-				return ((IEnergyHandler)comp).receiveEnergy(from, maxReceive, simulate);
+			if (comp instanceof IEnergyHandler)
+				return ((IEnergyHandler) comp).receiveEnergy(from, maxReceive, simulate);
 		}
 		return 0;
 	}
@@ -390,10 +396,10 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate)
 	{
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IEnergyHandler)
-				return ((IEnergyHandler)comp).extractEnergy(from, maxExtract, simulate);
+			if (comp instanceof IEnergyHandler)
+				return ((IEnergyHandler) comp).extractEnergy(from, maxExtract, simulate);
 		}
 		return 0;
 	}
@@ -401,12 +407,12 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public boolean canConnectEnergy(ForgeDirection from)
 	{
-		if(!valid || compAdded)
+		if (!valid || compAdded)
 			return true;
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IEnergyHandler)
-				return ((IEnergyHandler)comp).canConnectEnergy(from);
+			if (comp instanceof IEnergyHandler)
+				return ((IEnergyHandler) comp).canConnectEnergy(from);
 		}
 		return false;
 	}
@@ -414,10 +420,10 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public int getEnergyStored(ForgeDirection from)
 	{
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IEnergyHandler)
-				return ((IEnergyHandler)comp).getEnergyStored(from);
+			if (comp instanceof IEnergyHandler)
+				return ((IEnergyHandler) comp).getEnergyStored(from);
 		}
 		return 0;
 	}
@@ -425,10 +431,10 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public int getMaxEnergyStored(ForgeDirection from)
 	{
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IEnergyHandler)
-				return ((IEnergyHandler)comp).getMaxEnergyStored(from);
+			if (comp instanceof IEnergyHandler)
+				return ((IEnergyHandler) comp).getMaxEnergyStored(from);
 		}
 		return 0;
 	}
@@ -436,12 +442,12 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public int getSizeInventory()
 	{
-		if(!valid || compAdded)
+		if (!valid || compAdded)
 			return 0;
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IInventory)
-				return ((IInventory)comp).getSizeInventory();
+			if (comp instanceof IInventory)
+				return ((IInventory) comp).getSizeInventory();
 		}
 		return 0;
 	}
@@ -449,12 +455,12 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public ItemStack getStackInSlot(int i)
 	{
-		if(!valid || compAdded)
+		if (!valid || compAdded)
 			return null;
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IInventory)
-				return ((IInventory)comp).getStackInSlot(i);
+			if (comp instanceof IInventory)
+				return ((IInventory) comp).getStackInSlot(i);
 		}
 		return null;
 	}
@@ -462,12 +468,12 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public ItemStack decrStackSize(int i, int j)
 	{
-		if(!valid || compAdded)
+		if (!valid || compAdded)
 			return null;
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IInventory)
-				return ((IInventory)comp).decrStackSize(i,j);
+			if (comp instanceof IInventory)
+				return ((IInventory) comp).decrStackSize(i, j);
 		}
 		return null;
 	}
@@ -481,26 +487,26 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack)
 	{
-		if(!valid || compAdded)
+		if (!valid || compAdded)
 			return;
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IInventory)
-				((IInventory)comp).setInventorySlotContents(i,itemstack);
+			if (comp instanceof IInventory)
+				((IInventory) comp).setInventorySlotContents(i, itemstack);
 		}
 	}
 
 	@Override
 	public String getInventoryName()
 	{
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IInventory)
-				return ((IInventory)comp).getInventoryName();
+			if (comp instanceof IInventory)
+				return ((IInventory) comp).getInventoryName();
 		}
 		return null;
 	}
-	
+
 	@Override
 	public int getInventoryStackLimit()
 	{
@@ -508,23 +514,30 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer){return false;}
+	public boolean isUseableByPlayer(EntityPlayer entityplayer)
+	{
+		return false;
+	}
 
 	@Override
-	public void openInventory(){	}
+	public void openInventory()
+	{
+	}
 
 	@Override
-	public void closeInventory(){	}
+	public void closeInventory()
+	{
+	}
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack)
 	{
-		if(!valid || compAdded)
+		if (!valid || compAdded)
 			return false;
-		for(ITardisComponent comp : comps.values())
+		for (ITardisComponent comp : comps.values())
 		{
-			if(comp instanceof IInventory)
-				return ((IInventory)comp).isItemValidForSlot(i,itemstack);
+			if (comp instanceof IInventory)
+				return ((IInventory) comp).isItemValidForSlot(i, itemstack);
 		}
 		return false;
 	}
@@ -532,11 +545,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public int fill(ForgeDirection from, FluidStack resource, boolean doFill)
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IFluidHandler)
-					return ((IFluidHandler)comp).fill(from,resource,doFill);
+				if (comp instanceof IFluidHandler)
+					return ((IFluidHandler) comp).fill(from, resource, doFill);
 			}
 		return 0;
 	}
@@ -544,11 +557,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain)
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IFluidHandler)
-					return ((IFluidHandler)comp).drain(from,resource,doDrain);
+				if (comp instanceof IFluidHandler)
+					return ((IFluidHandler) comp).drain(from, resource, doDrain);
 			}
 		return null;
 	}
@@ -556,11 +569,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain)
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IFluidHandler)
-					return ((IFluidHandler)comp).drain(from,maxDrain,doDrain);
+				if (comp instanceof IFluidHandler)
+					return ((IFluidHandler) comp).drain(from, maxDrain, doDrain);
 			}
 		return null;
 	}
@@ -568,11 +581,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public boolean canFill(ForgeDirection from, Fluid fluid)
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IFluidHandler)
-					return ((IFluidHandler)comp).canFill(from,fluid);
+				if (comp instanceof IFluidHandler)
+					return ((IFluidHandler) comp).canFill(from, fluid);
 			}
 		return false;
 	}
@@ -580,11 +593,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public boolean canDrain(ForgeDirection from, Fluid fluid)
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IFluidHandler)
-					return ((IFluidHandler)comp).canDrain(from,fluid);
+				if (comp instanceof IFluidHandler)
+					return ((IFluidHandler) comp).canDrain(from, fluid);
 			}
 		return false;
 	}
@@ -592,11 +605,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public FluidTankInfo[] getTankInfo(ForgeDirection from)
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IFluidHandler)
-					return ((IFluidHandler)comp).getTankInfo(from);
+				if (comp instanceof IFluidHandler)
+					return ((IFluidHandler) comp).getTankInfo(from);
 			}
 		return null;
 	}
@@ -604,11 +617,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public boolean shouldChunkload()
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IChunkLoader)
-					return ((IChunkLoader)comp).shouldChunkload();
+				if (comp instanceof IChunkLoader)
+					return ((IChunkLoader) comp).shouldChunkload();
 			}
 		return false;
 	}
@@ -616,7 +629,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public SimpleCoordStore coords()
 	{
-		if(coords == null)
+		if (coords == null)
 			coords = new SimpleCoordStore(this);
 		return coords;
 	}
@@ -624,11 +637,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public ChunkCoordIntPair[] loadable()
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IChunkLoader)
-					return ((IChunkLoader)comp).loadable();
+				if (comp instanceof IChunkLoader)
+					return ((IChunkLoader) comp).loadable();
 			}
 		return null;
 	}
@@ -642,11 +655,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public IGridNode getGridNode(ForgeDirection dir)
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IGridHost)
-					return ((IGridHost)comp).getGridNode(dir);
+				if (comp instanceof IGridHost)
+					return ((IGridHost) comp).getGridNode(dir);
 			}
 		return null;
 	}
@@ -654,11 +667,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public AECableType getCableConnectionType(ForgeDirection dir)
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IGridHost)
-					return ((IGridHost)comp).getCableConnectionType(dir);
+				if (comp instanceof IGridHost)
+					return ((IGridHost) comp).getCableConnectionType(dir);
 			}
 		return AECableType.NONE;
 	}
@@ -666,11 +679,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public void securityBreak()
 	{
-		if(valid && !compAdded)
-			for(ITardisComponent comp : comps.values())
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
 			{
-				if(comp instanceof IGridHost)
-					((IGridHost)comp).securityBreak();
+				if (comp instanceof IGridHost)
+					((IGridHost) comp).securityBreak();
 			}
 	}
 

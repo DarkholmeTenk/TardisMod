@@ -1,12 +1,12 @@
 package tardis.common.integration.waila;
 
+import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.EngineTileEntity;
-import mcp.mobius.waila.api.IWailaDataAccessor;
 
 public class WailaEngineProvider extends AbstractWailaProvider
 {

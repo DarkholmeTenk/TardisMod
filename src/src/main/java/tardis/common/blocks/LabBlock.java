@@ -1,10 +1,6 @@
 package tardis.common.blocks;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import tardis.TardisMod;
-import tardis.common.tileents.LabTileEntity;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -13,13 +9,17 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.TardisMod;
+import tardis.common.tileents.LabTileEntity;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class LabBlock extends AbstractBlockContainer
 {
-
 	public LabBlock()
 	{
-		super(false);
+		super(false,TardisMod.modName);
 	}
 	
 	@Override
@@ -71,6 +71,12 @@ public class LabBlock extends AbstractBlockContainer
 		if(te instanceof LabTileEntity)
 			((LabTileEntity)te).dropEverything();
 		super.breakBlock(w, x, y, z, b, m);
+	}
+
+	@Override
+	public Class<? extends TileEntity> getTEClass()
+	{
+		return LabTileEntity.class;
 	}
 
 }

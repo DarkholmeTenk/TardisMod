@@ -1,29 +1,33 @@
 package tardis.common.core;
 
-import io.netty.buffer.Unpooled;
+import io.darkcraft.darkcore.mod.DarkcoreMod;
+import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.network.DataPacket;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.HashSet;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.DimensionManager;
+import tardis.TardisMod;
+import tardis.common.network.TardisPacketHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ServerConnectionFromClientEvent;
 
-import tardis.TardisMod;
-import tardis.common.network.packet.DimRegPacket;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.WorldSavedData;
-import net.minecraftforge.common.DimensionManager;
-
-public class TardisDimensionRegistry extends WorldSavedData implements GenericFutureListener
+public class TardisDimensionRegistry extends AbstractWorldDataStore implements GenericFutureListener
 {
+	public TardisDimensionRegistry()
+	{
+		this("TDimReg");
+	}
+	
 	public TardisDimensionRegistry(String par1Str)
 	{
 		super(par1Str);
@@ -40,31 +44,17 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 		}
 	}
 	
-	public static TardisDimensionRegistry load()
+	public static void loadAll()
 	{
-		TardisOutput.print("TDR","Attempting to load tardis dimension registry");
-		try
-		{
-			WorldSavedData data = MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.loadData(TardisDimensionRegistry.class, "TModDimReg");
-			if(data instanceof TardisDimensionRegistry)
-				return (TardisDimensionRegistry)data;
-		}
-		catch(Exception e)
-		{
-			
-		}
-		return new TardisDimensionRegistry("TModDimReg");
+		if(TardisMod.dimReg == null)
+			TardisMod.dimReg = new TardisDimensionRegistry();
+		TardisMod.dimReg.load();
 	}
 
-	public static void save()
+	public static void saveAll()
 	{
-		if(Helper.isServer())
-		{
-			TardisOutput.print("TDR", "Saving",TardisOutput.Priority.DEBUG);
-			if(TardisMod.dimReg == null)
-				TardisMod.dimReg = new TardisDimensionRegistry("TModDimReg");
-			MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.setData("TModDimReg", TardisMod.dimReg);
-		}
+		if(ServerHelper.isServer())
+			TardisMod.dimReg.save();
 	}
 	
 	public void registerDims()
@@ -79,14 +69,20 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 		{
 			TardisOutput.print("TDR", "Registering dim " + id,TardisOutput.Priority.DEBUG);
 			DimensionManager.registerDimension(id, TardisMod.providerID);
-			if(Helper.isServer())
-				TardisMod.networkChannel.sendToAll(getPacket());
+			if(ServerHelper.isServer())
+				DarkcoreMod.networkChannel.sendToAll(getPacket());
 		}
 	}
 	
 	public boolean hasDimension(int id)
 	{
 		return dimensionIDs.contains(id);
+	}
+
+	@Override
+	public int getDimension()
+	{
+		return 0;
 	}
 
 	@Override
@@ -101,7 +97,7 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 				addDimension(curr);
 			}
 		}
-		save();
+		saveAll();
 	}
 
 	@Override
@@ -118,11 +114,11 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 		nbt.setIntArray("registeredDimensions", dims);
 	}
 	
-	public static DimRegPacket getPacket()
+	public static DataPacket getPacket()
 	{
 		NBTTagCompound t = new NBTTagCompound();
 		TardisMod.dimReg.writeToNBT(t);
-		return new DimRegPacket(Unpooled.buffer(),t);
+		return new DataPacket(t,TardisPacketHandler.dimRegFlag);
 	}
 	
 	@SubscribeEvent
@@ -146,8 +142,8 @@ public class TardisDimensionRegistry extends WorldSavedData implements GenericFu
 	public void sendPacket(PlayerEvent event)
 	{
 		EntityPlayer pl = event.player;
-		if(pl instanceof EntityPlayerMP && TardisMod.networkChannel != null)
-			TardisMod.networkChannel.sendTo(getPacket(),(EntityPlayerMP) pl);
+		if(pl instanceof EntityPlayerMP && DarkcoreMod.networkChannel != null)
+			DarkcoreMod.networkChannel.sendTo(getPacket(),(EntityPlayerMP) pl);
 	}
 
 	@Override

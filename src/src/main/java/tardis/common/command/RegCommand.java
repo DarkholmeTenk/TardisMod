@@ -1,11 +1,11 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+
 import java.util.List;
 
-import tardis.TardisMod;
-import tardis.common.core.Helper;
-
 import net.minecraft.command.ICommandSender;
+import tardis.TardisMod;
 
 public class RegCommand extends AbstractCommand
 {
@@ -53,7 +53,7 @@ public class RegCommand extends AbstractCommand
 				if(astring.length == 3)
 				{
 					String un = astring[1];
-					int dim = Helper.toInt(astring[2], 0);
+					int dim = MathHelper.toInt(astring[2], 0);
 					if(TardisMod.plReg.addPlayer(un, dim))
 						sendString(comsen,un + " added to listing");
 					else

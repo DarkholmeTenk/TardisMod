@@ -1,8 +1,8 @@
 package tardis.common.blocks;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.IIcon;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import net.minecraft.world.IBlockAccess;
+import tardis.TardisMod;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -10,10 +10,9 @@ public class SchemaBlock extends AbstractBlock
 {
 	private final boolean visible;
 	
-	
 	public SchemaBlock(boolean vis)
 	{
-		super(vis);
+		super(vis,TardisMod.modName);
 		visible = vis;
 	}
 

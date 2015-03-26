@@ -1,11 +1,12 @@
 package tardis.common.blocks;
 
-import tardis.TardisMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.IBlockAccess;
+import tardis.TardisMod;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class StairBlock extends BlockStairs
 {
@@ -18,6 +19,12 @@ public class StairBlock extends BlockStairs
 		setCreativeTab(TardisMod.tab);
 		setBlockName("StairBlock");
 		setLightLevel(1F);
+	}
+	
+	public StairBlock register()
+	{
+		GameRegistry.registerBlock(this, getUnlocalizedName());
+		return this;
 	}
 	
 	@Override

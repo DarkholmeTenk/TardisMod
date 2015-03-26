@@ -1,7 +1,7 @@
 package tardis.client.renderer;
 
-import org.lwjgl.opengl.GL11;
-
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
@@ -10,9 +10,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
+
+import org.lwjgl.opengl.GL11;
+
 import tardis.TardisMod;
 import tardis.client.renderer.model.StickModel;
-import tardis.common.blocks.AbstractBlock;
 import tardis.common.tileents.LabTileEntity;
 
 public class LabRenderer extends AbstractObjRenderer implements IItemRenderer

@@ -1,10 +1,9 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+
 import java.util.List;
-
-import tardis.common.tileents.extensions.CraftingComponentType;
-
-import cpw.mods.fml.common.registry.GameRegistry;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,12 +12,21 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.TardisMod;
+import tardis.common.tileents.extensions.CraftingComponentType;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ForceFieldBlock extends AbstractBlock
 {
 	public ForceFieldBlock()
 	{
-		super(false);
+		super(false,TardisMod.modName);
+	}
+	
+	@Override
+	public Class<? extends AbstractItemBlock> getIB()
+	{
+		return ForceFieldItemBlock.class;
 	}
 
 	@Override
@@ -41,8 +49,9 @@ public class ForceFieldBlock extends AbstractBlock
 	{
 		if(ent instanceof EntityPlayer)
 		{
-			if(((EntityPlayer)ent).isSneaking() || ((EntityPlayer)ent).posY < y+1)
-				return;
+			if(w.getBlock(x, y+1, z) != this)
+				if(((EntityPlayer)ent).isSneaking() || ((EntityPlayer)ent).posY < y+1 || w.getBlock(x, y-1, z)==this)
+					return;
 		}
 		super.addCollisionBoxesToList(w, x, y, z, aabb, list, ent);
 	}

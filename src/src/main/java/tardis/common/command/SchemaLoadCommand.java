@@ -1,11 +1,13 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import java.util.List;
 
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
+import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 
 public class SchemaLoadCommand extends AbstractCommand
 {
@@ -36,7 +38,7 @@ public class SchemaLoadCommand extends AbstractCommand
 			if(astring.length == 5)
 			{
 				String name = astring[0];
-				TardisOutput.print("TLC", "Attempting to load " + name +" in dim " + Helper.getWorldID(pl.worldObj));
+				TardisOutput.print("TLC", "Attempting to load " + name +" in dim " + WorldHelper.getWorldID(pl.worldObj));
 				try
 				{
 					int x = Integer.parseInt(astring[1]);

@@ -1,5 +1,8 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+
 import java.util.List;
 
 import net.minecraft.block.Block;

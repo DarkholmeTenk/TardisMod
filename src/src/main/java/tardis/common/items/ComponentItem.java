@@ -1,6 +1,6 @@
 package tardis.common.items;
 
-import cpw.mods.fml.common.registry.GameRegistry;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -9,13 +9,14 @@ import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CraftingComponentType;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ComponentItem extends AbstractItem
 {
 
 	public ComponentItem()
 	{
-		super();
+		super(TardisMod.modName);
 		setUnlocalizedName("Component");
 		setSubNames(TardisTEComponent.getStrings());
 		setMaxStackSize(8);

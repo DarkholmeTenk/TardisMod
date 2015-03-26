@@ -3,13 +3,12 @@ package tardis.common.integration.waila;
 import java.util.HashMap;
 import java.util.List;
 
-import tardis.common.core.TardisOutput;
-import tardis.common.core.store.TwoIntStore;
-
-import net.minecraft.item.ItemStack;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
+import net.minecraft.item.ItemStack;
+import tardis.common.core.TardisOutput;
+import tardis.common.core.store.TwoIntStore;
 
 public abstract class AbstractWailaProvider implements IWailaDataProvider
 {

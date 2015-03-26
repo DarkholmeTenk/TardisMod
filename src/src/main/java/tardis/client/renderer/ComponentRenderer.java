@@ -1,14 +1,16 @@
 package tardis.client.renderer;
 
-import org.lwjgl.opengl.GL11;
-
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+
 import tardis.TardisMod;
-import tardis.client.renderer.model.TardisBlockModel;
 import tardis.client.renderer.model.StickModel;
-import tardis.common.blocks.AbstractBlock;
+import tardis.client.renderer.model.TardisBlockModel;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.components.TardisTEComponent;
 

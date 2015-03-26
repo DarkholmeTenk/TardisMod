@@ -1,72 +1,53 @@
 package tardis;
 
+import io.darkcraft.darkcore.mod.DarkcoreMod;
+import io.darkcraft.darkcore.mod.DarkcoreTeleporter;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+
 import java.io.IOException;
 
-import appeng.api.AEApi;
-import appeng.api.IAppEngApi;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
 import tardis.common.blocks.BatteryBlock;
-import tardis.common.blocks.BatteryBlockItemBlock;
-import tardis.common.blocks.ForceFieldBlock;
-import tardis.common.blocks.ForceFieldItemBlock;
-import tardis.common.blocks.GravityLiftBlock;
-import tardis.common.blocks.GravityLiftItemBlock;
-import tardis.common.blocks.LabBlock;
-import tardis.common.blocks.LandingPadBlock;
-import tardis.common.blocks.AbstractBlock;
-import tardis.common.blocks.TardisBlock;
 import tardis.common.blocks.ComponentBlock;
-import tardis.common.blocks.ComponentItemBlock;
 import tardis.common.blocks.ConsoleBlock;
 import tardis.common.blocks.CoreBlock;
 import tardis.common.blocks.DebugBlock;
 import tardis.common.blocks.DecoBlock;
-import tardis.common.blocks.DecoDarkItemBlock;
-import tardis.common.blocks.DecoItemBlock;
 import tardis.common.blocks.EngineBlock;
+import tardis.common.blocks.ForceFieldBlock;
+import tardis.common.blocks.GravityLiftBlock;
 import tardis.common.blocks.InternalDoorBlock;
-import tardis.common.blocks.InternalDoorItemBlock;
+import tardis.common.blocks.LabBlock;
+import tardis.common.blocks.LandingPadBlock;
 import tardis.common.blocks.SchemaBlock;
 import tardis.common.blocks.SchemaComponentBlock;
-import tardis.common.blocks.SchemaComponentItemBlock;
 import tardis.common.blocks.SchemaCoreBlock;
 import tardis.common.blocks.SlabBlock;
-import tardis.common.blocks.SlabItemBlock;
 import tardis.common.blocks.StairBlock;
+import tardis.common.blocks.TardisBlock;
 import tardis.common.blocks.TopBlock;
 import tardis.common.command.CommandRegister;
-import tardis.common.core.DimensionEventHandler;
-import tardis.common.core.Helper;
 import tardis.common.core.ConfigFile;
 import tardis.common.core.ConfigHandler;
 import tardis.common.core.CreativeTab;
+import tardis.common.core.DimensionEventHandler;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisOwnershipRegistry;
-import tardis.common.core.TardisTeleporter;
-import tardis.common.dimension.ChunkLoadingManager;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
-import tardis.common.items.AbstractItem;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.KeyItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.network.TardisPacketHandler;
-import tardis.common.tileents.BatteryTileEntity;
-import tardis.common.tileents.GravityLiftTileEntity;
-import tardis.common.tileents.LabTileEntity;
-import tardis.common.tileents.LandingPadTileEntity;
-import tardis.common.tileents.ComponentTileEntity;
-import tardis.common.tileents.ConsoleTileEntity;
-import tardis.common.tileents.CoreTileEntity;
-import tardis.common.tileents.EngineTileEntity;
-import tardis.common.tileents.SchemaCoreTileEntity;
-import tardis.common.tileents.TardisTileEntity;
+import appeng.api.AEApi;
+import appeng.api.IAppEngApi;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -77,22 +58,18 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.FMLEventChannel;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid="TardisMod",name="Tardis Mod",version="0.06",dependencies="required-after:FML; after:appliedenergistics2; after:Waila")
+@Mod(modid="TardisMod",name="Tardis Mod",version="0.06",dependencies="required-after:FML; required-after:darkcore; after:appliedenergistics2; after:Waila")
 public class TardisMod
 {
 	@Instance
 	public static TardisMod i;
+	public static final String modName = "TardisMod";
 	public static boolean inited = false;
 	
 	@SidedProxy(clientSide="tardis.client.TardisClientProxy", serverSide="tardis.common.TardisProxy")
 	public static TardisProxy proxy;
 	public static DimensionEventHandler dimEventHandler = new DimensionEventHandler();
-	public static TardisPacketHandler packetHandler = new TardisPacketHandler();
-	public static FMLEventChannel networkChannel;
 	
 	public static IAppEngApi aeAPI = null;
 	
@@ -100,12 +77,11 @@ public class TardisMod
 	public static ConfigFile blockConfig;
 	public static ConfigFile itemConfig;
 	
-	public static TardisTeleporter teleporter = null;
+	public static DarkcoreTeleporter teleporter = null;
 	public static ConfigHandler configHandler;
 	public static TardisDimensionHandler otherDims;
 	public static TardisDimensionRegistry dimReg;
 	public static TardisOwnershipRegistry plReg;
-	public static ChunkLoadingManager chunkManager;
 	public static CreativeTab tab = null;
 	
 	public static TardisOutput.Priority priorityLevel = TardisOutput.Priority.INFO;
@@ -131,7 +107,7 @@ public class TardisMod
 	public static AbstractBlock forcefield;
 	public static AbstractBlock battery;
 	public static StairBlock	  stairBlock;
-	public static SlabBlock	  slabBlock;
+	public static AbstractBlock	  slabBlock;
 	
 	public static LabBlock	labBlock;
 	
@@ -158,15 +134,15 @@ public class TardisMod
 		configHandler = new ConfigHandler(event.getModConfigurationDirectory());
 		configHandler.getSchemas();
 		tab = new CreativeTab();
+		DarkcoreMod.registerCreativeTab(modName, tab);
 		
 		modConfig   = configHandler.getConfigFile("Mod");
-		int prioLevel = Helper.clamp(modConfig.getInt("Debug Level", priorityLevel.ordinal()),0,TardisOutput.Priority.values().length);
+		int prioLevel = MathHelper.clamp(modConfig.getInt("Debug Level", priorityLevel.ordinal()),0,TardisOutput.Priority.values().length);
 		priorityLevel = TardisOutput.Priority.values()[prioLevel];
 		
 		providerID		= modConfig.getInt("Dimension Provider ID", 54);
 		tardisLoaded	= modConfig.getBoolean("Dimension always loaded", true);
 		keyInHand		= modConfig.getBoolean("Key needs to be in hand", true);
-		registerNetwork();
 		tardisVol		= (float) modConfig.getDouble("Tardis Volume", 1);
 		
 		xpBase			= modConfig.getInt("xp base amount", 80);
@@ -190,16 +166,11 @@ public class TardisMod
 		proxy.postAssignment();
 	}
 	
-	private void registerNetwork()
-	{
-		networkChannel = NetworkRegistry.INSTANCE.newEventDrivenChannel("tardis");
-		networkChannel.register(packetHandler);
-	}
-	
 	@EventHandler
 	public void doingInit(FMLInitializationEvent event)
 	{
 		proxy.init();
+		TardisPacketHandler.registerHandlers();
 	}
 	
 	@EventHandler
@@ -215,94 +186,60 @@ public class TardisMod
 	
 	private void initBlocks()
 	{
-		tardisBlock = new TardisBlock();
-		GameRegistry.registerBlock(tardisBlock,tardisBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(TardisTileEntity.class, tardisBlock.getUnlocalizedName());
+		tardisBlock = new TardisBlock().register();
 		
-		tardisTopBlock = new TopBlock();
-		GameRegistry.registerBlock(tardisTopBlock,tardisTopBlock.getUnlocalizedName());
+		tardisTopBlock = new TopBlock().register();
 		
-		tardisCoreBlock = new CoreBlock();
-		GameRegistry.registerBlock(tardisCoreBlock,tardisCoreBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(CoreTileEntity.class, tardisCoreBlock.getUnlocalizedName());
+		tardisCoreBlock = new CoreBlock().register();
 		
-		tardisConsoleBlock = new ConsoleBlock();
-		GameRegistry.registerBlock(tardisConsoleBlock, tardisConsoleBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(ConsoleTileEntity.class,tardisConsoleBlock.getUnlocalizedName());
+		tardisConsoleBlock = new ConsoleBlock().register();
 		
-		tardisEngineBlock = new EngineBlock();
-		GameRegistry.registerBlock(tardisEngineBlock, tardisEngineBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(EngineTileEntity.class, tardisEngineBlock.getUnlocalizedName());
+		tardisEngineBlock = new EngineBlock().register();
 		
-		componentBlock = new ComponentBlock();
-		GameRegistry.registerBlock(componentBlock,ComponentItemBlock.class,componentBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(ComponentTileEntity.class, componentBlock.getUnlocalizedName());
+		componentBlock = new ComponentBlock().register();
 		
-		internalDoorBlock = new InternalDoorBlock();
-		GameRegistry.registerBlock(internalDoorBlock,InternalDoorItemBlock.class,internalDoorBlock.getUnlocalizedName());
+		internalDoorBlock = new InternalDoorBlock().register();
 		
-		decoBlock = new DecoBlock(true);
-		GameRegistry.registerBlock(decoBlock, DecoItemBlock.class, decoBlock.getUnlocalizedName());
+		decoBlock = new DecoBlock(true).register();
 		
-		darkDecoBlock = new DecoBlock(false);
-		GameRegistry.registerBlock(darkDecoBlock, DecoDarkItemBlock.class, darkDecoBlock.getUnlocalizedName()+"Dark");
+		//darkDecoBlock = new DecoBlock(false);
+		//GameRegistry.registerBlock(darkDecoBlock, DecoDarkItemBlock.class, darkDecoBlock.getUnlocalizedName()+"Dark");
 		
-		stairBlock = new StairBlock();
-		GameRegistry.registerBlock(stairBlock,stairBlock.getUnlocalizedName());
+		stairBlock = new StairBlock().register();
 		
-		debugBlock = new DebugBlock();
-		GameRegistry.registerBlock(debugBlock, debugBlock.getUnlocalizedName());
+		debugBlock = new DebugBlock().register();
 		
 		boolean visibleSchema = modConfig.getBoolean("Visible schematic boundaries", false);
-		schemaBlock = new SchemaBlock(visibleSchema);
-		GameRegistry.registerBlock(schemaBlock, schemaBlock.getUnlocalizedName());
+		schemaBlock = new SchemaBlock(visibleSchema).register();
 		
-		schemaCoreBlock = new SchemaCoreBlock(visibleSchema);
-		GameRegistry.registerBlock(schemaCoreBlock,schemaCoreBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(SchemaCoreTileEntity.class, schemaCoreBlock.getUnlocalizedName());
+		schemaCoreBlock = new SchemaCoreBlock(visibleSchema).register();
 		
-		schemaComponentBlock = new SchemaComponentBlock();
-		GameRegistry.registerBlock(schemaComponentBlock, SchemaComponentItemBlock.class, schemaComponentBlock.getUnlocalizedName());
+		schemaComponentBlock = new SchemaComponentBlock().register();
 		
-		slabBlock = new SlabBlock();
-		GameRegistry.registerBlock(slabBlock,SlabItemBlock.class,slabBlock.getUnlocalizedName());
+		slabBlock = new SlabBlock().register();
 		
-		landingPad = new LandingPadBlock();
-		GameRegistry.registerBlock(landingPad, landingPad.getUnlocalizedName());
-		GameRegistry.registerTileEntity(LandingPadTileEntity.class, landingPad.getUnlocalizedName());
+		landingPad = new LandingPadBlock().register();
 		
-		labBlock	= new LabBlock();
-		GameRegistry.registerBlock(labBlock, labBlock.getUnlocalizedName());
-		GameRegistry.registerTileEntity(LabTileEntity.class, labBlock.getUnlocalizedName());
+		labBlock	= (LabBlock) new LabBlock().register();
 		
-		gravityLift = new GravityLiftBlock();
-		GameRegistry.registerBlock(gravityLift, GravityLiftItemBlock.class, gravityLift.getUnlocalizedName());
-		GameRegistry.registerTileEntity(GravityLiftTileEntity.class, gravityLift.getUnlocalizedName());
+		gravityLift = new GravityLiftBlock().register();
 		
-		forcefield = new ForceFieldBlock();
-		GameRegistry.registerBlock(forcefield, ForceFieldItemBlock.class, forcefield.getUnlocalizedName());
+		forcefield = new ForceFieldBlock().register();
 		
-		battery = new BatteryBlock();
-		GameRegistry.registerBlock(battery, BatteryBlockItemBlock.class, battery.getUnlocalizedName());
-		GameRegistry.registerTileEntity(BatteryTileEntity.class, battery.getUnlocalizedName());
+		battery = new BatteryBlock().register();
 	}
 	
 	private void initItems()
 	{
-		schemaItem = new SchemaItem();
-		GameRegistry.registerItem(schemaItem, schemaItem.getUnlocalizedName());
+		schemaItem = new SchemaItem().register();
 		
-		screwItem = new SonicScrewdriverItem();
-		GameRegistry.registerItem(screwItem, screwItem.getUnlocalizedName());
+		screwItem = (SonicScrewdriverItem) new SonicScrewdriverItem().register();
 		
-		keyItem = new KeyItem();
-		GameRegistry.registerItem(keyItem, keyItem.getUnlocalizedName());
+		keyItem = (KeyItem) new KeyItem().register();
 		
-		componentItem = new ComponentItem();
-		GameRegistry.registerItem(componentItem, componentItem.getUnlocalizedName());
+		componentItem = new ComponentItem().register();
 		
-		craftingComponentItem = new CraftingComponentItem();
-		GameRegistry.registerItem(craftingComponentItem, craftingComponentItem.getUnlocalizedName());
+		craftingComponentItem = (CraftingComponentItem) new CraftingComponentItem().register();
 		
 	}
 	
@@ -325,28 +262,18 @@ public class TardisMod
 			MinecraftForge.EVENT_BUS.unregister(otherDims);
 		otherDims = new TardisDimensionHandler();
 		MinecraftForge.EVENT_BUS.register(otherDims);
-		
-		if(chunkManager != null)
-		{
-			MinecraftForge.EVENT_BUS.unregister(chunkManager);
-			FMLCommonHandler.instance().bus().unregister(chunkManager);
-		}
-		chunkManager = new ChunkLoadingManager();
-		MinecraftForge.EVENT_BUS.register(chunkManager);
-		FMLCommonHandler.instance().bus().register(chunkManager);
-		ForgeChunkManager.setForcedChunkLoadingCallback(this, chunkManager);
 	}
 	
 	@EventHandler
 	public void serverStarting(FMLServerStartingEvent event)
 	{
-		dimReg = TardisDimensionRegistry.load();
+		TardisDimensionRegistry.loadAll();
 		dimReg.registerDims();
 		FMLCommonHandler.instance().bus().register(dimReg);
 		MinecraftForge.EVENT_BUS.register(dimReg);
-		plReg  = TardisOwnershipRegistry.load();
-		TardisOwnershipRegistry.save();
-		teleporter = new TardisTeleporter(event.getServer().worldServerForDimension(0));
+		TardisOwnershipRegistry.loadAll();
+		TardisOwnershipRegistry.saveAll();
+		teleporter = new DarkcoreTeleporter(event.getServer().worldServerForDimension(0));
 		CommandRegister.registerCommands(event);
 	}
 }

@@ -1,17 +1,17 @@
 package tardis.common.tileents.components;
 
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.FoodStats;
-
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.Helper;
 import tardis.common.entities.particles.ParticleType;
 import tardis.common.tileents.ComponentTileEntity;
-import tardis.common.tileents.CoreTileEntity;
 
 public class ComponentNanogene extends AbstractComponent
 {
@@ -71,9 +71,9 @@ public class ComponentNanogene extends AbstractComponent
 	public void updateTick()
 	{
 		super.updateTick();
-		if(parentObj == null || !Helper.isServer())
+		if(parentObj == null || !ServerHelper.isServer())
 			return;
-		if(tt % nanogeneTimer == 0 && Helper.isServer())
+		if(tt % nanogeneTimer == 0 && ServerHelper.isServer())
 		{
 			ArrayList<EntityPlayerMP> players = getNearbyPlayers();
 			for(EntityPlayerMP pl : players)
@@ -81,7 +81,7 @@ public class ComponentNanogene extends AbstractComponent
 				IArtronEnergyProvider core = getArtronEnergyProvider();
 				if(core != null && core.takeArtronEnergy(1, false))
 				{
-					Helper.spawnParticle(ParticleType.NANOGENE, Helper.getWorldID(parentObj), pl.posX , pl.posY+1, pl.posZ,20,true);
+					Helper.spawnParticle(ParticleType.NANOGENE, WorldHelper.getWorldID(parentObj), pl.posX , pl.posY+1, pl.posZ,20,true);
 					if(pl.isBurning())
 						pl.extinguish();
 					pl.heal(nanogeneHealAmount);

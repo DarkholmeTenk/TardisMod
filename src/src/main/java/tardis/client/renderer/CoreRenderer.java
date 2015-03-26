@@ -1,16 +1,18 @@
 package tardis.client.renderer;
 
-import org.lwjgl.opengl.GL11;
-
-import tardis.TardisMod;
-import tardis.client.renderer.model.RotorModel;
-import tardis.common.blocks.AbstractBlock;
-import tardis.common.tileents.CoreTileEntity;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
+
+import org.lwjgl.opengl.GL11;
+
+import tardis.TardisMod;
+import tardis.client.renderer.model.RotorModel;
+import tardis.common.tileents.CoreTileEntity;
 
 public class CoreRenderer extends AbstractBlockRenderer
 {

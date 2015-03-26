@@ -1,12 +1,19 @@
 package tardis.common.blocks;
 
-import tardis.common.tileents.EngineTileEntity;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.tileents.EngineTileEntity;
 
 public class EngineBlock extends AbstractBlockContainer
 {
+	public EngineBlock()
+	{
+		super(TardisMod.modName);
+	}
+	
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{
@@ -38,4 +45,10 @@ public class EngineBlock extends AbstractBlockContainer
 		}
 		return superEffect;
     }
+
+	@Override
+	public Class<? extends TileEntity> getTEClass()
+	{
+		return EngineTileEntity.class;
+	}
 }

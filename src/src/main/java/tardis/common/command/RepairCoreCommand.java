@@ -1,17 +1,20 @@
 package tardis.common.command;
 
-import java.util.List;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
-import tardis.TardisMod;
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
-import tardis.common.dimension.TardisWorldProvider;
-import tardis.common.tileents.CoreTileEntity;
+import java.util.List;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
+import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.tileents.CoreTileEntity;
 
 public class RepairCoreCommand extends AbstractCommand
 {
@@ -37,7 +40,7 @@ public class RepairCoreCommand extends AbstractCommand
 	@Override
 	public void commandBody(ICommandSender comSen, String[] astring)
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return;
 		String newOwner = null;
 		int worldID = 0;
@@ -48,7 +51,7 @@ public class RepairCoreCommand extends AbstractCommand
 		{
 			TardisOutput.print("TRCC", "WOrld?"+((EntityPlayerMP)comSen).worldObj.isRemote);
 			worldID  = ((EntityPlayer) comSen).worldObj.provider.dimensionId;
-			newOwner = Helper.getUsername((EntityPlayer) comSen);
+			newOwner = ServerHelper.getUsername((EntityPlayer) comSen);
 		}
 		
 		boolean total = false;
@@ -59,14 +62,14 @@ public class RepairCoreCommand extends AbstractCommand
 		
 		if(astring.length >= 4)
 		{
-			worldID = Helper.toInt(astring[total ? 1 : 0], 0);
+			worldID = MathHelper.toInt(astring[total ? 1 : 0], 0);
 			newOwner = astring[total ? 2 : 1];
 			o = total ? 3 : 2;
 		}
 		if(astring.length >= 2)
 		{
-			numRooms = Helper.toInt(astring[o], 0);
-			energy   = Helper.toInt(astring[o+1], 0);
+			numRooms = MathHelper.toInt(astring[o], 0);
+			energy   = MathHelper.toInt(astring[o+1], 0);
 		}
 		else
 		{
@@ -81,7 +84,7 @@ public class RepairCoreCommand extends AbstractCommand
 		if(newOwner != null)
 		{
 			TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner);
-			World world = Helper.getWorldServer(worldID);
+			World world = WorldHelper.getWorldServer(worldID);
 			CoreTileEntity tce = Helper.getTardisCore(world);
 			if(tce == null && world.provider instanceof TardisWorldProvider)
 			{

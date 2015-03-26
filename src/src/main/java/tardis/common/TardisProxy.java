@@ -1,6 +1,6 @@
 package tardis.common;
 
-import tardis.common.core.Helper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.world.World;
 
 public class TardisProxy
@@ -23,7 +23,7 @@ public class TardisProxy
 	
 	public World getWorld(int id)
 	{
-		return Helper.getWorldServer(id);
+		return WorldHelper.getWorldServer(id);
 	}
 
 	public void init()

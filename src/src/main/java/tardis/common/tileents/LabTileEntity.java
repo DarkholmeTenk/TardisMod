@@ -1,15 +1,14 @@
 package tardis.common.tileents;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import tardis.TardisMod;
-import tardis.api.IActivatable;
-import tardis.api.IArtronEnergyProvider;
-import tardis.common.core.Helper;
-import tardis.common.core.ConfigFile;
-import tardis.common.core.TardisOutput;
-import tardis.common.tileents.extensions.LabRecipe;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -17,6 +16,12 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import tardis.TardisMod;
+import tardis.api.IArtronEnergyProvider;
+import tardis.common.core.ConfigFile;
+import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
+import tardis.common.tileents.extensions.LabRecipe;
 
 public class LabTileEntity extends AbstractTileEntity implements ISidedInventory, IActivatable
 {
@@ -54,10 +59,8 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			config = TardisMod.configHandler.getConfigFile("Lab");
 			maxSpeed = config.getInt("max speed", 5);
 		}
-		if(Helper.isServer())
-		{
+		if(ServerHelper.isServer())
 			isPowered();
-		}
 	}
 	
 	private int numPartiallyMatchingRecipes(ItemStack newItemStack)
@@ -155,7 +158,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 						outputted = true;
 						break;
 					}
-					else if(Helper.sameItem(inventory[i], is))
+					else if(WorldHelper.sameItem(inventory[i], is))
 					{
 						if(inventory[i].stackSize + is.stackSize <= inventory[i].getMaxStackSize())
 						{
@@ -232,7 +235,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 				ItemStack is = inventory[i];
 				if(is != null)
 				{
-					inventory[i] = Helper.transferItemStack(is, (IInventory)out);
+					inventory[i] = WorldHelper.transferItemStack(is, (IInventory)out);
 				}
 			}
 		}
@@ -253,7 +256,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if(Helper.isServer())
+		if(ServerHelper.isServer())
 		{
 			if(isActive())
 				processTick();
@@ -262,9 +265,9 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			if((tt % 1200) == 0)
 				sendUpdate();
 		}
-		if((!Helper.isServer()) && isGeneratingEnergy(null,null))
+		if((!ServerHelper.isServer()) && isGeneratingEnergy(null,null))
 			moveSticks();
-		if(Helper.isServer() && tt % 20 == 0)
+		if(ServerHelper.isServer() && tt % 20 == 0)
 		{
 			powered = Helper.getArtronProvider(this, true) != null;
 			if(!powered && active)
@@ -280,7 +283,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	{
 		if(powered == null)
 		{
-			if(Helper.isServer())
+			if(ServerHelper.isServer())
 				powered = Helper.getArtronProvider(this, true) != null;
 			else
 				return false;
@@ -295,7 +298,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	
 	public boolean isGeneratingEnergy(LabRecipe rec,IArtronEnergyProvider core)
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return isActive() && generatingEnergy;
 		boolean result = false;
 		if(rec != null && core != null)
@@ -429,7 +432,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	@Override
 	public boolean activate(EntityPlayer pl, int side)
 	{
-		if(Helper.isServer())
+		if(ServerHelper.isServer())
 		{
 			active = !active;
 			powered = Helper.getArtronProvider(this, true) != null;
@@ -493,14 +496,14 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	public void readTransmittable(NBTTagCompound nbt)
 	{
 		active = nbt.getBoolean("active");
-		speed = Helper.clamp(nbt.getInteger("speed"), 1, maxSpeed);
+		speed = MathHelper.clamp(nbt.getInteger("speed"), 1, maxSpeed);
 	}
 	
 	private void moveSticks()
 	{
 		double inc = 0.0625;
-		stickX = Helper.clamp(stickX, 0, 1);
-		stickZ = Helper.clamp(stickZ, 0, 1);
+		stickX = MathHelper.clamp(stickX, 0, 1);
+		stickZ = MathHelper.clamp(stickZ, 0, 1);
 		if(stickX < inc)
 		{
 			if(stickZ >= inc)

@@ -3,10 +3,9 @@ package tardis.common.command;
 import java.io.File;
 import java.util.List;
 
+import net.minecraft.command.ICommandSender;
 import tardis.TardisMod;
 import tardis.common.tileents.ConsoleTileEntity;
-
-import net.minecraft.command.ICommandSender;
 
 public class SchemaRemoveCommand extends AbstractCommand
 {

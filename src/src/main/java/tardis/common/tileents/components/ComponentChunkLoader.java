@@ -1,9 +1,9 @@
 package tardis.common.tileents.components;
 
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-import tardis.api.IChunkLoader;
-import tardis.common.core.store.SimpleCoordStore;
 import tardis.common.tileents.ComponentTileEntity;
 
 public class ComponentChunkLoader extends AbstractComponent implements IChunkLoader

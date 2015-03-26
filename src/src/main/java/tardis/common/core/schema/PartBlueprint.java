@@ -1,5 +1,7 @@
 package tardis.common.core.schema;
 
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -8,6 +10,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.blocks.InternalDoorBlock;
 import tardis.common.core.Helper;
@@ -16,12 +23,6 @@ import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.tileents.SchemaCoreTileEntity;
-
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 public class PartBlueprint
 {
@@ -222,7 +223,7 @@ public class PartBlueprint
 		try
 		{
 			DataOutputStream stream = new DataOutputStream(new FileOutputStream(saveFile));
-			Helper.writeNBT(nbt, stream);
+			ServerHelper.writeNBT(nbt, stream);
 			//NBTTagCompound.writeNamedTag(nbt, stream);
 			stream.close();
 		}
@@ -238,7 +239,7 @@ public class PartBlueprint
 		{
 			DataInputStream stream = new DataInputStream(new FileInputStream(loadFile));
 			//NBTTagCompound nbt = (NBTTagCompound) NBTTagCompound.readNamedTag(stream);
-			NBTTagCompound nbt = Helper.readNBT(stream);
+			NBTTagCompound nbt = ServerHelper.readNBT(stream);
 			myName = nbt.getString("name");
 			bounds = nbt.getIntArray("bounds");
 			if(nbt.hasKey("primaryDoor"))

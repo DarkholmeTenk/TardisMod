@@ -1,21 +1,20 @@
 package tardis.client.renderer;
 
-import org.lwjgl.opengl.GL11;
-
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.IItemRenderer.ItemRenderType;
-import net.minecraftforge.client.IItemRenderer.ItemRendererHelper;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
+
+import org.lwjgl.opengl.GL11;
+
 import tardis.TardisMod;
-import tardis.common.blocks.AbstractBlock;
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import tardis.common.tileents.BatteryTileEntity;
 
 public class BatteryRenderer extends AbstractObjRenderer implements IItemRenderer
@@ -80,7 +79,7 @@ public class BatteryRenderer extends AbstractObjRenderer implements IItemRendere
 			int thing = (int)Math.round(angle - (15 * ringNum));
 			if(thing < 0)
 				thing += 360;
-			thing = Helper.clamp(thing, 0, 359);
+			thing = MathHelper.clamp(thing, 0, 359);
 			double am = offsets[thing] * baseSC;
 			GL11.glTranslated(0, am, 0);
 		}

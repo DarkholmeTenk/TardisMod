@@ -1,17 +1,14 @@
 package tardis.common.tileents;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import tardis.TardisMod;
-import tardis.api.IControlMatrix;
-import tardis.api.ScrewdriverMode;
-import tardis.api.TardisUpgradeMode;
-import tardis.common.core.Helper;
-import tardis.common.core.HitPosition;
-import tardis.common.core.TardisOutput;
-import tardis.common.items.SonicScrewdriverItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -21,6 +18,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
+import tardis.TardisMod;
+import tardis.api.IControlMatrix;
+import tardis.api.ScrewdriverMode;
+import tardis.api.TardisUpgradeMode;
+import tardis.common.core.Helper;
+import tardis.common.core.HitPosition;
+import tardis.common.core.TardisOutput;
+import tardis.common.items.SonicScrewdriverItem;
 
 public class EngineTileEntity extends AbstractTileEntity implements IControlMatrix
 {
@@ -53,7 +58,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if(tt % 40 == 1 && Helper.isServer())
+		if(tt % 40 == 1 && ServerHelper.isServer())
 		{
 			if(availableConsoleRooms == null)
 				refreshAvailableConsoleRooms();
@@ -71,7 +76,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		{
 			preparingToUpgrade = null;
 			preparingToUpgradeTT = -1;
-			if(Helper.isServer())
+			if(ServerHelper.isServer())
 				sendUpdate();
 		}
 	}
@@ -98,7 +103,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	{
 		if(currentUsers != null && currentUsers.length > 0)
 		{
-			currentUserID = Helper.cycle(currentUserID, 0, currentUsers.length-1);
+			currentUserID = MathHelper.cycle(currentUserID, 0, currentUsers.length-1);
 			currentPerson = currentUsers[currentUserID];
 		}
 		else
@@ -183,7 +188,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	
 	public boolean activate(EntityPlayer pl, int side, int blockY, float x, float y, float z)
 	{
-		if(Helper.isServer())
+		if(ServerHelper.isServer())
 			return true;
 		float relativeY = (blockY - yCoord) + y;
 		float relativeX = (side >= 4) ? z : x;
@@ -269,7 +274,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					hasScrew = false;
 					screwNBT = null;
 					TardisMod.screwItem.notifyMode(toGive,pl,false);
-					Helper.giveItemStack((EntityPlayerMP) pl, toGive);
+					WorldHelper.giveItemStack((EntityPlayerMP) pl, toGive);
 				}
 				else
 				{
@@ -296,7 +301,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					if(core.canModify(pl))
 						SonicScrewdriverItem.togglePermission(screwNBT, SonicScrewdriverItem.getMode(control-40));
 					else
-						Helper.sendString(pl, CoreTileEntity.cannotModifyMessage);
+						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
 				}
 				
 			}
@@ -317,7 +322,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					{
 						s += "does not have " + modeString + " functionality";
 					}
-					Helper.sendString(pl,"ENGINE",s);
+					ServerHelper.sendString(pl,"ENGINE",s);
 				}
 			}
 			else if(control == 60)
@@ -326,7 +331,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			{
 				if(availableConsoleRooms == null)
 					updateConsoleRooms();
-				consoleSettingControl = Helper.cycle(consoleSettingControl+(control == 71 ? -1 : 1), 0, availableConsoleRooms.length-1);
+				consoleSettingControl = MathHelper.cycle(consoleSettingControl+(control == 71 ? -1 : 1), 0, availableConsoleRooms.length-1);
 				consoleSettingString = availableConsoleRooms[consoleSettingControl];
 			}
 			else if(control == 73)
@@ -339,7 +344,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 						lastButton = -1;
 					else if(prevLastButton != 73)
 					{
-						Helper.sendString(pl, "ENGINE", "Warning: Performing this function may cause loss of items. Please right click, then sneak-right click this button to proceed");
+						ServerHelper.sendString(pl, "ENGINE", "Warning: Performing this function may cause loss of items. Please right click, then sneak-right click this button to proceed");
 					}
 					else
 					{
@@ -349,7 +354,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				else
 				{
 					lastButton = -1;
-					Helper.sendString(pl, "ENGINE",CoreTileEntity.cannotModifyMessage.getFormattedText());
+					ServerHelper.sendString(pl, "ENGINE",CoreTileEntity.cannotModifyMessage.getFormattedText());
 				}
 			}
 		}
@@ -374,7 +379,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	@Override
 	public double getControlState(int cID)
 	{
-		if(Helper.isServer())
+		if(ServerHelper.isServer())
 			return 0;
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
 		if(core != null)
@@ -495,15 +500,15 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			{
 				TardisOutput.print("TETE", "New NBT For Screw");
 				screwNBT = SonicScrewdriverItem.getNewNBT();
-				screwNBT.setInteger("linkedTardis", Helper.getWorldID(this));
+				screwNBT.setInteger("linkedTardis", WorldHelper.getWorldID(this));
 			}
 			else
 			{
 				int dim = SonicScrewdriverItem.getLinkedDim(screwNBT);
-				if(dim != 0 && dim != Helper.getWorldID(this))
+				if(dim != 0 && dim != WorldHelper.getWorldID(this))
 					screwNBT.setInteger("perm", SonicScrewdriverItem.minPerms);
 			}
-			screwNBT.setInteger("linkedTardis",Helper.getWorldID(this));
+			screwNBT.setInteger("linkedTardis",WorldHelper.getWorldID(this));
 		}
 		else
 		{

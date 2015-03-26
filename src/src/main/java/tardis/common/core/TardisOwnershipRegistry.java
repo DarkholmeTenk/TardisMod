@@ -1,20 +1,21 @@
 package tardis.common.core;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
-import tardis.TardisMod;
-import tardis.common.tileents.CoreTileEntity;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.world.WorldSavedData;
+import tardis.TardisMod;
+import tardis.common.tileents.CoreTileEntity;
 
-public class TardisOwnershipRegistry extends WorldSavedData
+public class TardisOwnershipRegistry extends AbstractWorldDataStore
 {
 	public HashMap<Integer,String> ownedDimMapping = new HashMap<Integer,String>();
 	
@@ -28,33 +29,17 @@ public class TardisOwnershipRegistry extends WorldSavedData
 		super("TModPReg");
 	}
 	
-	public static TardisOwnershipRegistry load()
+	public static void loadAll()
 	{
-		TardisOutput.print("TPR","Attempting to load tardis player registry");
-		try
-		{
-			WorldSavedData data = MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.loadData(TardisOwnershipRegistry.class, "TModPReg");
-			TardisOutput.print("TPlReg", "Player registry " + data.toString());
-			if(data != null && data instanceof TardisOwnershipRegistry)
-				return (TardisOwnershipRegistry)data;
-		}
-		catch(Exception e)
-		{
-			TardisOutput.print("TPlReg", e.getMessage(),TardisOutput.Priority.ERROR);
-			//e.printStackTrace();
-		}
-		return new TardisOwnershipRegistry();
+		if(TardisMod.plReg == null)
+			TardisMod.plReg = new TardisOwnershipRegistry();
+		TardisMod.plReg.load();
 	}
 
-	public static void save()
+	public static void saveAll()
 	{
-		if(Helper.isServer())
-		{
-			TardisOutput.print("TDR", "Saving",TardisOutput.Priority.DEBUG);
-			if(TardisMod.plReg == null)
-				TardisMod.plReg = load();
-			MinecraftServer.getServer().worldServerForDimension(0).perWorldStorage.setData("TardPlayReg", TardisMod.plReg);
-		}
+		if(ServerHelper.isServer())
+			TardisMod.plReg.save();
 	}
 	
 	public boolean addPlayer(String username, int dimension)
@@ -96,7 +81,7 @@ public class TardisOwnershipRegistry extends WorldSavedData
 	
 	public Integer getDimension(EntityPlayer player)
 	{
-		return getDimension(Helper.getUsername(player));
+		return getDimension(ServerHelper.getUsername(player));
 	}
 	
 	public CoreTileEntity getCore(EntityPlayer player)
@@ -112,7 +97,7 @@ public class TardisOwnershipRegistry extends WorldSavedData
 	public EntityPlayerMP getPlayer(int dimension)
 	{
 		if(ownedDimMapping.containsKey(dimension))
-			return Helper.getPlayer(ownedDimMapping.get(dimension));
+			return ServerHelper.getPlayer(ownedDimMapping.get(dimension));
 		return null;
 	}
 	
@@ -133,6 +118,12 @@ public class TardisOwnershipRegistry extends WorldSavedData
 			if(i != null)
 				comsen.addChatMessage(new ChatComponentText(owner + "->" + i));
 		}
+	}
+
+	@Override
+	public int getDimension()
+	{
+		return 0;
 	}
 
 	@Override

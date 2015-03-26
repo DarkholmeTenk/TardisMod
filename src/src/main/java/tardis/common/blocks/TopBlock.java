@@ -1,16 +1,21 @@
 package tardis.common.blocks;
 
-import tardis.TardisMod;
-import tardis.common.tileents.TardisTileEntity;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.tileents.TardisTileEntity;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TopBlock extends AbstractBlock
 {
+	public TopBlock()
+	{
+		super(TardisMod.modName);
+	}
 
 	@Override
 	public void initData()

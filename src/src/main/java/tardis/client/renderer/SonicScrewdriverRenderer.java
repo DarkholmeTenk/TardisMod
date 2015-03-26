@@ -1,14 +1,15 @@
 package tardis.client.renderer;
 
-import org.lwjgl.opengl.GL11;
-
-import tardis.client.renderer.model.SonicScrewdriverModel;
-import tardis.client.renderer.model.SonicScrewdriverLightModel;
-import tardis.common.items.SonicScrewdriverItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
+
+import org.lwjgl.opengl.GL11;
+
+import tardis.client.renderer.model.SonicScrewdriverLightModel;
+import tardis.client.renderer.model.SonicScrewdriverModel;
+import tardis.common.items.SonicScrewdriverItem;
 
 public class SonicScrewdriverRenderer implements IItemRenderer
 {

@@ -1,12 +1,6 @@
 package tardis.common.core;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import tardis.TardisMod;
-import tardis.api.TardisFunction;
-import tardis.api.ScrewdriverMode;
-import tardis.common.dimension.TardisWorldProvider;
-import tardis.common.items.SonicScrewdriverItem;
-import tardis.common.tileents.CoreTileEntity;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -15,13 +9,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import tardis.TardisMod;
+import tardis.api.ScrewdriverMode;
+import tardis.api.TardisFunction;
+import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.items.SonicScrewdriverItem;
+import tardis.common.tileents.CoreTileEntity;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class DimensionEventHandler
 {
 	@SubscribeEvent
 	public void damageHandler(LivingHurtEvent event)
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return;
 		EntityLivingBase ent = event.entityLiving;
 		DamageSource source = event.source;

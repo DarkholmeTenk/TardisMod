@@ -1,10 +1,13 @@
 package tardis.common.tileents;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
-import tardis.api.IActivatable;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
@@ -70,7 +73,7 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 			sendUpdate();
 		}
 			
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 		{
 			angle += (rotSpeed * getArtronEnergy() / getMaxArtronEnergy());
 			while(angle >= 360)
@@ -141,7 +144,7 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			is.stackTagCompound = nbt;
-			Helper.giveItemStack(player, is);
+			WorldHelper.giveItemStack(player, is);
 			worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 			return true;
 		}

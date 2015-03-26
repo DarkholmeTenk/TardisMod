@@ -1,11 +1,12 @@
 package tardis.common.tileents;
 
-import tardis.TardisMod;
-import tardis.api.IArtronEnergyProvider;
-import tardis.common.core.Helper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import tardis.TardisMod;
+import tardis.api.IArtronEnergyProvider;
+import tardis.common.core.Helper;
 
 public class LandingPadTileEntity extends ComponentTileEntity
 {
@@ -14,7 +15,7 @@ public class LandingPadTileEntity extends ComponentTileEntity
 	@Override
 	protected void dismantle(EntityPlayer pl)
 	{
-		Helper.giveItemStack(pl, new ItemStack(TardisMod.landingPad,1));
+		WorldHelper.giveItemStack(pl, new ItemStack(TardisMod.landingPad,1));
 		worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 	}
 	

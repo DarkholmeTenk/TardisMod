@@ -1,20 +1,35 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
 import java.util.List;
 
-import tardis.TardisMod;
-import tardis.common.core.Helper;
-import tardis.common.tileents.ConsoleTileEntity;
-import tardis.common.tileents.CoreTileEntity;
-import tardis.common.tileents.EngineTileEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.core.Helper;
+import tardis.common.tileents.ConsoleTileEntity;
+import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.EngineTileEntity;
 
 public class SchemaComponentBlock extends AbstractBlock
 {
+	public SchemaComponentBlock()
+	{
+		super(TardisMod.modName);
+	}
+	
+	@Override
+	public Class<? extends AbstractItemBlock> getIB()
+	{
+		return SchemaComponentItemBlock.class;
+	}
 
 	@Override
 	public void initData()
@@ -115,7 +130,7 @@ public class SchemaComponentBlock extends AbstractBlock
 	@Override
     public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer pl, int s, float t, float j, float k)
     {
-		boolean ser = Helper.isServer();
+		boolean ser = ServerHelper.isServer();
     	int meta = w.getBlockMetadata(x, y, z);
     	if(meta == 6 && j > 0.5 && ser || meta == 8)
 		{

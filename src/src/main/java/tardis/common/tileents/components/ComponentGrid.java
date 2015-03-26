@@ -1,8 +1,23 @@
 package tardis.common.tileents.components;
 
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import tardis.TardisMod;
+import tardis.common.core.TardisOutput;
+import tardis.common.tileents.ComponentTileEntity;
+import tardis.common.tileents.CoreTileEntity;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.GridNotification;
 import appeng.api.networking.IGrid;
@@ -13,20 +28,8 @@ import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import tardis.TardisMod;
-import tardis.api.IWatching;
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
-import tardis.common.core.store.SimpleCoordStore;
-import tardis.common.tileents.ComponentTileEntity;
-import tardis.common.tileents.CoreTileEntity;
 
-public class ComponentGrid extends AbstractComponent implements IGridHost, IGridBlock, IWatching
+public class ComponentGrid extends AbstractComponent implements IGridHost, IGridBlock, IBlockUpdateDetector
 {
 	private boolean inited = false;
 	private SimpleCoordStore myCoords = null;
@@ -112,7 +115,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	
 	private void linkToCore()
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return;
 		CoreTileEntity core = getCore();
 		if(core != null)
@@ -124,9 +127,9 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	
 	private void createNode()
 	{
-		if(node == null && Helper.isServer())
+		if(node == null && ServerHelper.isServer())
 		{
-			TardisOutput.print("TCG","Grid node creation! " + Helper.getWorldID(parentObj));
+			TardisOutput.print("TCG","Grid node creation! " + WorldHelper.getWorldID(parentObj));
 			node = TardisMod.aeAPI.createGridNode(this);
 			node.updateState();
 			linkedToCore = false;
@@ -151,7 +154,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	
 	private boolean addConnection(IGridNode otherNode)
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return true;
 		try
 		{
@@ -197,7 +200,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	}
 	
 	@Override
-	public void neighbourUpdated(Block neighbourBlockID)
+	public void blockUpdated(Block neighbourBlockID)
 	{
 		scan();
 	}

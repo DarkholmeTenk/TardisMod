@@ -3,16 +3,15 @@ package tardis.common.command;
 import java.io.File;
 import java.util.List;
 
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
 import tardis.common.core.schema.PartBlueprint;
 import tardis.common.tileents.ConsoleTileEntity;
-
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
 
 public class SchemaSaveCommand extends AbstractCommand
 {

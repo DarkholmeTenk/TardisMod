@@ -1,17 +1,20 @@
 package tardis.common.items;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import tardis.TardisMod;
 
 public class SchemaItem extends AbstractItem
 {
 
 	public SchemaItem()
 	{
-		super();
+		super(TardisMod.modName);
 		setMaxStackSize(1);
 		setUnlocalizedName("Schematic");
 	}

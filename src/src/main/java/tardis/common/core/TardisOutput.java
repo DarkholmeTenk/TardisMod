@@ -1,7 +1,6 @@
 package tardis.common.core;
 
 import tardis.TardisMod;
-import tardis.common.core.TardisOutput.Priority;
 
 public class TardisOutput
 {

@@ -1,14 +1,21 @@
 package tardis.common.blocks;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import tardis.common.tileents.ConsoleTileEntity;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.tileents.ConsoleTileEntity;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ConsoleBlock extends AbstractBlockContainer
 {
+	public ConsoleBlock()
+	{
+		super(TardisMod.modName);
+	}
+
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{
@@ -40,6 +47,12 @@ public class ConsoleBlock extends AbstractBlockContainer
 	public boolean isOpaqueCube()
 	{
 	   return false;
+	}
+
+	@Override
+	public Class<? extends TileEntity> getTEClass()
+	{
+		return ConsoleTileEntity.class;
 	}
 
 }

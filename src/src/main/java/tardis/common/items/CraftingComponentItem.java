@@ -1,10 +1,14 @@
 package tardis.common.items;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+
 import java.util.EnumSet;
+
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
+import tardis.TardisMod;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import tardis.common.tileents.extensions.LabFlag;
@@ -25,6 +29,7 @@ public class CraftingComponentItem extends AbstractItem
 	
 	public CraftingComponentItem()
 	{
+		super(TardisMod.modName);
 		setUnlocalizedName("CraftingComponent");
 		setSubNames(names);
 	}

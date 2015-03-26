@@ -1,11 +1,12 @@
 package tardis.common.tileents.components;
 
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import java.util.Random;
 
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
-import tardis.common.core.Helper;
 import tardis.common.core.ConfigFile;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
@@ -40,7 +41,7 @@ public abstract class AbstractComponent implements ITardisComponent
 	protected void parentAdded(ComponentTileEntity parent)
 	{
 		parentObj = parent;
-		world  = Helper.getWorldID(parent.getWorldObj());
+		world  = WorldHelper.getWorldID(parent.getWorldObj());
 		xCoord = parent.xCoord;
 		yCoord = parent.yCoord;
 		zCoord = parent.zCoord;

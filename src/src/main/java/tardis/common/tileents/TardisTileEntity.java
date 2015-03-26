@@ -1,14 +1,15 @@
 package tardis.common.tileents;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
+import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import tardis.TardisMod;
-import tardis.api.IChunkLoader;
-import tardis.api.IWatching;
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
-import tardis.common.core.store.SimpleCoordStore;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,8 +19,11 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
 
-public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IWatching
+public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector
 {
 	private int fadeTimer = 0;
 	
@@ -41,7 +45,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		super.updateEntity();
 		if(baseURL == null)
 			baseURL = TardisMod.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
-		if(Helper.isServer())
+		if(ServerHelper.isServer())
 		{
 			CoreTileEntity linkedCore = getCore();
 			if(linkedCore != null && owner == null)
@@ -110,7 +114,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	
 	private void playTakeoffSound()
 	{
-		Helper.playSound(this, "takeoff", 1);
+		SoundHelper.playSound(this, "takeoff", 1);
 		takingOffSoundPlayed = true;
 	}
 	
@@ -131,9 +135,9 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	private void playLandSound()
 	{
 		if(!landFast)
-			Helper.playSound(this, "landing", 1);
+			SoundHelper.playSound(this, "landing", 1);
 		else
-			Helper.playSound(this, "landingInt", 1);
+			SoundHelper.playSound(this, "landingInt", 1);
 		landingSoundPlayed = true;
 	}
 	
@@ -197,7 +201,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	
 	public void doorActivated(World world, int x, int y, int z, EntityPlayer player)
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return;
 		if(!inFlight())
 		{
@@ -306,7 +310,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	}
 
 	@Override
-	public void neighbourUpdated(Block neighbourBlockID)
+	public void blockUpdated(Block neighbourBlockID)
 	{
 		if((!takingOff) && worldObj.getBlock(xCoord, yCoord+1, zCoord) != TardisMod.tardisTopBlock)
 			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.tardisTopBlock, worldObj.getBlockMetadata(xCoord, yCoord, zCoord),3);

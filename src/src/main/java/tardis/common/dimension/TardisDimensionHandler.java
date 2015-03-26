@@ -1,18 +1,19 @@
 package tardis.common.dimension;
 
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.world.WorldEvent.Load;
+import tardis.common.core.TardisOutput;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class TardisDimensionHandler
 {
@@ -22,11 +23,11 @@ public class TardisDimensionHandler
 	{
 		if(w.provider instanceof TardisWorldProvider)
 			return;
-		int id = Helper.getWorldID(w);
+		int id = WorldHelper.getWorldID(w);
 		if(!dimensionIDs.contains(id));
 		{
 			dimensionIDs.add(id);
-			TardisOutput.print("TDimH", "Adding dimension: " + id + ", " + Helper.getDimensionName(w));
+			TardisOutput.print("TDimH", "Adding dimension: " + id + ", " + WorldHelper.getDimensionName(w));
 			cleanUp();
 		}
 	}
@@ -47,7 +48,7 @@ public class TardisDimensionHandler
 	
 	public void findDimensions()
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return;
 		WorldServer[] loadedWorlds = DimensionManager.getWorlds();
 		for(WorldServer w : loadedWorlds)
@@ -69,14 +70,14 @@ public class TardisDimensionHandler
 	
 	public Integer getControlFromDim(int dim)
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return 0;
 		cleanUp();
 		if(dimensionIDs.contains(dim))
 			return dimensionIDs.indexOf(dim);
 		else
 		{
-			World w = Helper.getWorldServer(dim);
+			World w = WorldHelper.getWorldServer(dim);
 			if(w != null)
 			{
 				addDimension(w);
@@ -90,9 +91,9 @@ public class TardisDimensionHandler
 	
 	public Integer getDimFromControl(int control)
 	{
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return 0;
-		int index = Helper.clamp(control, 0, dimensionIDs.size() - 1);
+		int index = MathHelper.clamp(control, 0, dimensionIDs.size() - 1);
 		int dim = dimensionIDs.get(index);
 		return dim;
 	}

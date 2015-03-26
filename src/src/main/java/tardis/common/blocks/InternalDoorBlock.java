@@ -1,17 +1,10 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+
 import java.io.File;
 import java.util.List;
-
-import tardis.TardisMod;
-import tardis.api.ScrewdriverMode;
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
-import tardis.common.core.schema.CoordStore;
-import tardis.common.core.schema.PartBlueprint;
-import tardis.common.items.SchemaItem;
-import tardis.common.items.SonicScrewdriverItem;
-import tardis.common.tileents.CoreTileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -25,9 +18,29 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.api.ScrewdriverMode;
+import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
+import tardis.common.core.schema.CoordStore;
+import tardis.common.core.schema.PartBlueprint;
+import tardis.common.items.SchemaItem;
+import tardis.common.items.SonicScrewdriverItem;
+import tardis.common.tileents.CoreTileEntity;
 
 public class InternalDoorBlock extends AbstractBlock
 {
+	public InternalDoorBlock()
+	{
+		super(TardisMod.modName);
+	}
+	
+	@Override
+	public Class<? extends AbstractItemBlock> getIB()
+	{
+		return InternalDoorItemBlock.class;
+	}
+
 	@Override
 	public void initData()
 	{

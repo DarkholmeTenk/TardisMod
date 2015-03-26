@@ -1,19 +1,20 @@
 package tardis.common.blocks;
 
-import tardis.TardisMod;
-import tardis.common.dimension.TardisTeleportHelper;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import tardis.TardisMod;
 
 public class DebugBlock extends AbstractBlock
 {
 
 	public DebugBlock()
 	{
-		super();
+		super(TardisMod.modName);
 	}
 
 	@Override
@@ -34,7 +35,7 @@ public class DebugBlock extends AbstractBlock
 		int dimID = DimensionManager.getNextFreeDimId();
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
 		MinecraftServer.getServer().worldServerForDimension(dimID).setBlock(0, 8, 0, Blocks.stone);
-		TardisTeleportHelper.teleportEntity(player, dimID, 0, 10, 0);
+		TeleportHelper.teleportEntity(player, dimID, 0, 10, 0);
 		return true;
 	}
 

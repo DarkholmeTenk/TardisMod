@@ -1,14 +1,28 @@
 package tardis.common.blocks;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import tardis.common.tileents.ComponentTileEntity;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.common.tileents.ComponentTileEntity;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ComponentBlock extends AbstractBlockContainer
 {
+	public ComponentBlock()
+	{
+		super(TardisMod.modName);
+	}
+	
+	@Override
+	public Class<? extends AbstractItemBlock> getIB()
+	{
+		return ComponentItemBlock.class;
+	}
+
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{
@@ -40,6 +54,12 @@ public class ComponentBlock extends AbstractBlockContainer
 	public boolean isOpaqueCube()
 	{
 	   return true;
+	}
+
+	@Override
+	public Class<? extends TileEntity> getTEClass()
+	{
+		return ComponentTileEntity.class;
 	}
 
 }

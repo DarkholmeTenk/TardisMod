@@ -1,22 +1,14 @@
 package tardis.common.items;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import cofh.api.block.IDismantleable;
-import cofh.api.item.IToolHammer;
-import cofh.api.tileentity.IReconfigurableFacing;
-
-import tardis.TardisMod;
-import tardis.api.TardisFunction;
-import tardis.api.ScrewdriverMode;
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
-import tardis.common.core.store.SimpleCoordStore;
-import tardis.common.dimension.TardisWorldProvider;
-import tardis.common.tileents.ConsoleTileEntity;
-import tardis.common.tileents.CoreTileEntity;
-import tardis.common.tileents.TardisTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,6 +19,18 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import tardis.TardisMod;
+import tardis.api.ScrewdriverMode;
+import tardis.api.TardisFunction;
+import tardis.common.core.Helper;
+import tardis.common.core.TardisOutput;
+import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.tileents.ConsoleTileEntity;
+import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.TardisTileEntity;
+import cofh.api.block.IDismantleable;
+import cofh.api.item.IToolHammer;
+import cofh.api.tileentity.IReconfigurableFacing;
 
 public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 {
@@ -35,7 +39,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 
 	public SonicScrewdriverItem()
 	{
-		super();
+		super(TardisMod.modName);
 		setUnlocalizedName("SonicScrewdriver");
 		setMaxDamage(64);
 		setMaxStackSize(1);
@@ -213,7 +217,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 	
 	private boolean rightClickBlock(ItemStack is, ScrewdriverMode mode, EntityPlayer player, World w)
 	{
-		if(Helper.isServer())
+		if(ServerHelper.isServer())
 		{
 			MovingObjectPosition hitPos = getMovingObjectPositionFromPlayer(w, player, true);
 			if(mode.equals(ScrewdriverMode.Dismantle))
@@ -229,7 +233,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 							ArrayList<ItemStack> s = dis.dismantleBlock(player, w, hitPos.blockX, hitPos.blockY, hitPos.blockZ, false);
 							for(ItemStack tis : s)
 								if(tis != null)
-									Helper.giveItemStack(player, tis);
+									WorldHelper.giveItemStack(player, tis);
 							toolUsed(is,player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 						}
 					}
@@ -364,14 +368,14 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 			if(!rightClickBlock(is,mode,player,world))
 				switchMode(is,world,player,mode);
 		}
-		else if(Helper.isServer())
+		else if(ServerHelper.isServer())
 		{
 			CoreTileEntity core = getLinkedCore(is);
 			if(mode.equals(ScrewdriverMode.Locate))
 			{
 				if(core != null)
 				{
-					if(Helper.getWorldID(core.getWorldObj()) == Helper.getWorldID(player.worldObj))
+					if(WorldHelper.getWorldID(core.getWorldObj()) == WorldHelper.getWorldID(player.worldObj))
 					{
 						player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]You are in the TARDIS"));
 					}
@@ -382,7 +386,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 							TardisTileEntity ext = core.getExterior();
 							if(ext != null)
 							{
-								if(Helper.getWorldID(ext) != player.worldObj.provider.dimensionId)
+								if(WorldHelper.getWorldID(ext) != player.worldObj.provider.dimensionId)
 									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS does not appear to be in this dimension"));
 								else
 									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS is at ["+ext.xCoord+","+ext.yCoord+","+ext.zCoord+"]"));
@@ -403,7 +407,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 				ConsoleTileEntity con = core.getConsole();
 				if(con != null && !core.inFlight())
 				{
-					if(con.setControls(Helper.getWorldID(player.worldObj), (int) Math.floor(player.posX), (int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))
+					if(con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX), (int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))
 					{
 						if(core.takeOff(true,player))
 							player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS inbound"));
@@ -423,7 +427,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 	@Override
 	public boolean hitEntity(ItemStack is, EntityLivingBase hit, EntityLivingBase hitter)
     {
-		if(!Helper.isServer())
+		if(!ServerHelper.isServer())
 			return false;
 		ScrewdriverMode mode = getMode(is);
 		if(ScrewdriverMode.Transmat.equals(mode) && !(hit instanceof EntityPlayer))
@@ -465,7 +469,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 	public void toolUsed(ItemStack is, EntityLivingBase player, int x, int y, int z)
 	{
 		float speed = (float)(player.getRNG().nextDouble() * 0.5) + 0.75f;
-		Helper.playSound(Helper.getWorldID(player.worldObj), x, y, z, "tardismod:sonic", 0.25F,speed);
+		SoundHelper.playSound(WorldHelper.getWorldID(player.worldObj), x, y, z, "tardismod:sonic", 0.25F,speed);
 		player.swingItem();
 	}
 

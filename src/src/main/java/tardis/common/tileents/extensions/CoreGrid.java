@@ -2,11 +2,10 @@ package tardis.common.tileents.extensions;
 
 import java.util.EnumSet;
 
-import tardis.common.core.Helper;
-import tardis.common.tileents.CoreTileEntity;
-
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
+import tardis.common.core.Helper;
+import tardis.common.tileents.CoreTileEntity;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.GridNotification;
 import appeng.api.networking.IGrid;
