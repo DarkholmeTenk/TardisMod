@@ -1,6 +1,7 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
@@ -11,7 +12,6 @@ import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
-import tardis.common.core.ConfigFile;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.extensions.LabFlag;
@@ -34,12 +34,19 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 	static
 	{
 		if(config == null)
-		{
-			config = TardisMod.configHandler.getConfigFile("ArtronBattery");
-			maxEnergyPerLevel = config.getInt("max energy per level",100);
-			energyPerLevel = config.getInt("energy per level", 1);
-			ticksPerEnergy = config.getInt("ticks per energy", 20);
-		}
+			refreshConfigs();
+	}
+	
+	public static void refreshConfigs()
+	{
+		if(config == null)
+			config = TardisMod.configHandler.registerConfigNeeder("ArtronBattery");
+		maxEnergyPerLevel = config.getInt("max energy per level",100,
+				"The amount of max energy that is gained per level");
+		energyPerLevel = config.getInt("energy per level", 1,
+				"The amount of energy per pulse that is gained per level");
+		ticksPerEnergy = config.getInt("ticks per energy", 20,
+				"The number of ticks between each energy pulse");
 	}
 	
 	public BatteryTileEntity(int _level)

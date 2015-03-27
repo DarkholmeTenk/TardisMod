@@ -117,7 +117,7 @@ public class InternalDoorBlock extends AbstractBlock
 						if(schemaCarrier && tag.hasKey("schemaName"))
 						{
 							String name = tag.getString("schemaName");
-							File schemaFile = TardisMod.configHandler.getSchemaFile(name);
+							File schemaFile = TardisMod.schemaHandler.getSchemaFile(name);
 							PartBlueprint pb = new PartBlueprint(schemaFile);
 							int facing = w.getBlockMetadata(x, y, z) % 4;
 							CoordStore door = pb.getPrimaryDoorPos(opposingFace(facing));

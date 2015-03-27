@@ -41,7 +41,7 @@ public class SchemaGiveCommand extends AbstractCommand
 			if(astring.length == 1)
 			{
 				String name = astring[0];
-				if(TardisMod.configHandler.getSchemaFile(name).exists())
+				if(TardisMod.schemaHandler.getSchemaFile(name).exists())
 				{
 					ItemStack is = new ItemStack(TardisMod.schemaItem,1);
 					if(is.stackTagCompound == null)

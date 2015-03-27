@@ -1,6 +1,7 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
@@ -28,7 +29,6 @@ import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
-import tardis.common.core.ConfigFile;
 import tardis.common.core.Helper;
 import tardis.common.items.ComponentItem;
 import tardis.common.tileents.components.ITardisComponent;
@@ -51,8 +51,16 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 
 	static
 	{
-		config = TardisMod.configHandler.getConfigFile("Components");
-		maxComponents = config.getInt("max components", 6);
+		if(config == null)
+			refreshConfigs();
+	}
+	
+	public static void refreshConfigs()
+	{
+		if(config == null)
+			config = TardisMod.configHandler.registerConfigNeeder("Components");
+		maxComponents = config.getInt("Max components", 6,
+				"The maximum number of TARDIS components (cable interfaces, etc), which can be applied to one open roundel");
 	}
 
 	public boolean addComponent(TardisTEComponent comp)

@@ -1061,7 +1061,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	
 	public static void refreshSchemas()
 	{
-		schemaList = TardisMod.configHandler.getSchemas();
+		schemaList = TardisMod.schemaHandler.getSchemas();
 	}
 	
 	public boolean getRelativeCoords()

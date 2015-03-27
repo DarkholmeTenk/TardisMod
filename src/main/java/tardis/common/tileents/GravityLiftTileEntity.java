@@ -1,13 +1,13 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -16,7 +16,6 @@ import net.minecraft.util.AxisAlignedBB;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
-import tardis.common.core.ConfigFile;
 
 public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewable
 {
@@ -25,7 +24,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	private static int scanCeilingInterval = 20;
 	private static int scanPlayerInterval = 2;
 	private static double movePerTick = 0.25;
-	private static double bevel = 0.5;
+	private static double bevel = 0.28;
 	
 	private int distance = -1;
 	private HashMap<EntityPlayerMP,Boolean> goingUp = new HashMap<EntityPlayerMP,Boolean>();
@@ -144,14 +143,20 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	public void init()
 	{
 		if(config == null)
+			refreshConfigs();
+		scanForCeiling();
+	}
+	
+	public static void refreshConfigs()
+	{
+		if(config == null)
 		{
-			config = TardisMod.configHandler.getConfigFile("GravityLift");
+			config = TardisMod.configHandler.registerConfigNeeder("GravityLift");
 			maxDistance = config.getInt("max distance", 64);
 			scanCeilingInterval = config.getInt("interval for ceiling scan", 20);
 			scanPlayerInterval = config.getInt("interval for player scan", 2);
 			movePerTick = config.getDouble("move per tick", 0.25);
 		}
-		scanForCeiling();
 	}
 	
 	@Override

@@ -38,7 +38,7 @@ public class SchemaSaveCommand extends AbstractCommand
 		try
 		{
 			PartBlueprint bp = new PartBlueprint(w, name, x,y,z);
-			File saveFile = TardisMod.configHandler.getSchemaFile(name);
+			File saveFile = TardisMod.schemaHandler.getSchemaFile(name);
 			bp.saveTo(saveFile);
 			ConsoleTileEntity.refreshSchemas();
 			return true;

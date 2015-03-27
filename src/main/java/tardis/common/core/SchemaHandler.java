@@ -1,5 +1,7 @@
 package tardis.common.core;
 
+import io.darkcraft.darkcore.mod.config.ConfigHandler;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,22 +14,13 @@ import java.util.HashMap;
 
 import tardis.TardisMod;
 
-public class ConfigHandler
+public class SchemaHandler
 {
-	private File tardisConfigDir;
 	private File tardisSchemaDir;
 	
-	private HashMap<String,ConfigFile> cachedConfigs = new HashMap<String,ConfigFile>();
-	
-	public ConfigHandler(File baseConfigDir) throws IOException
+	public SchemaHandler(ConfigHandler handler) throws IOException
 	{
-		tardisConfigDir = new File(baseConfigDir.toString() + "/tardis/");
-		if((!tardisConfigDir.exists()) || (!tardisConfigDir.isDirectory()))
-		{
-			if(!tardisConfigDir.mkdirs())
-				throw new IOException("Couldn't create " + tardisConfigDir.toString());
-		}
-		tardisSchemaDir = new File(tardisConfigDir.toString() + "/schema/");
+		tardisSchemaDir = new File(handler.getConfigDir(),"schemas/");
 		if((!tardisSchemaDir.exists()) || (!tardisSchemaDir.isDirectory()))
 		{
 			if(!tardisSchemaDir.mkdirs())
@@ -114,15 +107,5 @@ public class ConfigHandler
 		}
 		Collections.sort(found,String.CASE_INSENSITIVE_ORDER);
 		return found.toArray(fA);
-	}
-	
-	public ConfigFile getConfigFile(String name)
-	{
-		if(cachedConfigs.containsKey(name))
-			return cachedConfigs.get(name);
-		
-		ConfigFile tmp = new ConfigFile(new File(tardisConfigDir.toString() + "//Tardis" + name + ".cfg"));
-		cachedConfigs.put(name, tmp);
-		return tmp;
 	}
 }

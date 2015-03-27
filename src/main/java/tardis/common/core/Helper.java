@@ -206,7 +206,7 @@ public class Helper
 
 	public static void loadSchema(String name, World w, int x, int y, int z, int facing)
 	{
-		File schemaFile = TardisMod.configHandler.getSchemaFile(name);
+		File schemaFile = TardisMod.schemaHandler.getSchemaFile(name);
 		loadSchema(schemaFile, w, x, y, z, facing);
 	}
 
@@ -216,7 +216,7 @@ public class Helper
 			return;
 
 		long mstime = System.currentTimeMillis();
-		File schemaDiff = TardisMod.configHandler.getSchemaFile(toName + "." + fromName + ".diff");
+		File schemaDiff = TardisMod.schemaHandler.getSchemaFile(toName + "." + fromName + ".diff");
 		PartBlueprint diff = null;
 		if (schemaDiff.exists())
 		{
@@ -225,8 +225,8 @@ public class Helper
 		}
 		else
 		{
-			File fromFile = TardisMod.configHandler.getSchemaFile(fromName);
-			File toFile = TardisMod.configHandler.getSchemaFile(toName);
+			File fromFile = TardisMod.schemaHandler.getSchemaFile(fromName);
+			File toFile = TardisMod.schemaHandler.getSchemaFile(toName);
 			PartBlueprint fromPB = new PartBlueprint(fromFile);
 			PartBlueprint toPB = new PartBlueprint(toFile);
 			try

@@ -1,6 +1,7 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
@@ -36,7 +37,6 @@ import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.TardisFunction;
 import tardis.api.TardisUpgradeMode;
-import tardis.common.core.ConfigFile;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.items.KeyItem;
@@ -52,7 +52,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class CoreTileEntity extends AbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider
 {
-	private static ConfigFile config;
+	private static ConfigFile config = null;
 	public static final ChatComponentText cannotModifyMessage	= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS");
 	public static final ChatComponentText cannotUpgradeMessage	= new ChatComponentText("[TARDIS] You do not have enough upgrade points");
 	private int oldExteriorWorld = 0;
@@ -120,7 +120,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private static int maxNumRoomsInc = 10;
 	private static int maxShields = 1000;
 	private static int maxShieldsInc = 500;
-	private int maxHull;
+	private static int maxHull;
 	private static int maxEnergy = 1000;
 	private static int maxEnergyInc = 1000;
 	private static int energyPerSecond = 1;
@@ -133,8 +133,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	
 	static
 	{
-		config = TardisMod.configHandler.getConfigFile("Core");
-		explodeChance = config.getDouble("Explosion chance (on control not pressed)", 0.6);
+		if(config == null)
+			refreshConfigs();
 		loadable = new ChunkCoordIntPair[4];
 		loadable[0] = new ChunkCoordIntPair( 0, 0);
 		loadable[1] = new ChunkCoordIntPair(-1, 0);
@@ -143,26 +143,48 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	}
 	
 	{
-		maxSpeed			= config.getDouble("maxSpeed", 8);
-		maxEnergy			= config.getInt("maxEnergy", 1000);
-		maxNumRooms			= config.getInt("maxRooms", 30);
-		maxShields	 		= config.getInt("maxShields", 1000);
-		maxHull				= config.getInt("maxHull", 1000);
-		maxNumRoomsInc		= config.getInt("max rooms inc per level", 10);
-		maxShieldsInc		= config.getInt("max shields inc per level", 500);
-		maxEnergyInc		= config.getInt("max energy inc per level", 1000);
-		energyPerSecondInc	= config.getInt("energy per second inc per level",1);
-		energyCostDimChange	= config.getInt("energy cost to change dims",2000);
-		energyCostFlightMax	= config.getInt("max flight energy cost",3000);
-		energyCostPower		= config.getDouble("energy distance cost power", 0.8);
-		maxMoveForFast 		= config.getInt("max move for fast speed", 3);
 		shields		= maxShields;
 		hull		= maxHull;
 		
 		items = new ItemStack[TardisMod.numInvs];
 		fluids = new FluidStack[TardisMod.numTanks];
 		energy = 100;
-		energyPerSecond = config.getInt("energy per second",1);
+	}
+	
+	public static void refreshConfigs()
+	{
+		if(config == null)
+			config = TardisMod.configHandler.registerConfigNeeder("TARDIS Core");
+		explodeChance 		= config.getDouble("Explosion chance", 0.6,
+				"The chance of an explosion being caused if an active control is not pressed");
+		maxSpeed			= config.getDouble("max speed", 8,
+				"The maximum speed setting that can be reached");
+		maxEnergy			= config.getInt("Max energy", 1000,
+				"The base maximum energy");
+		maxNumRooms			= config.getInt("Max rooms", 30,
+				"The base maximum number of rooms");
+		maxShields	 		= config.getInt("Max shields", 1000,
+				"The base maximum amount of shielding");
+		maxHull				= config.getInt("Max hull", 1000,
+				"The maximum hull strength");
+		maxNumRoomsInc		= config.getInt("Max rooms increase", 10,
+				"How much a level of max rooms increases the maximum number of rooms");
+		maxShieldsInc		= config.getInt("Max shields increase", 500,
+				"How much a level of max shields increases the amount of shielding");
+		maxEnergyInc		= config.getInt("Max energy increase", 1000,
+				"How much a level of energy increases the max amount of energy");
+		energyPerSecondInc	= config.getInt("Energy Rate increase",1,
+				"How much a level of energy rate increases the amount of energy per second");
+		energyCostDimChange	= config.getInt("Dimension jump cost",2000,
+				"How much energy it costs to jump between dimensions");
+		energyCostFlightMax	= config.getInt("Max flight cost",3000,
+				"The maximum amount that a flight can cost");
+		energyCostPower		= config.getDouble("Flight cost exponent", 0.8,
+				"The number (x) which we do distance^x to, to calculate the cost of a flight");
+		maxMoveForFast 		= config.getInt("Short hop distance", 3,
+				"The maximum distance for which a jump can be considered a short hop which takes less time");
+		energyPerSecond 	= config.getInt("Energy rate",1,
+				"The base amount of energy the TARDIS generates per second");
 	}
 	
 	private void flightTick()

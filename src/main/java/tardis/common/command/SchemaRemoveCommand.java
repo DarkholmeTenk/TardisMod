@@ -35,7 +35,7 @@ public class SchemaRemoveCommand extends AbstractCommand
 		if(astring.length == 1)
 		{
 			String name = astring[0];
-			File schema = TardisMod.configHandler.getSchemaFile(name);
+			File schema = TardisMod.schemaHandler.getSchemaFile(name);
 			try
 			{
 				if(schema.exists())

@@ -4,7 +4,12 @@ import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.DarkcoreTeleporter;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.config.CType;
+import io.darkcraft.darkcore.mod.config.ConfigFile;
+import io.darkcraft.darkcore.mod.config.ConfigHandler;
+import io.darkcraft.darkcore.mod.config.ConfigHandlerFactory;
+import io.darkcraft.darkcore.mod.config.ConfigItem;
+import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
 import java.io.IOException;
 
@@ -31,10 +36,9 @@ import tardis.common.blocks.StairBlock;
 import tardis.common.blocks.TardisBlock;
 import tardis.common.blocks.TopBlock;
 import tardis.common.command.CommandRegister;
-import tardis.common.core.ConfigFile;
-import tardis.common.core.ConfigHandler;
 import tardis.common.core.CreativeTab;
 import tardis.common.core.DimensionEventHandler;
+import tardis.common.core.SchemaHandler;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisOwnershipRegistry;
@@ -46,6 +50,12 @@ import tardis.common.items.KeyItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.network.TardisPacketHandler;
+import tardis.common.tileents.BatteryTileEntity;
+import tardis.common.tileents.ComponentTileEntity;
+import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.GravityLiftTileEntity;
+import tardis.common.tileents.LabTileEntity;
+import tardis.common.tileents.components.AbstractComponent;
 import appeng.api.AEApi;
 import appeng.api.IAppEngApi;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -59,120 +69,147 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
-@Mod(modid="TardisMod",name="Tardis Mod",version="0.06",dependencies="required-after:FML; required-after:darkcore; after:appliedenergistics2; after:Waila")
-public class TardisMod
+@Mod(
+		modid = "TardisMod",
+		name = "Tardis Mod",
+		version = "0.06",
+		dependencies = "required-after:FML; required-after:darkcore; required-after:CoFHCore; after:appliedenergistics2; after:Waila")
+public class TardisMod implements IConfigHandlerMod
 {
 	@Instance
-	public static TardisMod i;
-	public static final String modName = "TardisMod";
-	public static boolean inited = false;
-	
-	@SidedProxy(clientSide="tardis.client.TardisClientProxy", serverSide="tardis.common.TardisProxy")
-	public static TardisProxy proxy;
-	public static DimensionEventHandler dimEventHandler = new DimensionEventHandler();
-	
-	public static IAppEngApi aeAPI = null;
-	
-	public static ConfigFile modConfig;
-	public static ConfigFile blockConfig;
-	public static ConfigFile itemConfig;
-	
-	public static DarkcoreTeleporter teleporter = null;
-	public static ConfigHandler configHandler;
-	public static TardisDimensionHandler otherDims;
-	public static TardisDimensionRegistry dimReg;
-	public static TardisOwnershipRegistry plReg;
-	public static CreativeTab tab = null;
-	
-	public static TardisOutput.Priority priorityLevel = TardisOutput.Priority.INFO;
-	public static int providerID = 54;
-	public static boolean tardisLoaded = true;
-	public static boolean keyInHand = true;
-	
-	public static AbstractBlock tardisBlock;
-	public static AbstractBlock tardisTopBlock;
-	public static AbstractBlock tardisCoreBlock;
-	public static AbstractBlock tardisConsoleBlock;
-	public static AbstractBlock tardisEngineBlock;
-	public static AbstractBlock componentBlock;
-	public static AbstractBlock internalDoorBlock;
-	public static AbstractBlock decoBlock;
-	public static AbstractBlock darkDecoBlock;
-	public static AbstractBlock schemaBlock;
-	public static AbstractBlock schemaCoreBlock;
-	public static AbstractBlock schemaComponentBlock;
-	public static AbstractBlock debugBlock;
-	public static AbstractBlock landingPad;
-	public static AbstractBlock gravityLift;
-	public static AbstractBlock forcefield;
-	public static AbstractBlock battery;
-	public static StairBlock	  stairBlock;
-	public static AbstractBlock	  slabBlock;
-	
-	public static LabBlock	labBlock;
-	
-	public static AbstractItem schemaItem;
-	public static AbstractItem componentItem;
-	public static CraftingComponentItem craftingComponentItem;
-	public static KeyItem keyItem;
-	public static SonicScrewdriverItem screwItem;
-	
-	public static float tardisVol = 1f;
-	public static boolean deathTransmatLive		= true;
-	public static int xpBase	= 80;
-	public static int xpInc		= 20;
-	public static int rfBase	= 50000;
-	public static int rfInc		= 50000;
-	public static int rfPerT	= 4098;
-	public static int maxFlu	= 32000;
-	public static int numTanks	= 5;
-	public static int numInvs	= 30;
-	
+	public static TardisMod					i;
+	public static final String				modName				= "TardisMod";
+	public static boolean					inited				= false;
+
+	@SidedProxy(clientSide = "tardis.client.TardisClientProxy", serverSide = "tardis.common.TardisProxy")
+	public static TardisProxy				proxy;
+	public static DimensionEventHandler		dimEventHandler		= new DimensionEventHandler();
+
+	public static IAppEngApi				aeAPI				= null;
+
+	public static ConfigHandler				configHandler;
+	public static SchemaHandler				schemaHandler;
+	public static ConfigFile				modConfig;
+
+	public static DarkcoreTeleporter		teleporter			= null;
+	public static TardisDimensionHandler	otherDims;
+	public static TardisDimensionRegistry	dimReg;
+	public static TardisOwnershipRegistry	plReg;
+	public static CreativeTab				tab					= null;
+
+	public static TardisOutput.Priority		priorityLevel		= TardisOutput.Priority.INFO;
+	public static int						providerID			= 54;
+	public static boolean					tardisLoaded		= true;
+	public static boolean					keyInHand			= true;
+
+	public static AbstractBlock				tardisBlock;
+	public static AbstractBlock				tardisTopBlock;
+	public static AbstractBlock				tardisCoreBlock;
+	public static AbstractBlock				tardisConsoleBlock;
+	public static AbstractBlock				tardisEngineBlock;
+	public static AbstractBlock				componentBlock;
+	public static AbstractBlock				internalDoorBlock;
+	public static AbstractBlock				decoBlock;
+	public static AbstractBlock				darkDecoBlock;
+	public static AbstractBlock				schemaBlock;
+	public static AbstractBlock				schemaCoreBlock;
+	public static AbstractBlock				schemaComponentBlock;
+	public static AbstractBlock				debugBlock;
+	public static AbstractBlock				landingPad;
+	public static AbstractBlock				gravityLift;
+	public static AbstractBlock				forcefield;
+	public static AbstractBlock				battery;
+	public static StairBlock				stairBlock;
+	public static AbstractBlock				slabBlock;
+
+	public static LabBlock					labBlock;
+
+	public static AbstractItem				schemaItem;
+	public static AbstractItem				componentItem;
+	public static CraftingComponentItem		craftingComponentItem;
+	public static KeyItem					keyItem;
+	public static SonicScrewdriverItem		screwItem;
+
+	public static double					tardisVol			= 1;
+	public static boolean					deathTransmatLive	= true;
+	public static boolean					visibleSchema		= false;
+	public static int						xpBase				= 80;
+	public static int						xpInc				= 20;
+	public static int						rfBase				= 50000;
+	public static int						rfInc				= 50000;
+	public static int						rfPerT				= 4098;
+	public static int						maxFlu				= 32000;
+	public static int						numTanks			= 5;
+	public static int						numInvs				= 30;
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
 	{
-		configHandler = new ConfigHandler(event.getModConfigurationDirectory());
-		configHandler.getSchemas();
+		configHandler = ConfigHandlerFactory.getConfigHandler(this);
+		schemaHandler = new SchemaHandler(configHandler);
+		schemaHandler.getSchemas();
 		tab = new CreativeTab();
 		DarkcoreMod.registerCreativeTab(modName, tab);
-		
-		modConfig   = configHandler.getConfigFile("Mod");
-		int prioLevel = MathHelper.clamp(modConfig.getInt("Debug Level", priorityLevel.ordinal()),0,TardisOutput.Priority.values().length);
-		priorityLevel = TardisOutput.Priority.values()[prioLevel];
-		
-		providerID		= modConfig.getInt("Dimension Provider ID", 54);
-		tardisLoaded	= modConfig.getBoolean("Dimension always loaded", true);
-		keyInHand		= modConfig.getBoolean("Key needs to be in hand", true);
-		tardisVol		= (float) modConfig.getDouble("Tardis Volume", 1);
-		
-		xpBase			= modConfig.getInt("xp base amount", 80);
-		xpInc			= modConfig.getInt("xp increase", 20);
-		rfBase			= modConfig.getInt("base RF storage", 50000);
-		rfInc			= modConfig.getInt("RF storage increase per level", 50000);
-		rfPerT			= modConfig.getInt("RF output per tick", 4098);
-		maxFlu			= modConfig.getInt("Max mb per internal tank",16000);
-		numTanks		= modConfig.getInt("Number of internal tanks", 6);
-		numInvs			= modConfig.getInt("Number of internal inventory slots", 30);
-		deathTransmatLive	= modConfig.getBoolean("Live after death transmat", true);
+
+		modConfig = configHandler.getModConfig();
+		refreshConfigs();
+
+		xpBase = modConfig.getInt("xp base amount", 80);
+		xpInc = modConfig.getInt("xp increase", 20);
+		rfBase = modConfig.getInt("base RF storage", 50000);
+		rfInc = modConfig.getInt("RF storage increase per level", 50000);
+		rfPerT = modConfig.getInt("RF output per tick", 4098);
+		maxFlu = modConfig.getInt("Max mb per internal tank", 16000);
+		numTanks = modConfig.getInt("Number of internal tanks", 6);
+		numInvs = modConfig.getInt("Number of internal inventory slots", 30);
+		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
-		blockConfig = configHandler.getConfigFile("Blocks");
 		initBlocks();
-		
-		itemConfig = configHandler.getConfigFile("Items");
 		initItems();
-		
-		//MinecraftForge.EVENT_BUS.register(new SoundHandler());
-		
+
+		// MinecraftForge.EVENT_BUS.register(new SoundHandler());
+
 		proxy.postAssignment();
 	}
 	
+	public static void refreshConfigs()
+	{
+		int outputPriority = modConfig.getConfigItem(new ConfigItem("Debug level",CType.INT,TardisOutput.Priority.INFO.ordinal(),
+				"Sets the level of debug output")).getInt();
+		priorityLevel = TardisOutput.getPriority(outputPriority);
+		
+		providerID = modConfig.getConfigItem(new ConfigItem("Dimension provider ID", CType.INT, 54,
+				"The id of the dimension provider")).getInt();
+		
+		tardisLoaded = modConfig.getConfigItem(new ConfigItem("Dimension always loaded", CType.BOOLEAN, true,
+				"Should the TARDIS dimensions always be loaded")).getBoolean();
+		
+		keyInHand = modConfig.getConfigItem(new ConfigItem("Key in hand", CType.BOOLEAN, true,
+				"Does a player need to have the key in hand to get through a locked TARDIS door")).getBoolean();
+		
+		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1,
+				"How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
+		
+		visibleSchema = modConfig.getConfigItem(new ConfigItem("Visible Schema", CType.BOOLEAN, false,
+				"Should schema boundaries be visible (clientside config)")).getBoolean();
+		
+		AbstractComponent.refreshConfigs();
+		BatteryTileEntity.refreshConfigs();
+		ComponentTileEntity.refreshConfigs();
+		CoreTileEntity.refreshConfigs();
+		GravityLiftTileEntity.refreshConfigs();
+		LabTileEntity.refreshConfigs();
+		
+		TardisDimensionHandler.refreshConfigs();
+	}
+
 	@EventHandler
 	public void doingInit(FMLInitializationEvent event)
 	{
 		proxy.init();
 		TardisPacketHandler.registerHandlers();
 	}
-	
+
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
@@ -183,7 +220,7 @@ public class TardisMod
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		inited = true;
 	}
-	
+
 	private void initBlocks()
 	{
 		tardisBlock = new TardisBlock().register();
@@ -202,14 +239,10 @@ public class TardisMod
 		
 		decoBlock = new DecoBlock(true).register();
 		
-		//darkDecoBlock = new DecoBlock(false);
-		//GameRegistry.registerBlock(darkDecoBlock, DecoDarkItemBlock.class, darkDecoBlock.getUnlocalizedName()+"Dark");
-		
 		stairBlock = new StairBlock().register();
 		
 		debugBlock = new DebugBlock().register();
 		
-		boolean visibleSchema = modConfig.getBoolean("Visible schematic boundaries", false);
 		schemaBlock = new SchemaBlock(visibleSchema).register();
 		
 		schemaCoreBlock = new SchemaCoreBlock(visibleSchema).register();
@@ -228,21 +261,21 @@ public class TardisMod
 		
 		battery = new BatteryBlock().register();
 	}
-	
+
 	private void initItems()
 	{
 		schemaItem = new SchemaItem().register();
-		
+
 		screwItem = (SonicScrewdriverItem) new SonicScrewdriverItem().register();
-		
+
 		keyItem = (KeyItem) new KeyItem().register();
-		
+
 		componentItem = new ComponentItem().register();
-		
+
 		craftingComponentItem = (CraftingComponentItem) new CraftingComponentItem().register();
-		
+
 	}
-	
+
 	private void initRecipes()
 	{
 		keyItem.initRecipes();
@@ -254,16 +287,16 @@ public class TardisMod
 		battery.initRecipes();
 		craftingComponentItem.initRecipes();
 	}
-	
+
 	@EventHandler
 	public void serverAboutToStart(FMLServerAboutToStartEvent event)
 	{
-		if(otherDims != null)
+		if (otherDims != null)
 			MinecraftForge.EVENT_BUS.unregister(otherDims);
 		otherDims = new TardisDimensionHandler();
 		MinecraftForge.EVENT_BUS.register(otherDims);
 	}
-	
+
 	@EventHandler
 	public void serverStarting(FMLServerStartingEvent event)
 	{
@@ -275,5 +308,11 @@ public class TardisMod
 		TardisOwnershipRegistry.saveAll();
 		teleporter = new DarkcoreTeleporter(event.getServer().worldServerForDimension(0));
 		CommandRegister.registerCommands(event);
+	}
+
+	@Override
+	public String getModID()
+	{
+		return modName;
 	}
 }

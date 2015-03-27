@@ -51,7 +51,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	
 	public static void updateConsoleRooms()
 	{
-		availableConsoleRooms = TardisMod.configHandler.getSchemas(true);
+		availableConsoleRooms = TardisMod.schemaHandler.getSchemas(true);
 	}
 	
 	@Override
@@ -440,7 +440,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	
 	public static void refreshAvailableConsoleRooms()
 	{
-		String[] rooms = TardisMod.configHandler.getSchemas(true);
+		String[] rooms = TardisMod.schemaHandler.getSchemas(true);
 		ArrayList<String> validRooms = new ArrayList<String>(rooms.length);
 		for(String room : rooms)
 		{
