@@ -1,3 +1,5 @@
+/crash-reports/
+/asm/
 /bin/
 /build/
 /config/
@@ -13,7 +15,6 @@
 /.project
 /gradlew
 /gradlew.bat
-/bin/
-/crash-reports/
-/options.txt
-/usernamecache.json
+/screenshots/
+options.txt
+usernamecache.json
