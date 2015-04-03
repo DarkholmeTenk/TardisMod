@@ -1,8 +1,11 @@
 package tardis.common.blocks;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.tileents.EngineTileEntity;
@@ -11,7 +14,7 @@ public class EngineBlock extends AbstractBlockContainer
 {
 	public EngineBlock()
 	{
-		super(TardisMod.modName);
+		super(false,TardisMod.modName);
 	}
 	
 	@Override
@@ -24,7 +27,8 @@ public class EngineBlock extends AbstractBlockContainer
 	public void initData()
 	{
 		setBlockName("TardisEngineBlock");
-		setLightLevel(0.8F);
+		setLightLevel(1F);
+		setBlockBounds(0,-1,0,1,3,1);
 	}
 
 	@Override
@@ -32,6 +36,19 @@ public class EngineBlock extends AbstractBlockContainer
 	{
 		// TODO Auto-generated method stub
 
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public boolean shouldSideBeRendered(IBlockAccess iblockaccess, int i, int j, int k, int l)
+	{
+	   return false;
+	}
+
+	@Override
+	public boolean isOpaqueCube()
+	{
+	   return false;
 	}
 	
 	@Override

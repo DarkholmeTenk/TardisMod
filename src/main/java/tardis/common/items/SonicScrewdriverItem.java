@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -20,6 +21,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
+import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
 import tardis.common.core.Helper;
@@ -193,6 +195,17 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		return true;
 	}
 	
+	public static boolean isPlayerHoldingScrewdriver(EntityPlayer pl)
+	{
+		ItemStack is = pl.getHeldItem();
+		if(is!= null)
+		{
+			if(is.getItem() == TardisMod.screwItem)
+				return true;
+		}
+		return false;
+	}
+	
 	public void notifyMode(ItemStack is, EntityPlayer player, boolean override)
 	{
 		ScrewdriverMode mode = getMode(is);
@@ -215,69 +228,85 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 			switchMode(is, player.worldObj, player, mode);
 	}
 	
+	private boolean dismantle(IDismantleable dis, SimpleCoordStore pos, EntityPlayer player, ItemStack is)
+	{
+		if(dis.canDismantle(player, pos.getWorldObj(), pos.x, pos.y, pos.z))
+		{
+			ArrayList<ItemStack> s = dis.dismantleBlock(player, pos.getWorldObj(), pos.x, pos.y, pos.z, false);
+			for(ItemStack tis : s)
+				if(tis != null)
+					WorldHelper.giveItemStack(player, tis);
+			toolUsed(is,player, pos.x, pos.y, pos.z);
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean screwScrewable(Object screw, ScrewdriverMode mode, EntityPlayer player)
+	{
+		if(screw instanceof IScrewable)
+			return ((IScrewable)screw).screw(mode, player);
+		return false;
+	}
+	
+	public boolean rightClickBlock(EntityPlayer pl, SimpleCoordStore pos)
+	{
+		if(!isPlayerHoldingScrewdriver(pl))
+			return false;
+		return screwScrewable(pos.getTileEntity(),getMode(pl.getHeldItem()),pl);
+	}
+	
 	private boolean rightClickBlock(ItemStack is, ScrewdriverMode mode, EntityPlayer player, World w)
 	{
+		System.out.println("T");
 		if(ServerHelper.isServer())
 		{
 			MovingObjectPosition hitPos = getMovingObjectPositionFromPlayer(w, player, true);
+			if(hitPos == null)
+				return false;
+			
+			TileEntity te = w.getTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+			Block b = w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+			if(screwScrewable(te,mode,player) || screwScrewable(b,mode,player))
+				return true;
 			if(mode.equals(ScrewdriverMode.Dismantle))
 			{
-				if(hitPos != null)
-				{
-					Block b = w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-					if(b != null && b instanceof IDismantleable)
-					{
-						IDismantleable dis = (IDismantleable) b;
-						if(dis.canDismantle(player, w, hitPos.blockX, hitPos.blockY, hitPos.blockZ))
-						{
-							ArrayList<ItemStack> s = dis.dismantleBlock(player, w, hitPos.blockX, hitPos.blockY, hitPos.blockZ, false);
-							for(ItemStack tis : s)
-								if(tis != null)
-									WorldHelper.giveItemStack(player, tis);
-							toolUsed(is,player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-						}
-					}
-					else
-					{
-						TileEntity te = w.getTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-						return te != null;
-					}
-				}
+				if(b instanceof IDismantleable)
+					if(dismantle((IDismantleable)b,new SimpleCoordStore(w,hitPos),player,is))
+						return true;
+				if(te instanceof IDismantleable)
+					if(dismantle((IDismantleable)te,new SimpleCoordStore(w,hitPos),player,is))
+						return true;
 			}
 			else if(mode.equals(ScrewdriverMode.Reconfigure))
 			{
-				if(hitPos != null)
+				if(b == TardisMod.decoBlock || b == TardisMod.darkDecoBlock)
 				{
-					Block b = w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-					if(b == TardisMod.decoBlock || b == TardisMod.darkDecoBlock)
+					int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+					if(m == 2 || m == 4)
 					{
-						int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-						if(m == 2 || m == 4)
+						CoreTileEntity core = Helper.getTardisCore(w);
+						if(core == null || core.canModify(player))
 						{
-							CoreTileEntity core = Helper.getTardisCore(w);
-							if(core == null || core.canModify(player))
-							{
-								w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.componentBlock, m==2?0:1, 3);
-								toolUsed(is,player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-								return true;
-							}
-							else
-								player.addChatMessage(CoreTileEntity.cannotModifyMessage);
+							w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.componentBlock, m==2?0:1, 3);
+							toolUsed(is,player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+							return true;
+						}
+						else
+							player.addChatMessage(CoreTileEntity.cannotModifyMessage);
+					}
+				}
+				else
+				{
+					if(te instanceof IReconfigurableFacing)
+					{
+						if(((IReconfigurableFacing)te).rotateBlock())
+						{
+							toolUsed(is,player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+							return true;
 						}
 					}
-					else
-					{
-						TileEntity te = w.getTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-						if(te instanceof IReconfigurableFacing)
-						{
-							if(((IReconfigurableFacing)te).rotateBlock())
-							{
-								toolUsed(is,player,hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-								return true;
-							}
-						}
-						return te != null;
-					}
+					return te != null;
 				}
 			}
 		}
@@ -362,8 +391,9 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
     {
+		System.out.println("T!");
 		ScrewdriverMode mode = getMode(is);
-		if(!world.isRemote && player.isSneaking())
+		if(ServerHelper.isServer() && player.isSneaking())
 		{
 			if(!rightClickBlock(is,mode,player,world))
 				switchMode(is,world,player,mode);
@@ -471,6 +501,12 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		float speed = (float)(player.getRNG().nextDouble() * 0.5) + 0.75f;
 		SoundHelper.playSound(WorldHelper.getWorldID(player.worldObj), x, y, z, "tardismod:sonic", 0.25F,speed);
 		player.swingItem();
+	}
+	
+	@Override
+	public void registerIcons(IIconRegister register)
+	{
+		
 	}
 
 }

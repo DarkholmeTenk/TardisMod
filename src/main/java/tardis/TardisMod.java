@@ -22,9 +22,11 @@ import tardis.common.blocks.ConsoleBlock;
 import tardis.common.blocks.CoreBlock;
 import tardis.common.blocks.DebugBlock;
 import tardis.common.blocks.DecoBlock;
+import tardis.common.blocks.DecoTransBlock;
 import tardis.common.blocks.EngineBlock;
 import tardis.common.blocks.ForceFieldBlock;
 import tardis.common.blocks.GravityLiftBlock;
+import tardis.common.blocks.InteriorDirtBlock;
 import tardis.common.blocks.InternalDoorBlock;
 import tardis.common.blocks.LabBlock;
 import tardis.common.blocks.LandingPadBlock;
@@ -38,6 +40,7 @@ import tardis.common.blocks.TopBlock;
 import tardis.common.command.CommandRegister;
 import tardis.common.core.CreativeTab;
 import tardis.common.core.DimensionEventHandler;
+import tardis.common.core.Helper;
 import tardis.common.core.SchemaHandler;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
@@ -111,6 +114,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock				internalDoorBlock;
 	public static AbstractBlock				decoBlock;
 	public static AbstractBlock				darkDecoBlock;
+	public static AbstractBlock				decoTransBlock;
 	public static AbstractBlock				schemaBlock;
 	public static AbstractBlock				schemaCoreBlock;
 	public static AbstractBlock				schemaComponentBlock;
@@ -121,6 +125,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock				battery;
 	public static StairBlock				stairBlock;
 	public static AbstractBlock				slabBlock;
+	public static AbstractBlock				interiorDirtBlock;
 
 	public static LabBlock					labBlock;
 
@@ -199,6 +204,7 @@ public class TardisMod implements IConfigHandlerMod
 		CoreTileEntity.refreshConfigs();
 		GravityLiftTileEntity.refreshConfigs();
 		LabTileEntity.refreshConfigs();
+		InteriorDirtBlock.refreshConfigs();
 		
 		TardisDimensionHandler.refreshConfigs();
 	}
@@ -238,6 +244,10 @@ public class TardisMod implements IConfigHandlerMod
 		internalDoorBlock = new InternalDoorBlock().register();
 		
 		decoBlock = new DecoBlock(true).register();
+		
+		decoTransBlock = new DecoTransBlock().register();
+		
+		interiorDirtBlock = new InteriorDirtBlock().register();
 		
 		stairBlock = new StairBlock().register();
 		
@@ -294,6 +304,8 @@ public class TardisMod implements IConfigHandlerMod
 		if (otherDims != null)
 			MinecraftForge.EVENT_BUS.unregister(otherDims);
 		otherDims = new TardisDimensionHandler();
+		dimReg = null;
+		Helper.datastoreMap.clear();
 		MinecraftForge.EVENT_BUS.register(otherDims);
 	}
 

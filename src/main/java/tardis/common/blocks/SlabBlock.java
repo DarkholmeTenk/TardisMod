@@ -1,6 +1,7 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 
 import java.util.List;
 
@@ -149,5 +150,11 @@ public class SlabBlock extends AbstractBlock
     {
 		return false;
     }
+	
+	@Override
+	public Class<? extends AbstractItemBlock> getIB()
+	{
+		return SlabItemBlock.class;
+	}
 
 }

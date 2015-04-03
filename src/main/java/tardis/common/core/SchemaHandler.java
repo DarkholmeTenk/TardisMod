@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import tardis.TardisMod;
+import tardis.common.core.schema.PartBlueprint;
 
 public class SchemaHandler
 {
@@ -107,5 +108,37 @@ public class SchemaHandler
 		}
 		Collections.sort(found,String.CASE_INSENSITIVE_ORDER);
 		return found.toArray(fA);
+	}
+	
+	private static HashMap<String,PartBlueprint> cachedPBs = new HashMap();
+
+	public void refresh(String myName)
+	{
+		if(cachedPBs.containsKey(myName))
+			cachedPBs.remove(myName);
+	}
+	
+	public void refresh(String name, PartBlueprint newPB)
+	{
+		if(newPB.myName.equals(name))
+			cachedPBs.put(name, newPB);
+	}
+	
+	public void refresh()
+	{
+		cachedPBs.clear();
+	}
+
+	public PartBlueprint getSchema(String name)
+	{
+		if(cachedPBs.containsKey(name))
+			return cachedPBs.get(name);
+		PartBlueprint temp = new PartBlueprint(getSchemaFile(name));
+		if(temp.myName != null)
+		{
+			cachedPBs.put(name, temp);
+			return temp;
+		}
+		return null;
 	}
 }

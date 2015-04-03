@@ -7,7 +7,7 @@ import java.util.List;
 import net.minecraft.command.ICommandSender;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
-import tardis.common.tileents.CoreTileEntity;
+import tardis.common.dimension.TardisDataStore;
 
 public class XpCommand extends AbstractCommand
 {
@@ -29,32 +29,32 @@ public class XpCommand extends AbstractCommand
 	{
 		return null;
 	}
-	
+
 	private void xp(String dest, double amount)
 	{
-		Integer dim = MathHelper.toInt(dest,0);
-		if(dim == 0)
+		Integer dim = MathHelper.toInt(dest, 0);
+		if (dim == 0)
 			dim = TardisMod.plReg.getDimension(dest);
-		if(dim != null && dim != 0)
+		if (dim != null && dim != 0)
 		{
-			CoreTileEntity core = Helper.getTardisCore(dim);
-			xp(core,amount);
+			TardisDataStore ds = Helper.getDatastore(dim);
+			xp(ds, amount);
 		}
 	}
-	
-	private void xp(CoreTileEntity core, double amount)
+
+	private void xp(TardisDataStore ds, double amount)
 	{
-		if(core != null && amount != 0)
-			core.addXP(amount);
+		if (ds != null && amount != 0)
+			ds.addXP(amount);
 	}
 
 	@Override
 	public void commandBody(ICommandSender comsen, String[] astring)
 	{
-		if(astring.length == 2)
-			xp(astring[0],MathHelper.toDouble(astring[1],0));
-		else if(astring.length == 1)
-			xp(comsen.getCommandSenderName(),MathHelper.toDouble(astring[0], 0));
+		if (astring.length == 2)
+			xp(astring[0], MathHelper.toDouble(astring[1], 0));
+		else if (astring.length == 1)
+			xp(comsen.getCommandSenderName(), MathHelper.toDouble(astring[0], 0));
 		else
 			getCommandUsage(comsen);
 	}

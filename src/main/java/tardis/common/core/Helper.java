@@ -8,6 +8,8 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.network.DataPacket;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -22,19 +24,22 @@ import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.PartBlueprint;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.entities.particles.ParticleType;
 import tardis.common.network.TardisPacketHandler;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
+import tardis.common.tileents.SchemaCoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 
 public class Helper
 {
-	public static final int	tardisCoreX	= 0;
-	public static final int	tardisCoreY	= 30;
-	public static final int	tardisCoreZ	= 0;
+	public static final int									tardisCoreX		= 0;
+	public static final int									tardisCoreY		= 70;
+	public static final int									tardisCoreZ		= 0;
+	public static HashMap<Integer, TardisDataStore>	datastoreMap	= new HashMap();
 
 	// /////////////////////////////////////////////////
 	// /////////////TELEPORT STUFF//////////////////////
@@ -56,7 +61,7 @@ public class Helper
 				TeleportHelper.teleportEntity(ent, 0, ent.posX, ent.posY, ent.posZ);
 		}
 	}
-	
+
 	public static void generateTardisInterior(int dimID, String ownerName, TardisTileEntity exterior)
 	{
 		World tardisWorld = WorldHelper.getWorldServer(dimID);
@@ -197,6 +202,11 @@ public class Helper
 			;
 		return true;
 	}
+	
+	public static PartBlueprint loadSchema(String name)
+	{
+		return TardisMod.schemaHandler.getSchema(name);
+	}
 
 	public static void loadSchema(File schemaFile, World w, int x, int y, int z, int facing)
 	{
@@ -210,7 +220,8 @@ public class Helper
 		loadSchema(schemaFile, w, x, y, z, facing);
 	}
 
-	public static void loadSchemaDiff(String fromName, String toName, World worldObj, int xCoord, int yCoord, int zCoord, int facing)
+	public static void loadSchemaDiff(String fromName, String toName, World worldObj, int xCoord, int yCoord, int zCoord,
+			int facing)
 	{
 		if (fromName.equals(toName))
 			return;
@@ -275,7 +286,7 @@ public class Helper
 		data.setInteger("c", count);
 		data.setBoolean("r", rand);
 		data.setInteger("type", type.ordinal());
-		DataPacket packet = new DataPacket(data,TardisPacketHandler.particleFlag);
+		DataPacket packet = new DataPacket(data, TardisPacketHandler.particleFlag);
 		DarkcoreMod.networkChannel.sendToDimension(packet, dim);
 	}
 
@@ -290,7 +301,7 @@ public class Helper
 		data.setInteger("x", te.xCoord);
 		data.setInteger("y", te.yCoord);
 		data.setInteger("z", te.zCoord);
-		DataPacket p = new DataPacket(data,TardisPacketHandler.controlFlag);
+		DataPacket p = new DataPacket(data, TardisPacketHandler.controlFlag);
 		DarkcoreMod.networkChannel.sendToServer(p);
 	}
 
@@ -379,15 +390,52 @@ public class Helper
 		}
 		return getTardisCore(w);
 	}
-
-	public static boolean isTardisWorld(World worldObj)
+	
+	public static TardisDataStore getDatastore(World w)
 	{
-		if (worldObj != null)
+		return getDatastore(WorldHelper.getWorldID(w));
+	}
+
+	public static TardisDataStore getDatastore(int dimID)
+	{
+		if(datastoreMap.containsKey(dimID))
+			return datastoreMap.get(dimID);
+		TardisDataStore store = new TardisDataStore(dimID);
+		store.load();
+		store.save();
+		datastoreMap.put(dimID, store);
+		return store;
+	}
+
+	public static boolean isTardisWorld(IBlockAccess world)
+	{
+		if (world instanceof World)
+			return ((World) world).provider instanceof TardisWorldProvider;
+		return false;
+	}
+	
+	public static boolean isExistingDoor(World w, int x, int y, int z)
+	{
+		if(isTardisWorld(w))
 		{
-			return worldObj.provider instanceof TardisWorldProvider;
+			CoreTileEntity core = getTardisCore(w);
+			if(core != null)
+			{
+				SimpleCoordStore pos = new SimpleCoordStore(w,x,y,z);
+				Set<SimpleCoordStore> rooms = core.getRooms();
+				for(SimpleCoordStore scs : rooms)
+				{
+					TileEntity te = scs.getTileEntity();
+					if(te instanceof SchemaCoreTileEntity)
+						if(((SchemaCoreTileEntity)te).isDoor(pos))
+							return true;
+				}
+				SchemaCoreTileEntity te = core.getSchemaCore();
+				if(te != null)
+					return te.isDoor(pos);
+			}
 		}
 		return false;
 	}
 
-	
 }

@@ -1,17 +1,28 @@
 package tardis.client.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.AdvancedModelLoader;
+import net.minecraftforge.client.model.IModelCustom;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
 
-public class EngineRenderer extends AbstractBlockRenderer
+public class EngineRenderer extends AbstractObjRenderer
 {
 	ControlRenderer comps = null;
+	IModelCustom engine;
+	
+	{
+		engine = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/engine.obj"));
+	}
 	
 	@Override
 	public AbstractBlock getBlock()
@@ -81,10 +92,20 @@ public class EngineRenderer extends AbstractBlockRenderer
 		{
 			CoreTileEntity core = Helper.getTardisCore(te.getWorldObj());
 			EngineTileEntity eng = (EngineTileEntity)te;
+			GL11.glScaled(2, 2, 2);
+			/**/
+			GL11.glPushMatrix();
+			GL11.glTranslated(0, -1.5, 0);
+			bindTexture(new ResourceLocation("tardismod","textures/models/engine.png"));
+			engine.renderAll();
+			GL11.glPopMatrix();
+			GL11.glPushMatrix();
+			GL11.glTranslated(-0.5, -0.5, -0.5);
 			renderRight(tess,eng,core);
 			renderFront(tess,eng,core);
 			renderLeft (tess,eng,core);
 			renderBack (tess,eng,core);
+			GL11.glPopMatrix();
 		}
 	}
 

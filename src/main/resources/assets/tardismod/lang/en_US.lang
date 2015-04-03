@@ -8,7 +8,6 @@ tile.TardisMod.DecoBlock.Roundel.name=Roundel
 tile.TardisMod.DecoBlock.Corridor.name=White Wall
 tile.TardisMod.DecoBlock.CorridorRoundel.name=White Roundel
 tile.TardisMod.DecoBlock.CorridorFloor.name=White Floor
-tile.TardisMod.DecoBlock.Glass.name=Glass
 
 tile.TardisMod.DecoBlockDark.Floor.name=Floor
 tile.TardisMod.DecoBlockDark.Wall.name=Wall

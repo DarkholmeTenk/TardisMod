@@ -19,7 +19,7 @@ public class CoreBlock extends AbstractBlockContainer
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{
-		return new CoreTileEntity();
+		return new CoreTileEntity(world);
 	}
 
 	@Override

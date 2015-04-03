@@ -11,6 +11,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
+import tardis.common.tileents.SchemaCoreTileEntity;
 import cpw.mods.fml.common.registry.GameData;
 
 public class SchemaStore
@@ -60,6 +61,12 @@ public class SchemaStore
 	
 	public void loadToWorld(World w,int meta, int x, int y, int z)
 	{
+		if(block == TardisMod.decoBlock && meta == 6)
+		{
+			block = TardisMod.decoTransBlock;
+			meta = blockMeta = 0;
+		}
+		
 		w.setBlock(x, y, z, block, meta, 3);
 		if(nbtStore != null)
 		{
@@ -93,7 +100,7 @@ public class SchemaStore
 		newStore.block = w.getBlock(x, y, z);
 		newStore.blockMeta = w.getBlockMetadata(x, y, z);
 		TileEntity te = w.getTileEntity(x, y, z);
-		if(te != null)
+		if(te != null && !(te instanceof SchemaCoreTileEntity))
 		{
 			newStore.nbtStore = new NBTTagCompound();
 			te.writeToNBT(newStore.nbtStore);
@@ -184,7 +191,8 @@ public class SchemaStore
 				}
 			}
 		}
-		TardisOutput.print("TSS", "No block found for "+ name +":(");
+		if(!b.equals(Blocks.air))
+			TardisOutput.print("TSS", "No block found for "+ name +":(");
 		return null;
 	}
 

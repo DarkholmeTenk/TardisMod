@@ -33,7 +33,7 @@ public class SchemaSaveCommand extends AbstractCommand
 		aliases.add("tsave");
 	}
 	
-	private boolean save(String name, EntityPlayerMP pl, World w, int x, int y, int z)
+	public static boolean save(String name, EntityPlayerMP pl, World w, int x, int y, int z)
 	{
 		try
 		{

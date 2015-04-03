@@ -1,7 +1,9 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +12,23 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.common.blocks.InternalDoorBlock;
+import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.schema.CoordStore;
+import tardis.common.core.schema.PartBlueprint;
 
-public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewable
+public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewable, IActivatable
 {
 	private String name = null;
 	private int[] bounds; 
 	private int facing;
+	private ArrayList<DoorDS> doors = new ArrayList();
+	private PartBlueprint pb = null;
 	
 	private boolean addedToCore = false;
 
@@ -29,9 +38,12 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	
 	public void setData(String passedName, int[] moddedBounds, int passedFacing)
 	{
+		System.out.println("N:" + passedName);
+		doors.clear();
 		name = passedName;
 		bounds = moddedBounds;
 		facing = passedFacing;
+		setDoorArray();
 	}
 	
 	public String getName()
@@ -71,6 +83,16 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			}
 		}
 		return returnList;
+	}
+	
+	@Override
+	public void init()
+	{
+		super.init();
+		CoreTileEntity core = Helper.getTardisCore(worldObj);
+		if(core != null && name!=null && !name.startsWith("tardis"))
+			core.addRoom(this);
+		addedToCore = true;
 	}
 	
 	@Override
@@ -115,7 +137,8 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	@Override
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
-		if(worldObj.isRemote)
+		System.out.println("T!");
+		if(!ServerHelper.isServer())
 			return true;
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
 		if(core == null || core.canModify(player))
@@ -136,6 +159,130 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 		return false;
 	}
 	
+	private void setDoorArray()
+	{
+		System.out.println("Name: "+ name);
+		if(name == null)
+			return;
+		if(doors.size() == 0)
+		{
+			PartBlueprint pb = Helper.loadSchema(name);
+			ArrayList<CoordStore> intDoors = pb.getDoors();
+			for(CoordStore d : intDoors)
+			{
+				CoordStore rot = PartBlueprint.rotate(d, pb.getFacing(), facing);
+				SimpleCoordStore scs = new SimpleCoordStore(worldObj,xCoord+rot.x,yCoord+rot.y,zCoord+rot.z);
+				int facing = 0;
+				if(rot.x == -bounds[0])
+					facing = 0;
+				if(rot.x == bounds[2])
+					facing = 2;
+				if(rot.z == -bounds[1])
+					facing = 1;
+				if(rot.z == bounds[3])
+					facing = 3;
+				doors.add(new DoorDS(facing,scs));
+			}
+		}
+	}
+	
+	public void recheckDoors()
+	{
+		if(!ServerHelper.isServer())
+			return;
+		if(doors.size() == 0)
+			setDoorArray();
+		for(DoorDS dds : doors)
+		{
+			SimpleCoordStore scs = dds.scs;
+			int facing = dds.facing;
+			boolean foundPair = false;
+			if(facing == 0)
+				foundPair = Helper.isExistingDoor(scs.getWorldObj(), scs.x-1, scs.y, scs.z);
+			if(facing == 1)
+				foundPair = Helper.isExistingDoor(scs.getWorldObj(), scs.x, scs.y, scs.z-1);
+			if(facing == 2)
+				foundPair = Helper.isExistingDoor(scs.getWorldObj(), scs.x+1, scs.y, scs.z);
+			if(facing == 3)
+				foundPair = Helper.isExistingDoor(scs.getWorldObj(), scs.x, scs.y, scs.z+1);
+			
+			if(!foundPair)
+			{
+				if(scs.getBlock() != TardisMod.internalDoorBlock)
+				{
+					if(pb == null)
+						pb = Helper.loadSchema(name);
+					repairDoor(dds,true);
+					System.out.println("NODOOR!");
+				}
+			}
+			else
+			{
+				if(scs.getBlock() != null)
+					repairDoor(dds,false);
+			}
+		}
+	}
+	
+	private boolean repairRow(int y,int stable, DoorDS door, boolean replace)
+	{
+		boolean repRow = false;
+		boolean repCol = true;
+		for(int o=(door.facing%2==0)?door.scs.z:door.scs.x;repCol;o--)
+		{
+			if(replace)
+				repCol = pb.repairBlock(worldObj, xCoord, yCoord, zCoord, door.facing%2==0?stable:o, y, door.facing%2==0?o:stable, facing);
+			else
+			{
+				System.out.println("REM");
+				repCol = (worldObj.getBlock(door.facing%2==0?stable:o, y, door.facing%2==0?o:stable) == TardisMod.internalDoorBlock);
+				repCol = repCol || SchemaComponentBlock.isDoorConnector(worldObj, door.facing%2==0?stable:o, y, door.facing%2==0?o:stable);
+				if(repCol)
+					worldObj.setBlockToAir(door.facing%2==0?stable:o, y, door.facing%2==0?o:stable);
+			}
+			repRow = repRow || repCol;
+		}
+		repCol = true;
+		for(int o=1+((door.facing%2==0)?door.scs.z:door.scs.x);repCol;o++)
+		{
+			if(replace)
+				repCol = pb.repairBlock(worldObj, xCoord, yCoord, zCoord, door.facing%2==0?stable:o, y, door.facing%2==0?o:stable, facing);
+			else
+			{
+				repCol = (worldObj.getBlock(door.facing%2==0?stable:o, y, door.facing%2==0?o:stable) == TardisMod.internalDoorBlock);
+				repCol = repCol || SchemaComponentBlock.isDoorConnector(worldObj, door.facing%2==0?stable:o, y, door.facing%2==0?o:stable);
+				if(repCol)
+					worldObj.setBlockToAir(door.facing%2==0?stable:o, y, door.facing%2==0?o:stable);
+			}
+		}
+		return repRow;
+	}
+	
+	private void repairDoor(DoorDS door, boolean replace)
+	{
+		boolean repRow = true;
+		//If facing is a multiple of 2, x is stable otherwise z is stable
+		int stable = (door.facing%2==0)?door.scs.x:door.scs.z;
+		for(int y = door.scs.y; repRow; y--)
+			repRow = repairRow(y,stable,door,replace);
+		repRow = true;
+		for(int y = door.scs.y+1; repRow; y++)
+			repRow = repairRow(y,stable,door,replace);
+		//InternalDoorBlock.manageConnected(door.scs.getWorldObj(), door.scs.x, door.scs.y, door.scs.y, door.facing);
+	}
+	
+	public boolean isDoor(SimpleCoordStore pos)
+	{
+		if(doors.size() == 0)
+			setDoorArray();
+		for(DoorDS dds : doors)
+		{
+			if(dds.scs.equals(pos))
+				return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
@@ -152,11 +299,13 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		super.readFromNBT(nbt);
-		if(nbt.hasKey("name"))
+		if(nbt.hasKey("name") && name == null)
 		{
+			doors.clear();
 			name = nbt.getString("name");
 			bounds = nbt.getIntArray("bounds");
 			facing = nbt.getInteger("facing");
+			//setDoorArray();
 		}
 	}
 
@@ -168,6 +317,24 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	@Override
 	public void readTransmittable(NBTTagCompound nbt)
 	{
+	}
+	
+	private class DoorDS
+	{
+		private int facing;
+		private SimpleCoordStore scs;
+		public DoorDS(int f, SimpleCoordStore s)
+		{
+			facing = f;
+			scs = s;
+		}
+	}
+
+	@Override
+	public boolean activate(EntityPlayer ent, int side)
+	{
+		recheckDoors();
+		return false;
 	}
 
 }

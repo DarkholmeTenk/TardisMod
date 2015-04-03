@@ -2,6 +2,7 @@ package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 
 import java.io.File;
 import java.util.List;
@@ -130,8 +131,6 @@ public class InternalDoorBlock extends AbstractBlock
 								if(te == null || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
 								{
 									pb.reconstitute(w, nX, nY, nZ, opposingFace(facing));
-									manageConnected(w,x,y,z,facing);
-									manageConnected(w,x+dx(facing),y,z+dz(facing),facing);
 								}
 								else if(!w.isRemote)
 								{
@@ -233,10 +232,21 @@ public class InternalDoorBlock extends AbstractBlock
 	
 	public static void manageConnected(World w, int x, int y, int z, int facing)
 	{
-		TardisOutput.print("TIDB", "Setting connected: " + w.isRemote);
+		if(!ServerHelper.isServer())
+			return;
+		//manageConnectedInternal(w,x+dx(facing),y,z+dz(facing),opposingFace(facing));
+		//manageConnectedInternal(w,x,y,z,facing);
+	}
+	
+	private static void manageConnectedInternal(World w, int x, int y, int z, int facing)
+	{
 		boolean connected = hasConnector(w,x,y,z);
+		if(!connected)
+			return;
+		System.out.println("CN:"+x+","+y+","+z+":"+connected);
 		if(w.getBlockMetadata(x, y, z) < 8 && connected)
-			w.setBlockMetadataWithNotify(x, y, z, 8+w.getBlockMetadata(x, y, z), 3);
+			w.setBlockToAir(x, y, z);
+			//w.setBlockMetadataWithNotify(x, y, z, 8+w.getBlockMetadata(x, y, z), 3);
 		else if(w.getBlockMetadata(x, y, z) >= 8 && !connected)
 			w.setBlockMetadataWithNotify(x, y, z, w.getBlockMetadata(x, y, z)-8, 3);
 		//TardisOutput.print("TIDB", "Connected:" + connected);
@@ -255,13 +265,18 @@ public class InternalDoorBlock extends AbstractBlock
 			MY=i;
 		for(int i=1;SchemaComponentBlock.isDoorConnector(w, x, y-i, z);i++)
 			mY=i;
-		//TardisOutput.print("TIDB", "ConnHandle:" + dX + "," + dZ + ":-" + mD + "to" + MD + ":-"+mY+"to"+MY);
+		TardisOutput.print("TIDB", "ConnHandle:" + dX + "," + dZ + ":-" + mD + "to" + MD + ":-"+mY+"to"+MY);
 		for(int d=-mD;d<=MD;d++)
 		{
 			for(int cY=-mY;cY<=MY;cY++)
 			{
 				if(SchemaComponentBlock.isDoorConnector(w, x+(d*dX), y+cY, z+(d*dZ)))
-					w.setBlockMetadataWithNotify(x+(d*dX), y+cY, z+(d*dZ), connected?1:0, 2);
+				{
+					if(connected)
+						w.setBlockToAir(x+(d*dX), y+cY, z+(d*dZ));
+					else
+						w.setBlockMetadataWithNotify(x+(d*dX), y+cY, z+(d*dZ), connected?1:0, 2);
+				}
 			}
 		}
 	}
