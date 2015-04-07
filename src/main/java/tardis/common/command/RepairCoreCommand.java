@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.CoreTileEntity;
 
@@ -86,18 +87,19 @@ public class RepairCoreCommand extends AbstractCommand
 			TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner);
 			World world = WorldHelper.getWorldServer(worldID);
 			CoreTileEntity tce = Helper.getTardisCore(world);
+			TardisDataStore ds = Helper.getDataStore(worldID);
 			if(tce == null && world.provider instanceof TardisWorldProvider)
 			{
 				world.setBlock(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, TardisMod.tardisCoreBlock);
 				tce = Helper.getTardisCore(world);
 			}
 			//TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);
-			if(tce != null)
+			if(tce != null && ds != null)
 			{
 				if(total)
 				{
 					tce.removeAllRooms(true);
-					Helper.generateTardisInterior(worldID, newOwner, tce.getExterior());
+					Helper.generateTardisInterior(worldID, newOwner, ds.getExterior());
 				}
 				tce.commandRepair(newOwner, numRooms, energy);
 			}

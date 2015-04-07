@@ -26,6 +26,7 @@ import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
@@ -411,9 +412,10 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 					}
 					else
 					{
-						if(core != null)
+						TardisDataStore ds = Helper.getDataStore(core);
+						if(ds != null)
 						{
-							TardisTileEntity ext = core.getExterior();
+							TardisTileEntity ext = ds.getExterior();
 							if(ext != null)
 							{
 								if(WorldHelper.getWorldID(ext) != player.worldObj.provider.dimensionId)

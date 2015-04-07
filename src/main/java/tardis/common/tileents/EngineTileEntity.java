@@ -209,7 +209,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		lastButtonTT = tt;
 		TardisOutput.print("TETE", "Control activated:" + control);
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
-		TardisDataStore ds = Helper.getDatastore(worldObj);
+		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if (core != null && ds != null)
 		{
 			if (control == 4 || control == 5)
@@ -391,7 +391,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		if (ServerHelper.isServer())
 			return 0;
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
-		TardisDataStore ds = Helper.getDatastore(worldObj);
+		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if (core != null && ds != null)
 		{
 			if (cID == 4 || cID == 5 || cID == 7 || (cID >= 10 && cID < 20) || (cID >= 71 && cID <= 73))

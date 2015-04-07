@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import tardis.TardisMod;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 
 public class TardisOwnershipRegistry extends AbstractWorldDataStore
@@ -90,6 +91,16 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 		if(dimID != null)
 		{
 			return Helper.getTardisCore(dimID);
+		}
+		return null;
+	}
+	
+	public TardisDataStore getDataStore(EntityPlayer player)
+	{
+		Integer dimID = getDimension(player);
+		if(dimID != null)
+		{
+			return Helper.getDataStore(dimID);
 		}
 		return null;
 	}

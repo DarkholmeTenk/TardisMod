@@ -7,8 +7,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
-import tardis.common.tileents.CoreTileEntity;
 import cofh.api.energy.IEnergyHandler;
 
 public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
@@ -73,10 +73,10 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
 	{
-		CoreTileEntity core = getCore();
-		if(core != null)
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
 		{
-			int rec = core.addRF(maxReceive,simulate);
+			int rec = ds.addRF(maxReceive,simulate);
 			if(!simulate)
 				hasFilled.get(from).set(rec);
 			return rec;
@@ -87,9 +87,9 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	@Override
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate)
 	{
-		CoreTileEntity core = getCore();
-		if(core != null)
-			return core.remRF(maxExtract,simulate);
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
+			return ds.remRF(maxExtract,simulate);
 		return 0;
 	}
 
@@ -102,18 +102,18 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	@Override
 	public int getEnergyStored(ForgeDirection from)
 	{
-		CoreTileEntity core = getCore();
-		if(core != null)
-			return core.getRF();
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
+			return ds.getRF();
 		return 0;
 	}
 
 	@Override
 	public int getMaxEnergyStored(ForgeDirection from)
 	{
-		CoreTileEntity core = getCore();
-		if(core != null)
-			return core.getMaxRF();
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
+			return ds.getMaxRF();
 		return 0;
 	}
 	
