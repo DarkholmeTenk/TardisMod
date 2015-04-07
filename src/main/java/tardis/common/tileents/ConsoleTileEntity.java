@@ -1,6 +1,7 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
@@ -14,7 +15,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
@@ -49,6 +49,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private boolean								uncoordinated		= false;
 	private boolean								stable				= false;
 	private boolean								landOnPad			= true;
+	private boolean								attemptToLand		= false;
 
 	private boolean								saveCoords			= false;
 	private HashMap<Integer, ControlStateStore>	states				= new HashMap<Integer, ControlStateStore>();
@@ -207,7 +208,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public int getControlFromHit(HitPosition hit)
 	{
-		CoreTileEntity core = getCore();
+		CoreTileEntity core = Helper.getTardisCore(this);
 		if (core == null)
 			return -1;
 		if (hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
@@ -371,7 +372,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public void activateControl(EntityPlayer pl, int controlID)
 	{
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
-		TardisDataStore ds = Helper.getDatastore(worldObj);
+		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if (core == null || ds == null)
 			return;
 		TardisOutput.print("TConTE", "Control:" + controlID, TardisOutput.Priority.DEBUG);
@@ -386,17 +387,21 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			pl.addChatMessage(new ChatComponentText("XP: " + ds.getXP() + "/" + ds.getXPNeeded()));
 			pl.addChatMessage(new ChatComponentText("Level:" + ds.getLevel()));
 		}
-		else if (controlID == 4)
+		else if (controlID == 4)	//Speed lever
 		{
 			int d = 1;
 			if (pl.isSneaking())
 				d = -1;
 			core.addSpeed(d);
 		}
-		else if (controlID == 100)
+		else if (controlID == 100)	//Scanner
 			core.sendDestinationStrings(pl);
-		else if (controlID == 904)
+		else if (controlID == 904)	//Land on pad
 			landOnPad = !landOnPad;
+		else if (core.inAbortableFlight() && controlID == 42)
+			attemptToLand = core.attemptToLand();
+		else if (controlID == 55)
+			uncoordinated = !uncoordinated;
 		else if (!core.inCoordinatedFlight())
 		{
 			if (isMovementControl(controlID) && (!core.inFlight() || !core.inCoordinatedFlight()))
@@ -452,15 +457,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 					landGroundControl = !landGroundControl;
 				else if (controlID == 53)
 					relativeCoords = !relativeCoords;
-				else if (controlID == 55)
-				{
-					if (((!uncoordinated) || (!core.inFlight())) || core.takeOffEnergy(pl))
-					{
-						uncoordinated = !uncoordinated;
-					}
-					else
-						ServerHelper.sendString(pl, "TARDIS", "Not enough energy to land");
-				}
 				else if (controlID == 60)
 				{
 					int newDimControl = dimControl + (pl.isSneaking() ? -1 : 1);
@@ -684,10 +680,10 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		}
 		if (!set)
 		{
-			CoreTileEntity c = getCore();
-			if (c != null)
+			TardisDataStore ds = Helper.getDataStore(this);
+			if (ds != null)
 			{
-				TardisTileEntity e = c.getExterior();
+				TardisTileEntity e = ds.getExterior();
 				if (e != null)
 				{
 					return setControls(dim, e.xCoord, e.zCoord, x, y, z, allowNearest);
@@ -805,6 +801,24 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		return getYFromControls(yControls);
 	}
+	
+	public SimpleCoordStore getCoordsFromControls(TardisTileEntity ext)
+	{
+		int w = getDimFromControls();
+		int x = getXFromControls(ext.xCoord);
+		int y = getYFromControls(ext.yCoord);
+		int z = getZFromControls(ext.zCoord);
+		return new SimpleCoordStore(w, x, y, z);
+	}
+	
+	public SimpleCoordStore getCoordsFromControls(SimpleCoordStore ext)
+	{
+		int w = getDimFromControls();
+		int x = getXFromControls(ext.x);
+		int y = getYFromControls(ext.y);
+		int z = getZFromControls(ext.z);
+		return new SimpleCoordStore(w, x, y, z);
+	}
 
 	public boolean getLandOnGroundFromControls()
 	{
@@ -913,18 +927,18 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public double getControlState(int controlID)
 	{
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
-		TardisDataStore ds = Helper.getDatastore(worldObj);
+		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if (core != null && ds != null)
 		{
-			if (controlID == 0)
+			if (controlID == 0)							//Artron energy
 				return ((double) core.getArtronEnergy() / core.getMaxArtronEnergy());
-			if (controlID == 1)
+			if (controlID == 1)							//Rooms gauge
 				return ((double) core.getNumRooms() / core.getMaxNumRooms());
-			if (controlID == 2 || controlID == 4)
+			if (controlID == 2 || controlID == 4)		//Speed
 				return MathHelper.clamp(core.getSpeed(controlID == 2) / core.getMaxSpeed(), 0, 1);
-			if (controlID == 3)
+			if (controlID == 3)							//Facing
 				return facing / 4.0;
-			if (controlID == 8)
+			if (controlID == 8)							//XP
 				return (ds.getXP() / ds.getXPNeeded());
 			if ((controlID >= 10 && controlID < 14) || controlID == 16)
 				return ((double) (xControls[controlID - 10] + 6) / 12);
@@ -943,7 +957,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if (controlID == 41)
 				return (regulated ? 1 : 0);
 			if (controlID == 42)
-				return core.inFlight() ? 1 : 0;
+				return ((!attemptToLand) && core.inFlight()) ? 1 : 0;
 			if (controlID == 50 || controlID == 51 || controlID == 5 || controlID == 902 || controlID == 903)
 				return lastButton == controlID ? 1 : 0;
 			if (controlID == 52)
@@ -973,7 +987,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public String[] getExtraInfo(int controlID)
 	{
 		CoreTileEntity core = Helper.getTardisCore(this);
-		TardisDataStore ds = Helper.getDatastore(worldObj);
+		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if (core != null && ds != null)
 		{
 			if (controlID == 0)
@@ -1018,7 +1032,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	private void pressedUnstable()
 	{
-		TardisOutput.print("TConTE", "Unstable button pressed");
 		unstableControl = -1;
 		unstablePressed = true;
 	}
@@ -1067,6 +1080,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public void land()
 	{
+		attemptToLand = false;
 		lastLanding = currentLanding;
 		currentLanding = getCurrentControlState();
 		primed = false;
@@ -1105,14 +1119,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public boolean isStable()
 	{
 		return stable;
-	}
-
-	public CoreTileEntity getCore()
-	{
-		TileEntity core = worldObj.getTileEntity(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ);
-		if (core != null && core instanceof CoreTileEntity)
-			return (CoreTileEntity) core;
-		return null;
 	}
 
 	@Override
@@ -1224,6 +1230,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 		nbt.setInteger("lastButton", lastButton);
 		nbt.setInteger("lastButtonTT", lastButtonTT);
+		nbt.setBoolean("attemptToLand", attemptToLand);
 	}
 
 	@Override
@@ -1234,5 +1241,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		screwMode = nbt.getInteger("scMo");
 		lastButton = nbt.getInteger("lastButton");
 		lastButtonTT = nbt.getInteger("lastButtonTT");
+		attemptToLand = nbt.getBoolean("attemptToLand");
 	}
 }

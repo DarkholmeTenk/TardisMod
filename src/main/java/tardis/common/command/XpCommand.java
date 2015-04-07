@@ -37,7 +37,7 @@ public class XpCommand extends AbstractCommand
 			dim = TardisMod.plReg.getDimension(dest);
 		if (dim != null && dim != 0)
 		{
-			TardisDataStore ds = Helper.getDatastore(dim);
+			TardisDataStore ds = Helper.getDataStore(dim);
 			xp(ds, amount);
 		}
 	}

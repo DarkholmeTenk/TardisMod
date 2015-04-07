@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.dimension.TardisDataStore;
 
 public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector
 {
@@ -56,10 +57,10 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		}
 		if(linkedDimension != null && tt % 20 == 0)
 		{
-			CoreTileEntity core = Helper.getTardisCore(linkedDimension);
-			if(core != null)
+			TardisDataStore ds = Helper.getDataStore(linkedDimension);
+			if(ds != null)
 			{
-				TardisTileEntity ext = core.getExterior();
+				TardisTileEntity ext = ds.getExterior();
 				if(ext != null)
 				{
 					if(!equals(ext))
@@ -159,10 +160,10 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	public void linkToDimension(int dimID)
 	{
 		linkedDimension = dimID;
-		CoreTileEntity te = Helper.getTardisCore(dimID);
-		if(te != null)
+		TardisDataStore ds = Helper.getDataStore(dimID);
+		if(ds != null)
 		{
-			te.linkToExterior(this);
+			ds.linkToExterior(this);
 		}
 	}
 	
@@ -214,12 +215,13 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			}
 			else
 			{
-				CoreTileEntity te = Helper.getTardisCore(linkedDimension);
-				if(te != null)
+				CoreTileEntity core = Helper.getTardisCore(linkedDimension);
+				TardisDataStore ds = Helper.getDataStore(linkedDimension);
+				if(core != null && ds != null)
 				{
-					te.linkToExterior(this);
-					if(!te.changeLock(player,false))
-						te.enterTardis(player,false);
+					ds.linkToExterior(this);
+					if(!core.changeLock(player,false))
+						core.enterTardis(player,false);
 				}
 			}
 		}

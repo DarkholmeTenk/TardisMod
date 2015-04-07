@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.client.renderer.model.ConsoleModel;
+import tardis.common.core.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 
@@ -151,7 +152,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 		if(te != null && te instanceof ConsoleTileEntity)
 		{
 			ConsoleTileEntity tce = (ConsoleTileEntity)te;
-			CoreTileEntity core = tce.getCore();
+			CoreTileEntity core = Helper.getTardisCore(te);
 			renderFrontPanel(tess,tce,core);
 			renderRightPanel(tess,tce,core);
 			renderBackPanel( tess,tce,core);

@@ -8,6 +8,8 @@ import java.util.Random;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
+import tardis.common.core.Helper;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 
@@ -81,6 +83,13 @@ public abstract class AbstractComponent implements ITardisComponent
 	{
 		if(parentObj != null)
 			return parentObj.getCore();
+		return null;
+	}
+	
+	public TardisDataStore getDatastore()
+	{
+		if(parentObj != null)
+			return Helper.getDataStore(parentObj);
 		return null;
 	}
 	

@@ -6,8 +6,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import tardis.TardisMod;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
-import tardis.common.tileents.CoreTileEntity;
 
 public class ComponentFluid extends AbstractComponent implements IFluidHandler
 {
@@ -28,9 +28,9 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 	{
 		if(parentObj != null && parentObj.getWorldObj() != null)
 		{
-			CoreTileEntity core = getCore();
-			if(core != null)
-				return core.getTanks();
+			TardisDataStore ds = getDatastore();
+			if(ds != null)
+				return ds.getTanks();
 		}
 		return null;
 	}

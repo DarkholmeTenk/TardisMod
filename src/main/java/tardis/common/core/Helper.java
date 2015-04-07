@@ -36,9 +36,9 @@ import tardis.common.tileents.TardisTileEntity;
 
 public class Helper
 {
-	public static final int									tardisCoreX		= 0;
-	public static final int									tardisCoreY		= 70;
-	public static final int									tardisCoreZ		= 0;
+	public static final int							tardisCoreX		= 0;
+	public static final int							tardisCoreY		= 70;
+	public static final int							tardisCoreZ		= 0;
 	public static HashMap<Integer, TardisDataStore>	datastoreMap	= new HashMap();
 
 	// /////////////////////////////////////////////////
@@ -81,11 +81,12 @@ public class Helper
 			tardisWorld.setBlock(tardisCoreX, tardisCoreY - 5, tardisCoreZ, TardisMod.tardisEngineBlock);
 		}
 		CoreTileEntity te = getTardisCore(dimID);
-		if (te != null)
+		TardisDataStore ds = getDataStore(dimID);
+		if (te != null && ds != null)
 		{
 			te.setOwner(ownerName);
 			if (exterior != null)
-				te.setExterior(exterior.getWorldObj(), exterior.xCoord, exterior.yCoord, exterior.zCoord);
+				ds.linkToExterior(exterior);
 		}
 	}
 
@@ -202,7 +203,7 @@ public class Helper
 			;
 		return true;
 	}
-	
+
 	public static PartBlueprint loadSchema(String name)
 	{
 		return TardisMod.schemaHandler.getSchema(name);
@@ -390,21 +391,33 @@ public class Helper
 		}
 		return getTardisCore(w);
 	}
-	
-	public static TardisDataStore getDatastore(World w)
+
+	public static TardisDataStore getDataStore(World w)
 	{
-		return getDatastore(WorldHelper.getWorldID(w));
+		return getDataStore(WorldHelper.getWorldID(w));
 	}
 
-	public static TardisDataStore getDatastore(int dimID)
+	public static TardisDataStore getDataStore(int dimID)
 	{
-		if(datastoreMap.containsKey(dimID))
-			return datastoreMap.get(dimID);
+		if (datastoreMap.containsKey(dimID))
+		{
+			TardisDataStore store = datastoreMap.get(dimID);
+//			if(!ServerHelper.isServer())
+//				store.load();
+			return store;
+		}
 		TardisDataStore store = new TardisDataStore(dimID);
 		store.load();
 		store.save();
 		datastoreMap.put(dimID, store);
 		return store;
+	}
+
+	public static TardisDataStore getDataStore(TileEntity te)
+	{
+		if (te != null)
+			return getDataStore(te.getWorldObj());
+		return null;
 	}
 
 	public static boolean isTardisWorld(IBlockAccess world)
@@ -413,25 +426,25 @@ public class Helper
 			return ((World) world).provider instanceof TardisWorldProvider;
 		return false;
 	}
-	
+
 	public static boolean isExistingDoor(World w, int x, int y, int z)
 	{
-		if(isTardisWorld(w))
+		if (isTardisWorld(w))
 		{
 			CoreTileEntity core = getTardisCore(w);
-			if(core != null)
+			if (core != null)
 			{
-				SimpleCoordStore pos = new SimpleCoordStore(w,x,y,z);
+				SimpleCoordStore pos = new SimpleCoordStore(w, x, y, z);
 				Set<SimpleCoordStore> rooms = core.getRooms();
-				for(SimpleCoordStore scs : rooms)
+				for (SimpleCoordStore scs : rooms)
 				{
 					TileEntity te = scs.getTileEntity();
-					if(te instanceof SchemaCoreTileEntity)
-						if(((SchemaCoreTileEntity)te).isDoor(pos))
+					if (te instanceof SchemaCoreTileEntity)
+						if (((SchemaCoreTileEntity) te).isDoor(pos))
 							return true;
 				}
 				SchemaCoreTileEntity te = core.getSchemaCore();
-				if(te != null)
+				if (te != null)
 					return te.isDoor(pos);
 			}
 		}

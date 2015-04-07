@@ -26,7 +26,7 @@ public class ConsoleBlock extends AbstractBlockContainer
 	public void initData()
 	{
 		setBlockName("ConsoleBlock");
-
+		setBlockBounds(0,0,0,1,1.5F,1);
 	}
 
 	@Override

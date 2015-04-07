@@ -3,8 +3,8 @@ package tardis.common.tileents.components;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
-import tardis.common.tileents.CoreTileEntity;
 
 public class ComponentInventory extends AbstractComponent implements IInventory
 {
@@ -24,30 +24,30 @@ public class ComponentInventory extends AbstractComponent implements IInventory
 	@Override
 	public int getSizeInventory()
 	{
-		CoreTileEntity tce = getCore();
-		if(tce != null)
-			return tce.getInvSize();
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
+			return ds.getInvSize();
 		return 0;
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int i)
 	{
-		CoreTileEntity tce = getCore();
-		if(tce != null)
-			return tce.getIS(i);
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
+			return ds.getIS(i);
 		return null;
 	}
 
 	@Override
 	public ItemStack decrStackSize(int i, int j)
 	{
-		CoreTileEntity tce = getCore();
-		if(tce != null)
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
 		{
-			ItemStack is = tce.getIS(i);
+			ItemStack is = ds.getIS(i);
 			ItemStack newIS = is.splitStack(j);
-			tce.setIS(is, i);
+			ds.setIS(is, i);
 			return newIS;
 		}
 		return null;
@@ -62,9 +62,9 @@ public class ComponentInventory extends AbstractComponent implements IInventory
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack)
 	{
-		CoreTileEntity tce = getCore();
-		if(tce != null)
-			tce.setIS(itemstack,i);
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
+			ds.setIS(itemstack,i);
 	}
 
 	@Override
@@ -82,10 +82,10 @@ public class ComponentInventory extends AbstractComponent implements IInventory
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack)
 	{
-		CoreTileEntity tce = getCore();
-		if(tce != null)
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
 		{
-			if(tce.getIS(i) == null)
+			if(ds.getIS(i) == null)
 				return true;
 		}
 		return false;
@@ -107,9 +107,9 @@ public class ComponentInventory extends AbstractComponent implements IInventory
 	@Override
 	public void markDirty()
 	{
-		CoreTileEntity core = getCore();
-		if(core != null)
-			core.markDirty();
+		TardisDataStore ds = getDatastore();
+		if(ds != null)
+			ds.markDirty();
 	}
 
 	@Override

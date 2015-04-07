@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -85,10 +86,11 @@ public class KeyItem extends AbstractItem
 		}
 		else if (ServerHelper.isServer() && ServerHelper.getUsername(player).equals(getOwnerName(is)))
 		{
-			CoreTileEntity te = TardisMod.plReg.getCore(player);
-			if (te != null)
+			CoreTileEntity core = TardisMod.plReg.getCore(player);
+			TardisDataStore ds = TardisMod.plReg.getDataStore(player);
+			if (core != null && ds != null)
 			{
-				if (!te.hasValidExterior() && !te.inFlight())
+				if (!ds.hasValidExterior() && !core.inFlight())
 				{
 					Helper.summonOldTardis(player);
 					player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
