@@ -335,7 +335,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				internalOnly = !internalOnly;
 			else if (control == 71 || control == 72)
 			{
-				if (availableConsoleRooms == null)
+				if (availableConsoleRooms == null || availableConsoleRooms.length == 1)
 					updateConsoleRooms();
 				consoleSettingControl = MathHelper.cycle(consoleSettingControl + (control == 71 ? -1 : 1), 0,
 						availableConsoleRooms.length - 1);
@@ -367,7 +367,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				}
 			}
 		}
-		sendUpdate();
 	}
 
 	@Override
@@ -540,22 +539,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt)
-	{
-		super.readFromNBT(nbt);
-
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbt)
-	{
-		super.writeToNBT(nbt);
-
-	}
-
-	@Override
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
+		super.writeTransmittable(nbt);
 		if (screwNBT != null)
 			nbt.setTag("sNBT", screwNBT);
 		if (currentPerson != null)
@@ -575,6 +561,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	@Override
 	public void readTransmittable(NBTTagCompound nbt)
 	{
+		super.readTransmittable(nbt);
 		if (nbt.hasKey("sNBT"))
 			screwNBT = nbt.getCompoundTag("sNBT");
 		hasScrew = nbt.getBoolean("hS");
@@ -603,8 +590,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	@Override
 	public void writeTransmittableOnly(NBTTagCompound nbt)
 	{
-		if (!consoleSettingString.equals("tardisConsoleMain"))
-			nbt.setString("css", sanitiseConsole(consoleSettingString));
+		nbt.setString("css", sanitiseConsole(consoleSettingString));
 		if (screwNBT != null)
 			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 	}

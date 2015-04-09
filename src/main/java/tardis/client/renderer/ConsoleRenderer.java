@@ -73,10 +73,10 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 	{
 		compRender.renderTextScreen(tess,tce,tce.schemaCategoryString,52, 1.05,-0.42,-0.1, -49,-90,0, 0.4,0.4,0.2);
 		compRender.renderTextScreen(tess,tce,tce.schemaChooserString,52, 1.26,-0.22,-0.1, -49,-90,0, 0.4,0.4,0.2);
-		compRender.renderButton(tess,tce,50, 1.05,-0.42,0.8, 41,-90,0,0.5,0.5,0.5);
-		compRender.renderButton(tess,tce,51, 1.15,-0.33,0.8, 41,-90,0,0.5,0.5,0.5);
-		compRender.renderButton(tess,tce,57, 1.26,-0.23,0.8, 41,-90,0,0.5,0.5,0.5);
-		compRender.renderButton(tess,tce,58, 1.36,-0.14,0.8, 41,-90,0,0.5,0.5,0.5);
+		compRender.renderButton(tess,tce,57, 1.05,-0.42,0.8, 41,-90,0,0.5,0.5,0.5);
+		compRender.renderButton(tess,tce,58, 1.15,-0.33,0.8, 41,-90,0,0.5,0.5,0.5);
+		compRender.renderButton(tess,tce,50, 1.26,-0.23,0.8, 41,-90,0,0.5,0.5,0.5);
+		compRender.renderButton(tess,tce,51, 1.36,-0.14,0.8, 41,-90,0,0.5,0.5,0.5);
 	}
 	
 	private void renderFrontPanel(Tessellator tess, ConsoleTileEntity tce, CoreTileEntity core)

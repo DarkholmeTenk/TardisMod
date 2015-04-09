@@ -97,8 +97,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		super.updateEntity();
 		if (++tickTimer % cycleLength == 0 && tickTimer != 0)
 			tickTimer = 0;
-		
-		
 
 		if (lastButton != -1)
 		{
@@ -131,7 +129,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			{
 				refreshSchemas();
 			}
-			if(tt % 1200 == 0)
+			if (tt % 1200 == 0)
 				sendUpdate();
 		}
 	}
@@ -1014,7 +1012,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				return (regulated ? 1 : 0);
 			if (controlID == 42)
 				return ((!attemptToLand) && core.inFlight()) ? 1 : 0;
-			if (controlID == 50 || controlID == 51 || controlID == 5 || controlID == 902 || controlID == 903)
+			if (controlID == 50 || controlID == 51 || controlID == 5 || controlID == 902 || controlID == 903 || controlID == 57
+					|| controlID == 58)
 				return lastButton == controlID ? 1 : 0;
 			if (controlID == 52)
 				return dayNightControl ? 1 : 0;
@@ -1063,28 +1062,30 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if (controlID >= 30 && controlID < 34)
 				return new String[] { "Set to " + yControls[controlID - 30] };
 
-			if(controlID == 900)
+			if (controlID == 900)
 				return new String[] { "Current mode: " + (saveCoords ? "Save" : "Load") };
-			if(controlID == 904)
+			if (controlID == 904)
 				return new String[] { "Current mode: " + (landOnPad ? "Land on landing pads" : "Ignore landing pads") };
-			if(controlID == 34)
+			if (controlID == 34)
 				return new String[] { "Current mode: " + (landGroundControl ? "Land on ground" : "Land in midair") };
-			if(controlID == 55)
-				return new String[] { "Current mode: " + (uncoordinated ? "Uncoordinated flight (Drifting)" : "Coordinated flight") };
-			if(controlID == 53)
+			if (controlID == 55)
+				return new String[] { "Current mode: "
+						+ (uncoordinated ? "Uncoordinated flight (Drifting)" : "Coordinated flight") };
+			if (controlID == 53)
 				return new String[] { "Current mode: " + (relativeCoords ? "Relative coordinates" : "Absolute coordinates") };
 		}
 		return null;
 	}
 
-	private static double[] defaultColors = { 1, 1, 1 };
-	private static double[] flightColors = {0.8, 0.9, 1};
+	private static double[]	defaultColors	= { 1, 1, 1 };
+	private static double[]	flightColors	= { 0.8, 0.9, 1 };
+
 	@Override
 	public double[] getColorRatio(int controlID)
 	{
-		if(controlID >= 1020)
+		if (controlID >= 1020)
 			return flightColors;
-		if(controlID >= 1000 && controlID % 2 == 0)
+		if (controlID >= 1000 && controlID % 2 == 0)
 			return flightColors;
 		return defaultColors;
 	}
@@ -1120,7 +1121,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		int ran = 0;
 		if (min != max)
 			ran = rand.nextInt(1 + max - min);
-		if(ran < 10)
+		if (ran < 10)
 			ran = (ran * 2) - 20;
 		unstableControl = min + ran;
 		unstablePressed = false;

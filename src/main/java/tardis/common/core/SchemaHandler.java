@@ -23,6 +23,7 @@ public class SchemaHandler
 {
 	private File								tardisSchemaDir;
 	private static ArrayList<String>			classPathSchemas	= null;
+	private static ArrayList<String>			classPathConsoles	= null;
 	private static HashMap<String, Set<String>>	schemaSets			= null;
 	private static final String					uncategorizedCat	= "Uncategorized";
 
@@ -92,9 +93,9 @@ public class SchemaHandler
 	public String[] getSchemas(boolean consoleSchemas)
 	{
 		String[] fA = new String[0];
-		if (classPathSchemas == null)
+		if ((!consoleSchemas && classPathSchemas == null) || (consoleSchemas && classPathConsoles == null))
 		{
-			classPathSchemas = new ArrayList();
+			ArrayList<String> tempStore = new ArrayList();
 			try
 			{
 				InputStream is = TardisMod.class.getResourceAsStream("/assets/tardismod/schema/schemaList");
@@ -107,8 +108,8 @@ public class SchemaHandler
 					{
 						TardisOutput.print("CH", "Added schema " + l + " " + consoleSchemas);
 						String q = l.replace(".schema", "");
-						if (!classPathSchemas.contains(q))
-							classPathSchemas.add(q);
+						if (!tempStore.contains(q))
+							tempStore.add(q);
 					}
 				}
 				TardisOutput.print("TCH", "Read classpath");
@@ -117,9 +118,13 @@ public class SchemaHandler
 			{
 				e.printStackTrace();
 			}
+			if(consoleSchemas)
+				classPathConsoles = tempStore;
+			else
+				classPathSchemas = tempStore;
 		}
 
-		ArrayList<String> found = new ArrayList<String>(classPathSchemas);
+		ArrayList<String> found = new ArrayList<String>(consoleSchemas ? classPathConsoles : classPathSchemas);
 		String[] files = tardisSchemaDir.list();
 		for (String s : files)
 		{

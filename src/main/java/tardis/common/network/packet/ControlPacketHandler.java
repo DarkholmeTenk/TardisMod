@@ -35,8 +35,6 @@ public class ControlPacketHandler implements IDataPacketHandler
 						((IControlMatrix)te).activateControl(player, controlID);
 						if(te instanceof AbstractTileEntity)
 							((AbstractTileEntity)te).sendUpdate();
-						//else
-						//	w.markBlockForUpdate(x, y, z);
 					}
 				}
 			}
