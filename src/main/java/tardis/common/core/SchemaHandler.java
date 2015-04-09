@@ -209,7 +209,7 @@ public class SchemaHandler
 	{
 		if (cachedPBs.containsKey(name))
 			return cachedPBs.get(name);
-		PartBlueprint temp = new PartBlueprint(getSchemaFile(name));
+		PartBlueprint temp = new PartBlueprint(name,getSchemaFile(name));
 		if (temp.myName != null)
 		{
 			cachedPBs.put(name, temp);

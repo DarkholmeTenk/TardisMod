@@ -209,16 +209,16 @@ public class Helper
 		return TardisMod.schemaHandler.getSchema(name);
 	}
 
-	public static void loadSchema(File schemaFile, World w, int x, int y, int z, int facing)
+	public static void loadSchema(String name, File schemaFile, World w, int x, int y, int z, int facing)
 	{
-		PartBlueprint pb = new PartBlueprint(schemaFile);
+		PartBlueprint pb = new PartBlueprint(name,schemaFile);
 		pb.reconstitute(w, x, y, z, facing);
 	}
 
 	public static void loadSchema(String name, World w, int x, int y, int z, int facing)
 	{
 		File schemaFile = TardisMod.schemaHandler.getSchemaFile(name);
-		loadSchema(schemaFile, w, x, y, z, facing);
+		loadSchema(name, schemaFile, w, x, y, z, facing);
 	}
 
 	public static void loadSchemaDiff(String fromName, String toName, World worldObj, int xCoord, int yCoord, int zCoord,
@@ -233,14 +233,12 @@ public class Helper
 		if (schemaDiff.exists())
 		{
 			TardisOutput.print("TH", "Loading diff from file");
-			diff = new PartBlueprint(schemaDiff);
+			diff = TardisMod.schemaHandler.getSchema(toName + "." + fromName + ".diff");
 		}
 		else
 		{
-			File fromFile = TardisMod.schemaHandler.getSchemaFile(fromName);
-			File toFile = TardisMod.schemaHandler.getSchemaFile(toName);
-			PartBlueprint fromPB = new PartBlueprint(fromFile);
-			PartBlueprint toPB = new PartBlueprint(toFile);
+			PartBlueprint fromPB = TardisMod.schemaHandler.getSchema(fromName);
+			PartBlueprint toPB = TardisMod.schemaHandler.getSchema(toName);
 			try
 			{
 				diff = new PartBlueprint(toPB, fromPB);

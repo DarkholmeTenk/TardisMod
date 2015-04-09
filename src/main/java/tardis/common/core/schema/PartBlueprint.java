@@ -247,14 +247,14 @@ public class PartBlueprint
 		}
 	}
 
-	public PartBlueprint(File loadFile)
+	public PartBlueprint(String name, File loadFile)
 	{
 		try
 		{
 			DataInputStream stream = new DataInputStream(new FileInputStream(loadFile));
 			// NBTTagCompound nbt = (NBTTagCompound) NBTTagCompound.readNamedTag(stream);
 			NBTTagCompound nbt = ServerHelper.readNBT(stream);
-			myName = nbt.getString("name");
+			myName = name;
 			bounds = nbt.getIntArray("bounds");
 			if (nbt.hasKey("primaryDoor"))
 			{
