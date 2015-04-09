@@ -32,6 +32,7 @@ public class PartBlueprint
 	private ArrayList<CoordStore>			doors			= new ArrayList();
 	private CoordStore						primaryDoor		= null;
 	private int								primaryDoorFace	= -1;
+	private boolean							initialized		= false;
 
 	public HashMap<CoordStore, SchemaStore>	storage			= new HashMap<CoordStore, SchemaStore>();
 
@@ -119,12 +120,15 @@ public class PartBlueprint
 
 	private void handleDoor(World w, int x, int y, int z, int xL, int yL, int zL, int face)
 	{
-		doors.add(new CoordStore(xL,yL,zL));
 		boolean primary = (w.getBlockMetadata(x, y, z) % 8) >= 4;
-		if (primary)
+		if(!initialized)
 		{
-			primaryDoor = new CoordStore(xL, yL, zL);
-			primaryDoorFace = face;
+			doors.add(new CoordStore(xL,yL,zL));
+			if (primary)
+			{
+				primaryDoor = new CoordStore(xL, yL, zL);
+				primaryDoorFace = face;
+			}
 		}
 		w.setBlockMetadataWithNotify(x, y, z, face + (primary ? 4 : 0), 3);
 		InternalDoorBlock.manageConnected(w, x, y, z, face);
@@ -134,31 +138,50 @@ public class PartBlueprint
 	private void getDoor(World world, int x, int y, int z, int facing)
 	{
 		int[] bounds = moddedBounds(facing);
-		for (int zL = -bounds[1]; zL <= bounds[3]; zL++)
+		if(!initialized)
 		{
-			int xL = -bounds[0];
-
-			for (int yL = 0; yL <= bounds[4]; yL++)
-				if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
-					handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 0);
-
-			xL = bounds[2];
-			for (int yL = 0; yL <= bounds[4]; yL++)
-				if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
-					handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 2);
+			for (int zL = -bounds[1]; zL <= bounds[3]; zL++)
+			{
+				int xL = -bounds[0];
+	
+				for (int yL = 0; yL <= bounds[4]; yL++)
+					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 0);
+	
+				xL = bounds[2];
+				for (int yL = 0; yL <= bounds[4]; yL++)
+					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 2);
+			}
+	
+			for (int xL = -bounds[0]; xL <= bounds[2]; xL++)
+			{
+				int zL = -bounds[1];
+				for (int yL = 0; yL <= bounds[4]; yL++)
+					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 1);
+	
+				zL = bounds[3];
+				for (int yL = 0; yL <= bounds[4]; yL++)
+					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 3);
+			}
+			initialized = true;
 		}
-
-		for (int xL = -bounds[0]; xL <= bounds[2]; xL++)
+		else
 		{
-			int zL = -bounds[1];
-			for (int yL = 0; yL <= bounds[4]; yL++)
-				if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
-					handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 1);
-
-			zL = bounds[3];
-			for (int yL = 0; yL <= bounds[4]; yL++)
-				if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
-					handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 3);
+			for(CoordStore door : doors)
+			{
+				CoordStore rotated = rotate(door,primaryDoorFace,facing);
+				if(rotated.x == -bounds[0])
+					handleDoor(world, x + rotated.x,y + rotated.y, z + rotated.z, rotated.x, rotated.y, rotated.z, 0);
+				if(rotated.x == bounds[2])
+					handleDoor(world, x + rotated.x,y + rotated.y, z + rotated.z, rotated.x, rotated.y, rotated.z, 2);
+				if(rotated.z == -bounds[1])
+					handleDoor(world, x + rotated.x,y + rotated.y, z + rotated.z, rotated.x, rotated.y, rotated.z, 1);
+				if(rotated.z == bounds[3])
+					handleDoor(world, x + rotated.x,y + rotated.y, z + rotated.z, rotated.x, rotated.y, rotated.z, 3);
+			}
 		}
 	}
 
@@ -190,6 +213,7 @@ public class PartBlueprint
 				if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
 					handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 3);
 		}
+		initialized = true;
 	}
 
 	private void scanStuff(World w, int x, int y, int z)
@@ -292,6 +316,7 @@ public class PartBlueprint
 						doors.add(door);
 					i++;
 				}
+				initialized = true;
 			}
 			stream.close();
 		}
