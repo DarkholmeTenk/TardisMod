@@ -71,7 +71,7 @@ public class SchemaReloadCommand extends AbstractCommand
 				}
 			}
 		}
-		ConsoleTileEntity.refreshSchemas();
+		ConsoleTileEntity.refreshCategories();
 		EngineTileEntity.refreshAvailableConsoleRooms();
 	}
 }

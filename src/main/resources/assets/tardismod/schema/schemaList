@@ -1,32 +1,29 @@
-bigChamber.schema
-corridor.schema
-corridor4Way.schema
-corridor4WayFancy.schema
-corridorShort.schema
-mediumChamber.schema
-mediumFarm.schema
-liftDown.schema
-liftDown2.schema
-liftUp.schema
-liftUp2.schema
+Corridor Junction.Four Way.schema
+Corridor Junction.T Junction.schema
+Corridor Junction.Turn Left.schema
+Corridor Junction.Turn Right.schema
+Corridor Lift.Down Further.schema
+Corridor Lift.Down.schema
+Corridor Lift.Up Further.schema
+Corridor Lift.Up.schema
+Corridor.Normal.schema
+Corridor.Short.schema
+Rooms.Big Chamber.schema
+Rooms.Med Chamber.schema
+Rooms.Med Farm.schema
 tardisConsoleMain.schema
-tardisConsoleWalkway.schema
-tardisConsoleWhiter.schema
-tardisConsolePillars.schema
-
-tardisConsolePillars.tardisConsoleMain.diff.schema
-tardisConsolePillars.tardisConsoleWalkway.diff.schema
-tardisConsolePillars.tardisConsoleWhiter.diff.schema
-
 tardisConsoleMain.tardisConsolePillars.diff.schema
 tardisConsoleMain.tardisConsoleWalkway.diff.schema
 tardisConsoleMain.tardisConsoleWhiter.diff.schema
-
-tardisConsoleWalkway.tardisConsolePillars.diff.schema
+tardisConsolePillars.schema
+tardisConsolePillars.tardisConsoleMain.diff.schema
+tardisConsolePillars.tardisConsoleWalkway.diff.schema
+tardisConsolePillars.tardisConsoleWhiter.diff.schema
+tardisConsoleWalkway.schema
 tardisConsoleWalkway.tardisConsoleMain.diff.schema
+tardisConsoleWalkway.tardisConsolePillars.diff.schema
 tardisConsoleWalkway.tardisConsoleWhiter.diff.schema
-
-tardisConsoleWhiter.tardisConsolePillars.diff.schema
+tardisConsoleWhiter.schema
 tardisConsoleWhiter.tardisConsoleMain.diff.schema
+tardisConsoleWhiter.tardisConsolePillars.diff.schema
 tardisConsoleWhiter.tardisConsoleWalkway.diff.schema
-

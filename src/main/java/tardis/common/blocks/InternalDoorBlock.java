@@ -98,7 +98,7 @@ public class InternalDoorBlock extends AbstractBlock
 	@Override
 	public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer player, int side, float i, float j, float k)
 	{
-		TardisOutput.print("TIDB","OBA"+x+","+y+","+z);
+		TardisOutput.print("TIDB","OBA"+x+","+y+","+z+":"+w.getBlockMetadata(x, y, z));
 		if(player != null)
 		{
 			ItemStack held =player.getHeldItem();
@@ -115,11 +115,13 @@ public class InternalDoorBlock extends AbstractBlock
 					CoreTileEntity te = Helper.getTardisCore(w);
 					if(te == null || (te.canModify(player)))
 					{
-						if(schemaCarrier && tag.hasKey("schemaName"))
+						if(schemaCarrier && tag.hasKey("schemaName") && tag.hasKey("schemaCat"))
 						{
+							String category = tag.getString("schemaCat");
 							String name = tag.getString("schemaName");
-							File schemaFile = TardisMod.schemaHandler.getSchemaFile(name);
-							PartBlueprint pb = new PartBlueprint(schemaFile);
+							//File schemaFile = TardisMod.schemaHandler.getSchemaFile(category,name);
+							//PartBlueprint pb = new PartBlueprint(schemaFile);
+							PartBlueprint pb = TardisMod.schemaHandler.getSchema(category, name);
 							int facing = w.getBlockMetadata(x, y, z) % 4;
 							CoordStore door = pb.getPrimaryDoorPos(opposingFace(facing));
 							int nX = x - door.x + dx(facing);

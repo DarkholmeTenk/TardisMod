@@ -151,17 +151,28 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public CoreTileEntity(World w)
 	{
-		this();
+		//this();
 		worldObj = w;
 		ds = Helper.getDataStore(WorldHelper.getWorldID(w));
+		shields = maxShields;
+		hull = maxHull;
+
+		energy = 100;
 	}
 
 	public CoreTileEntity()
 	{
 		shields = maxShields;
 		hull = maxHull;
-
 		energy = 100;
+	}
+	
+	private TardisDataStore gDS()
+	{
+		if(ds == null)
+			if(worldObj != null)
+				ds = Helper.getDataStore(worldObj);
+		return ds;
 	}
 
 	public static void refreshConfigs()
@@ -197,9 +208,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private void calculateFlightDistances()
 	{
 		SimpleCoordStore newStart = null;
-		TardisTileEntity ext = ds.getExterior();
+		TardisTileEntity ext = gDS().getExterior();
 		if(ext != null)
-			newStart = new SimpleCoordStore(ds.getExterior());
+			newStart = new SimpleCoordStore(gDS().getExterior());
 		else if(sourceLocation != null && destLocation != null)
 			newStart = sourceLocation.travelTo(destLocation, distanceTravelled/distanceToTravel, true).floor();
 		if(newStart != null)
@@ -270,22 +281,22 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if(flightTimer == 0)
 		{
 			if(flightState == FlightState.TAKINGOFF)
-				SoundHelper.playSound(this, "takeoff", 0.75F);
+				SoundHelper.playSound(this, "tardismod:takeoff", 0.75F);
 			if(flightState == FlightState.LANDING && fast)
-				SoundHelper.playSound(this, "landingInt", 0.75F);
+				SoundHelper.playSound(this, "tardismod:landingInt", 0.75F);
 		}
 		if(flightState == FlightState.FLIGHT || flightState == FlightState.DRIFT)
 		{
 			if(flightSoundTimer++ % 69 == 0)
-				SoundHelper.playSound(this, "engines", 0.75F);
+				SoundHelper.playSound(this, "tardismod:engines", 0.75F);
 		}
 		else if(flightState == FlightState.LANDING && !fast && flightTimer < (landSlowTicks - landFastTicks))
 		{
 			if(flightSoundTimer++ % 69 == 0)
-				SoundHelper.playSound(this, "engines", 0.75F);
+				SoundHelper.playSound(this, "tardismod:engines", 0.75F);
 		}
 		else if(flightState == FlightState.LANDING && !fast && flightTimer == (landSlowTicks - landFastTicks))
-			SoundHelper.playSound(this, "landingInt", 0.75F);
+			SoundHelper.playSound(this, "tardismod:landingInt", 0.75F);
 	}
 
 	private void flightTick()
@@ -328,7 +339,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				if(con.unstableControlPressed() && flightButtonTimer > 0)
 				{
 					instability = MathHelper.clamp(MathHelper.floor(instability - (0.5 * getSpeed(false))),0,100);
-					ds.addXP(getSpeed(false) + 4);
+					gDS().addXP(getSpeed(false) + 4);
 				}
 				else if(flightButtonTimer > 0)
 				{
@@ -364,7 +375,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public void sendUpdate()
 	{
 		super.sendUpdate();
-		ds.markMaybeDirty();
+		gDS().markMaybeDirty();
 	}
 
 	@Override
@@ -390,7 +401,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 		if (tt % 20 == 0)
 		{
-			addArtronEnergy(getEnergyPerSecond(ds.getLevel(TardisUpgradeMode.REGEN)), false);
+			addArtronEnergy(getEnergyPerSecond(gDS().getLevel(TardisUpgradeMode.REGEN)), false);
 			safetyTick();
 		}
 
@@ -417,12 +428,14 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 						TardisOutput.print("TCTE", "Removing room @ " + coord);
 						SchemaCoreTileEntity schemaCore = (SchemaCoreTileEntity) te;
 						schemaCore.remove();
+						refreshDoors();
 					}
 					i.remove();
 				}
 				else
 				{
 					deletingRooms = false;
+					refreshDoors();
 					numRooms = 0;
 				}
 			}
@@ -507,16 +520,16 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
 	{
-		if (!inFlight() && ds.hasValidExterior())
+		if (!inFlight() && gDS().hasValidExterior())
 		{
 			if (ignoreLock || canOpenLock(player, true))
 			{
-				World ext = WorldHelper.getWorld(ds.exteriorWorld);
+				World ext = WorldHelper.getWorld(gDS().exteriorWorld);
 				if (ext != null)
 				{
 					if (ext.isRemote)
 						return;
-					int facing = ext.getBlockMetadata(ds.exteriorX, ds.exteriorY, ds.exteriorZ);
+					int facing = ext.getBlockMetadata(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ);
 					int dx = 0;
 					int dz = 0;
 					double rot = 0;
@@ -540,11 +553,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 							break;
 					}
 
-					if (softBlock(ext, ds.exteriorX + dx, ds.exteriorY, ds.exteriorZ + dz)
-							&& softBlock(ext, ds.exteriorX + dx, ds.exteriorY, ds.exteriorZ + dz))
+					if (softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz)
+							&& softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz))
 					{
-						TeleportHelper.teleportEntity(player, ds.exteriorWorld, ds.exteriorX + 0.5 + (dx), ds.exteriorY,
-								ds.exteriorZ + 0.5 + (dz), rot);
+						TeleportHelper.teleportEntity(player, gDS().exteriorWorld, gDS().exteriorX + 0.5 + (dx), gDS().exteriorY,
+								gDS().exteriorZ + 0.5 + (dz), rot);
 					}
 					else
 						ServerHelper.sendString(player, "TARDIS", "The door is obstructed");
@@ -673,7 +686,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 		if (!(isValidPos(w, posArr[0], posArr[1], posArr[2])))
 		{
-			if (posArr[0] != ds.exteriorX || posArr[1] != ds.exteriorY || posArr[2] != ds.exteriorZ)
+			if (posArr[0] != gDS().exteriorX || posArr[1] != gDS().exteriorY || posArr[2] != gDS().exteriorZ)
 				posArr = scanForValidPos(w, posArr);
 		}
 		if (con.getLandOnGroundFromControls())
@@ -689,23 +702,23 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (con == null)
 			return false;
 		int dim = con.getDimFromControls();
-		if (ds.exteriorWorld == 10000)
+		if (gDS().exteriorWorld == 10000)
 		{
 			if(oldExteriorWorld != dim)
 				return true;
 		}
-		else if(dim != ds.exteriorWorld)
+		else if(dim != gDS().exteriorWorld)
 			return true;
-		int[] posArr = new int[] { con.getXFromControls(ds.exteriorX), con.getYFromControls(ds.exteriorY),
-				con.getZFromControls(ds.exteriorZ) };
+		int[] posArr = new int[] { con.getXFromControls(gDS().exteriorX), con.getYFromControls(gDS().exteriorY),
+				con.getZFromControls(gDS().exteriorZ) };
 		posArr = getModifiedControls(con, posArr);
-		TardisOutput.print("TCTE", "Moving to :" + Arrays.toString(posArr) + " from " + ds.exteriorX + "," + ds.exteriorY + ","
-				+ ds.exteriorZ);
-		if (Math.abs(posArr[0] - ds.exteriorX) > maxMoveForFast)
+		TardisOutput.print("TCTE", "Moving to :" + Arrays.toString(posArr) + " from " + gDS().exteriorX + "," + gDS().exteriorY + ","
+				+ gDS().exteriorZ);
+		if (Math.abs(posArr[0] - gDS().exteriorX) > maxMoveForFast)
 			return true;
-		if (Math.abs(posArr[1] - ds.exteriorY) > maxMoveForFast)
+		if (Math.abs(posArr[1] - gDS().exteriorY) > maxMoveForFast)
 			return true;
-		if (Math.abs(posArr[2] - ds.exteriorZ) > maxMoveForFast)
+		if (Math.abs(posArr[2] - gDS().exteriorZ) > maxMoveForFast)
 			return true;
 		return false;
 	}
@@ -717,7 +730,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		{
 			int dDim = con.getDimFromControls();
 
-			int extW = inFlight() ? oldExteriorWorld : ds.exteriorWorld;
+			int extW = inFlight() ? oldExteriorWorld : gDS().exteriorWorld;
 			int distance = (dDim != extW ? energyCostDimChange : 0);
 			double speedMod = Math.max(0.5, getSpeed(true) * 3 / getMaxSpeed());
 			int enCost = (int) Math.round(distance * speedMod);
@@ -741,9 +754,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				flightButtonTimer = 0;
 				currentBlockSpeed = 1;
 				updateMaxBlockSpeed();
-				TardisTileEntity te = ds.getExterior();
+				TardisTileEntity te = gDS().getExterior();
 				fast = te == null || (con.shouldLand() && isFastLanding());
-				oldExteriorWorld = ds.exteriorWorld;
+				oldExteriorWorld = gDS().exteriorWorld;
 				if (te != null)
 				{
 					te.takeoff();
@@ -779,22 +792,22 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	
 	private void removeOldBox()
 	{
-		World w = WorldHelper.getWorld(ds.exteriorWorld);
+		World w = WorldHelper.getWorld(gDS().exteriorWorld);
 		if (w != null)
 		{
-			if (w.getBlock(ds.exteriorX, ds.exteriorY, ds.exteriorZ) == TardisMod.tardisBlock)
+			if (w.getBlock(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ) == TardisMod.tardisBlock)
 			{
-				w.setBlockToAir(ds.exteriorX, ds.exteriorY, ds.exteriorZ);
-				w.setBlockToAir(ds.exteriorX, ds.exteriorY + 1, ds.exteriorZ);
+				w.setBlockToAir(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ);
+				w.setBlockToAir(gDS().exteriorX, gDS().exteriorY + 1, gDS().exteriorZ);
 				TardisOutput.print("TCTE", "Blanking exterior");
-				ds.exteriorWorld = 10000;
+				gDS().exteriorWorld = 10000;
 			}
 		}
 	}
 
 	private void placeBox()
 	{
-		if (!ServerHelper.isServer() || ds.hasValidExterior())
+		if (!ServerHelper.isServer() || gDS().hasValidExterior())
 			return;
 
 		ConsoleTileEntity con = getConsole();
@@ -805,8 +818,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 		int[] posArr;
 		if(distanceToTravel == 0 || distanceTravelled >= distanceToTravel || sourceLocation == null || destLocation == null)
-			posArr = new int[] { con.getXFromControls(ds.exteriorX) + getUnstableOffset(), con.getYFromControls(ds.exteriorY),
-					con.getZFromControls(ds.exteriorZ) + getUnstableOffset() };
+			posArr = new int[] { con.getXFromControls(gDS().exteriorX) + getUnstableOffset(), con.getYFromControls(gDS().exteriorY),
+					con.getZFromControls(gDS().exteriorZ) + getUnstableOffset() };
 		else
 		{
 			SimpleCoordStore newPos = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true).round();
@@ -818,9 +831,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		w.setBlock(posArr[0], posArr[1], posArr[2], TardisMod.tardisBlock, facing, 3);
 		w.setBlock(posArr[0], posArr[1] + 1, posArr[2], TardisMod.tardisTopBlock, facing, 3);
 
-		ds.setExterior(w, posArr[0], posArr[1], posArr[2]);
+		gDS().setExterior(w, posArr[0], posArr[1], posArr[2]);
 		oldExteriorWorld = 0;
-		TardisTileEntity tardis = ds.getExterior();
+		TardisTileEntity tardis = gDS().getExterior();
 		if (tardis != null)
 		{
 			tardis.linkedDimension = WorldHelper.getWorldID(this);
@@ -849,10 +862,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			ConsoleTileEntity con = getConsole();
 			forcedFlight = false;
 			currentBlockSpeed = 1;
-			ds.addXP(con != null && con.isStable() ? 15 : (45 - instability));
+			gDS().addXP(con != null && con.isStable() ? 15 : (45 - instability));
 			flightState = FlightState.LANDED;
-			SoundHelper.playSound(this, "engineDrum", 0.75F);
-			TardisTileEntity ext = ds.getExterior();
+			SoundHelper.playSound(this, "tardismod:engineDrum", 0.75F);
+			TardisTileEntity ext = gDS().getExterior();
 			if (ext != null)
 			{
 				ext.forceLand();
@@ -882,7 +895,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private boolean shouldExplode()
 	{
 		double eC = explodeChance * ((getSpeed(false) + 1) * 3 / getMaxSpeed());
-		eC *= MathHelper.clamp(3.0 / ((ds.getLevel() + 1) / 2), 0.2, 1);
+		eC *= MathHelper.clamp(3.0 / ((gDS().getLevel() + 1) / 2), 0.2, 1);
 		return rand.nextDouble() < eC;
 	}
 
@@ -1018,7 +1031,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		ownerName = name;
 		if (!worldObj.isRemote && TardisMod.plReg != null && !TardisMod.plReg.hasTardis(ownerName))
 			TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
-		TardisTileEntity ext = ds.getExterior();
+		TardisTileEntity ext = gDS().getExterior();
 		if (ext != null)
 			ext.owner = name;
 	}
@@ -1028,15 +1041,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		switch (fun)
 		{
 			case LOCATE:
-				return ds.getLevel() >= 3;
+				return gDS().getLevel() >= 3;
 			case SENSORS:
-				return ds.getLevel() >= 5;
+				return gDS().getLevel() >= 5;
 			case STABILISE:
-				return ds.getLevel() >= 7;
+				return gDS().getLevel() >= 7;
 			case TRANSMAT:
-				return ds.getLevel() >= 9;
+				return gDS().getLevel() >= 9;
 			case RECALL:
-				return ds.getLevel() >= 11;
+				return gDS().getLevel() >= 11;
 			default:
 				return false;
 		}
@@ -1071,6 +1084,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		speed = speed + a;
 		speed = MathHelper.clamp(speed, 0, getMaxSpeed());
+		System.out.println("HI!"+speed);
 		updateMaxBlockSpeed();
 		sendUpdate();
 		return speed;
@@ -1095,7 +1109,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public int getMaxNumRooms()
 	{
-		return getMaxNumRooms(ds.getLevel(TardisUpgradeMode.ROOMS));
+		return getMaxNumRooms(gDS().getLevel(TardisUpgradeMode.ROOMS));
 	}
 
 	public boolean addRoom(boolean sub, SchemaCoreTileEntity te)
@@ -1185,7 +1199,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public int getEnergyPerSecond()
 	{
-		return getEnergyPerSecond(ds.getLevel(TardisUpgradeMode.REGEN));
+		return getEnergyPerSecond(gDS().getLevel(TardisUpgradeMode.REGEN));
 	}
 
 	public int getEnergyPerSecond(int level)
@@ -1201,7 +1215,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public int getMaxArtronEnergy()
 	{
-		return getMaxArtronEnergy(ds.getLevel(TardisUpgradeMode.ENERGY));
+		return getMaxArtronEnergy(gDS().getLevel(TardisUpgradeMode.ENERGY));
 	}
 
 	@Override
@@ -1215,7 +1229,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (!sim)
 			energy += amount;
-		energy = MathHelper.clamp(energy, 0, getMaxArtronEnergy(ds.getLevel(TardisUpgradeMode.ENERGY)));
+		energy = MathHelper.clamp(energy, 0, getMaxArtronEnergy(gDS().getLevel(TardisUpgradeMode.ENERGY)));
 		return true;
 	}
 
@@ -1228,7 +1242,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				energy -= amount;
 			return true;
 		}
-		energy = MathHelper.clamp(energy, 0, getMaxArtronEnergy(ds.getLevel(TardisUpgradeMode.ENERGY)));
+		energy = MathHelper.clamp(energy, 0, getMaxArtronEnergy(gDS().getLevel(TardisUpgradeMode.ENERGY)));
 		return false;
 	}
 
@@ -1319,25 +1333,25 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		boolean trans = false;
 		if (entWorld == WorldHelper.getWorldID(worldObj))
 			trans = true;
-		else if (entWorld == ds.exteriorWorld)
+		else if (entWorld == gDS().exteriorWorld)
 		{
-			double distance = Math.pow(((ds.exteriorX + 0.5) - ent.posX), 2);
-			distance += Math.pow(((ds.exteriorY + 0.5) - ent.posY), 2);
-			distance += Math.pow(((ds.exteriorZ + 0.5) - ent.posZ), 2);
+			double distance = Math.pow(((gDS().exteriorX + 0.5) - ent.posX), 2);
+			distance += Math.pow(((gDS().exteriorY + 0.5) - ent.posY), 2);
+			distance += Math.pow(((gDS().exteriorZ + 0.5) - ent.posZ), 2);
 			distance = Math.pow(distance, 0.5);
 			if (distance <= getMaxTransmatDistance())
 				trans = true;
 		}
 		if (trans)
 		{
-			SoundHelper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "transmat", 0.6F);
+			SoundHelper.playSound(ent, "tardismod:transmat", 0.6F, 1);
 			TeleportHelper.teleportEntity(ent, WorldHelper.getWorldID(worldObj), to.x + 0.5, to.y + 1, to.z + 0.5, 90);
 			SoundHelper.playSound(worldObj, to.x, to.y + 1, to.z, "tardismod:transmat", 0.6F);
 			return true;
 		}
 		else
 		{
-			SoundHelper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "transmatFail", 0.6F);
+			SoundHelper.playSound(ent, "tardismod:transmatFail", 0.6F, 1);
 			return false;
 		}
 	}
@@ -1389,16 +1403,16 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (console != null)
 		{
 			int dD = console.getDimFromControls();
-			int dX = console.getXFromControls(ds.exteriorX);
-			int dY = console.getYFromControls(ds.exteriorY);
-			int dZ = console.getZFromControls(ds.exteriorZ);
+			int dX = console.getXFromControls(gDS().exteriorX);
+			int dY = console.getYFromControls(gDS().exteriorY);
+			int dZ = console.getZFromControls(gDS().exteriorZ);
 			TardisOutput.print("TCTE", "Dest:" + dD + "," + dX + "," + dY + "," + dZ);
 			if (dD == desDim && dX == desX && dY == desY && dZ == desZ && desStrs != null)
 				for (String s : desStrs)
 					pl.addChatMessage(new ChatComponentText(s));
 			else
 			{
-				int instability = MathHelper.clamp(20 - (2 * ds.getLevel()), 3, 20);
+				int instability = MathHelper.clamp(20 - (2 * gDS().getLevel()), 3, 20);
 				desDim = dD;
 				String[] send = new String[4];
 				if (desStrs != null && desStrs.length == 4)
@@ -1495,15 +1509,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			return;
 		}
 		List<String> string = new ArrayList<String>();
-		TardisTileEntity ext = ds.getExterior();
+		TardisTileEntity ext = gDS().getExterior();
 		if (ext == null)
 			return;
 		World w = ext.getWorldObj();
 		int dx = 0;
 		int dz = 0;
-		string.add("Current position: Dimension " + getDimensionName(ds.exteriorWorld) + "[" + ds.exteriorWorld + "] : "
-				+ ds.exteriorX + "," + ds.exteriorY + "," + ds.exteriorZ);
-		int facing = w.getBlockMetadata(ds.exteriorX, ds.exteriorY, ds.exteriorZ);
+		string.add("Current position: Dimension " + getDimensionName(gDS().exteriorWorld) + "[" + gDS().exteriorWorld + "] : "
+				+ gDS().exteriorX + "," + gDS().exteriorY + "," + gDS().exteriorZ);
+		int facing = w.getBlockMetadata(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ);
 		for (int i = 0; i < 4; i++)
 		{
 			switch (i)
@@ -1526,7 +1540,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					break;
 			}
 			String s = (i == facing ? "Current facing " : "Facing ");
-			boolean[] data = getObstructData(w, ds.exteriorX + dx, ds.exteriorY, ds.exteriorZ + dz);
+			boolean[] data = getObstructData(w, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz);
 			if (!data[0])
 				s += "obstructed";
 			else if (data[1])
@@ -1622,7 +1636,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (ServerHelper.isServer() && ds != null)
 		{
 			NBTTagCompound dsTC = new NBTTagCompound();
-			ds.writeToNBT(dsTC);
+			gDS().writeToNBT(dsTC);
 			nbt.setTag("ds", dsTC);
 		}
 	}

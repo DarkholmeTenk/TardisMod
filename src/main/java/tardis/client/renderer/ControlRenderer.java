@@ -43,6 +43,7 @@ public class ControlRenderer
 	
 	private FontRenderer fontRenderer;
 	private TextureManager textureManager;
+	int old = -1;
 	
 	public ControlRenderer(FontRenderer fr, TextureManager tm)
 	{
@@ -67,7 +68,7 @@ public class ControlRenderer
 	
 	private void resetHighlight()
 	{
-		GL11.glDepthMask(true);
+		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glColor3d(1, 1, 1);
 	}
 	
@@ -75,11 +76,18 @@ public class ControlRenderer
 	{
 		if(controlID >= 0 && te.getControlHighlight(controlID) >= 0)
 		{
-			GL11.glDepthMask(false);
-			GL11.glColor3d(0.2*te.getControlHighlight(controlID), 0.5 * te.getControlHighlight(controlID), te.getControlHighlight(controlID));
+			double hi = te.getControlHighlight(controlID);
+			GL11.glDepthFunc(GL11.GL_ALWAYS);
+			GL11.glColor3d(0.2*hi, 0.5 * hi, hi);
 		}
 		else
-			resetHighlight();
+		{
+			double[] colRat = te.getColorRatio(controlID);
+			if (colRat != null && colRat.length == 3 && (colRat[0] != 0 || colRat[1] != 0 || colRat[2] != 0))
+				GL11.glColor3d(colRat[0],colRat[1],colRat[2]);
+		}
+	//	else
+	//		resetHighlight();
 	}
 	
 	public void renderTextScreen(Tessellator tess, IControlMatrix tce,String s, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
@@ -93,9 +101,9 @@ public class ControlRenderer
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
 		GL11.glDepthMask(false);
-		GL11.glScaled(0.025, 0.025, 0.025);
+		GL11.glScaled(0.022, 0.022, 0.022);
 		if(s != null)
-			fontRenderer.drawString(s.length() > 14 ? s.substring(0,14):s, 0, 0, 16579836);
+			fontRenderer.drawString(s.length() > 18 ? s.substring(0,18):s, 0, 0, 16579836);
 		GL11.glDepthMask(true);
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
@@ -203,6 +211,7 @@ public class ControlRenderer
 		if(colRat != null && colRat.length == 3)
 			GL11.glColor3d(colRat[0] * am,colRat[1] * am,colRat[2] * am);
 		light.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+		resetHighlight();
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
 	}
@@ -216,11 +225,12 @@ public class ControlRenderer
 		setHighlight(te,id);
 		bindTexture(new ResourceLocation("tardismod","textures/models/TardisConsoleLever.png"));
 		lever.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
+		resetHighlight();
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
-		resetHighlight();
 		bindTexture(new ResourceLocation("tardismod","textures/models/TardisConsoleLeverBase.png"));
 		leverBase.render(null,0F,0F,0F,0F,0F,0.0625F);
+		GL11.glColor3d(1, 1, 1);
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
 	}
@@ -235,6 +245,7 @@ public class ControlRenderer
 		setHighlight(te,id);
 		bindTexture(new ResourceLocation("tardismod","textures/models/SpecialLever.png"));
 		specLever.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
+		resetHighlight();
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
 		resetHighlight();
@@ -249,7 +260,6 @@ public class ControlRenderer
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
-		resetHighlight();
 		GL11.glPushMatrix();
 		GL11.glTranslated(0, -0.03125, -0.0625);
 		bindTexture(new ResourceLocation("tardismod","textures/models/ScreenFrame.png"));
@@ -260,7 +270,6 @@ public class ControlRenderer
 		screen.render(null, 0, 0, 0, 0, 0, 0.0625F);
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
-		resetHighlight();
 	}
 	
 	public void renderPushSwitch(Tessellator tess, IControlMatrix tce, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
@@ -269,7 +278,6 @@ public class ControlRenderer
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
 		GL11.glPushMatrix();
 		GL11.glTranslated(0.03125, 0, 0.03125);
-		resetHighlight();
 		bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriverHolder.png"));
 		holder.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
 		GL11.glPopMatrix();
@@ -278,9 +286,11 @@ public class ControlRenderer
 		setHighlight(tce,id);
 		bindTexture(new ResourceLocation("tardismod","textures/models/PushLever.png"));
 		pushSwitch.render(null,0F,0F,0F,0F,0F,0.0625F);
-		GL11.glPopMatrix();
-		GL11.glPopMatrix();
 		resetHighlight();
+		GL11.glColor3d(1, 1, 1);
+		GL11.glPopMatrix();
+		GL11.glPopMatrix();
+		
 	}
 	
 
@@ -291,15 +301,15 @@ public class ControlRenderer
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
 		GL11.glPushMatrix();
 		GL11.glTranslated(0.03125, 0, 0.03125);
-		resetHighlight();
 		bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriverHolder.png"));
 		holder.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
 		GL11.glTranslated(0, -0.0015 + (0.06 * tce.getControlState(id)), 0);
-		setHighlight(tce,id);
+		setHighlight(tce, id);
 		bindTexture(new ResourceLocation("tardismod","textures/models/PushLever.png"));
 		pushSwitch.render(null,0F,0F,0F,0F,0F,0.0625F);
+		resetHighlight();
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
 		resetHighlight();
