@@ -119,7 +119,7 @@ public class SchemaHandler
 			}
 		}
 
-		ArrayList<String> found = new ArrayList<String>();
+		ArrayList<String> found = new ArrayList<String>(classPathSchemas);
 		String[] files = tardisSchemaDir.list();
 		for (String s : files)
 		{
@@ -137,7 +137,7 @@ public class SchemaHandler
 
 	public String[] getSchemaCategories()
 	{
-		if (schemaSets != null)
+		if (schemaSets != null && schemaSets.size() > 0)
 			return convert(schemaSets.keySet());
 		String[] schemas = getSchemas();
 		HashMap<String, Set<String>> schemaMap = new HashMap();

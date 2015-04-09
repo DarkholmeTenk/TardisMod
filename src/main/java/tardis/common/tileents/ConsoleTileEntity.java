@@ -129,7 +129,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 			if (schemaList == null)
 			{
-				TardisOutput.print("TConTE", "Getting schemas");
 				refreshSchemas();
 			}
 			if(tt % 1200 == 0)
@@ -1168,7 +1167,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		if (categoryNum != lastCategoryNum)
 		{
-			if (categoryList == null)
+			if (categoryList == null || categoryList.length == 0)
 				refreshCategories();
 			categoryNum = MathHelper.cycle(categoryNum, 0, categoryList.length - 1);
 			lastCategoryNum = categoryNum;
