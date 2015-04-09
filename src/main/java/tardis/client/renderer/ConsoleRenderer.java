@@ -71,9 +71,12 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 	
 	private void renderSchemaChooser(Tessellator tess, ConsoleTileEntity tce)
 	{
-		compRender.renderTextScreen(tess,tce,tce.schemaChooserString,52, 1.1,-0.4,-0.1, -45,-90,0, 0.4,0.4,0.2);
-		compRender.renderButton(tess,tce,50, 1.05,-0.42,0.8, 45,-90,0,0.5,0.5,0.5);
-		compRender.renderButton(tess,tce,51, 1.19,-0.29,0.8, 45,-90,0,0.5,0.5,0.5);
+		compRender.renderTextScreen(tess,tce,tce.schemaCategoryString,52, 1.05,-0.42,-0.1, -49,-90,0, 0.4,0.4,0.2);
+		compRender.renderTextScreen(tess,tce,tce.schemaChooserString,52, 1.26,-0.22,-0.1, -49,-90,0, 0.4,0.4,0.2);
+		compRender.renderButton(tess,tce,50, 1.05,-0.42,0.8, 41,-90,0,0.5,0.5,0.5);
+		compRender.renderButton(tess,tce,51, 1.15,-0.33,0.8, 41,-90,0,0.5,0.5,0.5);
+		compRender.renderButton(tess,tce,57, 1.26,-0.23,0.8, 41,-90,0,0.5,0.5,0.5);
+		compRender.renderButton(tess,tce,58, 1.36,-0.14,0.8, 41,-90,0,0.5,0.5,0.5);
 	}
 	
 	private void renderFrontPanel(Tessellator tess, ConsoleTileEntity tce, CoreTileEntity core)
@@ -122,11 +125,11 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 		renderSchemaChooser(tess,tce);
 		renderDimControls(tess,tce);
 		renderYControls(tess,tce);
-		compRender.renderScrewdriverHolder(tess, tce,1.13,-0.38,-0.225, 0,0,45, 0.5,0.5,0.5);
-		compRender.renderScrewdriver(tess, tce, 1, 1.13,-0.38,-0.225, 0, 0, 45, 0.5, 0.5, 0.5);
-		compRender.renderLever(tess, tce, 1020, 1.36, -0.15, -0.1, 0, 0, 45, 0.5, 0.5, 0.5);
-		compRender.renderLever(tess, tce, 1021, 1.36, -0.15, 0.4, 0, 0, 45, 0.5, 0.5, 0.5);
-		compRender.renderLever(tess, tce, 1022, 1.36, -0.15, 0.9, 0, 0, 45, 0.5, 0.5, 0.5);
+		compRender.renderScrewdriverHolder(tess, tce,1.20,-0.32,-0.225, 0,0,45, 0.5,0.5,0.5);
+		compRender.renderScrewdriver(tess, tce, 1, 1.20,-0.32,-0.225, 0, 0, 45, 0.5, 0.5, 0.5);
+		//compRender.renderLever(tess, tce, 1020, 1.36, -0.15, -0.1, 0, 0, 45, 0.5, 0.5, 0.5);
+		//compRender.renderLever(tess, tce, 1021, 1.36, -0.15, 0.4, 0, 0, 45, 0.5, 0.5, 0.5);
+		//compRender.renderLever(tess, tce, 1022, 1.36, -0.15, 0.9, 0, 0, 45, 0.5, 0.5, 0.5);
 		compRender.renderButton(tess, tce, 52, 1.36, -0.15, -1.15, 0, 0, 45, 0.6, 0.6, 0.6);
 		compRender.renderPushSwitch(tess,tce, 904, 0.81, -0.68, -0.45,-45,90, 0, 0.5,  0.5,  0.5);
 	}

@@ -270,22 +270,22 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if(flightTimer == 0)
 		{
 			if(flightState == FlightState.TAKINGOFF)
-				SoundHelper.playSound(this, "takeoff", 0.75F);
+				SoundHelper.playSound(this, "tardismod:takeoff", 0.75F);
 			if(flightState == FlightState.LANDING && fast)
-				SoundHelper.playSound(this, "landingInt", 0.75F);
+				SoundHelper.playSound(this, "tardismod:landingInt", 0.75F);
 		}
 		if(flightState == FlightState.FLIGHT || flightState == FlightState.DRIFT)
 		{
 			if(flightSoundTimer++ % 69 == 0)
-				SoundHelper.playSound(this, "engines", 0.75F);
+				SoundHelper.playSound(this, "tardismod:engines", 0.75F);
 		}
 		else if(flightState == FlightState.LANDING && !fast && flightTimer < (landSlowTicks - landFastTicks))
 		{
 			if(flightSoundTimer++ % 69 == 0)
-				SoundHelper.playSound(this, "engines", 0.75F);
+				SoundHelper.playSound(this, "tardismod:engines", 0.75F);
 		}
 		else if(flightState == FlightState.LANDING && !fast && flightTimer == (landSlowTicks - landFastTicks))
-			SoundHelper.playSound(this, "landingInt", 0.75F);
+			SoundHelper.playSound(this, "tardismod:landingInt", 0.75F);
 	}
 
 	private void flightTick()
@@ -417,12 +417,14 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 						TardisOutput.print("TCTE", "Removing room @ " + coord);
 						SchemaCoreTileEntity schemaCore = (SchemaCoreTileEntity) te;
 						schemaCore.remove();
+						refreshDoors();
 					}
 					i.remove();
 				}
 				else
 				{
 					deletingRooms = false;
+					refreshDoors();
 					numRooms = 0;
 				}
 			}
@@ -851,7 +853,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			currentBlockSpeed = 1;
 			ds.addXP(con != null && con.isStable() ? 15 : (45 - instability));
 			flightState = FlightState.LANDED;
-			SoundHelper.playSound(this, "engineDrum", 0.75F);
+			SoundHelper.playSound(this, "tardismod:engineDrum", 0.75F);
 			TardisTileEntity ext = ds.getExterior();
 			if (ext != null)
 			{
@@ -1330,14 +1332,14 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 		if (trans)
 		{
-			SoundHelper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "transmat", 0.6F);
+			SoundHelper.playSound(ent, "tardismod:transmat", 0.6F, 1);
 			TeleportHelper.teleportEntity(ent, WorldHelper.getWorldID(worldObj), to.x + 0.5, to.y + 1, to.z + 0.5, 90);
 			SoundHelper.playSound(worldObj, to.x, to.y + 1, to.z, "tardismod:transmat", 0.6F);
 			return true;
 		}
 		else
 		{
-			SoundHelper.playSound(ent.worldObj, (int) ent.posX, (int) ent.posY, (int) ent.posZ, "transmatFail", 0.6F);
+			SoundHelper.playSound(ent, "tardismod:transmatFail", 0.6F, 1);
 			return false;
 		}
 	}

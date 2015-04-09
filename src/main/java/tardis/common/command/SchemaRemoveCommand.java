@@ -42,7 +42,7 @@ public class SchemaRemoveCommand extends AbstractCommand
 				{
 					schema.delete();
 					sendString(icommandsender,"Removed schematic " + name);
-					ConsoleTileEntity.refreshSchemas();
+					ConsoleTileEntity.refreshCategories();
 				}
 			}
 			catch(Exception e)

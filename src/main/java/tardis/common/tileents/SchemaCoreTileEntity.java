@@ -38,7 +38,6 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	
 	public void setData(String passedName, int[] moddedBounds, int passedFacing)
 	{
-		System.out.println("N:" + passedName);
 		doors.clear();
 		name = passedName;
 		bounds = moddedBounds;
@@ -137,7 +136,6 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	@Override
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
-		System.out.println("T!");
 		if(!ServerHelper.isServer())
 			return true;
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
@@ -161,7 +159,6 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	
 	private void setDoorArray()
 	{
-		System.out.println("Name: "+ name);
 		if(name == null)
 			return;
 		if(doors.size() == 0)
@@ -213,7 +210,6 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 					if(pb == null)
 						pb = Helper.loadSchema(name);
 					repairDoor(dds,true);
-					System.out.println("NODOOR!");
 				}
 			}
 			else
@@ -234,7 +230,6 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 				repCol = pb.repairBlock(worldObj, xCoord, yCoord, zCoord, door.facing%2==0?stable:o, y, door.facing%2==0?o:stable, facing);
 			else
 			{
-				System.out.println("REM");
 				repCol = (worldObj.getBlock(door.facing%2==0?stable:o, y, door.facing%2==0?o:stable) == TardisMod.internalDoorBlock);
 				repCol = repCol || SchemaComponentBlock.isDoorConnector(worldObj, door.facing%2==0?stable:o, y, door.facing%2==0?o:stable);
 				if(repCol)
@@ -269,6 +264,11 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 		for(int y = door.scs.y+1; repRow; y++)
 			repRow = repairRow(y,stable,door,replace);
 		//InternalDoorBlock.manageConnected(door.scs.getWorldObj(), door.scs.x, door.scs.y, door.scs.y, door.facing);
+		if(replace)
+		{
+			boolean primary = worldObj.getBlockMetadata(door.scs.x, door.scs.y, door.scs.z) >= 4;
+			worldObj.setBlockMetadataWithNotify(door.scs.x, door.scs.y, door.scs.z, (door.facing ) + (primary?4:0) , 3);
+		}
 	}
 	
 	public boolean isDoor(SimpleCoordStore pos)

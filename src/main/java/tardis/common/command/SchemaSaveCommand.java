@@ -40,7 +40,7 @@ public class SchemaSaveCommand extends AbstractCommand
 			PartBlueprint bp = new PartBlueprint(w, name, x,y,z);
 			File saveFile = TardisMod.schemaHandler.getSchemaFile(name);
 			bp.saveTo(saveFile);
-			ConsoleTileEntity.refreshSchemas();
+			ConsoleTileEntity.refreshCategories();
 			return true;
 		}
 		catch(SchemaCoreNotFoundException e)

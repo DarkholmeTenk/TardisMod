@@ -34,6 +34,8 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(54), "External Scanner");
 		controlNames.put(new TwoIntStore(55), "Uncoordinated Flight Control");
 		controlNames.put(new TwoIntStore(56), "Flight Stabilizer");
+		controlNames.put(new TwoIntStore(57), "Prev Category Button");
+		controlNames.put(new TwoIntStore(58), "Next Category Button");
 		controlNames.put(new TwoIntStore(60), "Dimension Lever");
 		controlNames.put(new TwoIntStore(100), "Coordinate Guesser");
 		controlNames.put(new TwoIntStore(900), "Coordinate Save/Load Mode Control");
