@@ -44,7 +44,7 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(903), "Current Coordinates Store");
 		controlNames.put(new TwoIntStore(904), "Landing Pad Control");
 		controlNames.put(new TwoIntStore(1000,1019), "Save Slots");
-		controlNames.put(new TwoIntStore(1020,1022), "Flight Controls");
+		controlNames.put(new TwoIntStore(1020,1032), "Flight Controls");
 	}
 	
 	private boolean isConsole(IWailaDataAccessor accessor)

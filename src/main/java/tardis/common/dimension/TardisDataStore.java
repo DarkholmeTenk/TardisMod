@@ -316,7 +316,6 @@ public class TardisDataStore extends AbstractWorldDataStore
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
-		System.out.println("DSSAVE!");
 		nbt.setInteger("extW", exteriorWorld);
 		nbt.setInteger("extX", exteriorX);
 		nbt.setInteger("extY", exteriorY);

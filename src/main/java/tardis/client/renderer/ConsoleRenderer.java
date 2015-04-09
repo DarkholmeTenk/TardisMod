@@ -91,6 +91,9 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 		compRender.renderPushSwitch(tess, tce, 53,-0.7, -0.78 , 0.36,45, 90, 0, 0.6 , 0.6 , 0.6 );
 		compRender.renderWheel (tess, tce, 3, -1.25, -0.3, -0.4, 45, 90, -0, 0.5, 0.5, 0.5);			//ID 3 Facing wheel
 		compRender.renderLever (tess, tce, 4, -1.23, -0.28, 0.4, -45, -90, 0, 0.6,0.6,0.6);			//ID 4 Speed lever
+		compRender.renderPushSwitch(tess, tce, 1030, -1.08, -0.43, 0, 43, 90, 0, 0.5, 0.5, 0.5);
+		compRender.renderPushSwitch(tess, tce, 1031, -1.18, -0.34, 0, 43, 90, 0, 0.5, 0.5, 0.5);
+		compRender.renderPushSwitch(tess, tce, 1032, -1.28, -0.25, 0, 43, 90, 0, 0.5, 0.5, 0.5);
 	}
 	
 	private void renderRightPanel(Tessellator tess, ConsoleTileEntity tce, CoreTileEntity core)
@@ -101,6 +104,10 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 		compRender.renderPushSwitch(tess, tce, 55, 0.75, -0.28, -1.25, -45, 180, 0, 0.5, 0.5, 0.5);
 		if(core != null && core.hasFunction(TardisFunction.STABILISE))
 			compRender.renderPushSwitch(tess, tce, 56, 0.75, -0.18, -1.36 , -45, 180, 0, 0.5, 0.5, 0.5);
+		compRender.renderLever(tess, tce, 1022, 0.75, -0.46, -1.02, 90, 45, 90, 0.3, 0.4, 0.4);
+		compRender.renderLever(tess, tce, 1023, -0.75, -0.46, -1.02, 90, 45, 90, 0.3, 0.4, 0.4);
+		compRender.renderLever(tess, tce, 1020, 0.9, -0.19, -1.30, 45, 0, 0, 0.3, 0.4, 0.4);
+		compRender.renderLever(tess, tce, 1021, 1.07, -0.19, -1.30, 45, 0, 0, 0.3, 0.4, 0.4);
 	}
 	
 	private void renderLeftPanel(Tessellator tess, ConsoleTileEntity tce, CoreTileEntity core)
@@ -118,6 +125,9 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 			compRender.renderScreen(tess, tce, 54, "scanner", 0.47, -0.38, 1.1, 43, 180, 0, 0.3, 0.3, 0.3);
 		compRender.renderButton(tess, tce, 902, -0.95,-0.29,1.26,  -39,0,0,  0.5,0.5,0.5);
 		compRender.renderButton(tess, tce, 903, -0.95,-0.38,1.15,  -39,0,0,  0.5,0.5,0.5);
+		compRender.renderLever(tess, tce, 1027, 0.1, -0.42, 1.05, -90, -45, 90, 0.2, 0.3, 0.3);
+		compRender.renderLever(tess, tce, 1028, 0.7, -0.42, 1.05, -90, -45, 90, 0.2, 0.3, 0.3);
+		compRender.renderLever(tess, tce, 1029, 0.7, -0.49, 0.95, -90, -45, 90, 0.2, 0.3, 0.3);
 	}
 	
 	private void renderBackPanel(Tessellator tess, ConsoleTileEntity tce, CoreTileEntity core)
@@ -132,6 +142,9 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 		//compRender.renderLever(tess, tce, 1022, 1.36, -0.15, 0.9, 0, 0, 45, 0.5, 0.5, 0.5);
 		compRender.renderButton(tess, tce, 52, 1.36, -0.15, -1.15, 0, 0, 45, 0.6, 0.6, 0.6);
 		compRender.renderPushSwitch(tess,tce, 904, 0.81, -0.68, -0.45,-45,90, 0, 0.5,  0.5,  0.5);
+		compRender.renderLever(tess, tce, 1024, 0.97, -0.49, -0.6, 0, 0, 45, 0.3, 0.4, 0.4);
+		compRender.renderLever(tess, tce, 1025, 1.02, -0.43, -0.32, 0, 0, 45, 0.3, 0.4, 0.4);
+		compRender.renderButton(tess, tce, 1026, 0.91, -0.58, -0.3, -45, 90, 0, 0.5, 0.5, 0.5);
 	}
 	
 	@Override
