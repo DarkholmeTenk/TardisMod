@@ -93,6 +93,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static ConfigHandler				configHandler;
 	public static SchemaHandler				schemaHandler;
 	public static ConfigFile				modConfig;
+	public static ConfigFile				miscConfig;
 
 	public static DarkcoreTeleporter		teleporter			= null;
 	public static TardisDimensionHandler	otherDims;
@@ -157,16 +158,10 @@ public class TardisMod implements IConfigHandlerMod
 		DarkcoreMod.registerCreativeTab(modName, tab);
 
 		modConfig = configHandler.getModConfig();
+		miscConfig = configHandler.registerConfigNeeder("Misc");
 		refreshConfigs();
 
-		xpBase = modConfig.getInt("xp base amount", 80);
-		xpInc = modConfig.getInt("xp increase", 20);
-		rfBase = modConfig.getInt("base RF storage", 50000);
-		rfInc = modConfig.getInt("RF storage increase per level", 50000);
-		rfPerT = modConfig.getInt("RF output per tick", 4098);
-		maxFlu = modConfig.getInt("Max mb per internal tank", 16000);
-		numTanks = modConfig.getInt("Number of internal tanks", 6);
-		numInvs = modConfig.getInt("Number of internal inventory slots", 30);
+		
 		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
 		initBlocks();
@@ -197,6 +192,23 @@ public class TardisMod implements IConfigHandlerMod
 		
 		visibleSchema = modConfig.getConfigItem(new ConfigItem("Visible Schema", CType.BOOLEAN, false,
 				"Should schema boundaries be visible (clientside config)")).getBoolean();
+		
+		xpBase = miscConfig.getInt("xp base amount", 80,
+				"The amount of xp it initially costs to level up");
+		xpInc = miscConfig.getInt("xp increase", 20,
+				"The amount that is added on to the xp cost every time the TARDIS levels up");
+		rfBase = miscConfig.getInt("base RF storage", 50000,
+				"The amount of RF that can be stored when a TARDIS is level 0");
+		rfInc = miscConfig.getInt("RF storage increase per level", 50000,
+				"The extra amount of storage which is added every time the TARDIS levels up");
+		rfPerT = miscConfig.getInt("RF output per tick", 4098,
+				"The amount of RF which the TARDIS can output per tick");
+		maxFlu = miscConfig.getInt("Max mb per internal tank", 16000,
+				"The amount of millibuckets of fluid that can be stored for each internal tank");
+		numTanks = miscConfig.getInt("Number of internal tanks", 6,
+				"The number of internal tanks that the TARDIS has");
+		numInvs = miscConfig.getInt("Number of internal inventory slots", 30,
+				"The number of item inventory slots that the TARDIS has");
 		
 		AbstractComponent.refreshConfigs();
 		BatteryTileEntity.refreshConfigs();

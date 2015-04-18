@@ -1,5 +1,9 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.config.ConfigFile;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -16,9 +20,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.tileents.CoreTileEntity;
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
 
 public class InteriorDirtBlock extends AbstractBlock
 {

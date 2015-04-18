@@ -1,8 +1,8 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import net.minecraft.world.IBlockAccess;
 import tardis.TardisMod;
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 
 public class DecoTransBlock extends AbstractBlock
 {

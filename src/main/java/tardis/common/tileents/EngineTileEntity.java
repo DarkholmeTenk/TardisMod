@@ -469,11 +469,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		// return c.substring(13);
 	}
 
-	private static String unsanitiseConsole(String c)
-	{
-		return "tardisConsole" + c;
-	}
-
 	@Override
 	public double[] getColorRatio(int controlID)
 	{

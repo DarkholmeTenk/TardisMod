@@ -4,7 +4,6 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 
-import java.io.File;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -236,51 +235,6 @@ public class InternalDoorBlock extends AbstractBlock
 	{
 		if(!ServerHelper.isServer())
 			return;
-		//manageConnectedInternal(w,x+dx(facing),y,z+dz(facing),opposingFace(facing));
-		//manageConnectedInternal(w,x,y,z,facing);
-	}
-	
-	private static void manageConnectedInternal(World w, int x, int y, int z, int facing)
-	{
-		boolean connected = hasConnector(w,x,y,z);
-		if(!connected)
-			return;
-		System.out.println("CN:"+x+","+y+","+z+":"+connected);
-		if(w.getBlockMetadata(x, y, z) < 8 && connected)
-			w.setBlockToAir(x, y, z);
-			//w.setBlockMetadataWithNotify(x, y, z, 8+w.getBlockMetadata(x, y, z), 3);
-		else if(w.getBlockMetadata(x, y, z) >= 8 && !connected)
-			w.setBlockMetadataWithNotify(x, y, z, w.getBlockMetadata(x, y, z)-8, 3);
-		//TardisOutput.print("TIDB", "Connected:" + connected);
-		int mY=0;
-		int MY=0;
-		int mD=0;
-		int MD=0;
-		
-		int dX=(facing == 1 || facing == 3) ? 1 : 0;
-		int dZ=(facing == 1 || facing == 3) ? 0 : 1;
-		for(int i=1;SchemaComponentBlock.isDoorConnector(w, x+(i*dX), y, z+(i*dZ));i++)
-			MD=i;
-		for(int i=1;SchemaComponentBlock.isDoorConnector(w, x-(i*dX), y, z-(i*dZ));i++)
-			mD=i;
-		for(int i=1;SchemaComponentBlock.isDoorConnector(w, x, y+i, z);i++)
-			MY=i;
-		for(int i=1;SchemaComponentBlock.isDoorConnector(w, x, y-i, z);i++)
-			mY=i;
-		TardisOutput.print("TIDB", "ConnHandle:" + dX + "," + dZ + ":-" + mD + "to" + MD + ":-"+mY+"to"+MY);
-		for(int d=-mD;d<=MD;d++)
-		{
-			for(int cY=-mY;cY<=MY;cY++)
-			{
-				if(SchemaComponentBlock.isDoorConnector(w, x+(d*dX), y+cY, z+(d*dZ)))
-				{
-					if(connected)
-						w.setBlockToAir(x+(d*dX), y+cY, z+(d*dZ));
-					else
-						w.setBlockMetadataWithNotify(x+(d*dX), y+cY, z+(d*dZ), connected?1:0, 2);
-				}
-			}
-		}
 	}
 	
 	public static boolean hasConnector(World w, int x, int y, int z)

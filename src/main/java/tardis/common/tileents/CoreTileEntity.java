@@ -133,7 +133,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private static int					energyPerSecondInc	= 1;
 	private static int					energyCostDimChange	= 2000;
 	private static int					energyCostFlightMax	= 3000;
-	private static double				energyCostPower		= 0.8;
 	private static int					maxMoveForFast		= 3;
 	private static int					energyPerSpeed		= 200;
 	private IGridNode					node				= null;
@@ -196,8 +195,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				"How much a level of energy rate increases the amount of energy per second");
 		energyCostDimChange = config.getInt("Dimension jump cost", 2000, "How much energy it costs to jump between dimensions");
 		energyCostFlightMax = config.getInt("Max flight cost", 3000, "The maximum amount that a flight can cost");
-		energyCostPower = config.getDouble("Flight cost exponent", 0.8,
-				"The number (x) which we do distance^x to, to calculate the cost of a flight");
 		maxMoveForFast = config.getInt("Short hop distance", 3,
 				"The maximum distance for which a jump can be considered a short hop which takes less time");
 		energyPerSecond = config.getInt("Energy rate", 1, "The base amount of energy the TARDIS generates per second");
@@ -973,7 +970,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		String fullName = "tardisConsole" + sub;
 		SchemaCoreTileEntity schemaCore = getSchemaCore();
-		System.out.println(fullName + "-" + schemaCore.toString());
 		if (schemaCore != null)
 			Helper.loadSchemaDiff(schemaCore.getName(), fullName, worldObj, xCoord, yCoord - 10, zCoord, 0);
 		else

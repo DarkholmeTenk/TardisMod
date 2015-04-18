@@ -15,7 +15,6 @@ import net.minecraft.util.AxisAlignedBB;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
-import tardis.common.blocks.InternalDoorBlock;
 import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
