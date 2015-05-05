@@ -328,7 +328,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			}
 			distanceTravelled += MathHelper.clamp(currentBlockSpeed,1,maxBlockSpeed);
 		}
-		if(inAbortableFlight() && con.unstableFlight())
+		if(inAbortableFlight() && con.unstableFlight() && !forcedFlight)
 		{
 			int buttonTime = getButtonTime();
 			if(flightButtonTimer++ % buttonTime == 0)
@@ -1327,9 +1327,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		SimpleCoordStore to = getTransmatPoint();
 		int entWorld = WorldHelper.getWorldID(ent.worldObj);
 		boolean trans = false;
-		if (entWorld == WorldHelper.getWorldID(worldObj))
+		if (entWorld == WorldHelper.getWorldID(worldObj)) //if ent is in the tardis
 			trans = true;
-		else if (entWorld == gDS().exteriorWorld)
+		else if (entWorld == gDS().exteriorWorld && (flightState.equals(FlightState.LANDING) || flightState.equals(FlightState.LANDED)))
 		{
 			double distance = Math.pow(((gDS().exteriorX + 0.5) - ent.posX), 2);
 			distance += Math.pow(((gDS().exteriorY + 0.5) - ent.posY), 2);
