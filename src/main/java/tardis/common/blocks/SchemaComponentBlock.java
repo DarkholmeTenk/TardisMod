@@ -193,5 +193,13 @@ public class SchemaComponentBlock extends AbstractBlock
     {
 		setBlockBounds(0,0,0,1,1,1);
     }
+	
+	@Override
+	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta)
+	{
+		super.onBlockDestroyedByPlayer(world, x, y, z, meta);
+		if(ServerHelper.isServer() && x >= -1 && x <= 1 && z >= -1 && z <= 1)
+			Helper.repairConsole(world);
+	}
 
 }

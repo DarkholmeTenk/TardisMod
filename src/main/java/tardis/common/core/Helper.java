@@ -192,6 +192,25 @@ public class Helper
 		}
 		return null;
 	}
+	
+	public static void repairConsole(World w)
+	{
+		if(!Helper.isTardisWorld(w))
+			return;
+		int y = tardisCoreY - 2;
+		for(int x = -1; x<= 1; x++)
+		{
+			for(int z = -1; z<= 1; z++)
+			{
+				if(x == 0 && z == 0)
+					continue;
+				if(w.getBlock(x, y, z) != TardisMod.schemaComponentBlock)
+					w.setBlock(x, y, z, TardisMod.schemaComponentBlock, 3, 3);
+			}
+		}
+		if(w.getBlock(0, y+1, 0) != TardisMod.schemaComponentBlock)
+			w.setBlock(0, y+1, 0, TardisMod.schemaComponentBlock, 6, 3);
+	}
 
 	public static boolean isBlockRemovable(Block blockID)
 	{
