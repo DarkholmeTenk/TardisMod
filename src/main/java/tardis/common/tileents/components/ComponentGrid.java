@@ -127,6 +127,8 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	
 	private void createNode()
 	{
+		if(TardisMod.aeAPI == null)
+			return;
 		if(node == null && ServerHelper.isServer())
 		{
 			TardisOutput.print("TCG","Grid node creation! " + WorldHelper.getWorldID(parentObj));

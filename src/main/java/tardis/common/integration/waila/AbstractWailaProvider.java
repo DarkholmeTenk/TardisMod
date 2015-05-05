@@ -53,8 +53,6 @@ public abstract class AbstractWailaProvider implements IWailaDataProvider
 				for(String extraString : extra)
 					currenttip.add(extraString);
 			}
-			if(!f)
-				TardisOutput.print("TWCP", "Control not found:" + control);
 		}
 		return currenttip;
 	}

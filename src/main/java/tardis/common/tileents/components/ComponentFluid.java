@@ -46,7 +46,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 				if(tanks[i] == null)
 				{
 					if(doFill)
-						tanks[i] = new FluidStack(resource.fluidID,Math.min(TardisMod.maxFlu, resource.amount));
+						tanks[i] = new FluidStack(resource.getFluidID(),Math.min(TardisMod.maxFlu, resource.amount));
 					return Math.min(TardisMod.maxFlu, resource.amount);
 				}
 				else if(tanks[i].equals(resource))
@@ -79,7 +79,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 						else
 							tanks[i].amount -= toDrain;
 					}
-					return new FluidStack(resource.fluidID,toDrain);
+					return new FluidStack(resource.getFluidID(),toDrain);
 				}
 			}
 		}
@@ -97,7 +97,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 				if(tanks[i] != null)
 				{
 					int toDrain = Math.min(tanks[i].amount,maxDrain);
-					int fluidID = tanks[i].fluidID;
+					int fluidID = tanks[i].getFluidID();
 					if(doDrain)
 					{
 						if(toDrain == tanks[i].amount)
@@ -124,7 +124,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 				{
 					return true;
 				}
-				else if(tanks[i].fluidID == fluid.getID())
+				else if(tanks[i].getFluidID() == fluid.getID())
 				{
 					return tanks[i].amount < TardisMod.maxFlu;
 				}
@@ -141,7 +141,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 		{
 			for(int i = 0;i<tanks.length;i++)
 			{
-				if(tanks[i].fluidID == fluid.getID())
+				if(tanks[i].getFluidID() == fluid.getID())
 				{
 					return tanks[i].amount > 0;
 				}

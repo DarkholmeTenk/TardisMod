@@ -75,7 +75,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 @Mod(
 		modid = "TardisMod",
 		name = "Tardis Mod",
-		version = "0.85",
+		version = "0.87",
 		dependencies = "required-after:FML; required-after:darkcore; required-after:CoFHCore; after:appliedenergistics2; after:Waila")
 public class TardisMod implements IConfigHandlerMod
 {
@@ -324,6 +324,7 @@ public class TardisMod implements IConfigHandlerMod
 		if (otherDims != null)
 			MinecraftForge.EVENT_BUS.unregister(otherDims);
 		otherDims = new TardisDimensionHandler();
+		plReg = null;
 		dimReg = null;
 		Helper.datastoreMap.clear();
 		MinecraftForge.EVENT_BUS.register(otherDims);
