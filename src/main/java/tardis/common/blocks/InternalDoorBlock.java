@@ -105,7 +105,7 @@ public class InternalDoorBlock extends AbstractBlock
 			{
 				Item base = held.getItem();
 				NBTTagCompound tag = held.stackTagCompound;
-				if(base != null && tag != null && !w.isRemote)
+				if(base != null && tag != null && ServerHelper.isServer())
 				{
 					boolean schemaCarrier = (base instanceof SchemaItem);
 					if(base instanceof SonicScrewdriverItem)
@@ -127,7 +127,7 @@ public class InternalDoorBlock extends AbstractBlock
 							int nY = y - door.y;
 							int nZ = z - door.z + dz(facing);
 							TardisOutput.print("TIDB","OBA"+door.x+","+door.y+","+door.z);
-							if((!w.isRemote) && pb.roomFor(w, nX, nY, nZ, opposingFace(facing)))
+							if(pb.roomFor(w, nX, nY, nZ, opposingFace(facing)))
 							{
 								if(te == null || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
 								{
@@ -157,7 +157,7 @@ public class InternalDoorBlock extends AbstractBlock
 						player.addChatMessage(CoreTileEntity.cannotModifyMessage);
 					}
 				}
-				else if(w.isRemote)
+				else if(!ServerHelper.isServer())
 					return true;
 			}
 		}
