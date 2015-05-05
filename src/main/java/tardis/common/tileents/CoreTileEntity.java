@@ -1122,7 +1122,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				ret = true;
 			}
 
-			if (!sub && numRooms < maxNumRooms)
+			if (!sub && numRooms < getMaxNumRooms())
 			{
 				if (ServerHelper.isServer() && te != null)
 					roomSet.add(new SimpleCoordStore(te));
