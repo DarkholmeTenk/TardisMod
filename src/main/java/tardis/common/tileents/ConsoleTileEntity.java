@@ -549,6 +549,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 					toGive.stackTagCompound = new NBTTagCompound();
 					toGive.stackTagCompound.setInteger("scMo", 0);
 				}
+				toGive.stackTagCompound.setString("owner", core.getOwner());
 				toGive.stackTagCompound.setString("schemaCat", schemaCategoryString);
 				toGive.stackTagCompound.setString("schemaName", schemaChooserString);
 				toGive.stackTagCompound.setInteger("linkedTardis", WorldHelper.getWorldID(worldObj));

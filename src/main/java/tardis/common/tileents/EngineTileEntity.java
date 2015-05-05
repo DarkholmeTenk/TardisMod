@@ -512,6 +512,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				if (dim != 0 && dim != WorldHelper.getWorldID(this))
 					screwNBT.setInteger("perm", SonicScrewdriverItem.minPerms);
 			}
+			CoreTileEntity core = Helper.getTardisCore(worldObj);
+			if(core != null)
+				screwNBT.setString("owner", core.getOwner());
 			screwNBT.setInteger("linkedTardis", WorldHelper.getWorldID(this));
 		}
 		else

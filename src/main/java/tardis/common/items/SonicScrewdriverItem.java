@@ -163,12 +163,26 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		ScrewdriverMode mode = getMode(is);
 		return getColors(mode);
 	}
+	
+	public static String getOwner(ItemStack is)
+	{
+		if(is.stackTagCompound == null || !is.stackTagCompound.hasKey("owner"))
+			return "Unknown";
+		return is.stackTagCompound.getString("owner");
+	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void addInfo(ItemStack is, EntityPlayer player, List infoList)
 	{
 		if (is != null)
 		{
+			infoList.add("Owner: " + getOwner(is));
+			for(ScrewdriverMode m : ScrewdriverMode.values())
+			{
+				if(!hasPermission(is,m))
+					infoList.add(m.name() + " - Disabled");
+			}
 			ScrewdriverMode mode = getMode(is);
 			infoList.add("Mode: " + mode.toString());
 			if (mode.equals(ScrewdriverMode.Schematic))
