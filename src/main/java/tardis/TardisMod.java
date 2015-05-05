@@ -75,7 +75,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 @Mod(
 		modid = "TardisMod",
 		name = "Tardis Mod",
-		version = "0.87",
+		version = "0.9",
 		dependencies = "required-after:FML; required-after:darkcore; required-after:CoFHCore; after:appliedenergistics2; after:Waila")
 public class TardisMod implements IConfigHandlerMod
 {
