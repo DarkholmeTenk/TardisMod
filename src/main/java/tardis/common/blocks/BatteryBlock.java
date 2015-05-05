@@ -23,6 +23,7 @@ public class BatteryBlock extends AbstractBlockContainer
 	public BatteryBlock()
 	{
 		super(false,true,TardisMod.modName);
+		setCreativeTab(TardisMod.cTab);
 	}
 	
 	@Override

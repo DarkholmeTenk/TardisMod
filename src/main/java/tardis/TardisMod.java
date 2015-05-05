@@ -75,7 +75,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 @Mod(
 		modid = "TardisMod",
 		name = "Tardis Mod",
-		version = "0.075",
+		version = "0.8",
 		dependencies = "required-after:FML; required-after:darkcore; required-after:CoFHCore; after:appliedenergistics2; after:Waila")
 public class TardisMod implements IConfigHandlerMod
 {
@@ -100,6 +100,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static TardisDimensionRegistry	dimReg;
 	public static TardisOwnershipRegistry	plReg;
 	public static CreativeTab				tab					= null;
+	public static CreativeTab				cTab				= null;
 
 	public static TardisOutput.Priority		priorityLevel		= TardisOutput.Priority.INFO;
 	public static int						providerID			= 54;
@@ -156,7 +157,8 @@ public class TardisMod implements IConfigHandlerMod
 		configHandler = ConfigHandlerFactory.getConfigHandler(this);
 		schemaHandler = new SchemaHandler(configHandler);
 		schemaHandler.getSchemas();
-		tab = new CreativeTab();
+		tab = new CreativeTab("TardisModTab");
+		cTab = new CreativeTab("TardisModCraftableTab");
 		DarkcoreMod.registerCreativeTab(modName, tab);
 
 		modConfig = configHandler.getModConfig();

@@ -8,9 +8,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class CreativeTab extends CreativeTabs {
 
-	public CreativeTab()
+	public CreativeTab(String s)
 	{
-		super("TardisModTab");
+		super(s);
 	}
 
 	@Override

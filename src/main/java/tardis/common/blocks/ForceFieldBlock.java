@@ -21,6 +21,7 @@ public class ForceFieldBlock extends AbstractBlock
 	public ForceFieldBlock()
 	{
 		super(false,TardisMod.modName);
+		setCreativeTab(TardisMod.cTab);
 	}
 	
 	@Override

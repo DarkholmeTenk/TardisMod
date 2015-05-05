@@ -18,6 +18,7 @@ public class GravityLiftBlock extends AbstractBlockContainer
 	public GravityLiftBlock()
 	{
 		super(TardisMod.modName);
+		setCreativeTab(TardisMod.cTab);
 	}
 	
 	@Override

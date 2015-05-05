@@ -20,6 +20,7 @@ public class ComponentItem extends AbstractItem
 		setUnlocalizedName("Component");
 		setSubNames(TardisTEComponent.getStrings());
 		setMaxStackSize(8);
+		setCreativeTab(TardisMod.cTab);
 	}
 	
 	public ItemStack getIS(TardisTEComponent comp)

@@ -98,6 +98,11 @@ public class SonicScrewdriverRenderer implements IItemRenderer
 			GL11.glTranslated(0, 0.6, 0);
 			GL11.glScaled(1.65, 1.65, 1.65);
 		}
+		else if(type.equals(ItemRenderType.INVENTORY))
+		{
+			GL11.glScaled(1.75, 1.75, 1.75);
+			GL11.glTranslated(0,-0.1,0);
+		}
 		render(item);
 		GL11.glPopMatrix();
 	}

@@ -74,3 +74,4 @@ item.TardisMod.CraftingComponent.IngotChronosteel.name=Chronosteel Ingot
 item.TardisMod.CraftingComponent.CrystalKontron.name=Kontron Crystal
 
 itemGroup.TardisModTab=Tardis Mod
+itemGroup.TardisModCraftableTab=Tardis Mod - Craftable

@@ -32,6 +32,7 @@ public class CraftingComponentItem extends AbstractItem
 		super(TardisMod.modName);
 		setUnlocalizedName("CraftingComponent");
 		setSubNames(names);
+		setCreativeTab(TardisMod.cTab);
 	}
 
 	@Override

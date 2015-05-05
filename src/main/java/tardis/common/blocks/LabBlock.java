@@ -31,6 +31,7 @@ public class LabBlock extends AbstractBlockContainer
 	@Override
 	public void initData()
 	{
+		setCreativeTab(TardisMod.cTab);
 		setBlockName("Lab");
 		setHardness(5.0F);
 	}

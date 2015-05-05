@@ -26,6 +26,7 @@ public class KeyItem extends AbstractItem
 	{
 		super(TardisMod.modName);
 		setUnlocalizedName("TardisKey");
+		setCreativeTab(TardisMod.cTab);
 		setMaxStackSize(1);
 	}
 
