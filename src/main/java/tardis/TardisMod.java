@@ -147,6 +147,8 @@ public class TardisMod implements IConfigHandlerMod
 	public static int						maxFlu				= 32000;
 	public static int						numTanks			= 5;
 	public static int						numInvs				= 30;
+	public static boolean					keyCraftable		= true;
+	public static boolean					keyReqKontron		= true;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
@@ -186,6 +188,10 @@ public class TardisMod implements IConfigHandlerMod
 		
 		keyInHand = modConfig.getConfigItem(new ConfigItem("Key in hand", CType.BOOLEAN, true,
 				"Does a player need to have the key in hand to get through a locked TARDIS door")).getBoolean();
+		
+		keyCraftable = modConfig.getBoolean("keyCraftable", true, "True if the key is craftable.","False if they can only be spawned");
+		
+		keyReqKontron = modConfig.getBoolean("keyRequiresKontron", true, "True if the key requires a Kontron crystal to craft");
 		
 		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1,
 				"How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();

@@ -103,8 +103,15 @@ public class KeyItem extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " ik", " ii", 'i',
-				Items.iron_ingot, 'k', CraftingComponentType.KONTRON.getIS(1)));
+		if(TardisMod.keyCraftable)
+		{
+			if(TardisMod.keyReqKontron)
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " ik", " ii", 'i',
+						Items.iron_ingot, 'k', CraftingComponentType.KONTRON.getIS(1)));
+			else
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " i ", " ii", 'i',
+						Items.iron_ingot));
+		}
 	}
 
 }
