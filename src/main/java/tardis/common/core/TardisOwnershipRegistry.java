@@ -112,6 +112,13 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 		return null;
 	}
 	
+	public String getPlayerName(int dimension)
+	{
+		if(ownedDimMapping.containsKey(dimension))
+			return ownedDimMapping.get(dimension);
+		return null;
+	}
+	
 	public boolean hasTardis(String username)
 	{
 		Collection<String> values = ownedDimMapping.values();

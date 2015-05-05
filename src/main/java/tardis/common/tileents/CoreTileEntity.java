@@ -378,6 +378,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void init()
 	{
+		if(ownerName == null)
+			setOwner(TardisMod.plReg.getPlayerName(WorldHelper.getWorldID(this)));
 		if (ds == null)
 			ds = Helper.getDataStore(WorldHelper.getWorldID(this));
 	}
@@ -983,7 +985,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public boolean canModify(String playerName)
 	{
-		return isOwner(playerName) || modders.contains(playerName.hashCode());
+		if(playerName == null)
+			return false;
+		return isOwner(playerName) || (modders != null && modders.contains(playerName.hashCode()));
 	}
 
 	public void toggleModifier(EntityPlayer modder, String name)
@@ -1023,6 +1027,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public void setOwner(String name)
 	{
+		if(name == null)
+			return;
 		TardisOutput.print("TCTE", "Setting owner to " + name + "#" + worldObj.isRemote, TardisOutput.Priority.DEBUG);
 		ownerName = name;
 		if (!worldObj.isRemote && TardisMod.plReg != null && !TardisMod.plReg.hasTardis(ownerName))

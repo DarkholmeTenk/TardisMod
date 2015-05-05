@@ -210,6 +210,8 @@ public class Helper
 		}
 		if(w.getBlock(0, y+1, 0) != TardisMod.schemaComponentBlock)
 			w.setBlock(0, y+1, 0, TardisMod.schemaComponentBlock, 6, 3);
+		if(w.getBlock(0, tardisCoreY+1, 0) != TardisMod.schemaComponentBlock)
+			w.setBlock(0, tardisCoreY + 1, 0, TardisMod.schemaComponentBlock, 8, 3);
 	}
 
 	public static boolean isBlockRemovable(Block blockID)

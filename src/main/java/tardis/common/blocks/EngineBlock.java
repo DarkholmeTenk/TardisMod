@@ -2,10 +2,12 @@ package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import tardis.TardisMod;
+import tardis.common.core.Helper;
 import tardis.common.tileents.EngineTileEntity;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -67,5 +69,21 @@ public class EngineBlock extends AbstractBlockContainer
 	public Class<? extends TileEntity> getTEClass()
 	{
 		return EngineTileEntity.class;
+	}
+	
+	@Override
+	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta)
+	{
+		if(Helper.isTardisWorld(world) && x == Helper.tardisCoreX && y == Helper.tardisCoreY - 5 && z == Helper.tardisCoreZ)
+		{
+			TileEntity te = world.getTileEntity(x, y, z);
+			NBTTagCompound nbt = new NBTTagCompound();
+			if(te != null)
+				te.writeToNBT(nbt);
+			world.setBlock(x, y, z, this);
+			TileEntity newTE = world.getTileEntity(x, y, z);
+			if(te != null && newTE != null)
+				newTE.readFromNBT(nbt);
+		}
 	}
 }
