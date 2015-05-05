@@ -53,10 +53,10 @@ public class SonicScrewdriverRenderer implements IItemRenderer
 		GL11.glScaled(0.45, 0.4, 0.45);
 		Minecraft.getMinecraft().renderEngine.bindTexture(bottomTex);
 		GL11.glTranslated(0, -0.8, 0);
-		GL11.glPushMatrix();
-		GL11.glScaled(0.75, 0.75, 0.75);
-		bottom.renderAll();
-		GL11.glPopMatrix();
+			GL11.glPushMatrix();
+			GL11.glScaled(0.75, 0.75, 0.75);
+			bottom.renderAll();
+			GL11.glPopMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(middleTex);
 		GL11.glTranslated(0, 0.1, 0);
 		middle.renderAll();

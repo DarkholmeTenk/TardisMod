@@ -9,6 +9,7 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -17,6 +18,7 @@ import tardis.common.core.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
+import tardis.common.tileents.SchemaCoreTileEntity;
 
 public class SchemaComponentBlock extends AbstractBlock
 {
@@ -146,7 +148,15 @@ public class SchemaComponentBlock extends AbstractBlock
     		{
     			if(w.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
     			{
-    				return TardisMod.screwItem.rightClickBlock(pl, new SimpleCoordStore(w,x,y-i,z));
+    				if(TardisMod.screwItem.rightClickBlock(pl, new SimpleCoordStore(w,x,y-i,z)))
+    					return true;
+    				else
+    				{
+    					TileEntity te = w.getTileEntity(x, y-i, z);
+    					if(te instanceof SchemaCoreTileEntity)
+    						((SchemaCoreTileEntity)te).activate(pl, s);
+    					return true;
+    				}
     			}
     		}
     	}

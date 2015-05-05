@@ -1113,6 +1113,18 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		return getMaxNumRooms(gDS().getLevel(TardisUpgradeMode.ROOMS));
 	}
+	
+	private void refreshRoomCount()
+	{
+		Iterator<SimpleCoordStore> iter = roomSet.iterator();
+		while(iter.hasNext())
+		{
+			SimpleCoordStore scs = iter.next();
+			TileEntity te = scs.getTileEntity();
+			if(!(te instanceof SchemaCoreTileEntity))
+				iter.remove();
+		}
+	}
 
 	public boolean addRoom(boolean sub, SchemaCoreTileEntity te)
 	{
@@ -1122,17 +1134,21 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			if (sub)
 			{
 				if (ServerHelper.isServer() && te != null)
+				{
 					roomSet.remove(new SimpleCoordStore(te));
-				if (numRooms > 0)
-					numRooms--;
+					if(numRooms > 0)
+						numRooms--;
+				}
 				ret = true;
 			}
 
-			if (!sub && numRooms < getMaxNumRooms())
+			if (!sub && getNumRooms() < getMaxNumRooms())
 			{
 				if (ServerHelper.isServer() && te != null)
+				{
 					roomSet.add(new SimpleCoordStore(te));
-				numRooms++;
+					numRooms++;
+				}
 				ret = true;
 			}
 		}
@@ -1623,7 +1639,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 			nbt.setInteger("fT", flightTimer);
 			nbt.setInteger("tFT", totalFlightTimer);
-			nbt.setInteger("numR", numRooms);
+			nbt.setInteger("numR", getNumRooms());
 			nbt.setDouble("sped", speed);
 			nbt.setInteger("fS", flightState.ordinal());
 

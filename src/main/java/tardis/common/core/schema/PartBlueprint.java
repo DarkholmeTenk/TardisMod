@@ -453,7 +453,7 @@ public class PartBlueprint
 			CoordStore rotated = coord;
 			if (primaryDoorFace != facing)
 				rotated = rotate(coord, primaryDoorFace, facing);
-			if (w.getBlock(x + rotated.x, y + rotated.y, z + rotated.z) != Blocks.air)
+			if (!w.isAirBlock(x + rotated.x, y + rotated.y, z + rotated.z))
 				return false;
 		}
 		return true;

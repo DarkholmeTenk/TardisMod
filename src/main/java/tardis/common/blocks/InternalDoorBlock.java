@@ -130,21 +130,14 @@ public class InternalDoorBlock extends AbstractBlock
 							if(pb.roomFor(w, nX, nY, nZ, opposingFace(facing)))
 							{
 								if(te == null || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
-								{
 									pb.reconstitute(w, nX, nY, nZ, opposingFace(facing));
-								}
-								else if(!w.isRemote)
-								{
+								else
 									player.addChatMessage(new ChatComponentText("Too many rooms in this TARDIS"));
-								}
 							}
 							else
 							{
-								if(!w.isRemote)
-								{
-									TardisOutput.print("TIDB", "NoRoom:"+nX+","+nY+","+nZ,TardisOutput.Priority.DEBUG);
-									player.addChatMessage(new ChatComponentText("Not enough room for schematic"));
-								}
+								TardisOutput.print("TIDB", "NoRoom:"+nX+","+nY+","+nZ,TardisOutput.Priority.DEBUG);
+								player.addChatMessage(new ChatComponentText("Not enough room for schematic"));
 							}
 						}
 						else if(schemaCarrier)
