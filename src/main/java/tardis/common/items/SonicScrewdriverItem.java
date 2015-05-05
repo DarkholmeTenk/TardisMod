@@ -150,17 +150,16 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 
 	public static double[] getColors(ScrewdriverMode m)
 	{
-		double[] colors = new double[3];
-		colors[0] = 0;
-		colors[1] = 0;
-		colors[2] = 1;
 		if (m != null)
 			return m.c;
-		return colors;
+		return defaultColor;
 	}
 
+	private static double[] defaultColor = new double[]{0,0,1};
 	public static double[] getColors(ItemStack is)
 	{
+		if(is == null)
+			return defaultColor;
 		ScrewdriverMode mode = getMode(is);
 		return getColors(mode);
 	}

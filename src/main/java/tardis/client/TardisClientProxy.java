@@ -62,6 +62,8 @@ public class TardisClientProxy extends TardisProxy
 		FMLInterModComms.sendMessage("Waila","register","tardis.common.integration.waila.WailaCallback.wailaRegister");
 	}
 	
+	public static SonicScrewdriverRenderer screwRenderer;
+	
 	@Override
 	public void postAssignment()
 	{
@@ -74,7 +76,7 @@ public class TardisClientProxy extends TardisProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(LandingPadTileEntity.class, new LandingPadRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(BatteryTileEntity.class, new BatteryRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.labBlock), new LabRenderer());
-		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, new SonicScrewdriverRenderer());
+		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, screwRenderer = new SonicScrewdriverRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.battery), new BatteryRenderer());
 	}
 	

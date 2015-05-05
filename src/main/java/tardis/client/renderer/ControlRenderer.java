@@ -8,6 +8,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import tardis.api.IControlMatrix;
+import tardis.client.TardisClientProxy;
 import tardis.client.renderer.model.SonicScrewdriverLightModel;
 import tardis.client.renderer.model.SonicScrewdriverModel;
 import tardis.client.renderer.model.console.GaugeDisplayModel;
@@ -127,11 +128,12 @@ public class ControlRenderer
 			GL11.glPushMatrix();
 			handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
 			resetHighlight();
-			bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriver.png"));
+			/*bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriver.png"));
 			screw.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 			double[] colors = SonicScrewdriverItem.getColors(te.getScrewMode(slot));
 			GL11.glColor3d(colors[0], colors[1], colors[2]);
-			screwLight.render(null,0F,0F,0F,0F,0F,0.0625F);
+			screwLight.render(null,0F,0F,0F,0F,0F,0.0625F);*/
+			TardisClientProxy.screwRenderer.render(null);
 			resetHighlight();
 			GL11.glPopMatrix();
 		}
