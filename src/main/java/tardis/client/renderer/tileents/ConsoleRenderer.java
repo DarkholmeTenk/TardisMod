@@ -1,4 +1,4 @@
-package tardis.client.renderer;
+package tardis.client.renderer.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 
 import tardis.TardisMod;
 import tardis.api.TardisFunction;
+import tardis.client.renderer.ControlRenderer;
 import tardis.client.renderer.model.ConsoleModel;
 import tardis.common.core.Helper;
 import tardis.common.tileents.ConsoleTileEntity;

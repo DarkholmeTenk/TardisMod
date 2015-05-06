@@ -11,19 +11,7 @@ Corridor.Short.schema
 Rooms.Big Chamber.schema
 Rooms.Med Chamber.schema
 Rooms.Med Farm.schema
+tardisConsoleMain.tardisConsoleFull.diff.schema
 tardisConsoleMain.schema
-tardisConsoleMain.tardisConsolePillars.diff.schema
-tardisConsoleMain.tardisConsoleWalkway.diff.schema
-tardisConsoleMain.tardisConsoleWhiter.diff.schema
-tardisConsolePillars.schema
-tardisConsolePillars.tardisConsoleMain.diff.schema
-tardisConsolePillars.tardisConsoleWalkway.diff.schema
-tardisConsolePillars.tardisConsoleWhiter.diff.schema
-tardisConsoleWalkway.schema
-tardisConsoleWalkway.tardisConsoleMain.diff.schema
-tardisConsoleWalkway.tardisConsolePillars.diff.schema
-tardisConsoleWalkway.tardisConsoleWhiter.diff.schema
-tardisConsoleWhiter.schema
-tardisConsoleWhiter.tardisConsoleMain.diff.schema
-tardisConsoleWhiter.tardisConsolePillars.diff.schema
-tardisConsoleWhiter.tardisConsoleWalkway.diff.schema
+tardisConsoleFull.tardisConsoleMain.diff.schema
+tardisConsoleFull.schema

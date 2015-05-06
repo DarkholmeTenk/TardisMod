@@ -1,4 +1,4 @@
-package tardis.client.renderer;
+package tardis.client.renderer.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;

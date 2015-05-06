@@ -16,15 +16,16 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
-import tardis.client.renderer.BatteryRenderer;
-import tardis.client.renderer.ComponentRenderer;
-import tardis.client.renderer.ConsoleRenderer;
-import tardis.client.renderer.CoreRenderer;
-import tardis.client.renderer.EngineRenderer;
-import tardis.client.renderer.LabRenderer;
-import tardis.client.renderer.LandingPadRenderer;
 import tardis.client.renderer.SonicScrewdriverRenderer;
-import tardis.client.renderer.TardisRenderer;
+import tardis.client.renderer.tileents.BatteryRenderer;
+import tardis.client.renderer.tileents.ClosedRoundelRenderer;
+import tardis.client.renderer.tileents.ComponentRenderer;
+import tardis.client.renderer.tileents.ConsoleRenderer;
+import tardis.client.renderer.tileents.CoreRenderer;
+import tardis.client.renderer.tileents.EngineRenderer;
+import tardis.client.renderer.tileents.LabRenderer;
+import tardis.client.renderer.tileents.LandingPadRenderer;
+import tardis.client.renderer.tileents.TardisRenderer;
 import tardis.common.TardisProxy;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.BatteryTileEntity;
@@ -35,6 +36,7 @@ import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.TardisTileEntity;
+import tardis.common.tileents.extensions.DummyRoundelTE;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.relauncher.Side;
@@ -55,15 +57,16 @@ public class TardisClientProxy extends TardisProxy
 		WorldServer world = MinecraftServer.getServer().worldServerForDimension(worldID);
 		world.markBlockRangeForRenderUpdate(x, y, z, x, y, z);
 	}
-	
+
+	@Override
 	public void init()
 	{
 		TardisOutput.print("TM", "Sending message to WAILA");
 		FMLInterModComms.sendMessage("Waila","register","tardis.common.integration.waila.WailaCallback.wailaRegister");
 	}
-	
+
 	public static SonicScrewdriverRenderer screwRenderer;
-	
+
 	@Override
 	public void postAssignment()
 	{
@@ -75,11 +78,12 @@ public class TardisClientProxy extends TardisProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(LabTileEntity.class, new LabRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(LandingPadTileEntity.class, new LandingPadRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(BatteryTileEntity.class, new BatteryRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(DummyRoundelTE.class, new ClosedRoundelRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.labBlock), new LabRenderer());
 		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, screwRenderer = new SonicScrewdriverRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.battery), new BatteryRenderer());
 	}
-	
+
 	@Override
 	public World getWorld(int id)
 	{
@@ -92,7 +96,7 @@ public class TardisClientProxy extends TardisProxy
 				return cWorld;
 		return super.getWorld(id);
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	private ITextureObject loadSkin(TextureManager texMan, TardisTileEntity tte)
 	{
@@ -110,7 +114,7 @@ public class TardisClientProxy extends TardisProxy
 		skins.put(tte.owner, skin);
 		return object;
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	public ResourceLocation getSkin(TextureManager texMan,TardisTileEntity tte)
 	{

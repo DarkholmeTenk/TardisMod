@@ -1,4 +1,4 @@
-package tardis.client.renderer;
+package tardis.client.renderer.tileents;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;

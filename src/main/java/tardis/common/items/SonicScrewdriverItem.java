@@ -51,7 +51,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 	public static ScrewdriverMode getMode(int i)
 	{
 		ScrewdriverMode[] modes = ScrewdriverMode.values();
-		if (i < 0 || i >= modes.length)
+		if ((i < 0) || (i >= modes.length))
 			return modes[0];
 		return modes[i];
 	}
@@ -115,7 +115,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 
 	public static CoreTileEntity getLinkedCore(ItemStack is)
 	{
-		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("linkedTardis"))
+		if ((is.stackTagCompound != null) && is.stackTagCompound.hasKey("linkedTardis"))
 		{
 			int dim = is.stackTagCompound.getInteger("linkedTardis");
 			return Helper.getTardisCore(dim);
@@ -128,7 +128,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		if (is != null)
 		{
 			NBTTagCompound nbt = is.stackTagCompound;
-			if (nbt != null && nbt.hasKey("coordStore"))
+			if ((nbt != null) && nbt.hasKey("coordStore"))
 			{
 				return SimpleCoordStore.readFromNBT(nbt.getCompoundTag("coordStore"));
 			}
@@ -138,7 +138,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 
 	public static void setStoredCoords(ItemStack is, SimpleCoordStore toStore)
 	{
-		if (is != null && (is.getItem() instanceof SonicScrewdriverItem))
+		if ((is != null) && (is.getItem() instanceof SonicScrewdriverItem))
 		{
 			NBTTagCompound nbt = is.stackTagCompound;
 			if (nbt == null)
@@ -163,10 +163,10 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		ScrewdriverMode mode = getMode(is);
 		return getColors(mode);
 	}
-	
+
 	public static String getOwner(ItemStack is)
 	{
-		if(is.stackTagCompound == null || !is.stackTagCompound.hasKey("owner"))
+		if((is.stackTagCompound == null) || !is.stackTagCompound.hasKey("owner"))
 			return "Unknown";
 		return is.stackTagCompound.getString("owner");
 	}
@@ -190,7 +190,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 				String schemaName = getSchema(is);
 				String schemaCat = getSchemaCat(is);
 
-				if (schemaName == null || schemaName.equals("") || schemaCat == null || schemaCat.equals(""))
+				if ((schemaName == null) || schemaName.equals("") || (schemaCat == null) || schemaCat.equals(""))
 					infoList.add("Schematic: --None--");
 				else
 					infoList.add("Schematic: " + schemaCat + " - " + schemaName);
@@ -307,13 +307,13 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 			}
 			else if (mode.equals(ScrewdriverMode.Reconfigure))
 			{
-				if (b == TardisMod.decoBlock || b == TardisMod.darkDecoBlock)
+				if ((b == TardisMod.decoBlock) || (b == TardisMod.darkDecoBlock))
 				{
 					int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-					if (m == 2 || m == 4)
+					if ((m == 2) || (m == 4))
 					{
 						CoreTileEntity core = Helper.getTardisCore(w);
-						if (core == null || core.canModify(player))
+						if ((core == null) || core.canModify(player))
 						{
 							w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.componentBlock, m == 2 ? 0 : 1, 3);
 							toolUsed(is, player, hitPos.blockX, hitPos.blockY, hitPos.blockZ);
@@ -322,6 +322,19 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 						else
 							player.addChatMessage(CoreTileEntity.cannotModifyMessage);
 					}
+				}
+				else if(b == TardisMod.colorableRoundelBlock)
+				{
+					int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+					CoreTileEntity core = Helper.getTardisCore(w);
+					if ((core == null) || core.canModify(player))
+					{
+						w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.colorableOpenRoundelBlock, m, 3);
+						toolUsed(is, player, hitPos.blockX, hitPos.blockY, hitPos.blockZ);
+						return true;
+					}
+					else
+						player.addChatMessage(CoreTileEntity.cannotModifyMessage);
 				}
 				else
 				{
@@ -465,7 +478,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 			else if (mode.equals(ScrewdriverMode.Recall))
 			{
 				ConsoleTileEntity con = core.getConsole();
-				if (con != null && !core.inFlight())
+				if ((con != null) && !core.inFlight())
 				{
 					if (con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX),
 							(int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))

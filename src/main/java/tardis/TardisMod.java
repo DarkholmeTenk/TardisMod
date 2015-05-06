@@ -17,6 +17,10 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
 import tardis.common.blocks.BatteryBlock;
+import tardis.common.blocks.ColorableFloorBlock;
+import tardis.common.blocks.ColorableOpenRoundelBlock;
+import tardis.common.blocks.ColorableRoundelBlock;
+import tardis.common.blocks.ColorableWallBlock;
 import tardis.common.blocks.ComponentBlock;
 import tardis.common.blocks.ConsoleBlock;
 import tardis.common.blocks.CoreBlock;
@@ -75,8 +79,8 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 @Mod(
 		modid = "TardisMod",
 		name = "Tardis Mod",
-		version = "0.9",
-		dependencies = "required-after:FML; required-after:darkcore; required-after:CoFHCore; after:appliedenergistics2; after:Waila")
+		version = "0.95",
+		dependencies = "required-after:FML; required-after:darkcore@[0.2,]; required-after:CoFHCore; after:appliedenergistics2; after:Waila")
 public class TardisMod implements IConfigHandlerMod
 {
 	@Instance
@@ -129,6 +133,11 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock				slabBlock;
 	public static AbstractBlock				interiorDirtBlock;
 
+	public static AbstractBlock				colorableWallBlock;
+	public static AbstractBlock				colorableFloorBlock;
+	public static AbstractBlock				colorableRoundelBlock;
+	public static AbstractBlock				colorableOpenRoundelBlock;
+
 	public static LabBlock					labBlock;
 
 	public static AbstractItem				schemaItem;
@@ -165,7 +174,7 @@ public class TardisMod implements IConfigHandlerMod
 		miscConfig = configHandler.registerConfigNeeder("Misc");
 		refreshConfigs();
 
-		
+
 		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
 		initBlocks();
@@ -175,32 +184,32 @@ public class TardisMod implements IConfigHandlerMod
 
 		proxy.postAssignment();
 	}
-	
+
 	public static void refreshConfigs()
 	{
 		int outputPriority = modConfig.getConfigItem(new ConfigItem("Debug level",CType.INT,TardisOutput.Priority.INFO.ordinal(),
 				"Sets the level of debug output")).getInt();
 		priorityLevel = TardisOutput.getPriority(outputPriority);
-		
+
 		providerID = modConfig.getConfigItem(new ConfigItem("Dimension provider ID", CType.INT, 54,
 				"The id of the dimension provider")).getInt();
-		
+
 		tardisLoaded = modConfig.getConfigItem(new ConfigItem("Dimension always loaded", CType.BOOLEAN, true,
 				"Should the TARDIS dimensions always be loaded")).getBoolean();
-		
+
 		keyInHand = modConfig.getConfigItem(new ConfigItem("Key in hand", CType.BOOLEAN, true,
 				"Does a player need to have the key in hand to get through a locked TARDIS door")).getBoolean();
-		
+
 		keyCraftable = modConfig.getBoolean("keyCraftable", true, "True if the key is craftable.","False if they can only be spawned");
-		
+
 		keyReqKontron = modConfig.getBoolean("keyRequiresKontron", true, "True if the key requires a Kontron crystal to craft");
-		
+
 		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1,
 				"How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
-		
+
 		visibleSchema = modConfig.getConfigItem(new ConfigItem("Visible Schema", CType.BOOLEAN, false,
 				"Should schema boundaries be visible (clientside config)")).getBoolean();
-		
+
 		xpBase = miscConfig.getInt("xp base amount", 80,
 				"The amount of xp it initially costs to level up");
 		xpInc = miscConfig.getInt("xp increase", 20,
@@ -217,7 +226,7 @@ public class TardisMod implements IConfigHandlerMod
 				"The number of internal tanks that the TARDIS has");
 		numInvs = miscConfig.getInt("Number of internal inventory slots", 30,
 				"The number of item inventory slots that the TARDIS has");
-		
+
 		AbstractComponent.refreshConfigs();
 		BatteryTileEntity.refreshConfigs();
 		ComponentTileEntity.refreshConfigs();
@@ -225,7 +234,7 @@ public class TardisMod implements IConfigHandlerMod
 		GravityLiftTileEntity.refreshConfigs();
 		LabTileEntity.refreshConfigs();
 		InteriorDirtBlock.refreshConfigs();
-		
+
 		TardisDimensionHandler.refreshConfigs();
 	}
 
@@ -250,46 +259,54 @@ public class TardisMod implements IConfigHandlerMod
 	private void initBlocks()
 	{
 		tardisBlock = new TardisBlock().register();
-		
+
 		tardisTopBlock = new TopBlock().register();
-		
+
 		tardisCoreBlock = new CoreBlock().register();
-		
+
 		tardisConsoleBlock = new ConsoleBlock().register();
-		
+
 		tardisEngineBlock = new EngineBlock().register();
-		
+
 		componentBlock = new ComponentBlock().register();
-		
+
 		internalDoorBlock = new InternalDoorBlock().register();
-		
+
 		decoBlock = new DecoBlock(true).register();
-		
+
 		decoTransBlock = new DecoTransBlock().register();
-		
+
 		interiorDirtBlock = new InteriorDirtBlock().register();
-		
+
 		stairBlock = new StairBlock().register();
-		
+
 		debugBlock = new DebugBlock().register();
-		
+
 		schemaBlock = new SchemaBlock(visibleSchema).register();
-		
+
 		schemaCoreBlock = new SchemaCoreBlock(visibleSchema).register();
-		
+
 		schemaComponentBlock = new SchemaComponentBlock().register();
-		
+
 		slabBlock = new SlabBlock().register();
-		
+
 		landingPad = new LandingPadBlock().register();
-		
+
 		labBlock	= (LabBlock) new LabBlock().register();
-		
+
 		gravityLift = new GravityLiftBlock().register();
-		
+
 		forcefield = new ForceFieldBlock().register();
-		
+
 		battery = new BatteryBlock().register();
+
+		colorableWallBlock = new ColorableWallBlock().register();
+
+		colorableFloorBlock = new ColorableFloorBlock().register();
+
+		colorableRoundelBlock = new ColorableRoundelBlock().register();
+
+		colorableOpenRoundelBlock = new ColorableOpenRoundelBlock().register();
 	}
 
 	private void initItems()
