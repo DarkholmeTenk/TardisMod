@@ -82,7 +82,7 @@ public class Helper
 		}
 		CoreTileEntity te = getTardisCore(dimID);
 		TardisDataStore ds = getDataStore(dimID);
-		if (te != null && ds != null)
+		if ((te != null) && (ds != null))
 		{
 			te.setOwner(ownerName);
 			if (exterior != null)
@@ -170,7 +170,7 @@ public class Helper
 
 				for (int zO : validSpotRanges)
 				{
-					if (y > 1 && y < 253)
+					if ((y > 1) && (y < 253))
 					{
 						if (w.isAirBlock(x + xO, y + yO, z + zO) && w.isAirBlock(x + xO, y + yO + 1, z + zO))
 						{
@@ -192,7 +192,7 @@ public class Helper
 		}
 		return null;
 	}
-	
+
 	public static void repairConsole(World w)
 	{
 		if(!Helper.isTardisWorld(w))
@@ -202,7 +202,7 @@ public class Helper
 		{
 			for(int z = -1; z<= 1; z++)
 			{
-				if(x == 0 && z == 0)
+				if((x == 0) && (z == 0))
 					continue;
 				if(w.getBlock(x, y, z) != TardisMod.schemaComponentBlock)
 					w.setBlock(x, y, z, TardisMod.schemaComponentBlock, 3, 3);
@@ -212,6 +212,8 @@ public class Helper
 			w.setBlock(0, y+1, 0, TardisMod.schemaComponentBlock, 6, 3);
 		if(w.getBlock(0, tardisCoreY+1, 0) != TardisMod.schemaComponentBlock)
 			w.setBlock(0, tardisCoreY + 1, 0, TardisMod.schemaComponentBlock, 8, 3);
+		if(w.getBlock(0, tardisCoreY-5, 0) != TardisMod.tardisEngineBlock)
+			w.setBlock(0, tardisCoreY - 5, 0, TardisMod.tardisEngineBlock);
 	}
 
 	public static boolean isBlockRemovable(Block blockID)

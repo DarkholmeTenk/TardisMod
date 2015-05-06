@@ -17,6 +17,7 @@ tile.TardisMod.DecoBlockDark.Corridor.name=White Wall
 tile.TardisMod.DecoBlockDark.CorridorRoundel.name=White Roundel
 tile.TardisMod.DecoBlockDark.CorridorFloor.name=White Floor
 tile.TardisMod.DecoBlockDark.Glass.name=Glass
+tile.TardisMod.DecoGlass.name=Glass
 
 tile.TardisMod.Component.Roundel.name=Open Roundel
 tile.TardisMod.Component.CorridorRoundel.name=Open White Roundel
@@ -35,7 +36,7 @@ tile.TardisMod.SchemaCore.name=Schema Core
 tile.TardisMod.Slab.Console.name=Console Slab
 tile.TardisMod.Slab.Glass.name=Glass Slab
 tile.TardisMod.Slab.Walkway.name=Walkway
-tile.TardisMod.slab.Corridor.name=Corridor Slab
+tile.TardisMod.Slab.Corridor.name=Corridor Slab
 
 tile.TardisMod.TardisTop.name=TARDIS
 tile.TardisMod.InternalDoor.InternalDoor.name=Door
@@ -48,6 +49,7 @@ tile.TardisMod.TardisEngineBlock.name=Temporal Engine
 tile.TardisMod.SchemaComponent.Engine.name=Temporal Engine
 tile.TardisMod.Lab.name=Temporal Laboratory
 tile.TardisMod.LandingPad.name=TARDIS Landing Pad
+tile.TardisMod.TardisDirt.name=Temporal Dirt (Unfinished)
 
 tile.TardisMod.GravityLift.Normal.name=Solid Gravity Lift
 tile.TardisMod.GravityLift.Craftable.name=Gravity Lift
@@ -58,6 +60,11 @@ tile.TardisMod.Battery.Basic.name=Basic Artron Battery
 tile.TardisMod.Battery.Advanced.name=Advanced Artron Battery
 tile.TardisMod.Battery.Temporal.name=Temporal Artron Battery
 
+tile.TardisMod.ColorableWall.name=Solid Block
+tile.TardisMod.ColorableFloor.name=Flat Block
+tile.TardisMod.ColorableRoundel.name=Roundel
+tile.TardisMod.ColorableRoundelOpen.name=Open Roundel
+
 item.TardisMod.SonicScrewdriver.name=Sonic Screwdriver
 item.TardisMod.TardisKey.name=TARDIS Key
 
@@ -66,6 +73,7 @@ item.TardisMod.Component.Mass-Energy.name=TARDIS Cable Interface - ME Cable
 item.TardisMod.Component.Inv.name=TARDIS Cable Interface - Itemduct
 item.TardisMod.Component.Fluid.name=TARDIS Cable Interface - Fluiduct
 item.TardisMod.Component.RF.name=TARDIS Cable Interface - Energy Conduit
+item.TardisMod.Component.Peripheral.name=TARDIS Cable Interface - Computercraft (Unfinished)
 item.TardisMod.Component.ChunkLoader.name=TARDIS Cable Interface - Chunk Loader
 item.TardisMod.Component.Nanogene.name=Nanogene Canister
 

@@ -1,0 +1,86 @@
+﻿Added colorable blocks
+Redid all of the schema files
+Rebuilt the console room to be a nice hexagon
+Updated to 0.2 Darkcore
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch roomRedesign
+# Changes to be committed:
+#	new file:   models/bubble.blend
+#	new file:   models/bubble.blend1
+#	new file:   models/bubble.obj
+#	new file:   models/bubble.png
+#	new file:   models/bubbledepressed.blend
+#	new file:   models/bubbledepressed.blend1
+#	new file:   models/bubbledepressed.mtl
+#	new file:   models/bubbledepressed.obj
+#	modified:   src/main/java/tardis/TardisMod.java
+#	modified:   src/main/java/tardis/client/TardisClientProxy.java
+#	renamed:    src/main/java/tardis/client/renderer/BatteryRenderer.java -> src/main/java/tardis/client/renderer/tileents/BatteryRenderer.java
+#	new file:   src/main/java/tardis/client/renderer/tileents/ClosedRoundelRenderer.java
+#	renamed:    src/main/java/tardis/client/renderer/ComponentRenderer.java -> src/main/java/tardis/client/renderer/tileents/ComponentRenderer.java
+#	renamed:    src/main/java/tardis/client/renderer/ConsoleRenderer.java -> src/main/java/tardis/client/renderer/tileents/ConsoleRenderer.java
+#	renamed:    src/main/java/tardis/client/renderer/CoreRenderer.java -> src/main/java/tardis/client/renderer/tileents/CoreRenderer.java
+#	renamed:    src/main/java/tardis/client/renderer/EngineRenderer.java -> src/main/java/tardis/client/renderer/tileents/EngineRenderer.java
+#	renamed:    src/main/java/tardis/client/renderer/LabRenderer.java -> src/main/java/tardis/client/renderer/tileents/LabRenderer.java
+#	renamed:    src/main/java/tardis/client/renderer/LandingPadRenderer.java -> src/main/java/tardis/client/renderer/tileents/LandingPadRenderer.java
+#	renamed:    src/main/java/tardis/client/renderer/TardisRenderer.java -> src/main/java/tardis/client/renderer/tileents/TardisRenderer.java
+#	new file:   src/main/java/tardis/common/blocks/ColorableFloorBlock.java
+#	new file:   src/main/java/tardis/common/blocks/ColorableFloorItemBlock.java
+#	new file:   src/main/java/tardis/common/blocks/ColorableOpenRoundelBlock.java
+#	new file:   src/main/java/tardis/common/blocks/ColorableOpenRoundelItemBlock.java
+#	new file:   src/main/java/tardis/common/blocks/ColorableRoundelBlock.java
+#	new file:   src/main/java/tardis/common/blocks/ColorableRoundelItemBlock.java
+#	new file:   src/main/java/tardis/common/blocks/ColorableWallBlock.java
+#	new file:   src/main/java/tardis/common/blocks/ColorableWallItemBlock.java
+#	modified:   src/main/java/tardis/common/core/Helper.java
+#	modified:   src/main/java/tardis/common/core/schema/SchemaStore.java
+#	modified:   src/main/java/tardis/common/items/SonicScrewdriverItem.java
+#	modified:   src/main/java/tardis/common/tileents/ComponentTileEntity.java
+#	new file:   src/main/java/tardis/common/tileents/extensions/DummyRoundelTE.java
+#	modified:   src/main/resources/assets/tardismod/lang/en_US.lang
+#	new file:   src/main/resources/assets/tardismod/models/bubble.obj
+#	new file:   src/main/resources/assets/tardismod/models/bubbledepressed.obj
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor Junction.Four Way.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor Junction.T Junction.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor Junction.Turn Left.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor Junction.Turn Right.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor Lift.Down Further.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor Lift.Down.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor Lift.Up Further.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor Lift.Up.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor.Normal.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Corridor.Short.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Rooms.Big Chamber.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Rooms.Med Chamber.schema
+#	modified:   src/main/resources/assets/tardismod/schema/Rooms.Med Farm.schema
+#	modified:   src/main/resources/assets/tardismod/schema/schemaList
+#	new file:   src/main/resources/assets/tardismod/schema/tardisConsoleFull.schema
+#	new file:   src/main/resources/assets/tardismod/schema/tardisConsoleFull.tardisConsoleMain.diff.schema
+#	modified:   src/main/resources/assets/tardismod/schema/tardisConsoleMain.schema
+#	new file:   src/main/resources/assets/tardismod/schema/tardisConsoleMain.tardisConsoleFull.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleMain.tardisConsolePillars.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleMain.tardisConsoleWalkway.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleMain.tardisConsoleWhiter.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsolePillars.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsolePillars.tardisConsoleMain.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsolePillars.tardisConsoleWalkway.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsolePillars.tardisConsoleWhiter.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleWalkway.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleWalkway.tardisConsoleMain.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleWalkway.tardisConsolePillars.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleWalkway.tardisConsoleWhiter.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleWhiter.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleWhiter.tardisConsoleMain.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleWhiter.tardisConsolePillars.diff.schema
+#	deleted:    src/main/resources/assets/tardismod/schema/tardisConsoleWhiter.tardisConsoleWalkway.diff.schema
+#	new file:   src/main/resources/assets/tardismod/textures/blocks/ColorableFloor.png
+#	new file:   src/main/resources/assets/tardismod/textures/blocks/ColorableOpenRoundel.png
+#	new file:   src/main/resources/assets/tardismod/textures/blocks/ColorableRoundel.png
+#	new file:   src/main/resources/assets/tardismod/textures/blocks/ColorableWall.png
+#	new file:   src/main/resources/assets/tardismod/textures/models/bubble.png
+#	new file:   src/main/resources/assets/tardismod/textures/models/bubbledepressed.png
+#	new file:   src/main/resources/assets/tardismod/textures/models/bubbledepressed.psd
+#	modified:   src/main/resources/mcmod.info
+#
+

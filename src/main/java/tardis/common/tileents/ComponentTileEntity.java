@@ -54,7 +54,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 		if(config == null)
 			refreshConfigs();
 	}
-	
+
 	public static void refreshConfigs()
 	{
 		if(config == null)
@@ -65,7 +65,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 
 	public boolean addComponent(TardisTEComponent comp)
 	{
-		if (!hasComponent(comp) && getNumComponents() < maxComponents)
+		if (!hasComponent(comp) && (getNumComponents() < maxComponents))
 		{
 			if (inside == null)
 				inside = Helper.isTardisWorld(worldObj);
@@ -179,8 +179,17 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 
 	protected void dismantle(EntityPlayer pl)
 	{
-		int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-		worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.decoBlock, d == 0 ? 2 : 4, 3);
+		Block b = worldObj.getBlock(xCoord, yCoord, zCoord);
+		if(b == TardisMod.componentBlock)
+		{
+			int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
+			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.decoBlock, d == 0 ? 2 : 4, 3);
+		}
+		else
+		{
+			int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
+			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.colorableRoundelBlock, d, 3);
+		}
 	}
 
 	@Override
@@ -189,7 +198,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 		if (mode == ScrewdriverMode.Dismantle)
 		{
 			CoreTileEntity core = getCore();
-			if (core == null || core.canModify(player))
+			if ((core == null) || core.canModify(player))
 			{
 				ItemStack[] contained = getComponentItems();
 				if (contained.length > 0)
@@ -219,6 +228,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public boolean activate(EntityPlayer pl, int side)
 	{
+		if(!ServerHelper.isServer()) return true;
 		ItemStack is = pl.getHeldItem();
 		if (is != null)
 		{
@@ -226,11 +236,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 			if (i instanceof ComponentItem)
 			{
 				CoreTileEntity core = getCore();
-				if (core == null || core.canModify(pl))
+				if ((core == null) || core.canModify(pl))
 				{
 					int dam = is.getItemDamage();
 					TardisTEComponent[] possComps = TardisTEComponent.values();
-					if (dam >= 0 && dam < possComps.length)
+					if ((dam >= 0) && (dam < possComps.length))
 					{
 						TardisTEComponent rel = possComps[dam];
 						if (addComponent(rel))
@@ -307,7 +317,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 		TardisTEComponent[] possibleComps = TardisTEComponent.values();
 		for (Integer key : comps.keySet())
 		{
-			if (key >= 0 && key < possibleComps.length)
+			if ((key >= 0) && (key < possibleComps.length))
 			{
 				TardisTEComponent relevantComp = possibleComps[key];
 				NBTTagCompound compNBT = new NBTTagCompound();
@@ -381,7 +391,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	{
 		CoreTileEntity core = getCore();
 		if (core != null)
-			return (IArtronEnergyProvider) core;
+			return core;
 		return null;
 	}
 
