@@ -25,8 +25,8 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(13), "Upgrade shields level");
 		controlNames.put(new TwoIntStore(20), "Energy level gauge");
 		controlNames.put(new TwoIntStore(21), "Energy regen level gauge");
-		controlNames.put(new TwoIntStore(22), "Max rooms level gauge");
-		controlNames.put(new TwoIntStore(23), "Shields level gauge");
+		controlNames.put(new TwoIntStore(22), "Shields level gauge");
+		controlNames.put(new TwoIntStore(23), "Max rooms level gauge");
 		controlNames.put(new TwoIntStore(30), "Unspent points gauge");
 		controlNames.put(new TwoIntStore(39), "Screwdriver slot");
 		controlNames.put(new TwoIntStore(40,49), "Screwdriver permissions buttons");
@@ -37,14 +37,14 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(72), "Next Console Room");
 		controlNames.put(new TwoIntStore(73), "Switch Console Room");
 	}
-	
+
 	private boolean isEngine(IWailaDataAccessor accessor)
 	{
-		if(accessor.getBlock()== TardisMod.tardisEngineBlock || (accessor.getBlock()==TardisMod.schemaComponentBlock && accessor.getMetadata() == 7))
+		if((accessor.getBlock()== TardisMod.tardisEngineBlock) || ((accessor.getBlock()==TardisMod.schemaComponentBlock) && (accessor.getMetadata() == 7)))
 			return true;
 		return false;
 	}
-	
+
 	@Override
 	public String[] extraInfo(IWailaDataAccessor accessor, int control)
 	{
@@ -63,7 +63,7 @@ public class WailaEngineProvider extends AbstractWailaProvider
 			if(e != null)
 			{
 				MovingObjectPosition pos = accessor.getPosition();
-				if(pos.hitVec.yCoord <= e.yCoord+1.5)
+				if(pos.hitVec.yCoord <= (e.yCoord+1.5))
 					return e.getControlFromHit(pos.blockX,pos.blockY,pos.blockZ,pos.hitVec, accessor.getPlayer());
 			}
 		}
