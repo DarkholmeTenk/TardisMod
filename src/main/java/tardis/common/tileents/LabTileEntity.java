@@ -29,12 +29,12 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	private static ArrayList<LabRecipe> recipes = new ArrayList<LabRecipe>();
 	public static void addRecipe(LabRecipe toAdd)
 	{
-		if(toAdd != null && toAdd.isValid())
+		if((toAdd != null) && toAdd.isValid())
 		{
 			recipes.add(toAdd);
 		}
 	}
-	
+
 	private static ConfigFile config = null;
 	private static int maxSpeed = 5;
 
@@ -46,11 +46,11 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	private int speed = 1;
 	public int chargedEnergy = 0;
 	public int requiredEnergy = 0;
-	
+
 	//CLIENT ONLY
 	public double stickX = 0;
 	public double stickZ = 0;
-	
+
 	@Override
 	public void init()
 	{
@@ -59,7 +59,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		if(ServerHelper.isServer())
 			isPowered();
 	}
-	
+
 	public static void refreshConfigs()
 	{
 		if(config == null)
@@ -67,11 +67,11 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		maxSpeed = config.getInt("Max speed", 5,
 				"The maximum speed which the lab can operate at");
 	}
-	
+
 	private int numPartiallyMatchingRecipes(ItemStack newItemStack)
 	{
 		ItemStack[] inputSlots = getInputSlots();
-		
+
 		//Copy all the recipes into a new array list
 		ArrayList<LabRecipe> matching = new ArrayList<LabRecipe>();
 		matching.addAll(recipes);
@@ -95,7 +95,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		}
 		return matching.size();
 	}
-	
+
 	/**@return first recipe matched with the input items
 	 */
 	private LabRecipe getMatchedRecipe()
@@ -110,7 +110,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		}
 		return null;
 	}
-	
+
 	private ItemStack[] getInputSlots()
 	{
 		ItemStack[] inputSlots = new ItemStack[5];
@@ -118,7 +118,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			inputSlots[i] = inventory[i];
 		return inputSlots;
 	}
-	
+
 	private void takeComponents(ItemStack[] components)
 	{
 		if(components == null)
@@ -128,7 +128,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			for(int i = 0;i<5;i++)
 			{
 				ItemStack invIS = inventory[i];
-				if(invIS != null && invIS.getItem().equals(comp.getItem()))
+				if((invIS != null) && invIS.getItem().equals(comp.getItem()))
 				{
 					if(invIS.stackSize >= comp.stackSize)
 					{
@@ -141,7 +141,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			}
 		}
 	}
-	
+
 	private boolean addResults(ItemStack[] results)
 	{
 		int freeSlots = 0;
@@ -165,7 +165,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 					}
 					else if(WorldHelper.sameItem(inventory[i], is))
 					{
-						if(inventory[i].stackSize + is.stackSize <= inventory[i].getMaxStackSize())
+						if((inventory[i].stackSize + is.stackSize) <= inventory[i].getMaxStackSize())
 						{
 							inventory[i].stackSize += is.stackSize;
 							outputted = true;
@@ -173,17 +173,17 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 						}
 					}
 				}
-				if(outputted)
+				/*if(outputted)
 					TardisOutput.print("LTE", "Outputted " + is.getDisplayName());
 				else
-					TardisOutput.print("LTE", "Failed to output " + is.getDisplayName());
+					TardisOutput.print("LTE", "Failed to output " + is.getDisplayName());*/
 			}
 			TardisOutput.print("LTE", "Outputted results");
 			return true;
 		}
 		return false;
 	}
-	
+
 	private void update(boolean working)
 	{
 		if(working != wasWorking)
@@ -192,7 +192,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			sendUpdate();
 		}
 	}
-	
+
 	private void processTick()
 	{
 		IArtronEnergyProvider core = Helper.getArtronProvider(this,true);
@@ -201,16 +201,16 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			LabRecipe matchedRecipe = getMatchedRecipe();
 			if(isGeneratingEnergy(matchedRecipe,core))
 			{
-				TardisOutput.print("LTE", "#03");
+				//TardisOutput.print("LTE", "#03");
 				chargedEnergy += core.takeArtronEnergy(1, false) ? 1 : 0;
 				update(true);
 			}
 			else
 			{
-				TardisOutput.print("LTE", "#02");
+				//TardisOutput.print("LTE", "#02");
 				update(false);
 			}
-			
+
 			if(matchedRecipe != null)
 			{
 				if(chargedEnergy >= matchedRecipe.energyCost)
@@ -224,12 +224,12 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			}
 			else
 			{
-				TardisOutput.print("LTE", "#01");
+				//TardisOutput.print("LTE", "#01");
 				update(false);
 			}
 		}
 	}
-	
+
 	private void attemptToEmpty()
 	{
 		TileEntity out = worldObj.getTileEntity(xCoord, yCoord-1, zCoord);
@@ -245,7 +245,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			}
 		}
 	}
-	
+
 	public void dropEverything()
 	{
 		for(ItemStack is : inventory)
@@ -256,7 +256,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			worldObj.spawnEntityInWorld(ei);
 		}
 	}
-	
+
 	@Override
 	public void updateEntity()
 	{
@@ -272,7 +272,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		}
 		if((!ServerHelper.isServer()) && isGeneratingEnergy(null,null))
 			moveSticks();
-		if(ServerHelper.isServer() && tt % 20 == 0)
+		if(ServerHelper.isServer() && ((tt % 20) == 0))
 		{
 			powered = Helper.getArtronProvider(this, true) != null;
 			if(!powered && active)
@@ -283,7 +283,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			attemptToEmpty();
 		}
 	}
-	
+
 	public boolean isPowered()
 	{
 		if(powered == null)
@@ -295,20 +295,20 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		}
 		return powered;
 	}
-	
+
 	public boolean isActive()
 	{
 		return active && isPowered();
 	}
-	
+
 	public boolean isGeneratingEnergy(LabRecipe rec,IArtronEnergyProvider core)
 	{
 		if(!ServerHelper.isServer())
 			return isActive() && generatingEnergy;
 		boolean result = false;
-		if(rec != null && core != null)
+		if((rec != null) && (core != null))
 		{
-			if(chargedEnergy < rec.energyCost && rec.flagsSatisfied(core))
+			if((chargedEnergy < rec.energyCost) && rec.flagsSatisfied(core))
 				result = true;
 			if(result != generatingEnergy)
 			{
@@ -321,10 +321,10 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			generatingEnergy = false;
 			update(false);
 		}
-		
+
 		return generatingEnergy;
 	}
-	
+
 	@Override
 	public int getSizeInventory()
 	{
@@ -404,7 +404,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	{
 		if(slot < 5)
 		{
-			if((inventory[slot] == null && numPartiallyMatchingRecipes(item) > 0) || (inventory[slot] != null && inventory[slot].getItem().equals(item.getItem())))
+			if(((inventory[slot] == null) && (numPartiallyMatchingRecipes(item) > 0)) || ((inventory[slot] != null) && inventory[slot].getItem().equals(item.getItem())))
 				return true;
 		}
 		return false;
@@ -413,7 +413,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	@Override
 	public int[] getAccessibleSlotsFromSide(int side)
 	{
-		if(side >= 0 && side < 2)
+		if((side >= 0) && (side < 2))
 			return sideAccessibility[2];
 		return new int[]{};
 	}
@@ -421,7 +421,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	@Override
 	public boolean canInsertItem(int slot, ItemStack item, int side)
 	{
-		if(side < 0 || side >= 2)
+		if((side < 0) || (side >= 2))
 			return false;
 		return isItemValidForSlot(slot,item);
 	}
@@ -429,11 +429,11 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	@Override
 	public boolean canExtractItem(int slot, ItemStack item, int side)
 	{
-		if(side < 0 || side >= 2 || item == null)
+		if((side < 0) || (side >= 2) || (item == null))
 			return false;
 		return slot >= 5;
 	}
-	
+
 	@Override
 	public boolean activate(EntityPlayer pl, int side)
 	{
@@ -503,7 +503,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		active = nbt.getBoolean("active");
 		speed = MathHelper.clamp(nbt.getInteger("speed"), 1, maxSpeed);
 	}
-	
+
 	private void moveSticks()
 	{
 		double inc = 0.0625;
@@ -518,19 +518,19 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		}
 		else if(stickZ < inc)
 		{
-			if(stickX <= 1-inc)
+			if(stickX <= (1-inc))
 				stickX += inc;
 			else
 				stickZ += inc;
 		}
-		else if(stickX > 1-inc)
+		else if(stickX > (1-inc))
 		{
-			if(stickZ <= 1-inc)
+			if(stickZ <= (1-inc))
 				stickZ += inc;
 			else
 				stickX -= inc;
 		}
-		else if(stickZ > 1-inc)
+		else if(stickZ > (1-inc))
 		{
 			if(stickX >= inc)
 				stickX -= inc;
@@ -538,7 +538,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 				stickZ += inc;
 		}
 	}
-	
+
 	public double[] getStick()
 	{
 		return new double[] { (stickX-0.5)*2, (stickZ-0.5)*2 };
