@@ -818,7 +818,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			return;
 		}
 		int[] posArr;
-		if((distanceToTravel == 0) || (distanceTravelled >= distanceToTravel) || (sourceLocation == null) || (destLocation == null) || forcedFlight)
+		if((distanceToTravel == 0) || (distanceTravelled >= distanceToTravel) || (sourceLocation == null) || (destLocation == null) || forcedFlight || fast)
 			posArr = new int[] { con.getXFromControls(gDS().exteriorX) + getUnstableOffset(), con.getYFromControls(gDS().exteriorY),
 					con.getZFromControls(gDS().exteriorZ) + getUnstableOffset() };
 		else
