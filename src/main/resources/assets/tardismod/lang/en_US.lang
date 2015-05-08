@@ -76,6 +76,7 @@ item.TardisMod.Component.RF.name=TARDIS Cable Interface - Energy Conduit
 item.TardisMod.Component.Peripheral.name=TARDIS Cable Interface - Computercraft (Unfinished)
 item.TardisMod.Component.ChunkLoader.name=TARDIS Cable Interface - Chunk Loader
 item.TardisMod.Component.Nanogene.name=Nanogene Canister
+item.TardisMod.Component.Aspects.name=TARDIS Cable Interface - Essentia
 
 item.TardisMod.CraftingComponent.IngotDalek.name=Dalekanium Ingot
 item.TardisMod.CraftingComponent.IngotChronosteel.name=Chronosteel Ingot

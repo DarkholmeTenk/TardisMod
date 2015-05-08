@@ -9,18 +9,19 @@ public enum TardisTEComponent
 		FLUID		("Fluid","stickFlu",new ComponentFluid(),ValPos.BOTH),
 		CHUNK		("ChunkLoader","stickChLo", new ComponentChunkLoader(),ValPos.BOTH),
 		COMPUTER	("Peripheral","stickPer", new ComponentPeripheral(),ValPos.BOTH),
-		NANOGENE	("Nanogene","stickNano", new ComponentNanogene(),ValPos.BOTH);
-		
+		NANOGENE	("Nanogene","stickNano", new ComponentNanogene(),ValPos.BOTH),
+		THAUMCRAFT	("Aspects","stickAspect",new ComponentAspect(),ValPos.BOTH);
+
 		public enum ValPos
 		{
 			INSIDE, OUTSIDE, BOTH;
 		}
-		
+
 		private static String[] stringArray = null;
 		public final ValPos valPos;
 		public final String componentName;
 		public final String tex;
-		
+
 		public ITardisComponent baseObj;
 		TardisTEComponent(String name, String _tex, ITardisComponent comp, ValPos validPosition)
 		{
@@ -29,14 +30,14 @@ public enum TardisTEComponent
 			componentName = name;
 			valPos = validPosition;
 		}
-		
+
 		public boolean isValid(boolean inside)
 		{
 			if(inside)
 				return valPos!=ValPos.OUTSIDE;
 			return valPos!=ValPos.INSIDE;
 		}
-		
+
 		public static String[] getStrings()
 		{
 			if(stringArray == null)

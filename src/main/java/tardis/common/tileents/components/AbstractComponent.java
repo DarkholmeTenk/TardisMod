@@ -30,6 +30,9 @@ public abstract class AbstractComponent implements ITardisComponent
 	protected static boolean nanogeneFeed = true;
 	protected static Random rand = new Random();
 
+	public static int maxEachAspect = 16;
+	public static int numAspects = 16;
+
 	static
 	{
 		if(config == null)
@@ -45,6 +48,8 @@ public abstract class AbstractComponent implements ITardisComponent
 		nanogeneCost = config.getInt("nanogene cost", 1, "The amount of Artron energy used up each time a nanogene heals");
 		nanogeneHealAmount = config.getInt("nanogene heal amount", 2, "The amount of health a nanogene can restore per pulse");
 		nanogeneFeed = config.getBoolean("nanogene feed", true, "Whether nanogenes should also feed players as well as heal");
+		numAspects = config.getInt("num aspects", 32, "The number of thaumcraft aspects which can be stored in the TARDIS's cabling");
+		maxEachAspect = config.getInt("max aspect", 16, "The maximum amount of each thaumcraft aspect that can be stored");
 	}
 
 	protected void parentAdded(ComponentTileEntity parent)

@@ -34,13 +34,17 @@ import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.ComponentItem;
 import tardis.common.tileents.components.ITardisComponent;
 import tardis.common.tileents.components.TardisTEComponent;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IAspectSource;
+import thaumcraft.api.aspects.IEssentiaTransport;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
 import cofh.api.energy.IEnergyHandler;
 
 public class ComponentTileEntity extends AbstractTileEntity implements IScrewable, IActivatable, IBlockUpdateDetector,
-		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader
+		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport
 {
 	private HashMap<Integer, ITardisComponent>	comps			= new HashMap<Integer, ITardisComponent>();
 	private boolean								valid			= false;
@@ -710,6 +714,215 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 				if (comp instanceof IGridHost)
 					((IGridHost) comp).securityBreak();
 			}
+	}
+
+	public AspectList getAspects()
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return ((IAspectSource) comp).getAspects();
+			}
+		return null;
+	}
+
+	public void setAspects(AspectList aspects)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					((IAspectSource) comp).setAspects(aspects);
+			}
+	}
+
+	public boolean doesContainerAccept(Aspect tag)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return ((IAspectSource) comp).doesContainerAccept(tag);
+			}
+		return false;
+	}
+
+	public int addToContainer(Aspect tag, int amount)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return ((IAspectSource) comp).addToContainer(tag,amount);
+			}
+		return amount;
+	}
+
+	public boolean takeFromContainer(Aspect tag, int amount)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return ((IAspectSource) comp).takeFromContainer(tag,amount);
+			}
+		return false;
+	}
+
+	public boolean takeFromContainer(AspectList ot)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return ((IAspectSource) comp).takeFromContainer(ot);
+			}
+		return false;
+	}
+
+	public boolean doesContainerContainAmount(Aspect tag, int amount)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return ((IAspectSource) comp).doesContainerContainAmount(tag,amount);
+			}
+		return false;
+	}
+
+	public boolean doesContainerContain(AspectList ot)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return ((IAspectSource) comp).doesContainerContain(ot);
+			}
+		return false;
+	}
+
+	public int containerContains(Aspect tag)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return ((IAspectSource) comp).containerContains(tag);
+			}
+		return 0;
+	}
+
+	@Override
+	public boolean isConnectable(ForgeDirection face)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return true;
+			}
+		return false;
+	}
+
+	@Override
+	public boolean canInputFrom(ForgeDirection face)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return true;
+			}
+		return false;
+	}
+
+	@Override
+	public boolean canOutputTo(ForgeDirection face)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return true;
+			}
+		return false;
+	}
+
+	@Override
+	public void setSuction(Aspect aspect, int amount)
+	{
+	}
+
+	@Override
+	public Aspect getSuctionType(ForgeDirection face)
+	{
+		return null;
+	}
+
+	@Override
+	public int getSuctionAmount(ForgeDirection face)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return 16;
+			}
+		return 0;
+	}
+
+	@Override
+	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return ((IAspectSource)comp).takeFromContainer(aspect, amount) ? amount : 0;
+			}
+		return 0;
+	}
+
+	@Override
+	public int addEssentia(Aspect aspect, int amount, ForgeDirection face)
+	{
+		System.out.println("A!");
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IAspectSource)
+					return amount - ((IAspectSource)comp).addToContainer(aspect, amount);
+			}
+		return 0;
+	}
+
+	@Override
+	public Aspect getEssentiaType(ForgeDirection face)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getEssentiaAmount(ForgeDirection face)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getMinimumSuction()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean renderExtendedTube()
+	{
+		return false;
 	}
 
 }
