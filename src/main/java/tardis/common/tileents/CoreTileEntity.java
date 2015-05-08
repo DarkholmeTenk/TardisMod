@@ -745,6 +745,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (!inFlight())
 		{
 			ConsoleTileEntity con = getConsole();
+			if(con == null)
+				return false;
 			if ((!con.shouldLand()) || takeOffEnergy(pl))
 			{
 				instability = 0;
@@ -809,7 +811,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (!ServerHelper.isServer() || gDS().hasValidExterior())
 			return;
-
 		ConsoleTileEntity con = getConsole();
 		if (con == null)
 		{
@@ -817,7 +818,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			return;
 		}
 		int[] posArr;
-		if((distanceToTravel == 0) || (distanceTravelled >= distanceToTravel) || (sourceLocation == null) || (destLocation == null))
+		if((distanceToTravel == 0) || (distanceTravelled >= distanceToTravel) || (sourceLocation == null) || (destLocation == null) || forcedFlight)
 			posArr = new int[] { con.getXFromControls(gDS().exteriorX) + getUnstableOffset(), con.getYFromControls(gDS().exteriorY),
 					con.getZFromControls(gDS().exteriorZ) + getUnstableOffset() };
 		else
