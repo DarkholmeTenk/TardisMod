@@ -1,6 +1,5 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -12,7 +11,7 @@ import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class LandingPadBlock extends AbstractBlockContainer
+public class LandingPadBlock extends AbstractScrewableBlock
 {
 	public LandingPadBlock()
 	{
@@ -24,7 +23,7 @@ public class LandingPadBlock extends AbstractBlockContainer
 	{
 		return new LandingPadTileEntity();
 	}
-	
+
 	@Override
 	public String[] getIconSuffix()
 	{
@@ -37,7 +36,7 @@ public class LandingPadBlock extends AbstractBlockContainer
 		setBlockName("LandingPad");
 		setLightLevel(1F);
 	}
-	
+
 	@Override
 	public boolean isOpaqueCube()
 	{
