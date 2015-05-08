@@ -12,21 +12,21 @@ import tardis.common.tileents.ComponentTileEntity;
 public class ComponentFluid extends AbstractComponent implements IFluidHandler
 {
 	protected ComponentFluid() { }
-	
+
 	public ComponentFluid(ComponentTileEntity parent)
 	{
 		parentObj = parent;
 	}
-	
+
 	@Override
 	public ITardisComponent create(ComponentTileEntity parent)
 	{
 		return new ComponentFluid(parent);
 	}
-	
+
 	private FluidStack[] getTanks()
 	{
-		if(parentObj != null && parentObj.getWorldObj() != null)
+		if((parentObj != null) && (parentObj.getWorldObj() != null))
 		{
 			TardisDataStore ds = getDatastore();
 			if(ds != null)
@@ -38,6 +38,8 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 	@Override
 	public int fill(ForgeDirection from, FluidStack resource, boolean doFill)
 	{
+		if(resource == null)
+			return 0;
 		FluidStack[] tanks = getTanks();
 		if(tanks != null)
 		{
@@ -64,12 +66,14 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 	@Override
 	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain)
 	{
+		if(resource == null)
+			return null;
 		FluidStack[] tanks = getTanks();
 		if(tanks != null)
 		{
 			for(int i = 0;i<tanks.length;i++)
 			{
-				if(tanks[i] != null && tanks[i].equals(resource))
+				if((tanks[i] != null) && tanks[i].equals(resource))
 				{
 					int toDrain = Math.min(tanks[i].amount,resource.amount);
 					if(doDrain)
