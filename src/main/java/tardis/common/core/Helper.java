@@ -415,7 +415,10 @@ public class Helper
 
 	public static TardisDataStore getDataStore(World w)
 	{
-		return getDataStore(WorldHelper.getWorldID(w));
+		if(Helper.isTardisWorld(w))
+			return getDataStore(WorldHelper.getWorldID(w));
+		else
+			return null;
 	}
 
 	public static TardisDataStore getDataStore(int dimID)
