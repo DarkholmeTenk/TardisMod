@@ -1,6 +1,5 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 import net.minecraft.tileentity.TileEntity;
@@ -8,7 +7,7 @@ import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.tileents.ComponentTileEntity;
 
-public class ColorableOpenRoundelBlock extends AbstractBlockContainer implements IColorableBlock
+public class ColorableOpenRoundelBlock extends AbstractScrewableBlock implements IColorableBlock
 {
 
 	public ColorableOpenRoundelBlock()

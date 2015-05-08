@@ -1,6 +1,5 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 
 import java.util.EnumSet;
@@ -18,14 +17,14 @@ import tardis.common.tileents.extensions.LabFlag;
 import tardis.common.tileents.extensions.LabRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BatteryBlock extends AbstractBlockContainer
+public class BatteryBlock extends AbstractScrewableBlock
 {
 	public BatteryBlock()
 	{
 		super(false,true,TardisMod.modName);
 		setCreativeTab(TardisMod.cTab);
 	}
-	
+
 	@Override
 	public Class<? extends AbstractItemBlock> getIB()
 	{
@@ -44,7 +43,7 @@ public class BatteryBlock extends AbstractBlockContainer
 		setBlockName("Battery");
 		setSubNames("Basic","Advanced","Temporal");
 	}
-	
+
 	@Override
 	public ItemStack getIS(int am, int dam)
 	{
