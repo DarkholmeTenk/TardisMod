@@ -27,20 +27,21 @@ import tardis.common.dimension.TardisDataStore;
 public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector
 {
 	private int fadeTimer = 0;
-	
+
 	private boolean landed = false;
 	private boolean landFast = true;
 	private boolean takingOff = false;
 	private boolean landing   = true;
-	
+
 	private boolean takingOffSoundPlayed = false;
 	private boolean landingSoundPlayed = false;
-	
+
 	public String owner;
 	public static String baseURL = null;
-	
+
 	Integer linkedDimension = null;
-	
+
+	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
@@ -49,13 +50,13 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		if(ServerHelper.isServer())
 		{
 			CoreTileEntity linkedCore = getCore();
-			if(linkedCore != null && owner == null)
+			if((linkedCore != null) && (owner == null))
 			{
 				owner = linkedCore.getOwner();
 				sendUpdate();
 			}
 		}
-		if(linkedDimension != null && tt % 20 == 0)
+		if((linkedDimension != null) && ((tt % 20) == 0))
 		{
 			TardisDataStore ds = Helper.getDataStore(linkedDimension);
 			if(ds != null)
@@ -97,28 +98,28 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 				land();
 		}
 	}
-	
+
 	public boolean isTakingOff()
 	{
 		return takingOff;
 	}
-	
+
 	public boolean isLanding()
 	{
 		return landing;
 	}
-	
+
 	public boolean inFlight()
 	{
 		return isTakingOff() || isLanding();
 	}
-	
+
 	private void playTakeoffSound()
 	{
-		SoundHelper.playSound(this, "takeoff", 1);
+		SoundHelper.playSound(this, "tardismod:takeoff", 1);
 		takingOffSoundPlayed = true;
 	}
-	
+
 	public void takeoff()
 	{
 		fadeTimer = 0;
@@ -126,22 +127,22 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		playTakeoffSound();
 		sendUpdate();
 	}
-	
+
 	public void forceLand()
 	{
 		landing = false;
 		landed = true;
 	}
-	
+
 	private void playLandSound()
 	{
 		if(!landFast)
-			SoundHelper.playSound(this, "landing", 1);
+			SoundHelper.playSound(this, "tardismod:landing", 1);
 		else
-			SoundHelper.playSound(this, "landingInt", 1);
+			SoundHelper.playSound(this, "tardismod:landingInt", 1);
 		landingSoundPlayed = true;
 	}
-	
+
 	public void land(boolean fast)
 	{
 		fadeTimer = 0;
@@ -151,12 +152,12 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		TardisOutput.print("TTE", "LANDING!!!! " + (fast ? "FAST " : "SLOW ") + (worldObj.isRemote?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
 		sendUpdate();
 	}
-	
+
 	public void land()
 	{
 		land(false);
 	}
-	
+
 	public void linkToDimension(int dimID)
 	{
 		linkedDimension = dimID;
@@ -166,7 +167,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			ds.linkToExterior(this);
 		}
 	}
-	
+
 	public float getTransparency()
 	{
 		double multiplier = 1;
@@ -178,7 +179,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 				multiplier = (fadeTimer / (80 * 5.5));
 			else if(isTakingOff())
 				multiplier = 1 - (fadeTimer / (80 * 5.5));
-			
+
 			double remainder;
 			double transVal;
 			if(isLanding())
@@ -199,7 +200,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			return 1.0F;
 		}
 	}
-	
+
 	public void doorActivated(World world, int x, int y, int z, EntityPlayer player)
 	{
 		if(!ServerHelper.isServer())
@@ -217,7 +218,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			{
 				CoreTileEntity core = Helper.getTardisCore(linkedDimension);
 				TardisDataStore ds = Helper.getDataStore(linkedDimension);
-				if(core != null && ds != null)
+				if((core != null) && (ds != null))
 				{
 					ds.linkToExterior(this);
 					if(!core.changeLock(player,false))
@@ -226,10 +227,10 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			}
 		}
 	}
-	
+
 	public CoreTileEntity getCore()
 	{
-		if(linkedDimension != null && linkedDimension != 0)
+		if((linkedDimension != null) && (linkedDimension != 0))
 			return Helper.getTardisCore(linkedDimension);
 		return null;
 	}
@@ -239,7 +240,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	{
 		super.readFromNBT(tag);
 	}
-	
+
 	@Override
 	public void writeToNBT(NBTTagCompound tag)
 	{
@@ -314,7 +315,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	@Override
 	public void blockUpdated(Block neighbourBlockID)
 	{
-		if((!takingOff) && worldObj.getBlock(xCoord, yCoord+1, zCoord) != TardisMod.tardisTopBlock)
+		if((!takingOff) && (worldObj.getBlock(xCoord, yCoord+1, zCoord) != TardisMod.tardisTopBlock))
 			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.tardisTopBlock, worldObj.getBlockMetadata(xCoord, yCoord, zCoord),3);
 	}
 }
