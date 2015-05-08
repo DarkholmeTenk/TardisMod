@@ -32,6 +32,7 @@ import tardis.api.ScrewdriverMode;
 import tardis.common.core.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.ComponentItem;
+import tardis.common.tileents.components.ComponentAspect;
 import tardis.common.tileents.components.ITardisComponent;
 import tardis.common.tileents.components.TardisTEComponent;
 import thaumcraft.api.aspects.Aspect;
@@ -858,6 +859,12 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public Aspect getSuctionType(ForgeDirection face)
 	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof ComponentAspect)
+					return ((ComponentAspect)comp).getSuctionAspect();
+			}
 		return null;
 	}
 
@@ -867,8 +874,8 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 		if (valid && !compAdded)
 			for (ITardisComponent comp : comps.values())
 			{
-				if (comp instanceof IAspectSource)
-					return 16;
+				if (comp instanceof ComponentAspect)
+					return ((ComponentAspect)comp).getSuction();
 			}
 		return 0;
 	}
@@ -915,7 +922,6 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public int getMinimumSuction()
 	{
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

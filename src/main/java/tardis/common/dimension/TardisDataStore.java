@@ -43,6 +43,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 	private ItemStack[]										items			= new ItemStack[TardisMod.numInvs];
 	private FluidStack[]									fluids			= new FluidStack[TardisMod.numTanks];
 	private AspectList										aspectList		= new AspectList();
+	public int												maxSuck			= 16;
+	public Aspect											maxSuckT		= null;
 
 	public TardisDataStore(String n)
 	{
