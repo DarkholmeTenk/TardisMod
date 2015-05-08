@@ -420,6 +420,8 @@ public class Helper
 
 	public static TardisDataStore getDataStore(int dimID)
 	{
+		if(dimID == 0)
+			return null;
 		if (datastoreMap.containsKey(dimID))
 		{
 			TardisDataStore store = datastoreMap.get(dimID);

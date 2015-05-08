@@ -30,6 +30,7 @@ import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.common.core.Helper;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.ComponentItem;
 import tardis.common.tileents.components.ITardisComponent;
 import tardis.common.tileents.components.TardisTEComponent;
@@ -252,6 +253,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 								// null);
 								pl.inventory.markDirty();
 							}
+							return true;
 						}
 						else
 							pl.addChatMessage(new ChatComponentText("That component has already been fitted"));
@@ -385,6 +387,11 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	{
 		CoreTileEntity core = Helper.getTardisCore(this);
 		return core;
+	}
+
+	public TardisDataStore getDS()
+	{
+		return Helper.getDataStore(this);
 	}
 
 	public IArtronEnergyProvider getArtronEnergyProvider()

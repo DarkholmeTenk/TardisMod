@@ -8,7 +8,6 @@ import java.util.Random;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
-import tardis.common.core.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
@@ -16,13 +15,13 @@ import tardis.common.tileents.CoreTileEntity;
 public abstract class AbstractComponent implements ITardisComponent
 {
 	protected ComponentTileEntity parentObj;
-	
+
 	protected int world;
 	protected int xCoord;
 	protected int yCoord;
 	protected int zCoord;
 	protected int tt = 0;
-	
+
 	private static ConfigFile config = null;
 	protected static double nanogeneRange = 36;
 	protected static double nanogeneTimer = 10;
@@ -36,7 +35,7 @@ public abstract class AbstractComponent implements ITardisComponent
 		if(config == null)
 			refreshConfigs();
 	}
-	
+
 	public static void refreshConfigs()
 	{
 		if(config == null)
@@ -47,7 +46,7 @@ public abstract class AbstractComponent implements ITardisComponent
 		nanogeneHealAmount = config.getInt("nanogene heal amount", 2, "The amount of health a nanogene can restore per pulse");
 		nanogeneFeed = config.getBoolean("nanogene feed", true, "Whether nanogenes should also feed players as well as heal");
 	}
-	
+
 	protected void parentAdded(ComponentTileEntity parent)
 	{
 		parentObj = parent;
@@ -56,7 +55,7 @@ public abstract class AbstractComponent implements ITardisComponent
 		yCoord = parent.yCoord;
 		zCoord = parent.zCoord;
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbt)
 	{
@@ -78,28 +77,28 @@ public abstract class AbstractComponent implements ITardisComponent
 	{
 		parentAdded(parent);
 	}
-	
+
 	public CoreTileEntity getCore()
 	{
 		if(parentObj != null)
 			return parentObj.getCore();
 		return null;
 	}
-	
+
 	public TardisDataStore getDatastore()
 	{
 		if(parentObj != null)
-			return Helper.getDataStore(parentObj);
+			return parentObj.getDS();
 		return null;
 	}
-	
+
 	public IArtronEnergyProvider getArtronEnergyProvider()
 	{
 		if(parentObj != null)
 			return parentObj.getArtronEnergyProvider();
 		return null;
 	}
-	
+
 	@Override
 	public void updateTick()
 	{
