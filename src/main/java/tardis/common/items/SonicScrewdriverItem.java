@@ -480,7 +480,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 				ConsoleTileEntity con = core.getConsole();
 				if ((con != null) && !core.inFlight())
 				{
-					if (con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX),
+					if (con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX+1),
 							(int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))
 					{
 						if (core.takeOff(true, player))

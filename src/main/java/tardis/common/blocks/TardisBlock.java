@@ -1,10 +1,15 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+
+import java.util.List;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -19,7 +24,7 @@ public class TardisBlock extends AbstractBlockContainer
 	{
 		super(TardisMod.modName);
 	}
-	
+
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{
@@ -30,22 +35,32 @@ public class TardisBlock extends AbstractBlockContainer
 	public void initData()
 	{
 		setBlockName("Tardis");
-		setBlockBounds(0,0,0,1,2,1);
+		setBlockBounds(0,0,0,1,1,1);
 	}
 
 	@Override
 	public void initRecipes()
 	{
-		
+
 	}
-	
+
+	@Override
+	public void addCollisionBoxesToList(World w, int x, int y, int z, AxisAlignedBB aabb, List l, Entity e)
+    {
+        TileEntity te = w.getTileEntity(x, y, z);
+        if(te instanceof TardisTileEntity)
+        	if(((TardisTileEntity)te).isLanding())
+        		return;
+        super.addCollisionBoxesToList(w, x, y, z, aabb, l, e);
+    }
+
 	//OTHER THINGS
 	@Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int i, float j, float k, float l)
     {
     	super.onBlockActivated(world, x, y, z, player, i, j, k, l);
     	int myMeta = world.getBlockMetadata(x, y, z);
-    	if((myMeta == 0 && i == 2) || (myMeta == 1 && i == 5) || (myMeta == 2 && i == 3) || (myMeta == 3 && i == 4))
+    	if(((myMeta == 0) && (i == 2)) || ((myMeta == 1) && (i == 5)) || ((myMeta == 2) && (i == 3)) || ((myMeta == 3) && (i == 4)))
     	{
     		TileEntity te = world.getTileEntity(x, y, z);
     		if(te instanceof TardisTileEntity)
@@ -58,9 +73,9 @@ public class TardisBlock extends AbstractBlockContainer
         return false;
     }
 
-	
+
 	//PLACING AND DESTROYING THINGS
-	
+
 	@Override
 	public boolean canPlaceBlockAt(World world, int x, int y, int z)
 	{
@@ -68,7 +83,7 @@ public class TardisBlock extends AbstractBlockContainer
 			return true;
 		return false;
 	}
-	
+
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack)
 	{
@@ -76,12 +91,12 @@ public class TardisBlock extends AbstractBlockContainer
 		{
 			return;
 		}
-	
-		int dir = MathHelper.floor_double((double)(entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+
+		int dir = MathHelper.floor_double(((entity.rotationYaw * 4.0F) / 360.0F) + 0.5D) & 3;
 		world.setBlockMetadataWithNotify(x, y, z, dir, 3);
 		world.setBlock(x, y+1, z, TardisMod.tardisTopBlock, dir, 3);
 	}
-	
+
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta)
 	{
@@ -89,14 +104,14 @@ public class TardisBlock extends AbstractBlockContainer
 		if(world.getBlock(x, y+1,z) == TardisMod.tardisTopBlock)
 			world.setBlockToAir(x, y+1, z);
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess iblockaccess, int i, int j, int k, int l)
 	{
 	   return false;
 	}
-	
+
 	@Override
 	public boolean isBlockSolid(IBlockAccess w, int x, int y, int z, int s)
 	{
@@ -108,7 +123,7 @@ public class TardisBlock extends AbstractBlockContainer
 	{
 	   return false;
 	}
-	
+
 	@Override
 	public boolean isNormalCube(IBlockAccess w, int x, int y, int z)
 	{
@@ -116,7 +131,9 @@ public class TardisBlock extends AbstractBlockContainer
 		if(te instanceof TardisTileEntity)
 		{
 			if(((TardisTileEntity)te).isLanding())
+			{
 				return false;
+			}
 		}
 		return true;
 	}
@@ -126,5 +143,4 @@ public class TardisBlock extends AbstractBlockContainer
 	{
 		return TardisTileEntity.class;
 	}
-
 }

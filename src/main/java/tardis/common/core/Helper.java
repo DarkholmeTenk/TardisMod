@@ -172,6 +172,8 @@ public class Helper
 
 				for (int zO : validSpotRanges)
 				{
+					if((xO == 0) && (yO == 0) && (zO == 0))
+						continue;
 					if ((y > 1) && (y < 253))
 					{
 						if (w.isAirBlock(x + xO, y + yO, z + zO) && w.isAirBlock(x + xO, y + yO + 1, z + zO))
