@@ -76,7 +76,7 @@ public class KeyItem extends AbstractItem
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
 	{
-		if (is != null && getOwnerName(is) == null)
+		if ((is != null) && (getOwnerName(is) == null))
 			setOwnerName(is, ServerHelper.getUsername(player));
 
 		if (ServerHelper.isServer() && !TardisMod.plReg.hasTardis(getOwnerName(is))
@@ -89,12 +89,15 @@ public class KeyItem extends AbstractItem
 		{
 			CoreTileEntity core = TardisMod.plReg.getCore(player);
 			TardisDataStore ds = TardisMod.plReg.getDataStore(player);
-			if (core != null && ds != null)
+			if ((core != null) && (ds != null))
 			{
 				if (!ds.hasValidExterior() && !core.inFlight())
 				{
-					Helper.summonOldTardis(player);
-					player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
+					if(!Helper.isTardisWorld(world))
+					{
+						Helper.summonOldTardis(player);
+						player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
+					}
 				}
 			}
 		}
