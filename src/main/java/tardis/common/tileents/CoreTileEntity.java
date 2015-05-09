@@ -234,7 +234,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if(flightState == FlightState.TAKINGOFF)
 		{
 			removeOldBox();
-			if(fast && con.shouldLand())
+			if((fast && con.shouldLand()) || forcedFlight)
 			{
 				placeBox();
 				flightState = FlightState.LANDING;
