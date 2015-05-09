@@ -33,6 +33,23 @@ public class TardisDimensionHandler
 			refreshConfigs();
 	}
 
+	private Thread scanAfterDelayThread = null;
+	private Runnable scanAfterDelay = new Runnable(){
+		@Override
+		public void run()
+		{
+			while(true)
+			{
+				try
+				{
+					Thread.sleep(30000);
+					internalFindDimensions();
+				}
+				catch(Exception e){}
+			}
+		}
+	};
+
 	public static void refreshConfigs()
 	{
 		if(config == null)
@@ -106,13 +123,8 @@ public class TardisDimensionHandler
 		}
 	}
 
-	public void findDimensions()
+	private synchronized void internalFindDimensions()
 	{
-		if (!ServerHelper.isServer())
-			return;
-		WorldServer[] loadedWorlds = DimensionManager.getWorlds();
-		for (WorldServer w : loadedWorlds)
-			addDimension(w);
 		try
 		{
 			Field f = DimensionManager.class.getDeclaredField("dimensions");
@@ -132,6 +144,25 @@ public class TardisDimensionHandler
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public void scanAfterDelay()
+	{
+		if(scanAfterDelayThread == null)
+		{
+			scanAfterDelayThread = new Thread(scanAfterDelay);
+			scanAfterDelayThread.start();
+		}
+	}
+
+	public void findDimensions()
+	{
+		if (!ServerHelper.isServer())
+			return;
+		WorldServer[] loadedWorlds = DimensionManager.getWorlds();
+		for (WorldServer w : loadedWorlds)
+			addDimension(w);
+		internalFindDimensions();
 	}
 
 	@SubscribeEvent
