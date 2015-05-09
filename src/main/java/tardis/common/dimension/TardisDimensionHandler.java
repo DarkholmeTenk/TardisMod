@@ -7,8 +7,8 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 import net.minecraft.world.World;
@@ -118,9 +118,9 @@ public class TardisDimensionHandler
 			Field f = DimensionManager.class.getDeclaredField("dimensions");
 			f.setAccessible(true);
 			Object o = f.get(null);
-			if(o instanceof HashMap)
+			if(o instanceof Hashtable)
 			{
-				HashMap hm = (HashMap)o;
+				Hashtable hm = (Hashtable)o;
 				for(Object in : hm.keySet())
 				{
 					if(in instanceof Integer)

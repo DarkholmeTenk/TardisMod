@@ -17,12 +17,12 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.7.10-0.97"
+version = "1.7.10-0.975"
 group= "tardis" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "tardismod"
 
 minecraft {
-    version = "1.7.10-10.13.2.1291"
+    version = "1.7.10-10.13.3.1403-1.7.10"
     runDir = "eclipse"
 }
 
