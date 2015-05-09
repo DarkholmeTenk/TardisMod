@@ -121,6 +121,7 @@ public class Helper
 		{
 			int dimID = generateTardisInterior(player.getCommandSenderName(), te);
 			te.linkToDimension(dimID);
+			te.land(true);
 			ConsoleTileEntity con = getTardisConsole(dimID);
 			if (con != null)
 				con.setControls(te, true);
@@ -136,6 +137,7 @@ public class Helper
 		TardisTileEntity te = summonTardis(player);
 		if (te != null)
 		{
+			te.land(true);
 			te.linkToDimension(dim);
 			ConsoleTileEntity con = getTardisConsole(dim);
 			if (con != null)
