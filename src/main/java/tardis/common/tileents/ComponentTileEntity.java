@@ -69,13 +69,18 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 				"The maximum number of TARDIS components (cable interfaces, etc), which can be applied to one open roundel");
 	}
 
+	public boolean isComponentValid(TardisTEComponent comp)
+	{
+		if (inside == null)
+			inside = Helper.isTardisWorld(worldObj);
+		return comp.isValid(inside);
+	}
+
 	public boolean addComponent(TardisTEComponent comp)
 	{
 		if (!hasComponent(comp) && (getNumComponents() < maxComponents))
 		{
-			if (inside == null)
-				inside = Helper.isTardisWorld(worldObj);
-			if (comp.isValid(inside))
+			if (isComponentValid(comp))
 			{
 				compAdded = true;
 				comps.put(comp.ordinal(), comp.baseObj.create(this));
@@ -249,19 +254,24 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 					if ((dam >= 0) && (dam < possComps.length))
 					{
 						TardisTEComponent rel = possComps[dam];
-						if (addComponent(rel))
+						if(isComponentValid(rel))
 						{
-							if (!pl.capabilities.isCreativeMode)
+							if (addComponent(rel))
 							{
-								pl.inventory.decrStackSize(pl.inventory.currentItem, 1);
-								// pl.inventory.setInventorySlotContents(pl.inventory.currentItem,
-								// null);
-								pl.inventory.markDirty();
+								if (!pl.capabilities.isCreativeMode)
+								{
+									pl.inventory.decrStackSize(pl.inventory.currentItem, 1);
+									// pl.inventory.setInventorySlotContents(pl.inventory.currentItem,
+									// null);
+									pl.inventory.markDirty();
+								}
+								return true;
 							}
-							return true;
+							else
+								pl.addChatMessage(new ChatComponentText("That component has already been fitted"));
 						}
 						else
-							pl.addChatMessage(new ChatComponentText("That component has already been fitted"));
+							ServerHelper.sendString(pl, "That component is not valid " + (inside ? "inside" : "outside of") + " a TARDIS");
 					}
 				}
 				else
