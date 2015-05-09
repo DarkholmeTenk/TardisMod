@@ -1,5 +1,6 @@
 package tardis.common.tileents;
 
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,6 +17,9 @@ public class LandingPadTileEntity extends ComponentTileEntity
 	@Override
 	protected void dismantle(EntityPlayer pl)
 	{
+		if(!ServerHelper.isServer())
+			return;
+		super.dismantle(pl);
 		WorldHelper.giveItemStack(pl, new ItemStack(TardisMod.landingPad,1));
 		worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 	}
