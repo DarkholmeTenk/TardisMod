@@ -190,13 +190,15 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 
 	protected void dismantle(EntityPlayer pl)
 	{
+		if(!ServerHelper.isServer())
+			return;
 		Block b = worldObj.getBlock(xCoord, yCoord, zCoord);
 		if(b == TardisMod.componentBlock)
 		{
 			int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.decoBlock, d == 0 ? 2 : 4, 3);
 		}
-		else
+		else if(b == TardisMod.colorableOpenRoundelBlock)
 		{
 			int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.colorableRoundelBlock, d, 3);
