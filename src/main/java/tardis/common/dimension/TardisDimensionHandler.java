@@ -5,7 +5,9 @@ import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -14,6 +16,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import tardis.TardisMod;
+import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -52,9 +55,31 @@ public class TardisDimensionHandler
 			blacklistedNames.add(s);
 	}
 
+	private synchronized void addDimension(int id)
+	{
+		try
+		{
+			World w = WorldHelper.getWorld(id);
+			if(Helper.isTardisWorld(w))
+				return;
+			if (!dimensionIDs.contains(id))
+			{
+				if (blacklistedIDs.contains(id) || blacklistedNames.contains(WorldHelper.getDimensionName(w)))
+					return;
+				dimensionIDs.add(id);
+				TardisOutput.print("TDimH", "Adding dimension: " + id + ", " + WorldHelper.getDimensionName(w));
+				cleanUp();
+			}
+		}
+		catch(Exception e)
+		{
+			TardisOutput.print("TDimH", "Failed to add dimension: " + id);
+		}
+	}
+
 	private synchronized void addDimension(World w)
 	{
-		if (w.provider instanceof TardisWorldProvider)
+		if (Helper.isTardisWorld(w))
 			return;
 		int id = WorldHelper.getWorldID(w);
 		if (!dimensionIDs.contains(id))
@@ -74,7 +99,7 @@ public class TardisDimensionHandler
 		while (iter.hasNext())
 		{
 			Integer i = iter.next();
-			if (i == null || uniques.contains(i))
+			if ((i == null) || uniques.contains(i))
 				iter.remove();
 			else
 				uniques.add(i);
@@ -88,6 +113,25 @@ public class TardisDimensionHandler
 		WorldServer[] loadedWorlds = DimensionManager.getWorlds();
 		for (WorldServer w : loadedWorlds)
 			addDimension(w);
+		try
+		{
+			Field f = DimensionManager.class.getDeclaredField("dimensions");
+			f.setAccessible(true);
+			Object o = f.get(null);
+			if(o instanceof HashMap)
+			{
+				HashMap hm = (HashMap)o;
+				for(Object in : hm.keySet())
+				{
+					if(in instanceof Integer)
+						addDimension((Integer)in);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@SubscribeEvent

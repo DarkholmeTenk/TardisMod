@@ -74,6 +74,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 @Mod(
@@ -358,6 +359,12 @@ public class TardisMod implements IConfigHandlerMod
 		TardisOwnershipRegistry.saveAll();
 		teleporter = new DarkcoreTeleporter(event.getServer().worldServerForDimension(0));
 		CommandRegister.registerCommands(event);
+	}
+
+	@EventHandler
+	public void serverStarted(FMLServerStartedEvent event)
+	{
+		otherDims.findDimensions();
 	}
 
 	@Override
