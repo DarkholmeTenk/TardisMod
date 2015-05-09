@@ -59,7 +59,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if (tt % 40 == 1 && ServerHelper.isServer())
+		if (((tt % 40) == 1) && ServerHelper.isServer())
 		{
 			if (availableConsoleRooms == null)
 				refreshAvailableConsoleRooms();
@@ -67,13 +67,13 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			getUsernames();
 		}
 
-		if (lastButtonTT != -1 && tt > (lastButtonTT + 20))
+		if ((lastButtonTT != -1) && (tt > (lastButtonTT + 60)))
 		{
 			lastButton = -1;
 			lastButtonTT = -1;
 		}
 
-		if (preparingToUpgrade != null && tt > (preparingToUpgradeTT + 80))
+		if ((preparingToUpgrade != null) && (tt > (preparingToUpgradeTT + 80)))
 		{
 			preparingToUpgrade = null;
 			preparingToUpgradeTT = -1;
@@ -87,7 +87,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		currentUsers = new String[0];
 		ArrayList<String> users = new ArrayList<String>();
 		List plList = worldObj.playerEntities;
-		if (plList != null && plList.size() > 0)
+		if ((plList != null) && (plList.size() > 0))
 		{
 			for (Object o : plList)
 			{
@@ -102,7 +102,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	private void setUsername()
 	{
-		if (currentUsers != null && currentUsers.length > 0)
+		if ((currentUsers != null) && (currentUsers.length > 0))
 		{
 			currentUserID = MathHelper.cycle(currentUserID, 0, currentUsers.length - 1);
 			currentPerson = currentUsers[currentUserID];
@@ -202,6 +202,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		return true;
 	}
 
+	@Override
 	public void activateControl(EntityPlayer pl, int control)
 	{
 		int prevLastButton = lastButton;
@@ -210,9 +211,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		TardisOutput.print("TETE", "Control activated:" + control);
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
 		TardisDataStore ds = Helper.getDataStore(worldObj);
-		if (core != null && ds != null)
+		if ((core != null) && (ds != null))
 		{
-			if (control == 4 || control == 5)
+			if ((control == 4) || (control == 5))
 			{
 				currentUserID += control == 4 ? 1 : -1;
 				setUsername();
@@ -225,7 +226,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				core.toggleModifier(pl, currentPerson);
 				core.sendUpdate();
 			}
-			else if (control >= 10 && control < 20)
+			else if ((control >= 10) && (control < 20))
 			{
 				if (ds.unspentLevelPoints() > 0)
 				{
@@ -235,7 +236,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 						TardisOutput.print("TETE", "Setting mode to " + mode.name);
 						if (mode != null)
 						{
-							if (preparingToUpgrade == mode && pl.isSneaking())
+							if ((preparingToUpgrade == mode) && pl.isSneaking())
 							{
 								preparingToUpgrade = null;
 								preparingToUpgradeTT = -1;
@@ -257,7 +258,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					}
 				}
 			}
-			else if (control >= 20 && control < 30)
+			else if ((control >= 20) && (control < 30))
 			{
 				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 20);
 				if (mode != null)
@@ -272,7 +273,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 						+ ds.maxUnspentLevelPoints()));
 			else if (control == 39)
 			{
-				if (hasScrewdriver(0) && pl instanceof EntityPlayerMP)
+				if (hasScrewdriver(0) && (pl instanceof EntityPlayerMP))
 				{
 					ItemStack toGive = new ItemStack(TardisMod.screwItem, 1, 0);
 					validateScrewNBT();
@@ -280,7 +281,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					hasScrew = false;
 					screwNBT = null;
 					TardisMod.screwItem.notifyMode(toGive, pl, false);
-					WorldHelper.giveItemStack((EntityPlayerMP) pl, toGive);
+					WorldHelper.giveItemStack(pl, toGive);
 				}
 				else
 				{
@@ -299,7 +300,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					}
 				}
 			}
-			else if (control >= 40 && control < 50)
+			else if ((control >= 40) && (control < 50))
 			{
 				validateScrewNBT();
 				if (hasScrew)
@@ -311,15 +312,15 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				}
 
 			}
-			else if (control >= 50 && control < 60)
+			else if ((control >= 50) && (control < 60))
 			{
 				validateScrewNBT();
-				if (hasScrew && screwNBT != null)
+				if (hasScrew && (screwNBT != null))
 				{
 					ScrewdriverMode m = SonicScrewdriverItem.getMode(control - 50);
 					String modeString = m.name();
 					String s = "Sonic screwdriver ";
-					if (m.requiredFunction == null || core.hasFunction(m.requiredFunction))
+					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
 					{
 						s += SonicScrewdriverItem.hasPermission(screwNBT, m) ? "has" : "does not have";
 						s += " " + modeString + " permission";
@@ -333,9 +334,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			else if (control == 60)
 				internalOnly = !internalOnly;
-			else if (control == 71 || control == 72)
+			else if ((control == 71) || (control == 72))
 			{
-				if (availableConsoleRooms == null || availableConsoleRooms.length == 1)
+				if ((availableConsoleRooms == null) || (availableConsoleRooms.length == 1))
 					updateConsoleRooms();
 				consoleSettingControl = MathHelper.cycle(consoleSettingControl + (control == 71 ? -1 : 1), 0,
 						availableConsoleRooms.length - 1);
@@ -345,9 +346,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			{
 				if (core.canModify(pl))
 				{
-					if (prevLastButton != 73 && pl.isSneaking())
+					if ((prevLastButton != 73) && pl.isSneaking())
 						lastButton = -1;
-					else if (prevLastButton == 73 && !pl.isSneaking())
+					else if ((prevLastButton == 73) && !pl.isSneaking())
 						lastButton = -1;
 					else if (prevLastButton != 73)
 					{
@@ -391,16 +392,16 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			return 0;
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
 		TardisDataStore ds = Helper.getDataStore(worldObj);
-		if (core != null && ds != null)
+		if ((core != null) && (ds != null))
 		{
-			if (cID == 4 || cID == 5 || cID == 7 || (cID >= 10 && cID < 20) || (cID >= 71 && cID <= 73))
+			if ((cID == 4) || (cID == 5) || (cID == 7) || ((cID >= 10) && (cID < 20)) || ((cID >= 71) && (cID <= 73)))
 				return (lastButton == cID) ? 1.0 : 0;
 			if (cID == 6)
 				return litUp ? 1 : 0.2;
-			if (cID >= 20 && cID < 30)
+			if ((cID >= 20) && (cID < 30))
 			{
 				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(cID - 20);
-				if (mode != null && ds.maxUnspentLevelPoints() > 0)
+				if ((mode != null) && (ds.maxUnspentLevelPoints() > 0))
 					return ((double) ds.getLevel(mode)) / ((double) ds.maxUnspentLevelPoints());
 				return 0;
 			}
@@ -410,19 +411,19 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					return ((double) ds.unspentLevelPoints()) / ((double) ds.maxUnspentLevelPoints());
 				return 0;
 			}
-			if (cID >= 40 && cID < 60)
+			if ((cID >= 40) && (cID < 60))
 			{
 				if (!hasScrew)
 					return 0;
 				int mID = cID >= 50 ? cID - 50 : cID - 40;
-				if (hasScrew && screwNBT == null)
+				if (hasScrew && (screwNBT == null))
 					validateScrewNBT();
 				ScrewdriverMode m = SonicScrewdriverItem.getMode(mID);
 				if (cID < 50)
 					return SonicScrewdriverItem.hasPermission(screwNBT, m) ? 1 : 0;
 				else
 				{
-					if (m.requiredFunction == null || core.hasFunction(m.requiredFunction))
+					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
 					{
 						double v = SonicScrewdriverItem.hasPermission(screwNBT, m) ? 1 : 0.2;
 						// TardisOutput.print("TETE", "V:" + v);
@@ -463,7 +464,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	private static String sanitiseConsole(String c)
 	{
-		if (c == null || c.length() < 13)
+		if ((c == null) || (c.length() < 13))
 			return c;
 		return c.replace("tardisConsole", "");
 		// return c.substring(13);
@@ -475,7 +476,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		double[] retVal = { 0, 0, 0 };
 		if (controlID == 6)
 			retVal = new double[] { 0.2, 0.3, 0.9 };
-		if (controlID >= 50 && controlID < 60)
+		if ((controlID >= 50) && (controlID < 60))
 		{
 			ScrewdriverMode m = SonicScrewdriverItem.getMode(controlID - 50);
 			// TardisOutput.print("TETE","Colors: "+ m.c[0] + "," + m.c[1] + "," + m.c[2]);
@@ -487,7 +488,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	@Override
 	public double getControlHighlight(int controlID)
 	{
-		if (controlID >= 10 && controlID < 20)
+		if ((controlID >= 10) && (controlID < 20))
 		{
 			TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(controlID - 10);
 			if (mode != null)
@@ -509,7 +510,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			else
 			{
 				int dim = SonicScrewdriverItem.getLinkedDim(screwNBT);
-				if (dim != 0 && dim != WorldHelper.getWorldID(this))
+				if ((dim != 0) && (dim != WorldHelper.getWorldID(this)))
 					screwNBT.setInteger("perm", SonicScrewdriverItem.minPerms);
 			}
 			CoreTileEntity core = Helper.getTardisCore(worldObj);
