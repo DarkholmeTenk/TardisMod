@@ -1,5 +1,7 @@
 package tardis.common.tileents.components;
 
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -96,10 +98,18 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 		FluidStack[] tanks = getTanks();
 		if(tanks != null)
 		{
+			SimpleCoordStore n = parentObj.coords().getNearby(from);
+			TileEntity te = n.getTileEntity();
+			IFluidHandler other = null;
+			if(te instanceof IFluidHandler)
+				other = (IFluidHandler)te;
 			for(int i = 0;i<tanks.length;i++)
 			{
 				if(tanks[i] != null)
 				{
+					Fluid f = tanks[i].getFluid();
+					if((other != null) && !other.canFill(from.getOpposite(), f))
+						continue;
 					int toDrain = Math.min(tanks[i].amount,maxDrain);
 					Fluid fluidID = tanks[i].getFluid();
 					if(doDrain)
@@ -125,11 +135,9 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 			for(int i = 0;i<tanks.length;i++)
 			{
 				if(tanks[i] == null)
-					continue;
+					return true;
 				if(tanks[i].getFluid().equals(fluid))
-				{
 					return tanks[i].amount < TardisMod.maxFlu;
-				}
 			}
 		}
 		return false;
@@ -145,10 +153,8 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 			{
 				if(tanks[i] == null)
 					continue;
-				if(tanks[i].getFluid().equals(fluid.getID()))
-				{
+				if(tanks[i].getFluid().equals(fluid))
 					return tanks[i].amount > 0;
-				}
 			}
 		}
 		return false;
