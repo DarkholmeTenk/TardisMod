@@ -1700,6 +1700,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void readTransmittable(NBTTagCompound nbt)
 	{
+		super.readTransmittable(nbt);
 		if (nbt.hasKey("ownerName"))
 		{
 			explode = nbt.getBoolean("explode");
@@ -1721,7 +1722,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void readTransmittableOnly(NBTTagCompound nbt)
 	{
-		if (nbt.hasKey("dsTC") && !ServerHelper.isServer())
+		if (nbt.hasKey("ds") && !ServerHelper.isServer())
 		{
 			TardisDataStore tds = gDS();
 			if (tds != null)

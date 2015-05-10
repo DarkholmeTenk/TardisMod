@@ -431,12 +431,7 @@ public class Helper
 		if(dimID == 0)
 			return null;
 		if (datastoreMap.containsKey(dimID))
-		{
-			TardisDataStore store = datastoreMap.get(dimID);
-//			if(!ServerHelper.isServer())
-//				store.load();
-			return store;
-		}
+			return datastoreMap.get(dimID);
 		TardisDataStore store = new TardisDataStore(dimID);
 		store.load();
 		store.save();
