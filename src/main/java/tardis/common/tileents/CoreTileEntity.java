@@ -1721,8 +1721,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (nbt.hasKey("dsTC") && !ServerHelper.isServer())
 		{
-			if (ds != null)
-				ds.readFromNBT(nbt.getCompoundTag("dsTC"));
+			TardisDataStore tds = gDS();
+			if (tds != null)
+				tds.readFromNBT(nbt.getCompoundTag("ds"));
 		}
 	}
 
