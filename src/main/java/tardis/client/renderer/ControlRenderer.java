@@ -11,6 +11,7 @@ import tardis.api.IControlMatrix;
 import tardis.client.TardisClientProxy;
 import tardis.client.renderer.model.SonicScrewdriverLightModel;
 import tardis.client.renderer.model.SonicScrewdriverModel;
+import tardis.client.renderer.model.console.ButtonModel;
 import tardis.client.renderer.model.console.GaugeDisplayModel;
 import tardis.client.renderer.model.console.GaugeNeedleModel;
 import tardis.client.renderer.model.console.LeverBaseModel;
@@ -23,7 +24,6 @@ import tardis.client.renderer.model.console.SonicScrewdriverHolderModel;
 import tardis.client.renderer.model.console.SpecialLeverModel;
 import tardis.client.renderer.model.console.TardisLightModel;
 import tardis.client.renderer.model.console.ValveWheelModel;
-import tardis.common.items.SonicScrewdriverItem;
 
 public class ControlRenderer
 {
@@ -37,27 +37,28 @@ public class ControlRenderer
 	private static LeverBaseModel leverBase = new LeverBaseModel();
 	private static ScreenFrameModel screenFrame = new ScreenFrameModel();
 	private static ScreenModel screen = new ScreenModel();
+	private static ButtonModel button = new ButtonModel();
 	private static PushLeverModel pushSwitch = new PushLeverModel();
 	private static SpecialLeverModel specLever  = new SpecialLeverModel();
 	private static SchemaDisplayModel schemaDisplay = new SchemaDisplayModel();
 	private static TardisLightModel light = new TardisLightModel();
-	
+
 	private FontRenderer fontRenderer;
 	private TextureManager textureManager;
 	int old = -1;
-	
+
 	public ControlRenderer(FontRenderer fr, TextureManager tm)
 	{
 		fontRenderer = fr;
 		textureManager = tm;
 	}
-	
+
 	protected void bindTexture(ResourceLocation par1ResourceLocation)
     {
         if (textureManager != null)
         	textureManager.bindTexture(par1ResourceLocation);
     }
-	
+
 	private void handleSettings(double x,double y, double z, double rX, double rY, double rZ, double sX,double sY, double sZ)
 	{
 		GL11.glTranslated(x, y, z);
@@ -66,16 +67,16 @@ public class ControlRenderer
 		GL11.glRotated(rX, 1, 0, 0);
 		GL11.glScaled(sX, sY, sZ);
 	}
-	
+
 	private void resetHighlight()
 	{
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glColor3d(1, 1, 1);
 	}
-	
+
 	private void setHighlight(IControlMatrix te, int controlID)
 	{
-		if(controlID >= 0 && te.getControlHighlight(controlID) >= 0)
+		if((controlID >= 0) && (te.getControlHighlight(controlID) >= 0))
 		{
 			double hi = te.getControlHighlight(controlID);
 			GL11.glDepthFunc(GL11.GL_ALWAYS);
@@ -84,13 +85,13 @@ public class ControlRenderer
 		else
 		{
 			double[] colRat = te.getColorRatio(controlID);
-			if (colRat != null && colRat.length == 3 && (colRat[0] != 0 || colRat[1] != 0 || colRat[2] != 0))
+			if ((colRat != null) && (colRat.length == 3) && ((colRat[0] != 0) || (colRat[1] != 0) || (colRat[2] != 0)))
 				GL11.glColor3d(colRat[0],colRat[1],colRat[2]);
 		}
 	//	else
 	//		resetHighlight();
 	}
-	
+
 	public void renderTextScreen(Tessellator tess, IControlMatrix tce,String s, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
@@ -110,7 +111,7 @@ public class ControlRenderer
 		GL11.glPopMatrix();
 		resetHighlight();
 	}
-	
+
 	public void renderScrewdriverHolder(Tessellator tess, IControlMatrix te, double x, double y, double z, double rX,double rY, double rZ,double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
@@ -120,7 +121,7 @@ public class ControlRenderer
 		holder.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		GL11.glPopMatrix();
 	}
-	
+
 	public void renderScrewdriver(Tessellator tess, IControlMatrix te, int slot, double x, double y, double z, double rX,double rY, double rZ,double sX, double sY, double sZ)
 	{
 		if(te.hasScrewdriver(slot))
@@ -138,7 +139,7 @@ public class ControlRenderer
 			GL11.glPopMatrix();
 		}
 	}
-	
+
 	public void renderGauge(Tessellator tess, IControlMatrix te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
@@ -157,7 +158,7 @@ public class ControlRenderer
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
 	}
-	
+
 	public void renderGauges(Tessellator tess, IControlMatrix te, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ, int... ids)
 	{
 		GL11.glPushMatrix();
@@ -182,7 +183,7 @@ public class ControlRenderer
 		}
 		GL11.glPopMatrix();
 	}
-	
+
 	public void renderWheel(Tessellator tess, IControlMatrix te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
@@ -194,7 +195,7 @@ public class ControlRenderer
 		wheel.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
 		GL11.glPopMatrix();
 	}
-	
+
 	public void renderLight(Tessellator tess, IControlMatrix te,int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
@@ -210,20 +211,20 @@ public class ControlRenderer
 		bindTexture(new ResourceLocation("tardismod","textures/models/Light.png"));
 		double[] colRat = te.getColorRatio(id);
 		double am = te.getControlState(id);
-		if(colRat != null && colRat.length == 3)
+		if((colRat != null) && (colRat.length == 3))
 			GL11.glColor3d(colRat[0] * am,colRat[1] * am,colRat[2] * am);
 		light.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		resetHighlight();
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
 	}
-	
+
 	public void renderLever(Tessellator tess, IControlMatrix te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
 		GL11.glPushMatrix();
-		GL11.glRotated(te.getControlState(id)*140 - 70, 1, 0, 0);
+		GL11.glRotated((te.getControlState(id)*140) - 70, 1, 0, 0);
 		setHighlight(te,id);
 		bindTexture(new ResourceLocation("tardismod","textures/models/TardisConsoleLever.png"));
 		lever.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
@@ -236,13 +237,13 @@ public class ControlRenderer
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
 	}
-	
+
 	public void renderSpecialLever(Tessellator tess, IControlMatrix te, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
 		handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
 		GL11.glPushMatrix();
-		GL11.glRotated(70 - te.getControlState(id)*140, 0, 0, 1);
+		GL11.glRotated(70 - (te.getControlState(id)*140), 0, 0, 1);
 		GL11.glTranslated(-0.03125, -0.15625, 0);
 		setHighlight(te,id);
 		bindTexture(new ResourceLocation("tardismod","textures/models/SpecialLever.png"));
@@ -257,7 +258,7 @@ public class ControlRenderer
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
 	}
-	
+
 	public void renderScreen(Tessellator tess, IControlMatrix te, int id, String texture, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
@@ -273,7 +274,7 @@ public class ControlRenderer
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
 	}
-	
+
 	public void renderPushSwitch(Tessellator tess, IControlMatrix tce, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
@@ -292,11 +293,11 @@ public class ControlRenderer
 		GL11.glColor3d(1, 1, 1);
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
-		
-	}
-	
 
-	
+	}
+
+
+
 	public void renderButton(Tessellator tess, IControlMatrix tce, int id, double x, double y, double z,double rX,double rY,double rZ, double sX, double sY, double sZ)
 	{
 		GL11.glPushMatrix();
@@ -310,7 +311,7 @@ public class ControlRenderer
 		GL11.glTranslated(0, -0.0015 + (0.06 * tce.getControlState(id)), 0);
 		setHighlight(tce, id);
 		bindTexture(new ResourceLocation("tardismod","textures/models/PushLever.png"));
-		pushSwitch.render(null,0F,0F,0F,0F,0F,0.0625F);
+		button.render(null,0F,0F,0F,0F,0F,0.0625F);
 		resetHighlight();
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
