@@ -158,6 +158,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static int						maxFlu				= 32000;
 	public static int						numTanks			= 5;
 	public static int						numInvs				= 30;
+	public static int						shiftPressTime		= 60;
 	public static boolean					keyCraftable		= true;
 	public static boolean					keyReqKontron		= true;
 
@@ -227,6 +228,8 @@ public class TardisMod implements IConfigHandlerMod
 				"The number of internal tanks that the TARDIS has");
 		numInvs = miscConfig.getInt("Number of internal inventory slots", 30,
 				"The number of item inventory slots that the TARDIS has");
+
+		shiftPressTime = miscConfig.getInt("shift press time", 60, "The amount of time in ticks to shift press a button after pressing normally","20 ticks = 1 second");
 
 		AbstractComponent.refreshConfigs();
 		BatteryTileEntity.refreshConfigs();

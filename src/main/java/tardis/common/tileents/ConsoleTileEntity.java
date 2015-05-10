@@ -95,9 +95,10 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if (++tickTimer % cycleLength == 0 && tickTimer != 0)
+		if (((++tickTimer % cycleLength) == 0) && (tickTimer != 0))
 			tickTimer = 0;
 
+		/*
 		if (lastButton != -1)
 		{
 			int buttonDownTime = 5;
@@ -115,6 +116,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				lastButton = -1;
 				sendUpdate();
 			}
+		}*/
+		if ((lastButtonTT != -1) && (tt > (lastButtonTT + TardisMod.shiftPressTime)))
+		{
+			lastButton = -1;
+			lastButtonTT = -1;
 		}
 
 		if (ServerHelper.isServer())
@@ -122,72 +128,72 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if (rdpCounter > 0)
 				rdpCounter--;
 
-			if (roomDeletePrepare && rdpCounter <= 0)
+			if (roomDeletePrepare && (rdpCounter <= 0))
 				roomDeletePrepare = false;
 
 			if (schemaList == null)
 			{
 				refreshSchemas();
 			}
-			if (tt % 1200 == 0)
+			if ((tt % 1200) == 0)
 				sendUpdate();
 		}
 	}
 
 	private HitPosition activateSide(EntityPlayer pl, int blockX, int blockY, int blockZ, float i, float j, float k, int side)
 	{
-		float distanceAway = (side == 0 || side == 2) ? (float) (Math.abs(pl.posX - 0.5) - 0.5) : (float) (Math
+		float distanceAway = ((side == 0) || (side == 2)) ? (float) (Math.abs(pl.posX - 0.5) - 0.5) : (float) (Math
 				.abs(pl.posZ - 0.5) - 0.5);
-		float distanceSide = (side == 0 || side == 2) ? (float) (pl.posZ + 1) : (float) (pl.posX + 1);
+		float distanceSide = ((side == 0) || (side == 2)) ? (float) (pl.posZ + 1) : (float) (pl.posX + 1);
 		float hitAway;
-		if (blockX != 0 || blockZ != 0)
+		if ((blockX != 0) || (blockZ != 0))
 		{
-			if (side == 0 && blockX < 1)
+			if ((side == 0) && (blockX < 1))
 				return null;
-			if (side == 1 && blockZ < 1)
+			if ((side == 1) && (blockZ < 1))
 				return null;
-			if (side == 2 && blockX > -1)
+			if ((side == 2) && (blockX > -1))
 				return null;
-			if (side == 3 && blockZ > -1)
+			if ((side == 3) && (blockZ > -1))
 				return null;
 			hitAway = (side == 0 ? i : (side == 2 ? 1 - i : (side == 1 ? k : 1 - k)));
 		}
 		else
 		{
-			if (side == 0 && i < 0.9)
+			if ((side == 0) && (i < 0.9))
 				return null;
-			if (side == 2 && i > 0.1)
+			if ((side == 2) && (i > 0.1))
 				return null;
-			if (side == 3 && k > 0.1)
+			if ((side == 3) && (k > 0.1))
 				return null;
-			if (side == 1 && k < 0.9)
+			if ((side == 1) && (k < 0.9))
 				return null;
 			j = j + 1;
 			hitAway = (side == 0 ? i : (side == 2 ? 1 - i : (side == 1 ? k : 1 - k))) - 1;
 		}
 		float hitSide;
-		if (side == 0 || side == 2)
+		if ((side == 0) || (side == 2))
 			hitSide = blockZ + 1 + k;
 		else
 			hitSide = blockX + 1 + i;
 
-		float delta = activatedDelta(hitAway, j, distanceAway, (float) (pl.posY + pl.eyeHeight - yCoord));
+		float delta = activatedDelta(hitAway, j, distanceAway, (float) ((pl.posY + pl.eyeHeight) - yCoord));
 		float hitX = activatedX(hitAway, distanceAway, delta);
 		float hitZ = activatedZ(hitSide, distanceSide, delta);
-		if ((hitZ < 1 && (1 - hitX) >= hitZ) || (hitZ > 2 && (1 - hitX) > (3 - hitZ)))
+		if (((hitZ < 1) && ((1 - hitX) >= hitZ)) || ((hitZ > 2) && ((1 - hitX) > (3 - hitZ))))
 			return null;
 		return new HitPosition(hitX, hitZ, side);
 	}
 
 	private float activatedDelta(float xH, float yH, float xP, float yP)
 	{
-		float delta = (float) ((1.5 - xP - yP) / (-xP + yH + xH - yP));
+		float delta = (float) ((1.5 - xP - yP) / ((-xP + yH + xH) - yP));
 		return delta;
 	}
 
 	private float activatedX(float xH, float xP, float delta)
 	{
-		return (float) (xP - (delta * (xP - xH)));
+		return xP - (delta * (xP - xH));
 	}
 
 	/*
@@ -199,7 +205,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	private float activatedZ(float zH, float zP, float delta)
 	{
-		return (float) (zP - (delta * (zP - zH)));
+		return zP - (delta * (zP - zH));
 	}
 
 	public int getControlFromHit(HitPosition hit)
@@ -304,8 +310,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			return 904;
 		if (hit.within(1, 1.700, 0.513, 2.355, 0.898))
 		{
-			int jx = (int) (5 * (hit.posZ - 1.700) / (2.355 - 1.700));
-			int ix = (int) (4 * (hit.posY - 0.513) / (0.898 - 0.513));
+			int jx = (int) ((5 * (hit.posZ - 1.700)) / (2.355 - 1.700));
+			int ix = (int) ((4 * (hit.posY - 0.513)) / (0.898 - 0.513));
 			int control = 1000 + (5 * ix) + jx;
 			return control;
 		}
@@ -356,7 +362,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		float k = (float) (hit.zCoord - blockZ - zCoord);
 		// TardisOutput.print("TConTE", String.format("x: %d, y %d, z %d : %f, %f, %f",blockX,blockY,blockZ,i,j,k));
 		HitPosition hitPos = null;
-		for (int cnt = 0; cnt < 4 && hitPos == null; cnt++)
+		for (int cnt = 0; (cnt < 4) && (hitPos == null); cnt++)
 			hitPos = activateSide(pl, blockX, blockY, blockZ, i, j, k, cnt);
 		if (hitPos != null)
 		{
@@ -399,7 +405,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		if (ServerHelper.isServer())
 			return true;
 		HitPosition hit = null;
-		for (int cnt = 0; cnt < 4 && hit == null; cnt++)
+		for (int cnt = 0; (cnt < 4) && (hit == null); cnt++)
 			hit = activateSide(pl, blockX, blockY, blockZ, i, j, k, cnt);
 		if (hit != null)
 		{
@@ -415,11 +421,12 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return true;
 	}
 
+	@Override
 	public void activateControl(EntityPlayer pl, int controlID)
 	{
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
 		TardisDataStore ds = Helper.getDataStore(worldObj);
-		if (core == null || ds == null)
+		if ((core == null) || (ds == null))
 			return;
 		TardisOutput.print("TConTE", "Control:" + controlID, TardisOutput.Priority.DEBUG);
 		if (controlID == 0)
@@ -444,7 +451,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			core.sendDestinationStrings(pl);
 		else if (controlID == 904) // Land on pad
 			landOnPad = !landOnPad;
-		else if (core.inAbortableFlight() && controlID == 42)
+		else if (core.inAbortableFlight() && (controlID == 42))
 			attemptToLand = core.attemptToLand();
 		else if (controlID == 55)
 			uncoordinated = !uncoordinated;
@@ -459,7 +466,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				}
 				if (controlID == 3)
 					facing = MathHelper.cycle(facing + (pl.isSneaking() ? -1 : 1), 0, 3);
-				else if (controlID >= 10 && controlID < 14 || controlID == 16)
+				else if (((controlID >= 10) && (controlID < 14)) || (controlID == 16))
 				{
 					if (pl.isSneaking())
 						xControls[controlID - 10]--;
@@ -467,7 +474,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 						xControls[controlID - 10]++;
 					clampControls(xControls);
 				}
-				else if (controlID >= 14 && controlID < 16)
+				else if ((controlID >= 14) && (controlID < 16))
 				{
 					if (pl.isSneaking())
 						xControls[controlID - 10] = MathHelper.cycle(xControls[controlID - 10] - 1, 0, 7);
@@ -475,7 +482,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 						xControls[controlID - 10] = MathHelper.cycle(xControls[controlID - 10] + 1, 0, 7);
 					clampControls(xControls);
 				}
-				else if (controlID >= 20 && controlID < 24 || controlID == 26)
+				else if (((controlID >= 20) && (controlID < 24)) || (controlID == 26))
 				{
 					if (pl.isSneaking())
 						zControls[controlID - 20]--;
@@ -483,7 +490,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 						zControls[controlID - 20]++;
 					clampControls(zControls);
 				}
-				else if (controlID >= 24 && controlID < 26)
+				else if ((controlID >= 24) && (controlID < 26))
 				{
 					if (pl.isSneaking())
 						zControls[controlID - 20] = MathHelper.cycle(zControls[controlID - 20] - 1, 0, 7);
@@ -491,7 +498,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 						zControls[controlID - 20] = MathHelper.cycle(zControls[controlID - 20] + 1, 0, 7);
 					clampControls(zControls);
 				}
-				else if (controlID >= 30 && controlID < 34)
+				else if ((controlID >= 30) && (controlID < 34))
 				{
 					if (pl.isSneaking())
 						yControls[controlID - 30]--;
@@ -503,7 +510,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 					landGroundControl = !landGroundControl;
 				else if (controlID == 53)
 					relativeCoords = !relativeCoords;
-				else if (controlID == 60 && !core.inFlight())
+				else if ((controlID == 60) && !core.inFlight())
 				{
 					int newDimControl = dimControl + (pl.isSneaking() ? -1 : 1);
 					newDimControl = MathHelper.clamp(newDimControl, 0, TardisMod.otherDims.numDims() - 1);
@@ -514,9 +521,9 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			{
 				if (controlID == 40)
 					primed = true;
-				else if (controlID == 41 && primed)
+				else if ((controlID == 41) && primed)
 					regulated = true;
-				else if (controlID == 42 && primed && regulated)
+				else if ((controlID == 42) && primed && regulated)
 					core.takeOff(pl);
 			}
 		}
@@ -535,10 +542,10 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			else
 				ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
 		}
-		else if (controlID == 6 || controlID == 7) // Screwdriver slot 0/1
+		else if ((controlID == 6) || (controlID == 7)) // Screwdriver slot 0/1
 		{
 			int slot = controlID == 6 ? 0 : 1;
-			if (hasScrewdriver(slot) && pl instanceof EntityPlayerMP)
+			if (hasScrewdriver(slot) && (pl instanceof EntityPlayerMP))
 			{
 				setScrewdriver(slot, false);
 				ItemStack toGive = new ItemStack(TardisMod.screwItem, 1, 0);
@@ -555,7 +562,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				toGive.stackTagCompound.setInteger("linkedTardis", WorldHelper.getWorldID(worldObj));
 				screwNBT = null;
 				TardisMod.screwItem.notifyMode(toGive, pl, false);
-				WorldHelper.giveItemStack((EntityPlayerMP) pl, toGive);
+				WorldHelper.giveItemStack(pl, toGive);
 			}
 			else
 			{
@@ -572,7 +579,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 						if (screwNBT == null)
 							screwNBT = SonicScrewdriverItem.getNewNBT();
 						int linked = SonicScrewdriverItem.getLinkedDim(screwNBT);
-						if (linked != 0 && linked != WorldHelper.getWorldID(this))
+						if ((linked != 0) && (linked != WorldHelper.getWorldID(this)))
 							screwNBT.setInteger("perm", SonicScrewdriverItem.minPerms);
 						inv.mainInventory[inv.currentItem] = null;
 						setScrewdriver(slot, true);
@@ -580,7 +587,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				}
 			}
 		}
-		else if (controlID == 50 || controlID == 51) // Schema change
+		else if ((controlID == 50) || (controlID == 51)) // Schema change
 		{
 			TardisOutput.print("TConTE", "Cycling schema");
 			lastButton = controlID;
@@ -588,7 +595,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			schemaNum += (controlID == 50 ? -1 : 1);
 			refreshSchemas();
 		}
-		else if (controlID == 57 || controlID == 58)
+		else if ((controlID == 57) || (controlID == 58))
 		{
 			TardisOutput.print("TConTE", "Cycling schema");
 			lastButton = controlID;
@@ -598,9 +605,9 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		}
 		else if (controlID == 52)
 			dayNightControl = !dayNightControl;
-		else if (controlID == 54 && core.hasFunction(TardisFunction.SENSORS))
+		else if ((controlID == 54) && core.hasFunction(TardisFunction.SENSORS))
 			core.sendScannerStrings(pl);
-		else if (controlID == 56 && core.hasFunction(TardisFunction.STABILISE))
+		else if ((controlID == 56) && core.hasFunction(TardisFunction.STABILISE))
 		{
 			stable = !stable;
 			if (stable)
@@ -608,7 +615,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		}
 		else if (controlID == 900)
 			saveCoords = !saveCoords;
-		else if (controlID == 902 || controlID == 903)
+		else if ((controlID == 902) || (controlID == 903))
 		{
 			lastButton = controlID;
 			lastButtonTT = tickTimer;
@@ -622,12 +629,12 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		}
 		else if (controlID >= 1000) // Flight instabilitiers
 		{
-			if (controlID >= 1000 && controlID <= 1032)
+			if ((controlID >= 1000) && (controlID <= 1032))
 			{
 				lastButton = controlID;
 				lastButtonTT = tickTimer;
 			}
-			if (!core.inFlight() && controlID >= 1000 && controlID < 1020)
+			if (!core.inFlight() && (controlID >= 1000) && (controlID < 1020))
 			{
 				int num = controlID - 1000;
 				if (saveCoords)
@@ -650,7 +657,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			}
 		}
 
-		if (controlID == 901 && core.canModify(pl))
+		if ((controlID == 901) && core.canModify(pl))
 		{
 			if (!roomDeletePrepare)
 			{
@@ -673,7 +680,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		}
 		else
 		{
-			if (controlID == 901 && !core.canModify(pl))
+			if ((controlID == 901) && !core.canModify(pl))
 				pl.addChatMessage(CoreTileEntity.cannotModifyMessage);
 			if (roomDeletePrepare)
 				roomDeletePrepare = false;
@@ -682,7 +689,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public boolean isMovementControl(int controlID)
 	{
-		if (controlID >= 10 && controlID < 40)
+		if ((controlID >= 10) && (controlID < 40))
 			return true;
 		if (controlID == 3)
 			return true;
@@ -701,7 +708,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		int[] xCont = getControlsFromDest(x - exX);
 		int[] yCont = getYControls(y);
 		int[] zCont = getControlsFromDest(z - exZ);
-		if ((allowNearest || (getFromControls(xCont) == x && getFromControls(zCont) == z))
+		if ((allowNearest || ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)))
 				&& (TardisMod.otherDims.getDimFromControl(dCont) == dim))
 		{
 			relativeCoords = true;
@@ -710,7 +717,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			yControls = yCont;
 			zControls = zCont;
 			sendUpdate();
-			return allowNearest ? (getFromControls(xCont) == x && getFromControls(zCont) == z) : true;
+			return allowNearest ? ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)) : true;
 		}
 		return false;
 	}
@@ -722,7 +729,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		int[] yCont = getYControls(y);
 		int[] zCont = getControlsFromDest(z);
 		boolean set = false;
-		if ((allowNearest || (getFromControls(xCont) == x && getFromControls(zCont) == z))
+		if ((allowNearest || ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)))
 				&& (TardisMod.otherDims.getDimFromControl(dCont) == dim))
 		{
 			relativeCoords = false;
@@ -731,7 +738,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			yControls = yCont;
 			zControls = zCont;
 			sendUpdate();
-			set = allowNearest ? (getFromControls(xCont) == x && getFromControls(zCont) == z) : true;
+			set = allowNearest ? ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)) : true;
 		}
 		if (!set)
 		{
@@ -931,11 +938,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	private void clampControls()
 	{
-		if (xControls == null || xControls.length != 7)
+		if ((xControls == null) || (xControls.length != 7))
 			xControls = ControlStateStore.fixControls(xControls);
-		if (yControls == null || yControls.length != 4)
+		if ((yControls == null) || (yControls.length != 4))
 			yControls = new int[4];
-		if (zControls == null || zControls.length != 7)
+		if ((zControls == null) || (zControls.length != 7))
 			zControls = ControlStateStore.fixControls(zControls);
 		clampControls(xControls);
 		clampControls(yControls);
@@ -983,27 +990,27 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
 		TardisDataStore ds = Helper.getDataStore(worldObj);
-		if (core != null && ds != null)
+		if ((core != null) && (ds != null))
 		{
 			if (controlID == 0) // Artron energy
 				return ((double) core.getArtronEnergy() / core.getMaxArtronEnergy());
 			if (controlID == 1) // Rooms gauge
 				return ((double) core.getNumRooms() / core.getMaxNumRooms());
-			if (controlID == 2 || controlID == 4) // Speed
+			if ((controlID == 2) || (controlID == 4)) // Speed
 				return MathHelper.clamp(core.getSpeed(controlID == 2) / core.getMaxSpeed(), 0, 1);
 			if (controlID == 3) // Facing
 				return facing / 4.0;
 			if (controlID == 8) // XP
 				return (ds.getXP() / ds.getXPNeeded());
-			if ((controlID >= 10 && controlID < 14) || controlID == 16)
+			if (((controlID >= 10) && (controlID < 14)) || (controlID == 16))
 				return ((double) (xControls[controlID - 10] + 6) / 12);
-			if (controlID >= 14 && controlID < 16)
+			if ((controlID >= 14) && (controlID < 16))
 				return xControls[controlID - 10] / 8.0;
-			if ((controlID >= 20 && controlID < 24) || controlID == 26)
+			if (((controlID >= 20) && (controlID < 24)) || (controlID == 26))
 				return ((double) (zControls[controlID - 20] + 6) / 12);
-			if (controlID >= 24 && controlID < 26)
+			if ((controlID >= 24) && (controlID < 26))
 				return zControls[controlID - 20] / 8.0;
-			if (controlID >= 30 && controlID < 34)
+			if ((controlID >= 30) && (controlID < 34))
 				return yControls[controlID - 30] / 3.0;
 			if (controlID == 34)
 				return (landGroundControl ? 1 : 0);
@@ -1013,8 +1020,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				return (regulated ? 1 : 0);
 			if (controlID == 42)
 				return ((!attemptToLand) && core.inFlight()) ? 1 : 0;
-			if (controlID == 50 || controlID == 51 || controlID == 5 || controlID == 902 || controlID == 903 || controlID == 57
-					|| controlID == 58)
+			if ((controlID == 50) || (controlID == 51) || (controlID == 5) || (controlID == 902) || (controlID == 903) || (controlID == 57)
+					|| (controlID == 58))
 				return lastButton == controlID ? 1 : 0;
 			if (controlID == 52)
 				return dayNightControl ? 1 : 0;
@@ -1032,7 +1039,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				return roomDeletePrepare ? 1 : 0;
 			if (controlID == 904)
 				return landOnPad ? 1 : 0;
-			if (controlID >= 1000 && controlID < 1033)
+			if ((controlID >= 1000) && (controlID < 1033))
 				return lastButton == controlID ? 1 : 0;
 			return (((tickTimer + (controlID * 20)) % cycleLength) / cycleLength);
 		}
@@ -1044,7 +1051,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		CoreTileEntity core = Helper.getTardisCore(this);
 		TardisDataStore ds = Helper.getDataStore(worldObj);
-		if (core != null && ds != null)
+		if ((core != null) && (ds != null))
 		{
 			if (controlID == 0)
 				return new String[] { "Energy: " + core.getArtronEnergy() + "/" + core.getMaxArtronEnergy() };
@@ -1056,11 +1063,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			{
 				return new String[] { "XP:     " + ds.getXP() + "/" + ds.getXPNeeded(), "Level: " + ds.getLevel() };
 			}
-			if (controlID >= 10 && controlID < 17)
+			if ((controlID >= 10) && (controlID < 17))
 				return new String[] { "Set to " + xControls[controlID - 10] };
-			if (controlID >= 20 && controlID < 27)
+			if ((controlID >= 20) && (controlID < 27))
 				return new String[] { "Set to " + zControls[controlID - 20] };
-			if (controlID >= 30 && controlID < 34)
+			if ((controlID >= 30) && (controlID < 34))
 				return new String[] { "Set to " + yControls[controlID - 30] };
 
 			if (controlID == 900)
@@ -1086,7 +1093,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		if (controlID >= 1020)
 			return flightColors;
-		if (controlID >= 1000 && controlID % 2 == 0)
+		if ((controlID >= 1000) && ((controlID % 2) == 0))
 			return flightColors;
 		return defaultColors;
 	}
@@ -1095,11 +1102,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public double getControlHighlight(int controlID)
 	{
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
-		double highlightAmount = Math.abs((tickTimer % 40) - 20) / 40.0 + 0.5;
-		if (controlID == unstableControl && !unstablePressed && core != null && core.inFlight())
+		double highlightAmount = (Math.abs((tickTimer % 40) - 20) / 40.0) + 0.5;
+		if ((controlID == unstableControl) && !unstablePressed && (core != null) && core.inFlight())
 			return highlightAmount;
 
-		if (controlID == 901 && roomDeletePrepare)
+		if ((controlID == 901) && roomDeletePrepare)
 			return highlightAmount;
 		return -1;
 	}
@@ -1121,7 +1128,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		int max = 1032;
 		int ran = 0;
 		if (min != max)
-			ran = rand.nextInt(1 + max - min);
+			ran = rand.nextInt((1 + max) - min);
 		if (ran < 10)
 			ran = (ran * 2) - 20;
 		unstableControl = min + ran;
@@ -1137,18 +1144,19 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public boolean unstableControlPressed()
 	{
-		return unstablePressed || unstableControl == -1;
+		return unstablePressed || (unstableControl == -1);
 	}
 
 	public void setScrewdriver(int slot, boolean bool)
 	{
 		int bit = (int) Math.pow(2, slot);
-		if ((hasScrewdriver & bit) == 0 && bool)
+		if (((hasScrewdriver & bit) == 0) && bool)
 			hasScrewdriver += bit;
-		else if ((hasScrewdriver & bit) == bit && !bool)
+		else if (((hasScrewdriver & bit) == bit) && !bool)
 			hasScrewdriver -= bit;
 	}
 
+	@Override
 	public boolean hasScrewdriver(int slot)
 	{
 		int bit = (int) Math.pow(2, slot);
@@ -1169,7 +1177,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		if (categoryNum != lastCategoryNum)
 		{
-			if (categoryList == null || categoryList.length == 0)
+			if ((categoryList == null) || (categoryList.length == 0))
 				refreshCategories();
 			categoryNum = MathHelper.cycle(categoryNum, 0, categoryList.length - 1);
 			lastCategoryNum = categoryNum;
@@ -1196,10 +1204,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return dayNightControl;
 	}
 
+	@Override
 	public ScrewdriverMode getScrewMode(int slot)
 	{
 		ScrewdriverMode[] vals = ScrewdriverMode.values();
-		if (screwMode >= 0 && screwMode < vals.length)
+		if ((screwMode >= 0) && (screwMode < vals.length))
 			return vals[screwMode];
 		return vals[0];
 	}
@@ -1319,7 +1328,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		nbt.setString("schemaCategoryString", schemaCategoryString);
 		nbt.setString("schemaChooserString", schemaChooserString);
-		nbt.setFloat("dCS", ((float) dimControl) / (TardisMod.otherDims.numDims() - 1f));
+		nbt.setFloat("dCS", (dimControl) / (TardisMod.otherDims.numDims() - 1f));
 		if (screwNBT != null)
 			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 		nbt.setInteger("lastButton", lastButton);

@@ -67,7 +67,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			getUsernames();
 		}
 
-		if ((lastButtonTT != -1) && (tt > (lastButtonTT + 60)))
+		if ((lastButtonTT != -1) && (tt > (lastButtonTT + TardisMod.shiftPressTime)))
 		{
 			lastButton = -1;
 			lastButtonTT = -1;
