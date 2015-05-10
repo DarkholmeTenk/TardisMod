@@ -693,6 +693,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			posArr = findGround(w, posArr);
 		if (con.getLandOnPadFromControls())
 			posArr = scanForLandingPad(w, posArr);
+		if((posArr[1] == 0) && (w.getBlock(posArr[0], posArr[1], posArr[2]) == Blocks.bedrock))
+			posArr[1]++;
 		return posArr;
 	}
 
