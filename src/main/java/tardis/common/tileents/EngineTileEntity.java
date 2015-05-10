@@ -55,6 +55,19 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		availableConsoleRooms = TardisMod.schemaHandler.getSchemas(true);
 	}
 
+	private boolean importantButton(int button)
+	{
+		switch(button)
+		{
+			case 10:
+			case 11:
+			case 12:
+			case 13:
+			case 73: return true;
+			default: return false;
+		}
+	}
+
 	@Override
 	public void updateEntity()
 	{
@@ -67,7 +80,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			getUsernames();
 		}
 
-		if ((lastButtonTT != -1) && (tt > (lastButtonTT + TardisMod.shiftPressTime)))
+		if ((lastButtonTT != -1) && (tt > (lastButtonTT + (importantButton(lastButton) ? TardisMod.shiftPressTime : 20))))
 		{
 			lastButton = -1;
 			lastButtonTT = -1;

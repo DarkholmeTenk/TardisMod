@@ -91,6 +91,15 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		clampControls();
 	}
 
+	private boolean importantButton(int button)
+	{
+		switch(button)
+		{
+			case 901: return true;
+			default: return false;
+		}
+	}
+
 	@Override
 	public void updateEntity()
 	{
@@ -98,26 +107,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		if (((++tickTimer % cycleLength) == 0) && (tickTimer != 0))
 			tickTimer = 0;
 
-		/*
-		if (lastButton != -1)
-		{
-			int buttonDownTime = 5;
-			boolean shouldGoUp = false;
-			if (lastButtonTT + buttonDownTime > cycleLength)
-			{
-				if (tickTimer < lastButtonTT && (tickTimer > ((lastButtonTT + buttonDownTime) % cycleLength)))
-					shouldGoUp = true;
-			}
-			else if (tickTimer > (lastButtonTT + buttonDownTime))
-				shouldGoUp = true;
-
-			if (shouldGoUp)
-			{
-				lastButton = -1;
-				sendUpdate();
-			}
-		}*/
-		if ((lastButtonTT != -1) && (tt > (lastButtonTT + TardisMod.shiftPressTime)))
+		if ((lastButtonTT != -1) && (tt > (lastButtonTT + (importantButton(lastButton) ? TardisMod.shiftPressTime : 20))))
 		{
 			lastButton = -1;
 			lastButtonTT = -1;
