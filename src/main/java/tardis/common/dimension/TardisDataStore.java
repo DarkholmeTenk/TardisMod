@@ -129,7 +129,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 				tardisXP -= getXPNeeded();
 				tardisLevel++;
 			}
-			SoundHelper.playSound(dimID, Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, "levelup", 1);
+			SoundHelper.playSound(dimID, Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, "tardismod:levelup", 1);
 		}
 		CoreTileEntity core = getCore();
 		if (core != null) core.sendUpdate();
