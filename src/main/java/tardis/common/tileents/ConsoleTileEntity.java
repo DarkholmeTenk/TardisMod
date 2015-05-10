@@ -111,6 +111,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		{
 			lastButton = -1;
 			lastButtonTT = -1;
+			sendUpdate();
 		}
 
 		if (ServerHelper.isServer())
