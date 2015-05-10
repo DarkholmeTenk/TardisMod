@@ -530,8 +530,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 		if (controlID == 5)
 		{
-			lastButton = 5;
-			lastButtonTT = tickTimer;
 			if (core.canModify(pl))
 			{
 				if (!hasScrewdriver(0) && core.takeArtronEnergy(500, false))
@@ -590,16 +588,12 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		else if ((controlID == 50) || (controlID == 51)) // Schema change
 		{
 			TardisOutput.print("TConTE", "Cycling schema");
-			lastButton = controlID;
-			lastButtonTT = tickTimer;
 			schemaNum += (controlID == 50 ? -1 : 1);
 			refreshSchemas();
 		}
 		else if ((controlID == 57) || (controlID == 58))
 		{
 			TardisOutput.print("TConTE", "Cycling schema");
-			lastButton = controlID;
-			lastButtonTT = tickTimer;
 			categoryNum += (controlID == 57 ? -1 : 1);
 			refreshSchemas();
 		}
@@ -617,8 +611,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			saveCoords = !saveCoords;
 		else if ((controlID == 902) || (controlID == 903))
 		{
-			lastButton = controlID;
-			lastButtonTT = tickTimer;
 			if (!core.inFlight())
 			{
 				ControlStateStore toLoad = controlID == 902 ? lastLanding : currentLanding;
@@ -685,6 +677,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if (roomDeletePrepare)
 				roomDeletePrepare = false;
 		}
+		lastButton = controlID;
+		lastButtonTT = tt;
 	}
 
 	public boolean isMovementControl(int controlID)
@@ -992,6 +986,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if ((core != null) && (ds != null))
 		{
+			//System.out.println("LB:"+lastButton + ":" + controlID);
 			if (controlID == 0) // Artron energy
 				return ((double) core.getArtronEnergy() / core.getMaxArtronEnergy());
 			if (controlID == 1) // Rooms gauge
@@ -1344,7 +1339,9 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		dimControlState = nbt.getFloat("dCS");
 		screwMode = nbt.getInteger("scMo");
 		lastButton = nbt.getInteger("lastButton");
+		System.out.println("LB" + lastButton);
 		lastButtonTT = nbt.getInteger("lastButtonTT");
+		System.out.println(lastButtonTT + ":"+tt);
 		attemptToLand = nbt.getBoolean("attemptToLand");
 	}
 }

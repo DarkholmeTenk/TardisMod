@@ -1658,7 +1658,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void writeTransmittableOnly(NBTTagCompound nbt)
 	{
-		if (ServerHelper.isServer() && (ds != null))
+		if (ServerHelper.isServer() && (gDS() != null))
 		{
 			NBTTagCompound dsTC = new NBTTagCompound();
 			gDS().writeToNBT(dsTC);
