@@ -98,6 +98,7 @@ public class Helper
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
 		TardisMod.dimReg.addDimension(dimID);
 		TardisDimensionRegistry.saveAll();
+		TardisMod.dimReg.sendPacket();
 		generateTardisInterior(dimID, ownerName, exterior);
 		return dimID;
 	}

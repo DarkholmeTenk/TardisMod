@@ -27,14 +27,14 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 	{
 		this("TDimReg");
 	}
-	
+
 	public TardisDimensionRegistry(String par1Str)
 	{
 		super(par1Str);
 	}
 
 	private static HashSet<Integer> dimensionIDs = new HashSet<Integer>();
-	
+
 	public void addDimension(int id)
 	{
 		if(dimensionIDs.add(id))
@@ -43,7 +43,7 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 			markDirty();
 		}
 	}
-	
+
 	public static void loadAll()
 	{
 		if(TardisMod.dimReg == null)
@@ -56,13 +56,13 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 		if(ServerHelper.isServer())
 			TardisMod.dimReg.save();
 	}
-	
+
 	public void registerDims()
 	{
 		for(Integer i:dimensionIDs)
 			registerDim(i);
 	}
-	
+
 	private void registerDim(int id)
 	{
 		if(!DimensionManager.isDimensionRegistered(id))
@@ -73,7 +73,7 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 				DarkcoreMod.networkChannel.sendToAll(getPacket());
 		}
 	}
-	
+
 	public boolean hasDimension(int id)
 	{
 		return dimensionIDs.contains(id);
@@ -113,36 +113,42 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 		}
 		nbt.setIntArray("registeredDimensions", dims);
 	}
-	
+
 	public static DataPacket getPacket()
 	{
 		NBTTagCompound t = new NBTTagCompound();
 		TardisMod.dimReg.writeToNBT(t);
 		return new DataPacket(t,TardisPacketHandler.dimRegFlag);
 	}
-	
+
+	public void sendPacket()
+	{
+		DataPacket p = getPacket();
+		DarkcoreMod.networkChannel.sendToAll(p);
+	}
+
 	@SubscribeEvent
 	public void sendPacket(PlayerLoggedInEvent event)
 	{
 		sendPacket((PlayerEvent)event);
 	}
-	
+
 	@SubscribeEvent
 	public void sendPacket(PlayerChangedDimensionEvent event)
 	{
 		sendPacket((PlayerEvent)event);
 	}
-	
+
 	@SubscribeEvent
 	public void sendPacket(ServerConnectionFromClientEvent event)
 	{
 		event.manager.scheduleOutboundPacket(getPacket(), this);
 	}
-	
+
 	public void sendPacket(PlayerEvent event)
 	{
 		EntityPlayer pl = event.player;
-		if(pl instanceof EntityPlayerMP && DarkcoreMod.networkChannel != null)
+		if((pl instanceof EntityPlayerMP) && (DarkcoreMod.networkChannel != null))
 			DarkcoreMod.networkChannel.sendTo(getPacket(),(EntityPlayerMP) pl);
 	}
 
