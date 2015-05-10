@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.7.10-0.975"
+version = "1.7.10-0.98"
 group= "tardis" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "tardismod"
 
