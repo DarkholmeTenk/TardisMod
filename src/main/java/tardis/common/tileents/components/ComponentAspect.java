@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.common.dimension.TardisDataStore;
@@ -46,7 +47,12 @@ public class ComponentAspect extends AbstractComponent implements IAspectSource,
 	public AspectList getAspects()
 	{
 		TardisDataStore ds = getDatastore();
-		if (ds != null) return ds.getAspectList();
+		if (ds != null)
+		{
+			if(ds.getAspectList().size() == 0)
+				return null;
+			return ds.getAspectList();
+		}
 		return new AspectList();
 	}
 
@@ -109,6 +115,13 @@ public class ComponentAspect extends AbstractComponent implements IAspectSource,
 		return 0;
 	}
 
+	public int getMaxAspectStorage()
+	{
+		TardisDataStore ds = getDatastore();
+		if(ds != null) return ds.getMaxAspectStorage();
+		return TardisMod.maxEachAspect;
+	}
+
 	private void dumpAspects(TardisDataStore ds, IEssentiaTransport dump, ForgeDirection f)
 	{
 		Aspect[] myAspects = ds.getAspectList().getAspects();
@@ -150,7 +163,7 @@ public class ComponentAspect extends AbstractComponent implements IAspectSource,
 			if(source.getSuctionAmount(o) < getSuction())
 				if(doesContainerAccept(a))
 				{
-					int max = maxEachAspect - ds.getAspectList().getAmount(a);
+					int max = getMaxAspectStorage() - ds.getAspectList().getAmount(a);
 					max = source.takeEssentia(a, max, o);
 					addToContainer(a,max);
 				}

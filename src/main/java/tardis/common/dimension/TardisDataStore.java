@@ -18,7 +18,6 @@ import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
-import tardis.common.tileents.components.AbstractComponent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 
@@ -266,6 +265,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public void readTransmittable(NBTTagCompound nbt)
 	{
+		if(TardisMod.tcInstalled)
+			aspectList.readFromNBT(nbt, "aspectList");
 		tardisLevel = nbt.getInteger("tL");
 		tardisXP = nbt.getDouble("txp");
 		for (TardisUpgradeMode mode : TardisUpgradeMode.values())
@@ -311,7 +312,6 @@ public class TardisDataStore extends AbstractWorldDataStore
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
-		aspectList.readFromNBT(nbt, "aspectList");
 		nbt.setInteger("extW", exteriorWorld);
 		nbt.setInteger("extX", exteriorX);
 		nbt.setInteger("extY", exteriorY);
@@ -325,7 +325,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
-		aspectList.writeToNBT(nbt, "aspectList");
+		if(TardisMod.tcInstalled)
+			aspectList.writeToNBT(nbt, "aspectList");
 		nbt.setInteger("tL", tardisLevel);
 		nbt.setDouble("txp", tardisXP);
 		if (upgradeLevels.size() > 0) for (TardisUpgradeMode mode : upgradeLevels.keySet())
@@ -364,21 +365,21 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public boolean canHaveAspect(Aspect a, int am)
 	{
 		int cAm = aspectList.getAmount(a);
-		if(cAm >= AbstractComponent.maxEachAspect)
+		if(cAm >= getMaxAspectStorage())
 			return false;
-		return (aspectList.size() < AbstractComponent.numAspects) || ((cAm != 0) && ((cAm + am) <= AbstractComponent.maxEachAspect));
+		return (aspectList.size() < TardisMod.numAspects) || ((cAm != 0) && ((cAm + am) <= getMaxAspectStorage()));
 	}
 
 	public int addAspect(Aspect a, int am)
 	{
 		int cAm = aspectList.getAmount(a);
-		if((cAm == 0) && (aspectList.size() >= AbstractComponent.numAspects))
+		if((cAm == 0) && (aspectList.size() >= TardisMod.numAspects))
 			return am;
 		int toAdd = am;
 		int toRet = 0;
-		if((am + cAm) > AbstractComponent.maxEachAspect)
+		if((am + cAm) > getMaxAspectStorage())
 		{
-			toAdd = Math.max(0,AbstractComponent.maxEachAspect - cAm);
+			toAdd = Math.max(0,getMaxAspectStorage() - cAm);
 			toRet = am - toAdd;
 		}
 		aspectList.add(a, toAdd);
@@ -394,6 +395,11 @@ public class TardisDataStore extends AbstractWorldDataStore
 		aspectList.remove(a, am);
 		markDirty();
 		return true;
+	}
+
+	public int getMaxAspectStorage()
+	{
+		return ((getLevel() - 1) * TardisMod.maxEachAspectInc) + TardisMod.maxEachAspect;
 	}
 
 }
