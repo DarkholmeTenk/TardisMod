@@ -64,7 +64,7 @@ tile.TardisMod.Battery.Temporal.name=Temporal Artron Battery
 tile.TardisMod.ColorableWall.name=Solid Block
 tile.TardisMod.ColorableFloor.name=Flat Block
 tile.TardisMod.ColorableRoundel.name=Roundel
-tile.TardisMod.ColorableRoundelOpen.name=Open Roundel
+tile.TardisMod.ColorableOpenRoundel.name=Open Roundel
 
 item.TardisMod.SonicScrewdriver.name=Sonic Screwdriver
 item.TardisMod.TardisKey.name=TARDIS Key
