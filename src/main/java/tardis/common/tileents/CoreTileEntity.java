@@ -398,6 +398,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			explode = false;
 		}
 
+		if((tt == 2) && ServerHelper.isServer())
+			refreshDoors();
+
 		if ((tt % 20) == 0)
 		{
 			addArtronEnergy(getEnergyPerSecond(gDS().getLevel(TardisUpgradeMode.REGEN)), false);
@@ -1105,6 +1108,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public int getNumRooms()
 	{
+		if(ServerHelper.isServer())
+			return roomSet.size();
 		return numRooms;
 	}
 
@@ -1138,25 +1143,18 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			if (sub)
 			{
 				if (ServerHelper.isServer() && (te != null))
-				{
 					roomSet.remove(new SimpleCoordStore(te));
-					if(numRooms > 0)
-						numRooms--;
-				}
 				ret = true;
 			}
 
 			if (!sub && (getNumRooms() < getMaxNumRooms()))
 			{
 				if (ServerHelper.isServer() && (te != null))
-				{
 					roomSet.add(new SimpleCoordStore(te));
-					numRooms++;
-				}
 				ret = true;
 			}
 		}
-		if (ret)
+		if (ret && (tt > 1))
 			refreshDoors();
 		updateMaxBlockSpeed();
 		return ret;
@@ -1648,7 +1646,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 			nbt.setInteger("fT", flightTimer);
 			nbt.setInteger("tFT", totalFlightTimer);
-			nbt.setInteger("numR", getNumRooms());
 			nbt.setDouble("sped", speed);
 			nbt.setInteger("fS", flightState.ordinal());
 
@@ -1665,6 +1662,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			NBTTagCompound dsTC = new NBTTagCompound();
 			gDS().writeToNBT(dsTC);
 			nbt.setTag("ds", dsTC);
+			nbt.setInteger("numR", getNumRooms());
 		}
 	}
 
@@ -1710,7 +1708,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 			flightTimer = nbt.getInteger("fT");
 			totalFlightTimer = nbt.getInteger("tFT");
-			numRooms = nbt.getInteger("numR");
+
 			speed = nbt.getDouble("sped");
 			flightState = FlightState.get(nbt.getInteger("fS"));
 
@@ -1728,6 +1726,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			if (tds != null)
 				tds.readFromNBT(nbt.getCompoundTag("ds"));
 		}
+		numRooms = nbt.getInteger("numR");
 	}
 
 	@Override
