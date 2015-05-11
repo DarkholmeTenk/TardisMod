@@ -193,6 +193,12 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 		if(!ServerHelper.isServer())
 			return;
 		Block b = worldObj.getBlock(xCoord, yCoord, zCoord);
+		ItemStack[] contained = getComponentItems();
+		if (contained.length > 0)
+		{
+			for (ItemStack is : contained)
+				WorldHelper.giveItemStack(pl, is);
+		}
 		if(b == TardisMod.componentBlock)
 		{
 			int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
@@ -213,12 +219,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 			CoreTileEntity core = getCore();
 			if ((core == null) || core.canModify(player))
 			{
-				ItemStack[] contained = getComponentItems();
-				if (contained.length > 0)
-				{
-					for (ItemStack is : contained)
-						WorldHelper.giveItemStack(player, is);
-				}
+
 				dismantle(player);
 				return true;
 			}

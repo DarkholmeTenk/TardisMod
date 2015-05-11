@@ -22,11 +22,11 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 	private static int maxEnergyPerLevel = 100;
 	private static int energyPerLevel = 1;
 	private static int ticksPerEnergy = 20;
-	
+
 	private int level = 1;
 	private int artronEnergy = 0;
 	private int mode = 0; //0 landed, 1 uncoordinated, 2 coordinated
-	
+
 	private static double rotSpeed = 4;
 	private double angle = 0; //max = 359.99
 	private boolean changed = false;
@@ -36,7 +36,7 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 		if(config == null)
 			refreshConfigs();
 	}
-	
+
 	public static void refreshConfigs()
 	{
 		if(config == null)
@@ -48,46 +48,46 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 		ticksPerEnergy = config.getInt("ticks per energy", 20,
 				"The number of ticks between each energy pulse");
 	}
-	
+
 	public BatteryTileEntity(int _level)
 	{
 		level = _level;
 	}
-	
+
 	public BatteryTileEntity()
 	{
 		level = -1;
 	}
-	
+
 	@Override
 	public void init()
 	{
 		if(level == -1)
 			level = worldObj.getBlockMetadata(xCoord, yCoord, zCoord) +1;
 	}
-	
+
 	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if((tt % ticksPerEnergy == 0) && (artronEnergy > 0 || Helper.isTardisWorld(worldObj)))
+		if(((tt % ticksPerEnergy) == 0) && ((artronEnergy > 0) || Helper.isTardisWorld(worldObj)))
 			addArtronEnergy(level * energyPerLevel,false);
-		if(tt % 1200 == 0)
+		if((tt % 1200) == 0)
 			sendUpdate();
-		if(tt % 15 == 0 && changed)
+		if(((tt % 15) == 0) && changed)
 		{
 			changed = false;
 			sendUpdate();
 		}
-			
+
 		if(!ServerHelper.isServer())
 		{
-			angle += (rotSpeed * getArtronEnergy() / getMaxArtronEnergy());
+			angle += ((rotSpeed * getArtronEnergy()) / getMaxArtronEnergy());
 			while(angle >= 360)
 				angle -=360;
 		}
 	}
-	
+
 	@Override
 	public int getMaxArtronEnergy()
 	{
@@ -139,11 +139,11 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 			default : return false;
 		}
 	}
-	
+
 	@Override
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
-		if(mode.equals(ScrewdriverMode.Dismantle))
+		if(mode.equals(ScrewdriverMode.Dismantle) && ServerHelper.isServer())
 		{
 			TardisOutput.print("BTE", xCoord +"," + yCoord +","+ zCoord);
 			int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
@@ -182,17 +182,17 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 		sendUpdate();
 		return true;
 	}
-	
+
 	public double getAngle()
 	{
 		return angle;
 	}
-	
+
 	public int getMode()
 	{
 		return mode;
 	}
-	
+
 	public int getLevel()
 	{
 		return level;
