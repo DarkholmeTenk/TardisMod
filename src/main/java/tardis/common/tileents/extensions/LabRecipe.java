@@ -14,7 +14,12 @@ public class LabRecipe
 	public final ItemStack[] dest;
 	public final EnumSet<LabFlag> flags;
 	public final int energyCost;
-	
+
+	public LabRecipe(ItemStack _source, ItemStack _dest, EnumSet<LabFlag> _flags, int _enCost)
+	{
+		this(new ItemStack[]{_source}, new ItemStack[]{_dest}, _flags, _enCost);
+	}
+
 	public LabRecipe(ItemStack[] _source, ItemStack[] _dest, EnumSet<LabFlag> _flags, int _enCost)
 	{
 		source = _source;
@@ -27,9 +32,9 @@ public class LabRecipe
 	{
 		if(energyCost < 0)
 			return false;
-		if(source == null || dest == null || flags == null)
+		if((source == null) || (dest == null) || (flags == null))
 			return false;
-		if(source.length == 0 || dest.length == 0 || source.length > 5 || dest.length > 5)
+		if((source.length == 0) || (dest.length == 0) || (source.length > 5) || (dest.length > 5))
 			return false;
 		for(int i = 0;i<source.length;i++)
 			if(source[i] == null)
@@ -45,24 +50,24 @@ public class LabRecipe
 			return false;
 		return true;
 	}
-	
+
 	public boolean containsItemStack(ItemStack is)
 	{
 		if(is == null)
 			return true;
 		return containsItem(is.getItem());
 	}
-	
+
 	public boolean containsItem(Item i)
 	{
 		for(ItemStack is: source)
 		{
-			if(is != null && is.getItem().equals(i))
+			if((is != null) && is.getItem().equals(i))
 				return true;
 		}
 		return false;
 	}
-	
+
 	public boolean isSatisfied(ItemStack[] items)
 	{
 		if(items == null)
@@ -89,7 +94,7 @@ public class LabRecipe
 		}
 		return true;
 	}
-	
+
 	public boolean flagsSatisfied(IArtronEnergyProvider core)
 	{
 		if(core == null)

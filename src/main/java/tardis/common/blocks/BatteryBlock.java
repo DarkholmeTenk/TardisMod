@@ -34,6 +34,7 @@ public class BatteryBlock extends AbstractScrewableBlock
 	@Override
 	public TileEntity createNewTileEntity(World w, int m)
 	{
+		System.out.println(m);
 		return new BatteryTileEntity(m+1);
 	}
 
@@ -48,7 +49,11 @@ public class BatteryBlock extends AbstractScrewableBlock
 	public ItemStack getIS(int am, int dam)
 	{
 		ItemStack is = super.getIS(am, dam);
-		NBTTagCompound d = new NBTTagCompound();
+		NBTTagCompound d;
+		if(is.stackTagCompound == null)
+			d = new NBTTagCompound();
+		else
+			d = is.stackTagCompound;
 		d.setInteger("ae",0);
 		is.stackTagCompound = d;
 		return is;
@@ -65,7 +70,7 @@ public class BatteryBlock extends AbstractScrewableBlock
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1),
 				'd', CraftingComponentType.DALEKANIUM.getIS(1),
 				'k', getIS(1,0)));
-		LabTileEntity.addRecipe(new LabRecipe(new ItemStack[] { getIS(1,1) }, new ItemStack[] { getIS(1,2) }, EnumSet.of(LabFlag.INFLIGHT),200));
+		LabTileEntity.addRecipe(new LabRecipe(getIS(1,1), getIS(1,2), EnumSet.of(LabFlag.INFLIGHT),200));
 	}
 
 	@Override
