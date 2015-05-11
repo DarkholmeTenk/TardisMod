@@ -1105,7 +1105,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public boolean unstableFlight()
 	{
-		return stable;
+		return !stable;
 	}
 
 	public void randomUnstableControl()
