@@ -6,6 +6,7 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.FoodStats;
 import tardis.api.IArtronEnergyProvider;
@@ -20,7 +21,7 @@ public class ComponentNanogene extends AbstractComponent
 	{
 		parentObj = parent;
 	}
-	
+
 	protected ComponentNanogene(){}
 
 	@Override
@@ -28,66 +29,67 @@ public class ComponentNanogene extends AbstractComponent
 	{
 		return new ComponentNanogene(parent);
 	}
-	
-	private boolean isPlayerInNeedOfHelp(EntityPlayerMP pl)
+
+	private boolean isPlayerInNeedOfHelp(EntityLivingBase ent)
 	{
-		if(pl.getHealth() < pl.getMaxHealth())
+		if(ent.getHealth() < ent.getMaxHealth())
 			return true;
-		if(nanogeneFeed)
+		if(nanogeneFeed && (ent instanceof EntityPlayerMP))
 		{
+			EntityPlayerMP pl = (EntityPlayerMP)ent;
 			FoodStats fs = pl.getFoodStats();
 			if(fs.needFood())
 				return true;
 		}
 		return false;
 	}
-	
-	private ArrayList<EntityPlayerMP> getNearbyPlayers()
+
+	private ArrayList<EntityLivingBase> getNearbyPlayers()
 	{
-		ArrayList<EntityPlayerMP> list = new ArrayList<EntityPlayerMP>();
-		List worldList = parentObj.getWorldObj().playerEntities;
+		ArrayList<EntityLivingBase> list = new ArrayList<EntityLivingBase>();
+		List worldList = parentObj.getWorldObj().loadedEntityList;
 		double x = parentObj.xCoord + 0.5;
 		double y = parentObj.yCoord + 0.5;
 		double z = parentObj.zCoord + 0.5;
 		for(Object o : worldList)
 		{
-			if(o instanceof EntityPlayerMP)
+			if(o instanceof EntityLivingBase)
 			{
-				EntityPlayerMP pl = (EntityPlayerMP)o;
-				if(isPlayerInNeedOfHelp(pl))
+				EntityLivingBase ent = (EntityLivingBase)o;
+				if(isPlayerInNeedOfHelp(ent))
 				{
-					double dist = ((pl.posX - x) * (pl.posX - x));
-					dist += ((pl.posY - y) * (pl.posY - y));
-					dist += ((pl.posZ - z) * (pl.posZ - z));
+					double dist = ((ent.posX - x) * (ent.posX - x));
+					dist += ((ent.posY - y) * (ent.posY - y));
+					dist += ((ent.posZ - z) * (ent.posZ - z));
 					if(dist <= nanogeneRange)
-						list.add(pl);
+						list.add(ent);
 				}
 			}
 		}
 		return list;
 	}
-	
+
 	@Override
 	public void updateTick()
 	{
 		super.updateTick();
-		if(parentObj == null || !ServerHelper.isServer())
+		if((parentObj == null) || !ServerHelper.isServer())
 			return;
-		if(tt % nanogeneTimer == 0 && ServerHelper.isServer())
+		if(((tt % nanogeneTimer) == 0) && ServerHelper.isServer())
 		{
-			ArrayList<EntityPlayerMP> players = getNearbyPlayers();
-			for(EntityPlayerMP pl : players)
+			ArrayList<EntityLivingBase> ents = getNearbyPlayers();
+			for(EntityLivingBase ent : ents)
 			{
 				IArtronEnergyProvider core = getArtronEnergyProvider();
-				if(core != null && core.takeArtronEnergy(1, false))
+				if((core != null) && core.takeArtronEnergy(1, false))
 				{
-					Helper.spawnParticle(ParticleType.NANOGENE, WorldHelper.getWorldID(parentObj), pl.posX , pl.posY+1, pl.posZ,20,true);
-					if(pl.isBurning())
-						pl.extinguish();
-					pl.heal(nanogeneHealAmount);
-					if(nanogeneFeed)
+					Helper.spawnParticle(ParticleType.NANOGENE, WorldHelper.getWorldID(parentObj), ent.posX , ent.posY+1, ent.posZ,20,true);
+					if(ent.isBurning())
+						ent.extinguish();
+					ent.heal(nanogeneHealAmount);
+					if(nanogeneFeed && (ent instanceof EntityPlayerMP))
 					{
-						FoodStats fs = pl.getFoodStats();
+						FoodStats fs = ((EntityPlayerMP)ent).getFoodStats();
 						fs.addStats(1, 1);
 					}
 				}
