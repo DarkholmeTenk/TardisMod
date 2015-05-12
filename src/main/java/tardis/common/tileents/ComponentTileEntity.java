@@ -214,6 +214,8 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
+		if(!ServerHelper.isServer())
+			return true;
 		if (mode == ScrewdriverMode.Dismantle)
 		{
 			CoreTileEntity core = getCore();
