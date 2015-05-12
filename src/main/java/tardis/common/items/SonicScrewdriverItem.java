@@ -171,6 +171,21 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		return is.stackTagCompound.getString("owner");
 	}
 
+	private void addModeInfo(ScrewdriverMode mode, ItemStack is, List infoList)
+	{
+		infoList.add("Mode: " + mode.toString());
+		if (mode.equals(ScrewdriverMode.Schematic))
+		{
+			String schemaName = getSchema(is);
+			String schemaCat = getSchemaCat(is);
+
+			if ((schemaName == null) || schemaName.equals("") || (schemaCat == null) || schemaCat.equals(""))
+				infoList.add("Schematic: --None--");
+			else
+				infoList.add("Schematic: " + schemaCat + " - " + schemaName);
+		}
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void addInfo(ItemStack is, EntityPlayer player, List infoList)
@@ -184,17 +199,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 					infoList.add(m.name() + " - Disabled");
 			}
 			ScrewdriverMode mode = getMode(is);
-			infoList.add("Mode: " + mode.toString());
-			if (mode.equals(ScrewdriverMode.Schematic))
-			{
-				String schemaName = getSchema(is);
-				String schemaCat = getSchemaCat(is);
-
-				if ((schemaName == null) || schemaName.equals("") || (schemaCat == null) || schemaCat.equals(""))
-					infoList.add("Schematic: --None--");
-				else
-					infoList.add("Schematic: " + schemaCat + " - " + schemaName);
-			}
+			addModeInfo(mode, is, infoList);
 		}
 	}
 
@@ -239,7 +244,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		if (override || isValidMode(player, is, mode))
 		{
 			ArrayList<Object> list = new ArrayList<Object>();
-			addInfo(is, player, list);
+			addModeInfo(mode, is, list);
 			for (Object o : list)
 			{
 				if (o instanceof String)
