@@ -219,7 +219,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		{
 			boolean isInTardis = false;
 			isInTardis = pl.worldObj.provider instanceof TardisWorldProvider;
-			if (isInTardis && mode.equals(ScrewdriverMode.Locate))
+			if (isInTardis && (mode.equals(ScrewdriverMode.Locate) || mode.equals(ScrewdriverMode.Recall)))
 				return false;
 			if (!isInTardis && mode.equals(ScrewdriverMode.Schematic))
 				return false;
