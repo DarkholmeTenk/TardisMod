@@ -399,7 +399,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 
 		if((tt == 2) && ServerHelper.isServer())
-			refreshDoors();
+			refreshDoors(false);
 
 		if ((tt % 20) == 0)
 		{
@@ -430,14 +430,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 						TardisOutput.print("TCTE", "Removing room @ " + coord);
 						SchemaCoreTileEntity schemaCore = (SchemaCoreTileEntity) te;
 						schemaCore.remove();
-						refreshDoors();
 					}
 					i.remove();
 				}
 				else
 				{
 					deletingRooms = false;
-					refreshDoors();
+					refreshDoors(true);
 					numRooms = 0;
 				}
 			}
@@ -1135,6 +1134,25 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 	}
 
+	private void refreshDoors(boolean isRoomBeingRemoved)
+	{
+		if (tt <= 2)
+			return;
+		synchronized (roomSet)
+		{
+			System.out.println("Rechecking doors");
+			for (SimpleCoordStore room : roomSet)
+			{
+				TileEntity te = room.getTileEntity();
+				if (te instanceof SchemaCoreTileEntity)
+					((SchemaCoreTileEntity) te).recheckDoors(isRoomBeingRemoved);
+			}
+			SchemaCoreTileEntity te = getSchemaCore();
+			if (te != null)
+				te.recheckDoors(isRoomBeingRemoved);
+		}
+	}
+
 	public boolean addRoom(boolean sub, SchemaCoreTileEntity te)
 	{
 		boolean ret = false;
@@ -1145,6 +1163,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				if (ServerHelper.isServer() && (te != null))
 					roomSet.remove(new SimpleCoordStore(te));
 				ret = true;
+				if(!deletingRooms)
+					refreshDoors(true);
 			}
 
 			if (!sub && (getNumRooms() < getMaxNumRooms()))
@@ -1152,31 +1172,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				if (ServerHelper.isServer() && (te != null))
 					roomSet.add(new SimpleCoordStore(te));
 				ret = true;
+				refreshDoors(false);
 			}
 		}
-		if (ret && (tt > 1))
-			refreshDoors();
 		updateMaxBlockSpeed();
 		return ret;
-	}
-
-	private void refreshDoors()
-	{
-		if (tt <= 1)
-			return;
-		synchronized (roomSet)
-		{
-			System.out.println("Rechecking doors");
-			for (SimpleCoordStore room : roomSet)
-			{
-				TileEntity te = room.getTileEntity();
-				if (te instanceof SchemaCoreTileEntity)
-					((SchemaCoreTileEntity) te).recheckDoors();
-			}
-			SchemaCoreTileEntity te = getSchemaCore();
-			if (te != null)
-				te.recheckDoors();
-		}
 	}
 
 	public boolean addRoom(SchemaCoreTileEntity te)
@@ -1238,7 +1238,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public int getMaxArtronEnergy()
 	{
-		return getMaxArtronEnergy(gDS().getLevel(TardisUpgradeMode.ENERGY));
+		TardisDataStore mds = gDS();
+		if(mds == null)
+			return getMaxArtronEnergy(0);
+		return getMaxArtronEnergy(mds.getLevel(TardisUpgradeMode.ENERGY));
 	}
 
 	@Override
