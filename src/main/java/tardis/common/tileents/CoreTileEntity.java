@@ -1350,11 +1350,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return 250;
 	}
 
-	public boolean transmatEntity(Entity ent)
+	public boolean canTransmatEntity(Entity ent)
 	{
 		if (!hasFunction(TardisFunction.TRANSMAT))
 			return false;
-		SimpleCoordStore to = getTransmatPoint();
 		int entWorld = WorldHelper.getWorldID(ent.worldObj);
 		boolean trans = false;
 		if (entWorld == WorldHelper.getWorldID(worldObj)) //if ent is in the tardis
@@ -1368,7 +1367,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			if (distance <= getMaxTransmatDistance())
 				trans = true;
 		}
-		if (trans)
+		return trans;
+	}
+
+	public boolean transmatEntity(Entity ent)
+	{
+		if (!hasFunction(TardisFunction.TRANSMAT))
+			return false;
+		SimpleCoordStore to = getTransmatPoint();
+		if (canTransmatEntity(ent))
 		{
 			SoundHelper.playSound(ent, "tardismod:transmat", 0.6F, 1);
 			TeleportHelper.teleportEntity(ent, WorldHelper.getWorldID(worldObj), to.x + 0.5, to.y + 1, to.z + 0.5, 90);
