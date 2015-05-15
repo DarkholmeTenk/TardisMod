@@ -1219,7 +1219,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public int getEnergyPerSecond()
 	{
-		return getEnergyPerSecond(gDS().getLevel(TardisUpgradeMode.REGEN));
+		TardisDataStore mds = gDS();
+		if(mds == null)
+			return getEnergyPerSecond(0);
+		return getEnergyPerSecond(mds.getLevel(TardisUpgradeMode.REGEN));
 	}
 
 	public int getEnergyPerSecond(int level)

@@ -1,8 +1,6 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
@@ -19,7 +17,7 @@ public class CoreBlock extends AbstractBlockContainer
 	{
 		super(TardisMod.modName);
 	}
-	
+
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{
@@ -37,9 +35,9 @@ public class CoreBlock extends AbstractBlockContainer
 	@Override
 	public void initRecipes()
 	{
-		
+
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess iblockaccess, int i, int j, int k, int l)
@@ -62,7 +60,7 @@ public class CoreBlock extends AbstractBlockContainer
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta)
 	{
-		if(Helper.isTardisWorld(world) && x == Helper.tardisCoreX && y == Helper.tardisCoreY && z == Helper.tardisCoreZ)
+		if(Helper.isTardisWorld(world) && (x == Helper.tardisCoreX) && (y == Helper.tardisCoreY) && (z == Helper.tardisCoreZ))
 		{
 			TileEntity te = world.getTileEntity(x, y, z);
 			NBTTagCompound nbt = new NBTTagCompound();
@@ -70,8 +68,16 @@ public class CoreBlock extends AbstractBlockContainer
 				te.writeToNBT(nbt);
 			world.setBlock(x, y, z, this);
 			TileEntity newTE = world.getTileEntity(x, y, z);
-			if(te != null && newTE != null)
+			if((te != null) && (newTE != null))
 				newTE.readFromNBT(nbt);
 		}
 	}
+
+	@Override
+    public boolean canPlaceBlockAt(World w, int x, int y, int z)
+    {
+		if(!Helper.isTardisWorld(w))
+			return false;
+		return super.canPlaceBlockAt(w, x, y, z);
+    }
 }
