@@ -210,7 +210,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 					repairDoor(dds,true);
 				}
 			}
-			else
+			else if(foundPair)
 			{
 				if(scs.getBlock() != null)
 					repairDoor(dds,false);
