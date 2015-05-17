@@ -44,7 +44,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TardisClientProxy extends TardisProxy
 {
-	private ResourceLocation defaultSkin = new ResourceLocation("tardismod","textures/models/Tardis.png");
+	private TardisRenderer tardisRenderer = new TardisRenderer();
 	public HashMap<String,ResourceLocation> skins = new HashMap<String,ResourceLocation>();
 	public static World cWorld = null;
 	public TardisClientProxy()
@@ -70,7 +70,7 @@ public class TardisClientProxy extends TardisProxy
 	@Override
 	public void postAssignment()
 	{
-		ClientRegistry.bindTileEntitySpecialRenderer(TardisTileEntity.class, new TardisRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TardisTileEntity.class, tardisRenderer);
 		ClientRegistry.bindTileEntitySpecialRenderer(CoreTileEntity.class, new CoreRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(ConsoleTileEntity.class, new ConsoleRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(ComponentTileEntity.class, new ComponentRenderer());
@@ -82,6 +82,7 @@ public class TardisClientProxy extends TardisProxy
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.labBlock), new LabRenderer());
 		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, screwRenderer = new SonicScrewdriverRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.battery), new BatteryRenderer());
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.tardisBlock), tardisRenderer);
 	}
 
 	@Override
