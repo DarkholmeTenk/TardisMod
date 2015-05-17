@@ -55,10 +55,13 @@ public class DimensionEventHandler
 	private void handleDead(World w, EntityPlayer player, LivingHurtEvent event,DamageSource source)
 	{
 		String name = ServerHelper.getUsername(player);
-		if(playersToSave.keySet().contains(name))
+		synchronized(playersToSave)
 		{
-			event.setCanceled(true);
-			return;
+			if(playersToSave.keySet().contains(name))
+			{
+				event.setCanceled(true);
+				return;
+			}
 		}
 
 		if(w != null)
