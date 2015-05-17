@@ -92,7 +92,7 @@ public class Helper
 
 	public static int generateTardisInterior(String ownerName, TardisTileEntity exterior)
 	{
-		if (exterior.getWorldObj().isRemote)
+		if(!ServerHelper.isServer())
 			return 0;
 		int dimID = DimensionManager.getNextFreeDimId();
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
