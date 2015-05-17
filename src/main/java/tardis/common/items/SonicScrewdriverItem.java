@@ -31,11 +31,16 @@ import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
+import buildcraft.api.tools.IToolWrench;
 import cofh.api.block.IDismantleable;
 import cofh.api.item.IToolHammer;
 import cofh.api.tileentity.IReconfigurableFacing;
+import cpw.mods.fml.common.Optional;
 
-public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
+@Optional.InterfaceList(value={
+		@Optional.Interface(iface="buildcraft.api.tools.IToolWrench",modid="BuildCraftAPI|core"),
+		@Optional.Interface(iface="cofh.api.item.IToolHammer",modid="CoFHLib")})
+public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, IToolWrench
 {
 	public static final int	maxPerms	= 0xFF;
 	public static final int	minPerms	= 0xCD;
@@ -51,45 +56,38 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 	public static ScrewdriverMode getMode(int i)
 	{
 		ScrewdriverMode[] modes = ScrewdriverMode.values();
-		if ((i < 0) || (i >= modes.length))
-			return modes[0];
+		if ((i < 0) || (i >= modes.length)) return modes[0];
 		return modes[i];
 	}
 
 	public static ScrewdriverMode getMode(ItemStack is)
 	{
-		if (is == null)
-			return ScrewdriverMode.Dismantle;
-
+		if (is == null) return null;
+		if (!(is.getItem() instanceof SonicScrewdriverItem)) return null;
 		NBTTagCompound isTag = is.stackTagCompound;
 		if (isTag == null)
 		{
 			is.stackTagCompound = isTag = new NBTTagCompound();
 			isTag.setInteger("scMo", 0);
 		}
-
 		return getMode(isTag.getInteger("scMo"));
 	}
 
 	private String getSchemaCat(ItemStack is)
 	{
-		if (is == null)
-			return "";
+		if (is == null) return "";
 
 		NBTTagCompound isTag = is.stackTagCompound;
-		if (isTag != null)
-			return isTag.getString("schemaCat");
+		if (isTag != null) return isTag.getString("schemaCat");
 		return "";
 	}
 
 	public static String getSchema(ItemStack is)
 	{
-		if (is == null)
-			return "";
+		if (is == null) return "";
 
 		NBTTagCompound isTag = is.stackTagCompound;
-		if (isTag != null)
-			return isTag.getString("schemaName");
+		if (isTag != null) return isTag.getString("schemaName");
 		return "";
 	}
 
@@ -128,10 +126,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		if (is != null)
 		{
 			NBTTagCompound nbt = is.stackTagCompound;
-			if ((nbt != null) && nbt.hasKey("coordStore"))
-			{
-				return SimpleCoordStore.readFromNBT(nbt.getCompoundTag("coordStore"));
-			}
+			if ((nbt != null) && nbt.hasKey("coordStore")) { return SimpleCoordStore.readFromNBT(nbt.getCompoundTag("coordStore")); }
 		}
 		return null;
 	}
@@ -141,8 +136,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		if ((is != null) && (is.getItem() instanceof SonicScrewdriverItem))
 		{
 			NBTTagCompound nbt = is.stackTagCompound;
-			if (nbt == null)
-				nbt = is.stackTagCompound = new NBTTagCompound();
+			if (nbt == null) nbt = is.stackTagCompound = new NBTTagCompound();
 			NBTTagCompound storeNBT = toStore.writeToNBT();
 			nbt.setTag("coordStore", storeNBT);
 		}
@@ -150,24 +144,22 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 
 	public static double[] getColors(ScrewdriverMode m)
 	{
-		if (m != null)
-			return m.c;
+		if (m != null) return m.c;
 		return defaultColor;
 	}
 
-	private static double[] defaultColor = new double[]{0,0,1};
+	private static double[]	defaultColor	= new double[] { 0, 0, 1 };
+
 	public static double[] getColors(ItemStack is)
 	{
-		if(is == null)
-			return defaultColor;
+		if (is == null) return defaultColor;
 		ScrewdriverMode mode = getMode(is);
 		return getColors(mode);
 	}
 
 	public static String getOwner(ItemStack is)
 	{
-		if((is.stackTagCompound == null) || !is.stackTagCompound.hasKey("owner"))
-			return "Unknown";
+		if ((is.stackTagCompound == null) || !is.stackTagCompound.hasKey("owner")) return "Unknown";
 		return is.stackTagCompound.getString("owner");
 	}
 
@@ -193,10 +185,9 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		if (is != null)
 		{
 			infoList.add("Owner: " + getOwner(is));
-			for(ScrewdriverMode m : ScrewdriverMode.values())
+			for (ScrewdriverMode m : ScrewdriverMode.values())
 			{
-				if(!hasPermission(is,m))
-					infoList.add(m.name() + " - Disabled");
+				if (!hasPermission(is, m)) infoList.add(m.name() + " - Disabled");
 			}
 			ScrewdriverMode mode = getMode(is);
 			addModeInfo(mode, is, infoList);
@@ -205,24 +196,18 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 
 	public boolean isValidMode(EntityPlayer pl, ItemStack is, ScrewdriverMode mode)
 	{
-		if (!hasPermission(is, mode))
-			return false;
-		if (mode.requiredFunction == null)
-			return true;
+		if (!hasPermission(is, mode)) return false;
+		if (mode.requiredFunction == null) return true;
 		TardisOutput.print("TSSI", "HasP");
 		CoreTileEntity core = getLinkedCore(is);
-		if (core == null)
-			return false;
-		if (!core.hasFunction(mode.requiredFunction))
-			return false;
+		if (core == null) return false;
+		if (!core.hasFunction(mode.requiredFunction)) return false;
 		if (pl != null)
 		{
 			boolean isInTardis = false;
 			isInTardis = pl.worldObj.provider instanceof TardisWorldProvider;
-			if (isInTardis && (mode.equals(ScrewdriverMode.Locate) || mode.equals(ScrewdriverMode.Recall)))
-				return false;
-			if (!isInTardis && mode.equals(ScrewdriverMode.Schematic))
-				return false;
+			if (isInTardis && (mode.equals(ScrewdriverMode.Locate) || mode.equals(ScrewdriverMode.Recall))) return false;
+			if (!isInTardis && mode.equals(ScrewdriverMode.Schematic)) return false;
 		}
 		return true;
 	}
@@ -232,8 +217,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		ItemStack is = pl.getHeldItem();
 		if (is != null)
 		{
-			if (is.getItem() == TardisMod.screwItem)
-				return true;
+			if (is.getItem() == TardisMod.screwItem) return true;
 		}
 		return false;
 	}
@@ -260,14 +244,14 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 			switchMode(is, player.worldObj, player, mode);
 	}
 
+	@Optional.Method(modid="CoFHLib")
 	private boolean dismantle(IDismantleable dis, SimpleCoordStore pos, EntityPlayer player, ItemStack is)
 	{
 		if (dis.canDismantle(player, pos.getWorldObj(), pos.x, pos.y, pos.z))
 		{
 			ArrayList<ItemStack> s = dis.dismantleBlock(player, pos.getWorldObj(), pos.x, pos.y, pos.z, false);
 			for (ItemStack tis : s)
-				if (tis != null)
-					WorldHelper.giveItemStack(player, tis);
+				if (tis != null) WorldHelper.giveItemStack(player, tis);
 			toolUsed(is, player, pos.x, pos.y, pos.z);
 			return true;
 		}
@@ -276,15 +260,13 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 
 	private boolean screwScrewable(Object screw, ScrewdriverMode mode, EntityPlayer player)
 	{
-		if (screw instanceof IScrewable)
-			return ((IScrewable) screw).screw(mode, player);
+		if (screw instanceof IScrewable) return ((IScrewable) screw).screw(mode, player);
 		return false;
 	}
 
 	public boolean rightClickBlock(EntityPlayer pl, SimpleCoordStore pos)
 	{
-		if (!isPlayerHoldingScrewdriver(pl))
-			return false;
+		if (!isPlayerHoldingScrewdriver(pl)) return false;
 		return screwScrewable(pos.getTileEntity(), getMode(pl.getHeldItem()), pl);
 	}
 
@@ -294,21 +276,15 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		if (ServerHelper.isServer())
 		{
 			MovingObjectPosition hitPos = getMovingObjectPositionFromPlayer(w, player, true);
-			if (hitPos == null)
-				return false;
+			if (hitPos == null) return false;
 
 			TileEntity te = w.getTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 			Block b = w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-			if (screwScrewable(te, mode, player) || screwScrewable(b, mode, player))
-				return true;
+			if (screwScrewable(te, mode, player) || screwScrewable(b, mode, player)) return true;
 			if (mode.equals(ScrewdriverMode.Dismantle))
 			{
-				if (b instanceof IDismantleable)
-					if (dismantle((IDismantleable) b, new SimpleCoordStore(w, hitPos), player, is))
-						return true;
-				if (te instanceof IDismantleable)
-					if (dismantle((IDismantleable) te, new SimpleCoordStore(w, hitPos), player, is))
-						return true;
+				if (b instanceof IDismantleable) if (dismantle((IDismantleable) b, new SimpleCoordStore(w, hitPos), player, is)) return true;
+				if (te instanceof IDismantleable) if (dismantle((IDismantleable) te, new SimpleCoordStore(w, hitPos), player, is)) return true;
 			}
 			else if (mode.equals(ScrewdriverMode.Reconfigure))
 			{
@@ -328,7 +304,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 							player.addChatMessage(CoreTileEntity.cannotModifyMessage);
 					}
 				}
-				else if(b == TardisMod.colorableRoundelBlock)
+				else if (b == TardisMod.colorableRoundelBlock)
 				{
 					int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 					CoreTileEntity core = Helper.getTardisCore(w);
@@ -360,10 +336,8 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 
 	public static boolean hasPermission(ItemStack is, ScrewdriverMode mode)
 	{
-		if (is == null)
-			return false;
-		if (is.stackTagCompound == null)
-			return false;
+		if (is == null) return false;
+		if (is.stackTagCompound == null) return false;
 		return hasPermission(is.stackTagCompound, mode);
 	}
 
@@ -381,10 +355,8 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 
 	public static void setPermission(ItemStack is, ScrewdriverMode mode, boolean value)
 	{
-		if (is == null)
-			return;
-		if (is.stackTagCompound == null)
-			return;
+		if (is == null) return;
+		if (is.stackTagCompound == null) return;
 		setPermission(is.stackTagCompound, mode, value);
 	}
 
@@ -392,8 +364,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 	{
 		TardisOutput.print("TSSI", "Setting permission " + mode.name() + " to " + value);
 		int permissions = maxPerms;
-		if (nbt.hasKey("perm"))
-			permissions = nbt.getInteger("perm");
+		if (nbt.hasKey("perm")) permissions = nbt.getInteger("perm");
 		int toCheck = (int) Math.pow(2, mode.ordinal());
 		if (!value)
 			permissions -= permissions & toCheck;
@@ -440,8 +411,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		ScrewdriverMode mode = getMode(is);
 		if (ServerHelper.isServer() && player.isSneaking())
 		{
-			if (!rightClickBlock(is, mode, player, world))
-				switchMode(is, world, player, mode);
+			if (!rightClickBlock(is, mode, player, world)) switchMode(is, world, player, mode);
 		}
 		else if (ServerHelper.isServer())
 		{
@@ -463,11 +433,9 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 							if (ext != null)
 							{
 								if (WorldHelper.getWorldID(ext) != player.worldObj.provider.dimensionId)
-									player.addChatMessage(new ChatComponentText(
-											"[Sonic Screwdriver]The TARDIS does not appear to be in this dimension"));
+									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS does not appear to be in this dimension"));
 								else
-									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS is at ["
-											+ ext.xCoord + "," + ext.yCoord + "," + ext.zCoord + "]"));
+									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS is at [" + ext.xCoord + "," + ext.yCoord + "," + ext.zCoord + "]"));
 							}
 						}
 					}
@@ -477,19 +445,16 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 			}
 			else if (mode.equals(ScrewdriverMode.Transmat))
 			{
-				if (core.hasFunction(TardisFunction.TRANSMAT))
-					core.transmatEntity(player);
+				if (core.hasFunction(TardisFunction.TRANSMAT)) core.transmatEntity(player);
 			}
 			else if (mode.equals(ScrewdriverMode.Recall))
 			{
 				ConsoleTileEntity con = core.getConsole();
 				if ((con != null) && !core.inFlight())
 				{
-					if (con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX+1),
-							(int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))
+					if (con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX + 1), (int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))
 					{
-						if (core.takeOff(true, player))
-							player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS inbound"));
+						if (core.takeOff(true, player)) player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS inbound"));
 					}
 					else
 						player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS recall failed"));
@@ -506,14 +471,12 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 	@Override
 	public boolean hitEntity(ItemStack is, EntityLivingBase hit, EntityLivingBase hitter)
 	{
-		if (!ServerHelper.isServer())
-			return false;
+		if (!ServerHelper.isServer()) return false;
 		ScrewdriverMode mode = getMode(is);
 		if (ScrewdriverMode.Transmat.equals(mode) && !(hit instanceof EntityPlayer))
 		{
 			CoreTileEntity core = getLinkedCore(is);
-			if (core != null)
-				core.transmatEntity(hit);
+			if (core != null) core.transmatEntity(hit);
 			return true;
 		}
 		return false;
@@ -538,8 +501,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 		if (is != null)
 		{
 			ScrewdriverMode mode = getMode(is);
-			if (mode.equals(ScrewdriverMode.Dismantle) || mode.equals(ScrewdriverMode.Reconfigure))
-				return true;
+			if (mode.equals(ScrewdriverMode.Dismantle) || mode.equals(ScrewdriverMode.Reconfigure)) return true;
 		}
 		return false;
 	}
@@ -556,6 +518,20 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer
 	public void registerIcons(IIconRegister register)
 	{
 
+	}
+
+	@Override
+	public boolean canWrench(EntityPlayer pl, int x, int y, int z)
+	{
+		ItemStack is = pl.getHeldItem();
+		if (is == null) return false;
+		return getMode(is) == ScrewdriverMode.Reconfigure;
+	}
+
+	@Override
+	public void wrenchUsed(EntityPlayer pl, int x, int y, int z)
+	{
+		toolUsed(null, pl, x, y, z);
 	}
 
 }
