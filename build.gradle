@@ -44,6 +44,7 @@ dependencies {
 
 processResources
 {
+	exclude '**/*.wav'
 	exclude '**/*.psd'
 	exclude '**/*.blend'
 	exclude '**/*.tga'
