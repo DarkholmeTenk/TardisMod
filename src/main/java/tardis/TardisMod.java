@@ -347,8 +347,6 @@ public class TardisMod implements IConfigHandlerMod
 	{
 		TardisDimensionRegistry.loadAll();
 		dimReg.registerDims();
-		FMLCommonHandler.instance().bus().register(dimReg);
-		MinecraftForge.EVENT_BUS.register(dimReg);
 		TardisOwnershipRegistry.loadAll();
 		TardisOwnershipRegistry.saveAll();
 		teleporter = new DarkcoreTeleporter(event.getServer().worldServerForDimension(0));

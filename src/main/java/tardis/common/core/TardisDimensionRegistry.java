@@ -13,8 +13,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.MinecraftForge;
 import tardis.TardisMod;
 import tardis.common.network.TardisPacketHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
@@ -39,6 +41,8 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 	{
 		if(dimensionIDs.add(id))
 		{
+			if(!DimensionManager.isDimensionRegistered(id))
+				registerDim(id);
 			TardisOutput.print("TDR", "Adding dimension:" + id,TardisOutput.Priority.DEBUG);
 			markDirty();
 		}
@@ -47,7 +51,11 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 	public static void loadAll()
 	{
 		if(TardisMod.dimReg == null)
+		{
 			TardisMod.dimReg = new TardisDimensionRegistry();
+			FMLCommonHandler.instance().bus().register(TardisMod.dimReg);
+			MinecraftForge.EVENT_BUS.register(TardisMod.dimReg);
+		}
 		TardisMod.dimReg.load();
 	}
 
@@ -91,12 +99,8 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 		//TardisOutput.print("TDR", "Reading from nbt");
 		int[] dims = nbt.getIntArray("registeredDimensions");
 		if(dims != null)
-		{
 			for(int curr: dims)
-			{
 				addDimension(curr);
-			}
-		}
 		saveAll();
 	}
 
@@ -107,10 +111,7 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 		int[] dims = new int[dimensionIDs.size()];
 		int i=0;
 		for(Integer curr:dimensionIDs)
-		{
-			dims[i] = curr;
-			i++;
-		}
+			dims[i++] = curr;
 		nbt.setIntArray("registeredDimensions", dims);
 	}
 
@@ -147,8 +148,10 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 
 	public void sendPacket(PlayerEvent event)
 	{
+		if(!ServerHelper.isServer())
+			return;
 		EntityPlayer pl = event.player;
-		if((pl instanceof EntityPlayerMP) && (DarkcoreMod.networkChannel != null))
+		if(pl instanceof EntityPlayerMP)
 			DarkcoreMod.networkChannel.sendTo(getPacket(),(EntityPlayerMP) pl);
 	}
 
