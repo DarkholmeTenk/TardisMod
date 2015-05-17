@@ -655,9 +655,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					TileEntity te = w.getTileEntity(current[0] + xO, current[1] + yO, current[2] + zO);
 					if (te instanceof LandingPadTileEntity)
 					{
-						if (((LandingPadTileEntity) te).isClear())
+						if (((LandingPadTileEntity) te).isClearBottom())
 						{
 							return new int[] { current[0] + xO, current[1] + yO + 1, current[2] + zO };
+						}
+						else if (((LandingPadTileEntity) te).isClearTop())
+						{
+							return new int[] { current[0] + xO, current[1] + yO + 2, current[2] + zO };
 						}
 					}
 				}

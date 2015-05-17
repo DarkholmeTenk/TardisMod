@@ -30,6 +30,8 @@ public class LandingPadTileEntity extends ComponentTileEntity
 		if(Helper.isTardisWorld(worldObj))
 			return super.getCore();
 		TileEntity te = worldObj.getTileEntity(xCoord, yCoord+1, zCoord);
+		if(!(te instanceof TardisTileEntity))
+			te = worldObj.getTileEntity(xCoord, yCoord + 2, zCoord);
 		if(te instanceof TardisTileEntity)
 		{
 			if(!((TardisTileEntity)te).inFlight())
@@ -95,6 +97,16 @@ public class LandingPadTileEntity extends ComponentTileEntity
 
 	public boolean isClear()
 	{
-		return worldObj.isAirBlock(xCoord, yCoord+1, zCoord) && worldObj.isAirBlock(xCoord, yCoord+2, zCoord);
+		return worldObj.isAirBlock(xCoord, yCoord+2, zCoord) && (worldObj.isAirBlock(xCoord, yCoord+1, zCoord) || worldObj.isAirBlock(xCoord, yCoord+3, zCoord));
+	}
+
+	public boolean isClearBottom()
+	{
+		return worldObj.isAirBlock(xCoord, yCoord+2, zCoord) && (worldObj.isAirBlock(xCoord, yCoord+1, zCoord));
+	}
+
+	public boolean isClearTop()
+	{
+		return worldObj.isAirBlock(xCoord, yCoord+2, zCoord) && worldObj.isAirBlock(xCoord, yCoord+3, zCoord);
 	}
 }
