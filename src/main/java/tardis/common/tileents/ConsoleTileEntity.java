@@ -504,7 +504,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				else if ((controlID == 60) && !core.inFlight())
 				{
 					int newDimControl = dimControl + (pl.isSneaking() ? -1 : 1);
-					newDimControl = MathHelper.clamp(newDimControl, 0, TardisMod.otherDims.numDims() - 1);
+					newDimControl = MathHelper.clamp(newDimControl, 0, getNumDims() - 1);
 					dimControl = newDimControl;
 				}
 			}
@@ -689,12 +689,12 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public boolean setControls(int dim, int exX, int exZ, int x, int y, int z, boolean allowNearest)
 	{
-		int dCont = TardisMod.otherDims.getControlFromDim(dim);
+		int dCont = getControlFromDim(dim);
 		int[] xCont = getControlsFromDest(x - exX);
 		int[] yCont = getYControls(y);
 		int[] zCont = getControlsFromDest(z - exZ);
 		if ((allowNearest || ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)))
-				&& (TardisMod.otherDims.getDimFromControl(dCont) == dim))
+				&& (getDimFromControl(dCont) == dim))
 		{
 			relativeCoords = true;
 			dimControl = dCont;
@@ -709,13 +709,16 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public boolean setControls(int dim, int x, int y, int z, boolean allowNearest)
 	{
-		int dCont = TardisMod.otherDims.getControlFromDim(dim);
+		TardisDataStore ds = Helper.getDataStore(this);
+		if(ds == null)
+			return false;
+		int dCont = getControlFromDim(dim);
 		int[] xCont = getControlsFromDest(x);
 		int[] yCont = getYControls(y);
 		int[] zCont = getControlsFromDest(z);
 		boolean set = false;
 		if ((allowNearest || ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)))
-				&& (TardisMod.otherDims.getDimFromControl(dCont) == dim))
+				&& (getDimFromControl(dCont) == dim))
 		{
 			relativeCoords = false;
 			dimControl = dCont;
@@ -727,14 +730,10 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		}
 		if (!set)
 		{
-			TardisDataStore ds = Helper.getDataStore(this);
-			if (ds != null)
+			TardisTileEntity e = ds.getExterior();
+			if (e != null)
 			{
-				TardisTileEntity e = ds.getExterior();
-				if (e != null)
-				{
-					return setControls(dim, e.xCoord, e.zCoord, x, y, z, allowNearest);
-				}
+				return setControls(dim, e.xCoord, e.zCoord, x, y, z, allowNearest);
 			}
 		}
 		return set;
@@ -818,7 +817,33 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public int getDimFromControls()
 	{
-		return TardisMod.otherDims.getDimFromControl(dimControl);
+		return getDimFromControl(dimControl);
+	}
+
+	private int getDimFromControl(int dCont)
+	{
+		TardisDataStore ds = Helper.getDataStore(this);
+		if(ds != null)
+			return TardisMod.otherDims.getDimFromControl(dCont,ds.getLevel());
+		return 0;
+	}
+
+	public int getControlFromDim(int dim)
+	{
+		TardisDataStore ds = Helper.getDataStore(this);
+		if(ds != null)
+			return TardisMod.otherDims.getControlFromDim(dim, ds.getLevel());
+		return 0;
+	}
+
+	public int getNumDims()
+	{
+		TardisDataStore ds = Helper.getDataStore(this);
+		if(ds == null)
+			return TardisMod.otherDims.numDims();
+		else
+			return TardisMod.otherDims.numDims(ds.getLevel());
+
 	}
 
 	public int getZFromControls(int extZ)
@@ -897,7 +922,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		{
 			TardisOutput.print("TConTE", "Loading state");
 			facing = state.facing;
-			dimControl = TardisMod.otherDims.getControlFromDim(state.dimControl);
+			dimControl = getControlFromDim(state.dimControl);
 			xControls = state.xControls.clone();
 			yControls = state.yControls.clone();
 			zControls = state.zControls.clone();
@@ -1216,7 +1241,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		schemaNum = nbt.getInteger("schemaNum");
 		int dC = nbt.getInteger("dC");
 		TardisOutput.print("TConTE", "Attempting to set dim controls to dim: " + dC);
-		dimControl = TardisMod.otherDims.getControlFromDim(dC);
+		dimControl = getControlFromDim(dC);
 		if (nbt.hasKey("scNBT"))
 			screwNBT = nbt.getCompoundTag("scNBT");
 		for (int i = 0; i < 20; i++)
@@ -1314,7 +1339,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		nbt.setString("schemaCategoryString", schemaCategoryString);
 		nbt.setString("schemaChooserString", schemaChooserString);
-		nbt.setFloat("dCS", (dimControl) / (TardisMod.otherDims.numDims() - 1f));
+		nbt.setFloat("dCS", (dimControl) / (getNumDims() - 1f));
 		if (screwNBT != null)
 			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 		nbt.setInteger("lastButton", lastButton);

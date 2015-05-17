@@ -132,7 +132,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private static int					maxEnergyInc		= 1000;
 	private static int					energyPerSecond		= 1;
 	private static int					energyPerSecondInc	= 1;
-	private static int					energyCostDimChange	= 2000;
+	public static int					energyCostDimChange	= 2000;
 	private static int					energyCostFlightMax	= 3000;
 	private static int					maxMoveForFast		= 3;
 	private static int					energyPerSpeed		= 200;
@@ -742,7 +742,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			int dDim = con.getDimFromControls();
 
 			int extW = inFlight() ? oldExteriorWorld : gDS().exteriorWorld;
-			int distance = (dDim != extW ? energyCostDimChange : 0);
+			int distance = (dDim != extW ? ((TardisDimensionHandler.getEnergyCost(dDim) + TardisDimensionHandler.getEnergyCost(extW))/2) : 0);
 			double speedMod = Math.max(0.5, (getSpeed(true) * 3) / getMaxSpeed());
 			int enCost = (int) Math.round(distance * speedMod);
 			return takeArtronEnergy(enCost, false);
