@@ -11,7 +11,7 @@ public class DimRegPacketHandler implements IDataPacketHandler
 	@Override
 	public void handleData(NBTTagCompound nbt)
 	{
-		if((nbt != null) && !ServerHelper.isServer())
+		if((nbt != null) && ServerHelper.isClient())
 		{
 			System.out.println("Recieved new dimensions list from server");
 			if(TardisMod.dimReg == null)

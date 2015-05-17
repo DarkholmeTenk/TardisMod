@@ -73,7 +73,7 @@ public class ComponentNanogene extends AbstractComponent
 	public void updateTick()
 	{
 		super.updateTick();
-		if((parentObj == null) || !ServerHelper.isServer())
+		if((parentObj == null) || ServerHelper.isClient())
 			return;
 		if(((tt % nanogeneTimer) == 0) && ServerHelper.isServer())
 		{

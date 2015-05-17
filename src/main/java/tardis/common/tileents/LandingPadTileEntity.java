@@ -17,7 +17,7 @@ public class LandingPadTileEntity extends ComponentTileEntity
 	@Override
 	protected void dismantle(EntityPlayer pl)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return;
 		super.dismantle(pl);
 		WorldHelper.giveItemStack(pl, new ItemStack(TardisMod.landingPad,1));

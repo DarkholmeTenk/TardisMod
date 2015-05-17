@@ -25,7 +25,7 @@ public class ParticlePacketHandler implements IDataPacketHandler
 	
 	public void handleData(NBTTagCompound nbt)
 	{
-		if(nbt != null && !ServerHelper.isServer())
+		if(nbt != null && ServerHelper.isClient())
 		{
 			int dim = nbt.getInteger("dim");
 			double x = nbt.getDouble("x");

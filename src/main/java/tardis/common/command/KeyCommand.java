@@ -43,7 +43,7 @@ public class KeyCommand extends AbstractCommand
 	@Override
 	public void commandBody(ICommandSender comSen, String[] astring)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return;
 		String from = (comSen instanceof EntityPlayer) ? comSen.getCommandSenderName() : null;
 		String to = null;

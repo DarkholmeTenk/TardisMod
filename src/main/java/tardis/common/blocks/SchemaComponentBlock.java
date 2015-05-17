@@ -175,7 +175,7 @@ public class SchemaComponentBlock extends AbstractBlock
     		CoreTileEntity te = Helper.getTardisCore(w);
     		if(te != null)
     		{
-				if((!w.isRemote) && (!te.changeLock(pl,true)))
+				if((ServerHelper.isServer()) && (!te.changeLock(pl,true)))
 					te.leaveTardis(pl,false);
     		}
     		return true;

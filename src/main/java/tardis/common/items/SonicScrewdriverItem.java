@@ -471,7 +471,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	@Override
 	public boolean hitEntity(ItemStack is, EntityLivingBase hit, EntityLivingBase hitter)
 	{
-		if (!ServerHelper.isServer()) return false;
+		if (ServerHelper.isClient()) return false;
 		ScrewdriverMode mode = getMode(is);
 		if (ScrewdriverMode.Transmat.equals(mode) && !(hit instanceof EntityPlayer))
 		{

@@ -73,7 +73,7 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 			sendUpdate();
 		}
 
-		if (!ServerHelper.isServer())
+		if (ServerHelper.isClient())
 		{
 			angle += ((rotSpeed * getArtronEnergy()) / getMaxArtronEnergy());
 			while (angle >= 360)

@@ -135,7 +135,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	@Override
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return true;
 		CoreTileEntity core = Helper.getTardisCore(worldObj);
 		if((core == null) || core.canModify(player))
@@ -184,7 +184,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 
 	public void recheckDoors(boolean isRoomBeingRemoved)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return;
 		if(doors.size() == 0)
 			setDoorArray();

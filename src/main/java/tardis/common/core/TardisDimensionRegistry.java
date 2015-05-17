@@ -148,7 +148,7 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 
 	public void sendPacket(PlayerEvent event)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return;
 		EntityPlayer pl = event.player;
 		if(pl instanceof EntityPlayerMP)

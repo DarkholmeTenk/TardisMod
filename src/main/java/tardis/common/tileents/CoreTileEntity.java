@@ -298,7 +298,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void flightTick()
 	{
-		if (!ServerHelper.isServer())
+		if (ServerHelper.isClient())
 			return;
 		if((currentBlockSpeed == 0) || (maxBlockSpeed == 0))
 		{
@@ -450,7 +450,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public boolean activate(EntityPlayer player, int side)
 	{
-		if (!ServerHelper.isServer())
+		if (ServerHelper.isClient())
 			return true;
 		sendDestinationStrings(player);
 		return true;
@@ -512,7 +512,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public void enterTardis(EntityPlayer player, boolean ignoreLock)
 	{
-		if (player.worldObj.isRemote)
+		if (ServerHelper.isClient())
 			return;
 		if (ignoreLock || canOpenLock(player, false))
 			enterTardis(player);
@@ -522,6 +522,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
 	{
+		if (ServerHelper.isClient())
+			return;
 		if (!inFlight() && gDS().hasValidExterior())
 		{
 			if (ignoreLock || canOpenLock(player, true))
@@ -529,8 +531,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				World ext = WorldHelper.getWorld(gDS().exteriorWorld);
 				if (ext != null)
 				{
-					if (ext.isRemote)
-						return;
 					int facing = ext.getBlockMetadata(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ);
 					int dx = 0;
 					int dz = 0;
@@ -578,7 +578,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public boolean changeLock(EntityPlayer pl, boolean inside)
 	{
-		if (pl.worldObj.isRemote)
+		if (ServerHelper.isClient())
 			return false;
 
 		TardisOutput.print("TCTE", "Changing lock");
@@ -813,7 +813,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void placeBox()
 	{
-		if (!ServerHelper.isServer() || gDS().hasValidExterior())
+		if (ServerHelper.isClient() || gDS().hasValidExterior())
 			return;
 		ConsoleTileEntity con = getConsole();
 		if (con == null)
@@ -1035,9 +1035,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if(name == null)
 			return;
-		TardisOutput.print("TCTE", "Setting owner to " + name + "#" + worldObj.isRemote, TardisOutput.Priority.DEBUG);
+		TardisOutput.print("TCTE", "Setting owner to " + name + "#" + ServerHelper.isClient(), TardisOutput.Priority.DEBUG);
 		ownerName = name;
-		if (!worldObj.isRemote && (TardisMod.plReg != null) && !TardisMod.plReg.hasTardis(ownerName))
+		if (ServerHelper.isServer() && (TardisMod.plReg != null) && !TardisMod.plReg.hasTardis(ownerName))
 			TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
 		TardisTileEntity ext = gDS().getExterior();
 		if (ext != null)
@@ -1733,7 +1733,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void readTransmittableOnly(NBTTagCompound nbt)
 	{
-		if (nbt.hasKey("ds") && !ServerHelper.isServer())
+		if (nbt.hasKey("ds") && ServerHelper.isClient())
 		{
 			TardisDataStore tds = gDS();
 			if (tds != null)

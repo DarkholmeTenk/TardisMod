@@ -88,7 +88,7 @@ public class TardisClientProxy extends TardisProxy
 	@Override
 	public World getWorld(int id)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			if(Minecraft.getMinecraft() != null)
 				if(Minecraft.getMinecraft().thePlayer != null)
 					cWorld = Minecraft.getMinecraft().thePlayer.worldObj;

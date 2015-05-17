@@ -9,7 +9,6 @@ import java.util.List;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
@@ -42,7 +41,7 @@ public class RepairCoreCommand extends AbstractCommand
 	@Override
 	public void commandBody(ICommandSender comSen, String[] astring)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return;
 		String newOwner = null;
 		int worldID = 0;
@@ -51,7 +50,7 @@ public class RepairCoreCommand extends AbstractCommand
 
 		if(comSen instanceof EntityPlayer)
 		{
-			TardisOutput.print("TRCC", "WOrld?"+((EntityPlayerMP)comSen).worldObj.isRemote);
+			TardisOutput.print("TRCC", "World?"+ServerHelper.isServer());
 			worldID  = ((EntityPlayer) comSen).worldObj.provider.dimensionId;
 			newOwner = ServerHelper.getUsername((EntityPlayer) comSen);
 		}

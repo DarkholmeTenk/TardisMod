@@ -115,7 +115,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	
 	private void linkToCore()
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return;
 		CoreTileEntity core = getCore();
 		if(core != null)
@@ -156,7 +156,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	
 	private boolean addConnection(IGridNode otherNode)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return true;
 		try
 		{

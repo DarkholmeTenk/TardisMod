@@ -37,7 +37,7 @@ public class SwitchConsoleCommand extends AbstractCommand
 	@Override
 	public void commandBody(ICommandSender icommandsender, String[] astring)
 	{
-		if(!ServerHelper.isServer() || (astring.length == 0))
+		if(ServerHelper.isClient() || (astring.length == 0))
 			return;
 		World w = null;
 		if(astring.length == 2)

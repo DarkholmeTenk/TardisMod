@@ -33,7 +33,7 @@ public class DimensionEventHandler
 	@SubscribeEvent
 	public void damageHandler(LivingHurtEvent event)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return;
 		EntityLivingBase ent = event.entityLiving;
 		DamageSource source = event.source;

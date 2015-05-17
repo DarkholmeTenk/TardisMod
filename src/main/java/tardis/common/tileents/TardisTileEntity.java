@@ -149,7 +149,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		landing = true;
 		landFast = fast;
 		playLandSound();
-		TardisOutput.print("TTE", "LANDING!!!! " + (fast ? "FAST " : "SLOW ") + (worldObj.isRemote?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
+		TardisOutput.print("TTE", "LANDING!!!! " + (fast ? "FAST " : "SLOW ") + (ServerHelper.isClient()?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
 		sendUpdate();
 	}
 
@@ -203,7 +203,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 
 	public void doorActivated(World world, int x, int y, int z, EntityPlayer player)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return;
 		if(!inFlight())
 		{

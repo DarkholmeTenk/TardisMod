@@ -92,7 +92,7 @@ public class Helper
 
 	public static int generateTardisInterior(String ownerName, TardisTileEntity exterior)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return 0;
 		int dimID = DimensionManager.getNextFreeDimId();
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
@@ -151,7 +151,7 @@ public class Helper
 	private static TardisTileEntity summonTardis(EntityPlayer player)
 	{
 		World w = player.worldObj;
-		if (w.isRemote)
+		if (ServerHelper.isClient())
 			return null;
 
 		int x = (int) Math.floor(player.posX);
@@ -303,7 +303,7 @@ public class Helper
 
 	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z, int count, boolean rand)
 	{
-		if (!ServerHelper.isServer())
+		if (ServerHelper.isClient())
 			return;
 		NBTTagCompound data = new NBTTagCompound();
 		data.setInteger("dim", dim);

@@ -224,7 +224,7 @@ public class ComponentAspect extends AbstractComponent implements IAspectSource,
 	@Override
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return true;
 		CoreTileEntity core = getCore();
 		if(mode == ScrewdriverMode.Reconfigure)

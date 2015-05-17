@@ -190,7 +190,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 
 	protected void dismantle(EntityPlayer pl)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return;
 		Block b = worldObj.getBlock(xCoord, yCoord, zCoord);
 		ItemStack[] contained = getComponentItems();
@@ -214,7 +214,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return true;
 		if (mode == ScrewdriverMode.Dismantle)
 		{
@@ -244,7 +244,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public boolean activate(EntityPlayer pl, int side)
 	{
-		if(!ServerHelper.isServer()) return true;
+		if(ServerHelper.isClient()) return true;
 		ItemStack is = pl.getHeldItem();
 		if (is != null)
 		{

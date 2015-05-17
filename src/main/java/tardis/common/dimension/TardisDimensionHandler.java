@@ -157,7 +157,7 @@ public class TardisDimensionHandler
 
 	public void findDimensions()
 	{
-		if (!ServerHelper.isServer())
+		if (ServerHelper.isClient())
 			return;
 		WorldServer[] loadedWorlds = DimensionManager.getWorlds();
 		for (WorldServer w : loadedWorlds)
@@ -180,7 +180,7 @@ public class TardisDimensionHandler
 
 	public Integer getControlFromDim(int dim)
 	{
-		if (!ServerHelper.isServer())
+		if (ServerHelper.isClient())
 			return 0;
 		cleanUp();
 		if (dimensionIDs.contains(dim))
@@ -201,7 +201,7 @@ public class TardisDimensionHandler
 
 	public Integer getDimFromControl(int control)
 	{
-		if (!ServerHelper.isServer())
+		if (ServerHelper.isClient())
 			return 0;
 		int index = MathHelper.clamp(control, 0, dimensionIDs.size() - 1);
 		int dim = dimensionIDs.get(index);

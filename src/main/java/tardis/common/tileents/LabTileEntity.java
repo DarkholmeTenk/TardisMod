@@ -270,7 +270,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 			if((tt % 1200) == 0)
 				sendUpdate();
 		}
-		if((!ServerHelper.isServer()) && isGeneratingEnergy(null,null))
+		if((ServerHelper.isClient()) && isGeneratingEnergy(null,null))
 			moveSticks();
 		if(ServerHelper.isServer() && ((tt % 20) == 0))
 		{
@@ -303,7 +303,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 
 	public boolean isGeneratingEnergy(LabRecipe rec,IArtronEnergyProvider core)
 	{
-		if(!ServerHelper.isServer())
+		if(ServerHelper.isClient())
 			return isActive() && generatingEnergy;
 		boolean result = false;
 		if((rec != null) && (core != null))
