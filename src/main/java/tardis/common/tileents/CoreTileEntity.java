@@ -39,6 +39,7 @@ import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.items.KeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CoreGrid;
@@ -618,7 +619,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return true;
 	}
 
-	private int[] scanForValidPos(World w, int[] current)
+	private int[] scanForValidPos(World w, int[] current, int mh)
 	{
 		int[] check = { 0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9 };
 		for (int i = 0; i < check.length; i++)
@@ -630,7 +631,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				for (int k = 0; k < check.length; k++)
 				{
 					int zO = check[k];
-					if (isValidPos(w, current[0] + xO, current[1] + yO, current[2] + zO))
+					if (isValidPos(w, current[0] + xO, current[1] + yO, current[2] + zO, mh))
 					{
 						return new int[] { current[0] + xO, current[1] + yO, current[2] + zO };
 					}
@@ -689,11 +690,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		World w = WorldHelper.getWorld(con.getDimFromControls());
 		if (w == null)
 			return posArr;
-
-		if (!(isValidPos(w, posArr[0], posArr[1], posArr[2])))
+		int mh = TardisDimensionHandler.getMaxHeight(con.getDimFromControls());
+		if(posArr[1] >= mh)
+			posArr[1] = mh - 1;
+		if (!(isValidPos(w, posArr[0], posArr[1], posArr[2], mh)))
 		{
 			if ((posArr[0] != gDS().exteriorX) || (posArr[1] != gDS().exteriorY) || (posArr[2] != gDS().exteriorZ))
-				posArr = scanForValidPos(w, posArr);
+				posArr = scanForValidPos(w, posArr, mh);
 		}
 		if (con.getLandOnGroundFromControls())
 			posArr = findGround(w, posArr);
@@ -786,9 +789,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return takeOff(false, pl);
 	}
 
-	private boolean isValidPos(World w, int x, int y, int z)
+	private boolean isValidPos(World w, int x, int y, int z, int mh)
 	{
-		return (y > 0) && (y < 254) && softBlock(w, x, y, z) && softBlock(w, x, y + 1, z);
+		return (y > 0) && (y < (mh-1)) && softBlock(w, x, y, z) && softBlock(w, x, y + 1, z);
 	}
 
 	private int getUnstableOffset()
