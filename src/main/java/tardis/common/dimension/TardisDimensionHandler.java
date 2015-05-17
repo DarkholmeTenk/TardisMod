@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -19,6 +20,7 @@ import net.minecraftforge.event.world.WorldEvent.Load;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.tileents.CoreTileEntity;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class TardisDimensionHandler
@@ -28,6 +30,8 @@ public class TardisDimensionHandler
 	private static ArrayList<Integer>			blacklistedIDs;
 	private static ArrayList<String>			blacklistedNames;
 	private static HashMap<Integer, Integer>	maxHeights				= new HashMap();
+	private static HashMap<Integer, Integer>	minLevels				= new HashMap();
+	private static HashMap<Integer, Integer>	energyCosts				= new HashMap();
 
 	static
 	{
@@ -35,24 +39,44 @@ public class TardisDimensionHandler
 	}
 
 	private Thread								scanAfterDelayThread	= null;
-	private Runnable							scanAfterDelay			=new Runnable()
-																		{
-																			@Override
-																			public void run()
-																			{
-																				while (true)
-																				{
-																					try
-																					{
-																						Thread.sleep(30000);
-																						internalFindDimensions();
-																					}
-																					catch (Exception e)
-																					{
-																					}
-																				}
-																			}
-																		};
+	private Runnable							scanAfterDelay			=
+		new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				while (true)
+				{
+					try
+					{
+						Thread.sleep(30000);
+						internalFindDimensions();
+					}
+					catch (Exception e)
+					{
+					}
+				}
+			}
+		};
+
+	private static void splitToTwoInts(String s, HashMap<Integer,Integer> toFill)
+	{
+		toFill.clear();
+		String[] csvBlobs = s.split(",");
+		for(String csvBlob : csvBlobs)
+		{
+			String[] intBlobs = csvBlob.split("\\|");
+			if(intBlobs.length != 2)
+				continue;
+			try
+			{
+				int dim = Integer.parseInt(intBlobs[0]);
+				int height = Integer.parseInt(intBlobs[1]);
+				toFill.put(dim, height);
+			}
+			catch(NumberFormatException e){}
+		}
+	}
 
 	public static void refreshConfigs()
 	{
@@ -72,34 +96,27 @@ public class TardisDimensionHandler
 			blacklistedNames.add(s);
 
 		String heightsStr = config.getString("Maximum heights", "-1|127", "A comma separated list of maximum heights in the form dimID|height", "E.g. -1|127 which sets the max height of the nether (dim -1) to 127");
-		String[] heightBlobs = heightsStr.split(",");
-		for(String heightBlob : heightBlobs)
-		{
-			String[] dimBlobs = heightBlob.split("\\|");
-			if(dimBlobs.length != 2)
-				continue;
-			try
-			{
-				int dim = Integer.parseInt(dimBlobs[0]);
-				int height = Integer.parseInt(dimBlobs[1]);
-				maxHeights.put(dim, height);
-			}
-			catch(NumberFormatException e){}
+		splitToTwoInts(heightsStr,maxHeights);
 
-		}
+		String minLevelStr = config.getString("Minimum levels", "1|13,-1|5", "A comma separated list of minimum levels required to reach dimension","In the form dimID|level");
+		splitToTwoInts(minLevelStr,minLevels);
+
+		String enCostStr = config.getString("Energy costs", "1|5000,-1|3000", "A comma separated list of energy cost to reach dimension","In the form dimID|cost");
+		splitToTwoInts(enCostStr,energyCosts);
 	}
 
 	public static int getMaxHeight(int dimID)
 	{
-
 		if(maxHeights.containsKey(dimID))
-		{
-			int max = maxHeights.get(dimID);
-			System.out.println("Getting mh for " + dimID + " - " + max);
-			return max;
-		}
-		System.out.println("Getting mh for " + dimID + " : " + 255);
+			return maxHeights.get(dimID);
 		return 255;
+	}
+
+	public static int getEnergyCost(int dimID)
+	{
+		if(energyCosts.containsKey(dimID))
+			return energyCosts.get(dimID);
+		return CoreTileEntity.energyCostDimChange;
 	}
 
 	private synchronized void addDimension(int id)
@@ -201,30 +218,52 @@ public class TardisDimensionHandler
 		return Math.max(1, dimensionIDs.size());
 	}
 
-	public Integer getControlFromDim(int dim)
+	private List<Integer> getDims(int level)
+	{
+		ArrayList<Integer> list = new ArrayList();
+		for(Integer dim : dimensionIDs)
+		{
+			if(minLevels.containsKey(dim) && (minLevels.get(dim) > level))
+				continue;
+			list.add(dim);
+		}
+		return list;
+	}
+
+	public int numDims(int level)
+	{
+		return getDims(level).size();
+	}
+
+	public Integer getControlFromDim(int dim, int level)
 	{
 		if (ServerHelper.isClient()) return 0;
 		cleanUp();
+		List<Integer> dims = getDims(level);
 		if (dimensionIDs.contains(dim))
-			return dimensionIDs.indexOf(dim);
+		{
+			if(dims.contains(dim))
+				return dims.indexOf(dim);
+		}
 		else
 		{
 			World w = WorldHelper.getWorldServer(dim);
 			if (w != null)
 			{
 				addDimension(w);
-				return dimensionIDs.indexOf(w);
+				return getControlFromDim(dim,level);
 			}
 		}
 		if (dimensionIDs.contains(0)) return dimensionIDs.indexOf(0);
 		return 0;
 	}
 
-	public Integer getDimFromControl(int control)
+	public Integer getDimFromControl(int control, int level)
 	{
 		if (ServerHelper.isClient()) return 0;
-		int index = MathHelper.clamp(control, 0, dimensionIDs.size() - 1);
-		int dim = dimensionIDs.get(index);
+		List<Integer> dims = getDims(level);
+		int index = MathHelper.clamp(control, 0, dims.size() - 1);
+		int dim = dims.get(index);
 		return dim;
 	}
 }
