@@ -1,5 +1,8 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
 import java.io.File;
 import java.util.List;
 
@@ -24,7 +27,7 @@ public class SchemaSaveCommand extends AbstractCommand
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender)
 	{
-		return null;
+		return "/tardissave <name> <x> <y> <z>";
 	}
 
 	@Override
@@ -32,7 +35,7 @@ public class SchemaSaveCommand extends AbstractCommand
 	{
 		aliases.add("tsave");
 	}
-	
+
 	public static boolean save(String name, EntityPlayerMP pl, World w, int x, int y, int z)
 	{
 		try
@@ -45,13 +48,13 @@ public class SchemaSaveCommand extends AbstractCommand
 		}
 		catch(SchemaCoreNotFoundException e)
 		{
-			sendString(pl,e.getMessage());
+			ServerHelper.sendString(pl,e.getMessage());
 			TardisOutput.print("TSSC", "ERROR:" + e.getMessage(),TardisOutput.Priority.ERROR);
 			e.printStackTrace();
 		}
 		catch(SchemaDoorNotFoundException e)
 		{
-			sendString(pl,e.getMessage());
+			ServerHelper.sendString(pl,e.getMessage());
 			TardisOutput.print("TSSC", "ERROR:" + e.getMessage(),TardisOutput.Priority.ERROR);
 			e.printStackTrace();
 		}
@@ -86,7 +89,7 @@ public class SchemaSaveCommand extends AbstractCommand
 				{
 					sendString(pl,"Totally not numbers");
 				}
-				
+
 			}
 			else if(astring.length == 1)
 			{
@@ -95,7 +98,7 @@ public class SchemaSaveCommand extends AbstractCommand
 				y = (int) Math.floor(pl.posY);
 				z = (int) Math.floor(pl.posZ);
 				boolean f =false;
-				for(int i = 0;i<4 && !f;i++)
+				for(int i = 0;(i<4) && !f;i++)
 				{
 					if(pl.worldObj.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
 					{
@@ -104,7 +107,7 @@ public class SchemaSaveCommand extends AbstractCommand
 					}
 				}
 			}
-			
+
 			if(astring.length >= 1)
 			{
 				if(save(name,pl,pl.worldObj,x,y,z))

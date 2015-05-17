@@ -1,5 +1,7 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
@@ -18,7 +20,7 @@ public class SwitchDebugModeCommand extends AbstractCommand
 	@Override
 	public String getCommandUsage(ICommandSender p_71518_1_)
 	{
-		return null;
+		return "/tdebug (deprecated)";
 	}
 
 	@Override
@@ -38,7 +40,7 @@ public class SwitchDebugModeCommand extends AbstractCommand
 		}
 		catch(Exception e)
 		{
-			
+
 		}
 	}
 

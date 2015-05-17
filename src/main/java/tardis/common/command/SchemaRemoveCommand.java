@@ -1,5 +1,7 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+
 import java.io.File;
 import java.util.List;
 
@@ -19,7 +21,7 @@ public class SchemaRemoveCommand extends AbstractCommand
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender)
 	{
-		return null;
+		return "/tardisremove <schemaName>";
 	}
 
 	@Override

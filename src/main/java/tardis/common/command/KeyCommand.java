@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
@@ -30,7 +31,7 @@ public class KeyCommand extends AbstractCommand
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender)
 	{
-		return "tardiskey <username1> <username2>: gives username2's key to username1";
+		return "tardiskey <player1> <player2>";
 	}
 
 	@Override
@@ -53,7 +54,7 @@ public class KeyCommand extends AbstractCommand
 			from = astring[0];
 			to   = astring[1];
 		}
-		if(to == null || from == null)
+		if((to == null) || (from == null))
 		{
 			sendString(comSen,getCommandUsage(comSen));
 			return;

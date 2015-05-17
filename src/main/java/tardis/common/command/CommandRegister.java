@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 public class CommandRegister

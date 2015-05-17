@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import tardis.TardisMod;
 
 public class SchemaGiveCommand extends AbstractCommand
 {
-	
+
 	@Override
 	public String getCommandName()
 	{
@@ -22,7 +23,7 @@ public class SchemaGiveCommand extends AbstractCommand
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender)
 	{
-		return null;
+		return "/tardisschema <schemaname>";
 	}
 
 	@Override

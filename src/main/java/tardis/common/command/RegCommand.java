@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 
 import java.util.List;

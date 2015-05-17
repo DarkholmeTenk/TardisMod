@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class XpCommand extends AbstractCommand
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender)
 	{
-		return null;
+		return "/tardisxp <dimID> <amount>";
 	}
 
 	private void xp(String dest, double amount)
@@ -35,7 +36,7 @@ public class XpCommand extends AbstractCommand
 		Integer dim = MathHelper.toInt(dest, 0);
 		if (dim == 0)
 			dim = TardisMod.plReg.getDimension(dest);
-		if (dim != null && dim != 0)
+		if ((dim != null) && (dim != 0))
 		{
 			TardisDataStore ds = Helper.getDataStore(dim);
 			xp(ds, amount);
@@ -44,7 +45,7 @@ public class XpCommand extends AbstractCommand
 
 	private void xp(TardisDataStore ds, double amount)
 	{
-		if (ds != null && amount != 0)
+		if ((ds != null) && (amount != 0))
 			ds.addXP(amount);
 	}
 

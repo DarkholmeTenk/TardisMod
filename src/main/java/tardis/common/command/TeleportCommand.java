@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
 
@@ -21,7 +22,7 @@ public class TeleportCommand extends AbstractCommand
 	@Override
 	public String getCommandUsage(ICommandSender comSen)
 	{
-		return "ttp dimID x y z";
+		return "/ttp [player1] [player2] [player3]... <<playerTo>|[dimID] <x> <y> <z>";
 	}
 
 	@Override
@@ -41,7 +42,7 @@ public class TeleportCommand extends AbstractCommand
 				boolean nonPlayerFound = false;
 				int offset = 0;
 				ArrayList<EntityPlayerMP> pls = new ArrayList<EntityPlayerMP>();
-				for(int i = 0;i<astring.length&&!nonPlayerFound;i++)
+				for(int i = 0;(i<astring.length)&&!nonPlayerFound;i++)
 				{
 					EntityPlayerMP plx = ServerHelper.getPlayer(astring[i]);
 					if(plx != null)
@@ -56,7 +57,7 @@ public class TeleportCommand extends AbstractCommand
 				{
 					if(pls.size() == 0)
 						pls.add(pl);
-					
+
 					try
 					{
 						Integer w = 0;
@@ -111,7 +112,7 @@ public class TeleportCommand extends AbstractCommand
 					EntityPlayerMP dest = pls.get(pls.size()-1);
 					if(pls.size() == 1)
 						pls.add(pl);
-					
+
 					for(EntityPlayerMP plx : pls)
 					{
 						if(plx != dest)

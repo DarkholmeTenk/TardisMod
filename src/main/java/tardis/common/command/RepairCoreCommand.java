@@ -1,5 +1,6 @@
 package tardis.common.command;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
@@ -28,7 +29,7 @@ public class RepairCoreCommand extends AbstractCommand
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender)
 	{
-		return null;
+		return "/tardisrepair <dimID> <new owner> <rooms> <energy>";
 	}
 
 	@Override
@@ -47,20 +48,20 @@ public class RepairCoreCommand extends AbstractCommand
 		int worldID = 0;
 		int numRooms = 0;
 		int energy = 0;
-		
+
 		if(comSen instanceof EntityPlayer)
 		{
 			TardisOutput.print("TRCC", "WOrld?"+((EntityPlayerMP)comSen).worldObj.isRemote);
 			worldID  = ((EntityPlayer) comSen).worldObj.provider.dimensionId;
 			newOwner = ServerHelper.getUsername((EntityPlayer) comSen);
 		}
-		
+
 		boolean total = false;
 		int o = 0;
 		if(astring.length > 0)
 			if(astring[0].equals("total"))
 				total = true;
-		
+
 		if(astring.length >= 4)
 		{
 			worldID = MathHelper.toInt(astring[total ? 1 : 0], 0);
@@ -81,20 +82,20 @@ public class RepairCoreCommand extends AbstractCommand
 				energy   = tce.getArtronEnergy();
 			}
 		}
-		
+
 		if(newOwner != null)
 		{
 			TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner);
 			World world = WorldHelper.getWorldServer(worldID);
 			CoreTileEntity tce = Helper.getTardisCore(world);
 			TardisDataStore ds = Helper.getDataStore(worldID);
-			if(tce == null && world.provider instanceof TardisWorldProvider)
+			if((tce == null) && (world.provider instanceof TardisWorldProvider))
 			{
 				world.setBlock(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, TardisMod.tardisCoreBlock);
 				tce = Helper.getTardisCore(world);
 			}
 			//TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);
-			if(tce != null && ds != null)
+			if((tce != null) && (ds != null))
 			{
 				if(total)
 				{
