@@ -24,7 +24,6 @@ import tardis.common.blocks.ColorableWallBlock;
 import tardis.common.blocks.ComponentBlock;
 import tardis.common.blocks.ConsoleBlock;
 import tardis.common.blocks.CoreBlock;
-import tardis.common.blocks.DebugBlock;
 import tardis.common.blocks.DecoBlock;
 import tardis.common.blocks.DecoTransBlock;
 import tardis.common.blocks.EngineBlock;
@@ -276,7 +275,7 @@ public class TardisMod implements IConfigHandlerMod
 
 		stairBlock = new StairBlock().register();
 
-		debugBlock = new DebugBlock().register();
+//		debugBlock = new DebugBlock().register();
 
 		schemaBlock = new SchemaBlock(visibleSchema).register();
 

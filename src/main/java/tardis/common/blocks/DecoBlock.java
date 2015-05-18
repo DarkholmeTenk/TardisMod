@@ -18,8 +18,7 @@ import tardis.TardisMod;
 public class DecoBlock extends AbstractBlock
 {
 	private final boolean				lit;
-	private static final String[]		subs		= { "Floor", "Wall", "Roundel", "Corridor", "CorridorRoundel",
-			"CorridorFloor", "Glass", "WallPlain"	};
+	private static final String[]		subs		= { "Wall" };
 	private static String[]				suffixes	= { "topbottom", "side" };
 	public HashMap<Integer, Boolean>	litUpDim	= new HashMap<Integer, Boolean>();
 
@@ -80,7 +79,7 @@ public class DecoBlock extends AbstractBlock
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x, int y, int z, int mX, int mY, int mZ)
 	{
-		if (w.getBlock(mX, mY, mZ) == this && w.getBlockMetadata(mX, mY, mZ) == w.getBlockMetadata(x, y, z))
+		if ((w.getBlock(mX, mY, mZ) == this) && (w.getBlockMetadata(mX, mY, mZ) == w.getBlockMetadata(x, y, z)))
 			return false;
 		return super.shouldSideBeRendered(w, s, x, y, z, mX, mY, mZ);
 	}
@@ -99,14 +98,14 @@ public class DecoBlock extends AbstractBlock
 		boolean flag = isLadder(w, x, y, z, null);
 
 		if (flag)
-			this.setBlockBounds(0.25F, 0.0F, 0.25F, 0.75F, 1.0F, 0.75F);
+			setBlockBounds(0.25F, 0.0F, 0.25F, 0.75F, 1.0F, 0.75F);
 		else
 			resetBounds();
 	}
 
 	private void resetBounds()
 	{
-		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+		setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	@Override

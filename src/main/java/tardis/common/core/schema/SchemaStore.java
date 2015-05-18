@@ -70,6 +70,7 @@ public class SchemaStore
 		{
 			switch(meta)
 			{
+				case 1: meta = 0; break;
 				case 2: block = TardisMod.colorableRoundelBlock; meta = 3; break;
 				case 4: block = TardisMod.colorableRoundelBlock; meta = 15; break;
 				case 3: block = TardisMod.colorableWallBlock; meta = 15; break;
