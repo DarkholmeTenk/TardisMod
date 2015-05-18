@@ -742,7 +742,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			int dDim = con.getDimFromControls();
 
 			int extW = inFlight() ? oldExteriorWorld : gDS().exteriorWorld;
-			int enCost = (dDim != extW ? ((TardisDimensionHandler.getEnergyCost(dDim) + TardisDimensionHandler.getEnergyCost(extW))/2) : 0);
+			int enCost = (dDim != extW ? Math.max(TardisDimensionHandler.getEnergyCost(dDim), TardisDimensionHandler.getEnergyCost(extW)) : 0);
 			return takeArtronEnergy(enCost, false);
 		}
 		return false;
@@ -1244,6 +1244,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public boolean addArtronEnergy(int amount, boolean sim)
 	{
+		if(amount == 0)
+			return true;
 		if (!sim)
 			energy += amount;
 		energy = MathHelper.clamp(energy, 0, getMaxArtronEnergy(gDS().getLevel(TardisUpgradeMode.ENERGY)));
@@ -1253,6 +1255,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public boolean takeArtronEnergy(int amount, boolean sim)
 	{
+		if(amount == 0)
+			return true;
 		if (energy >= amount)
 		{
 			if (!sim)
