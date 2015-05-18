@@ -524,9 +524,15 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if (core.canModify(pl))
 			{
 				if (!hasScrewdriver(0) && core.takeArtronEnergy(500, false))
+				{
+					core.sendUpdate();
 					setScrewdriver(0, true);
+				}
 				else if (hasScrewdriver(0) && core.addArtronEnergy(400, false))
+				{
+					core.sendUpdate();
 					setScrewdriver(0, false);
+				}
 			}
 			else
 				ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
