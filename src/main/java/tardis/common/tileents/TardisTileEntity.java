@@ -80,7 +80,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			else if(isTakingOff() && !takingOffSoundPlayed)
 				playTakeoffSound();
 			//sendUpdate();
-			if(++fadeTimer >( !landFast && isLanding() ? 21.5 * 20 : 5 * 20))
+			if(++fadeTimer >( !landFast && isLanding() ? 21.5 * 20 : 3.5 * 20))
 			{
 				if(isLanding())
 					landed = true;
@@ -176,7 +176,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		else if(isTakingOff() || isLanding())
 		{
 			if(isLanding())
-				multiplier = (fadeTimer / (80 * 5.5));
+				multiplier = (fadeTimer / (landFast ? 50 : 80 * 5.5));
 			else if(isTakingOff())
 				multiplier = 1 - (fadeTimer / (80 * 5.5));
 
@@ -184,7 +184,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			double transVal;
 			if(isLanding())
 			{
-				int value = landFast ? 40 : 80;
+				int value = landFast ? 30 : 80;
 				remainder = ((fadeTimer - (value/2)) % value);
 				transVal = multiplier * (Math.abs(1-((2*remainder)/value)));
 			}
