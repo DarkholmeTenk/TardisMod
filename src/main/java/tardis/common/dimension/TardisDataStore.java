@@ -217,7 +217,9 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public ItemStack setIS(ItemStack is, int slot)
 	{
 		ItemStack ret = items[slot];
-		items[slot] = is;
+			items[slot] = is;
+		else
+			items[slot] = null;
 		markDirty();
 		return ret;
 	}
