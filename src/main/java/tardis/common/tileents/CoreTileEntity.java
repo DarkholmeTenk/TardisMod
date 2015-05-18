@@ -1051,21 +1051,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public boolean hasFunction(TardisFunction fun)
 	{
-		switch (fun)
-		{
-			case LOCATE:
-				return gDS().getLevel() >= 3;
-			case SENSORS:
-				return gDS().getLevel() >= 5;
-			case STABILISE:
-				return gDS().getLevel() >= 7;
-			case TRANSMAT:
-				return gDS().getLevel() >= 9;
-			case RECALL:
-				return gDS().getLevel() >= 11;
-			default:
-				return false;
-		}
+		return gDS().hasFunction(fun);
 	}
 
 	public double getMaxSpeed()

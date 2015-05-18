@@ -17,7 +17,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import tardis.TardisMod;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
-import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.CoreTileEntity;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -36,20 +36,34 @@ public class DimensionEventHandler
 		if(ServerHelper.isClient())
 			return;
 		EntityLivingBase ent = event.entityLiving;
+		World w = ent.worldObj;
 		DamageSource source = event.source;
-		boolean cancel = true;
-		if((source == DamageSource.starve) || (source == DamageSource.onFire) || (source == DamageSource.wither))
-			cancel = false;
-		if(ent instanceof EntityPlayer)
+		if((!handleTranquility(w,event,ent,source)) && (ent instanceof EntityPlayer))
 		{
 			EntityPlayer player = (EntityPlayer)ent;
 			//TardisOutput.print("TDEH", "Handling hurt event");
 			if(player.getHealth() <= event.ammount)
 			{
-				World w = player.worldObj;
 				handleDead(w,player,event,source);
 			}
 		}
+	}
+
+	private boolean handleTranquility(World w, LivingHurtEvent event, EntityLivingBase ent, DamageSource source)
+	{
+		if(Helper.isTardisWorld(w))
+		{
+			TardisDataStore store = Helper.getDataStore(w);
+			if(store.hasFunction(TardisFunction.TRANQUILITY))
+			{
+				if((source == DamageSource.wither) || (source == DamageSource.magic) || (source == DamageSource.generic))
+				{
+					event.setCanceled(true);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private void handleDead(World w, EntityPlayer player, LivingHurtEvent event,DamageSource source)
@@ -66,7 +80,7 @@ public class DimensionEventHandler
 
 		if(w != null)
 		{
-			if(!(w.provider instanceof TardisWorldProvider))
+			if(!Helper.isTardisWorld(w))
 			{
 				Integer tardisDim = TardisMod.plReg.getDimension(player);
 				if(tardisDim != null)

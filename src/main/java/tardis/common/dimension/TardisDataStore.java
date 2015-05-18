@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import tardis.TardisMod;
+import tardis.api.TardisFunction;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
@@ -400,6 +401,27 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public int getMaxAspectStorage()
 	{
 		return ((getLevel() - 1) * TardisMod.maxEachAspectInc) + TardisMod.maxEachAspect;
+	}
+
+	public boolean hasFunction(TardisFunction fun)
+	{
+		switch (fun)
+		{
+			case LOCATE:
+				return getLevel() >= 3;
+			case SENSORS:
+				return getLevel() >= 5;
+			case STABILISE:
+				return getLevel() >= 7;
+			case TRANSMAT:
+				return getLevel() >= 9;
+			case RECALL:
+				return getLevel() >= 11;
+			case TRANQUILITY:
+				return getLevel() >= 15;
+			default:
+				return false;
+		}
 	}
 
 }
