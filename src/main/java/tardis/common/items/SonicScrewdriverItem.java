@@ -43,7 +43,7 @@ import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface="buildcraft.api.tools.IToolWrench",modid="BuildCraftAPI|core"),
-		@Optional.Interface(iface="cofh.api.item.IToolHammer",modid="CoFHLib")})
+		@Optional.Interface(iface="cofh.api.item.IToolHammer",modid="CoFHCore")})
 public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, IToolWrench
 {
 	public static final int	maxPerms	= 0xFF;
@@ -248,7 +248,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			switchMode(is, player.worldObj, player, mode);
 	}
 
-	@Optional.Method(modid="CoFHLib")
+	@Optional.Method(modid="CoFHCore")
 	private boolean dismantle(Object o, SimpleCoordStore pos, EntityPlayer player, ItemStack is)
 	{
 		if(!(o instanceof IDismantleable)) return false;

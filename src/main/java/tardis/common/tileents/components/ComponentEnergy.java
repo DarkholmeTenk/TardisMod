@@ -13,7 +13,7 @@ import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
-@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid="CoFHLib")
+@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid="CoFHCore")
 public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 {
 	private HashMap<ForgeDirection,AtomicInteger> hasFilled = new HashMap<ForgeDirection,AtomicInteger>(ForgeDirection.VALID_DIRECTIONS.length);
@@ -69,7 +69,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	@Override
 	public void updateTick()
 	{
-		if(!Loader.isModLoaded("CoFHLib")) return;
+		if(!Loader.isModLoaded("CoFHCore")) return;
 		rfc = 0;
 		scanNearby();
 	}

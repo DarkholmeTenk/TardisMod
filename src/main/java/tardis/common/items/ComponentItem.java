@@ -33,7 +33,7 @@ public class ComponentItem extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
-		if(Loader.isModLoaded("CoFHLib"))
+		if(Loader.isModLoaded("CoFHCore"))
 			GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.ENERGY), true, "grg","iii","grg",
 					'g', Items.gold_nugget,
 					'r', Items.redstone,
