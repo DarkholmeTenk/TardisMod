@@ -1256,7 +1256,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (!hasFunction(TardisFunction.TRANSMAT)) return false;
 		TardisDataStore ds = gDS();
-		if ((ds != null) && (ent instanceof EntityPlayer)) if (ds.hasPermission((EntityPlayer) ent, TardisPermission.TRANSMAT)) return false;
+		if ((ds != null) && (ent instanceof EntityPlayer)) if (!ds.hasPermission((EntityPlayer) ent, TardisPermission.TRANSMAT)) return false;
 		int entWorld = WorldHelper.getWorldID(ent.worldObj);
 		boolean trans = false;
 		if (entWorld == WorldHelper.getWorldID(worldObj)) // if ent is in the tardis
