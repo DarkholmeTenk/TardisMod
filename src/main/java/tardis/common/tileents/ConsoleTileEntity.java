@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.ScrewdriverMode;
@@ -90,6 +91,13 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				yControls[i] = 0;
 		}
 		clampControls();
+	}
+
+	public ConsoleTileEntity(){}
+
+	public ConsoleTileEntity(World w)
+	{
+		worldObj = w;
 	}
 
 	private boolean importantButton(int button)

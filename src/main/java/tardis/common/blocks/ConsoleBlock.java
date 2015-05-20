@@ -19,7 +19,7 @@ public class ConsoleBlock extends AbstractBlockContainer
 	@Override
 	public TileEntity createNewTileEntity(World world, int extra)
 	{
-		return new ConsoleTileEntity();
+		return new ConsoleTileEntity(world);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class ConsoleBlock extends AbstractBlockContainer
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess iblockaccess, int i, int j, int k, int l)
