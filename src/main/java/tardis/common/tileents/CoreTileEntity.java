@@ -105,6 +105,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	};
 
 	private LockState					lockState			= LockState.Open;
+	private int							lastLockSound		= Integer.MIN_VALUE;
+	private static int					lockSoundDelay		= 80;
 
 	private HashSet<SimpleCoordStore>	roomSet				= new HashSet<SimpleCoordStore>();
 	private String						ownerName;
@@ -194,6 +196,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		maxMoveForFast = config.getInt("Short hop distance", 3, "The maximum distance for which a jump can be considered a short hop which takes less time");
 		energyPerSecond = config.getInt("Energy rate", 1, "The base amount of energy the TARDIS generates per second");
 		energyPerSpeed = config.getInt("Energy per speed", 50, "Energy per unit of block speed", "The tardis moves at a max speed of (max flight cost / energy per speed) blocks per tick");
+		lockSoundDelay = config.getInt("Lock sound delay", 80, "Amount of ticks between lock sounds being allowed to play");
 	}
 
 	private void calculateFlightDistances()
@@ -471,6 +474,16 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return false;
 	}
 
+	private void playLockSound()
+	{
+		if(tt < (lastLockSound + lockSoundDelay)) return;
+		lastLockSound = tt;
+		SoundHelper.playSound(worldObj, xCoord+13, yCoord-1, zCoord, "tardismod:locked", 0.5f);
+		TardisDataStore ds = gDS();
+		if((ds != null) && (ds.getExterior() != null))
+			SoundHelper.playSound(ds.getExterior(), "tardismod:locked", 0.5f);
+	}
+
 	private void enterTardis(EntityLivingBase ent)
 	{
 		TeleportHelper.teleportEntity(ent, worldObj.provider.dimensionId, xCoord + 13.5, yCoord - 1, zCoord + 0.5, 90);
@@ -482,7 +495,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (ignoreLock || canOpenLock(player, false))
 			enterTardis(player);
 		else
+		{
+			playLockSound();
 			player.addChatMessage(new ChatComponentText("[TARDIS]The door is locked"));
+		}
 	}
 
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
@@ -530,7 +546,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					ServerHelper.sendString(player, "TARDIS", "The door refuses to open");
 			}
 			else
+			{
+				playLockSound();
 				ServerHelper.sendString(player, "TARDIS", "The door is locked");
+			}
 		}
 		else if (inFlight())
 			ServerHelper.sendString(player, "TARDIS", "The door won't open in flight");
