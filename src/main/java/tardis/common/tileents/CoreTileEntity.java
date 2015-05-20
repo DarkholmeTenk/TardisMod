@@ -35,6 +35,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.TardisFunction;
+import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
@@ -54,10 +55,13 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class CoreTileEntity extends AbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider
 {
 	private static ConfigFile				config					= null;
-	public static final ChatComponentText	cannotModifyMessage		= new ChatComponentText(
-																			"[TARDIS] You do not have permission to modify this TARDIS");
-	public static final ChatComponentText	cannotUpgradeMessage	= new ChatComponentText(
-																			"[TARDIS] You do not have enough upgrade points");
+	public static final ChatComponentText	cannotModifyFly			= new ChatComponentText("[TARDIS] You do not have permission to fly this TARDIS");
+	public static final ChatComponentText	cannotModifyRecall		= new ChatComponentText("[TARDIS] You do not have permission to recall this TARDIS");
+	public static final ChatComponentText	cannotModifyRecolour	= new ChatComponentText("[TARDIS] You do not have permission to recolour this block");
+	public static final ChatComponentText	cannotModifyRoundel		= new ChatComponentText("[TARDIS] You do not have permission to modify this roundel");
+	public static final ChatComponentText	cannotModifyMessage		= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS");
+	public static final ChatComponentText	cannotModifyPermissions	= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS's permissions");
+	public static final ChatComponentText	cannotUpgradeMessage	= new ChatComponentText("[TARDIS] You do not have enough upgrade points");
 	private int								oldExteriorWorld		= 0;
 
 	private float							lastProximity			= 0;
@@ -70,11 +74,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private static int						buttonTime				= 80;
 
 	private FlightState						flightState				= FlightState.LANDED;
-	//Timer to make sure buttons occur at a regular interval
+	// Timer to make sure buttons occur at a regular interval
 	private int								flightButtonTimer		= 0;
-	//Timer just used to make sure engine sounds don't overlap
+	// Timer just used to make sure engine sounds don't overlap
 	private int								flightSoundTimer		= 0;
-	//Timer tracking how long the TARDIS has been in its current flight state
+	// Timer tracking how long the TARDIS has been in its current flight state
 	private int								flightTimer				= 0;
 	private int								totalFlightTimer		= 0;
 
@@ -121,7 +125,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private double						distanceToTravel	= 0;
 	private double						distanceTravelled	= 0;
 	private int							currentBlockSpeed	= 0;
-	private	int							maxBlockSpeed		= 0;
+	private int							maxBlockSpeed		= 0;
 
 	private static int					maxNumRooms			= 30;
 	private static int					maxNumRoomsInc		= 10;
@@ -140,8 +144,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	static
 	{
-		if (config == null)
-			refreshConfigs();
+		if (config == null) refreshConfigs();
 		loadable = new ChunkCoordIntPair[4];
 		loadable[0] = new ChunkCoordIntPair(0, 0);
 		loadable[1] = new ChunkCoordIntPair(-1, 0);
@@ -151,7 +154,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public CoreTileEntity(World w)
 	{
-		//this();
+		// this();
 		worldObj = w;
 		ds = Helper.getDataStore(WorldHelper.getWorldID(w));
 		shields = maxShields;
@@ -169,52 +172,41 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private TardisDataStore gDS()
 	{
-		if(ds == null)
-			if(worldObj != null)
-				ds = Helper.getDataStore(worldObj);
+		if (ds == null) if (worldObj != null) ds = Helper.getDataStore(worldObj);
 		return ds;
 	}
 
 	public static void refreshConfigs()
 	{
-		if (config == null)
-			config = TardisMod.configHandler.registerConfigNeeder("TARDIS Core");
-		explodeChance = config.getDouble("Explosion chance", 0.6,
-				"The chance of an explosion being caused if an active control is not pressed");
+		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("TARDIS Core");
+		explodeChance = config.getDouble("Explosion chance", 0.6, "The chance of an explosion being caused if an active control is not pressed");
 		maxSpeed = config.getDouble("max speed", 8, "The maximum speed setting that can be reached");
 		maxEnergy = config.getInt("Max energy", 1000, "The base maximum energy");
 		maxNumRooms = config.getInt("Max rooms", 30, "The base maximum number of rooms");
 		maxShields = config.getInt("Max shields", 1000, "The base maximum amount of shielding");
 		maxHull = config.getInt("Max hull", 1000, "The maximum hull strength");
-		maxNumRoomsInc = config.getInt("Max rooms increase", 10,
-				"How much a level of max rooms increases the maximum number of rooms");
-		maxShieldsInc = config.getInt("Max shields increase", 500,
-				"How much a level of max shields increases the amount of shielding");
-		maxEnergyInc = config.getInt("Max energy increase", 1000,
-				"How much a level of energy increases the max amount of energy");
-		energyPerSecondInc = config.getInt("Energy Rate increase", 1,
-				"How much a level of energy rate increases the amount of energy per second");
+		maxNumRoomsInc = config.getInt("Max rooms increase", 10, "How much a level of max rooms increases the maximum number of rooms");
+		maxShieldsInc = config.getInt("Max shields increase", 500, "How much a level of max shields increases the amount of shielding");
+		maxEnergyInc = config.getInt("Max energy increase", 1000, "How much a level of energy increases the max amount of energy");
+		energyPerSecondInc = config.getInt("Energy Rate increase", 1, "How much a level of energy rate increases the amount of energy per second");
 		energyCostDimChange = config.getInt("Dimension jump cost", 2000, "How much energy it costs to jump between dimensions");
 		energyCostFlightMax = config.getInt("Max flight cost", 3000, "The maximum amount that a flight can cost");
-		maxMoveForFast = config.getInt("Short hop distance", 3,
-				"The maximum distance for which a jump can be considered a short hop which takes less time");
+		maxMoveForFast = config.getInt("Short hop distance", 3, "The maximum distance for which a jump can be considered a short hop which takes less time");
 		energyPerSecond = config.getInt("Energy rate", 1, "The base amount of energy the TARDIS generates per second");
-		energyPerSpeed = config.getInt("Energy per speed", 50, "Energy per unit of block speed",
-				"The tardis moves at a max speed of (max flight cost / energy per speed) blocks per tick");
+		energyPerSpeed = config.getInt("Energy per speed", 50, "Energy per unit of block speed", "The tardis moves at a max speed of (max flight cost / energy per speed) blocks per tick");
 	}
 
 	private void calculateFlightDistances()
 	{
 		SimpleCoordStore newStart = null;
 		TardisTileEntity ext = gDS().getExterior();
-		if(ext != null)
+		if (ext != null)
 			newStart = new SimpleCoordStore(gDS().getExterior());
-		else if((sourceLocation != null) && (destLocation != null))
-			newStart = sourceLocation.travelTo(destLocation, distanceTravelled/distanceToTravel, true).floor();
-		if(newStart != null)
+		else if ((sourceLocation != null) && (destLocation != null)) newStart = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true).floor();
+		if (newStart != null)
 		{
 			ConsoleTileEntity con = getConsole();
-			if(con != null)
+			if (con != null)
 			{
 				fast = (con.shouldLand() && isFastLanding());
 				sourceLocation = newStart;
@@ -230,28 +222,27 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private void nextFlightState()
 	{
 		ConsoleTileEntity con = getConsole();
-		if(con == null)
-			return;
-		if(flightState == FlightState.TAKINGOFF)
+		if (con == null) return;
+		if (flightState == FlightState.TAKINGOFF)
 		{
 			removeOldBox();
-			if((fast && con.shouldLand()) || forcedFlight)
+			if ((fast && con.shouldLand()) || forcedFlight)
 			{
 				placeBox();
 				flightState = FlightState.LANDING;
 			}
 			else
 			{
-				if(con.shouldLand())
+				if (con.shouldLand())
 					flightState = FlightState.FLIGHT;
 				else
 					flightState = FlightState.DRIFT;
 			}
 		}
-		else if(flightState == FlightState.DRIFT)
+		else if (flightState == FlightState.DRIFT)
 		{
 			calculateFlightDistances();
-			if(con.shouldLand() && !fast)
+			if (con.shouldLand() && !fast)
 				flightState = FlightState.FLIGHT;
 			else
 			{
@@ -259,9 +250,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				flightState = FlightState.LANDING;
 			}
 		}
-		else if(flightState == FlightState.FLIGHT)
+		else if (flightState == FlightState.FLIGHT)
 		{
-			if(con.shouldLand())
+			if (con.shouldLand())
 			{
 				placeBox();
 				flightState = FlightState.LANDING;
@@ -269,86 +260,73 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			else
 				flightState = FlightState.DRIFT;
 		}
-		else if(flightState == FlightState.LANDING)
-			land();
+		else if (flightState == FlightState.LANDING) land();
 		flightTimer = 0;
 	}
 
 	private void handleSound()
 	{
-		if(flightTimer == 0)
+		if (flightTimer == 0)
 		{
-			if(flightState == FlightState.TAKINGOFF)
-				SoundHelper.playSound(this, "tardismod:takeoff", 0.75F);
-			if((flightState == FlightState.LANDING) && fast)
-				SoundHelper.playSound(this, "tardismod:landingInt", 0.75F);
+			if (flightState == FlightState.TAKINGOFF) SoundHelper.playSound(this, "tardismod:takeoff", 0.75F);
+			if ((flightState == FlightState.LANDING) && fast) SoundHelper.playSound(this, "tardismod:landingInt", 0.75F);
 		}
-		if((flightState == FlightState.FLIGHT) || (flightState == FlightState.DRIFT))
+		if ((flightState == FlightState.FLIGHT) || (flightState == FlightState.DRIFT))
 		{
-			if((flightSoundTimer++ % 69) == 0)
-				SoundHelper.playSound(this, "tardismod:engines", 0.75F);
+			if ((flightSoundTimer++ % 69) == 0) SoundHelper.playSound(this, "tardismod:engines", 0.75F);
 		}
-		else if((flightState == FlightState.LANDING) && !fast && (flightTimer < (landSlowTicks - landFastTicks)))
+		else if ((flightState == FlightState.LANDING) && !fast && (flightTimer < (landSlowTicks - landFastTicks)))
 		{
-			if((flightSoundTimer++ % 69) == 0)
-				SoundHelper.playSound(this, "tardismod:engines", 0.75F);
+			if ((flightSoundTimer++ % 69) == 0) SoundHelper.playSound(this, "tardismod:engines", 0.75F);
 		}
-		else if((flightState == FlightState.LANDING) && !fast && (flightTimer == (landSlowTicks - landFastTicks)))
-			SoundHelper.playSound(this, "tardismod:landingInt", 0.75F);
+		else if ((flightState == FlightState.LANDING) && !fast && (flightTimer == (landSlowTicks - landFastTicks))) SoundHelper.playSound(this, "tardismod:landingInt", 0.75F);
 	}
 
 	private void flightTick()
 	{
-		if (ServerHelper.isClient())
-			return;
-		if((currentBlockSpeed == 0) || (maxBlockSpeed == 0))
+		if (ServerHelper.isClient()) return;
+		if ((currentBlockSpeed == 0) || (maxBlockSpeed == 0))
 		{
 			currentBlockSpeed = 1;
 			updateMaxBlockSpeed();
 		}
 		ConsoleTileEntity con = getConsole();
-		if(con == null)
-			return;
+		if (con == null) return;
 		totalFlightTimer++;
 		handleSound();
 		flightTimer++;
-		if((flightState == FlightState.TAKINGOFF) && (flightTimer >= takeOffTicks))
-			nextFlightState();
-		if((flightState == FlightState.LANDING) && (flightTimer >= (fast ? landFastTicks : landSlowTicks)))
-			nextFlightState();
-		if(((flightState == FlightState.DRIFT) && con.shouldLand()) || ((flightState == FlightState.FLIGHT) && !con.shouldLand()))
-			nextFlightState();
-		if((flightState == FlightState.FLIGHT) && (distanceTravelled >= distanceToTravel))
-			nextFlightState();
-		if(flightState == FlightState.FLIGHT)
+		if ((flightState == FlightState.TAKINGOFF) && (flightTimer >= takeOffTicks)) nextFlightState();
+		if ((flightState == FlightState.LANDING) && (flightTimer >= (fast ? landFastTicks : landSlowTicks))) nextFlightState();
+		if (((flightState == FlightState.DRIFT) && con.shouldLand()) || ((flightState == FlightState.FLIGHT) && !con.shouldLand())) nextFlightState();
+		if ((flightState == FlightState.FLIGHT) && (distanceTravelled >= distanceToTravel)) nextFlightState();
+		if (flightState == FlightState.FLIGHT)
 		{
-			if(((flightTimer % 20) == 0) && (currentBlockSpeed < maxBlockSpeed) && takeArtronEnergy(energyPerSpeed,false))
+			if (((flightTimer % 20) == 0) && (currentBlockSpeed < maxBlockSpeed) && takeArtronEnergy(energyPerSpeed, false))
 			{
 				currentBlockSpeed++;
 				sendUpdate();
 			}
-			distanceTravelled += MathHelper.clamp(currentBlockSpeed,1,maxBlockSpeed);
+			distanceTravelled += MathHelper.clamp(currentBlockSpeed, 1, maxBlockSpeed);
 		}
-		if(inAbortableFlight() && con.unstableFlight() && !forcedFlight)
+		if (inAbortableFlight() && con.unstableFlight() && !forcedFlight)
 		{
 			int buttonTime = getButtonTime();
-			if((flightButtonTimer++ % buttonTime) == 0)
+			if ((flightButtonTimer++ % buttonTime) == 0)
 			{
-				if(con.unstableControlPressed() && (flightButtonTimer > 0))
+				if (con.unstableControlPressed() && (flightButtonTimer > 0))
 				{
-					instability = MathHelper.clamp(MathHelper.floor(instability - (0.5 * getSpeed(false))),0,100);
+					instability = MathHelper.clamp(MathHelper.floor(instability - (0.5 * getSpeed(false))), 0, 100);
 					gDS().addXP(getSpeed(false) + 4);
 				}
-				else if(flightButtonTimer > 0)
+				else if (flightButtonTimer > 0)
 				{
-					instability = MathHelper.clamp(MathHelper.floor(instability + getSpeed(false)),0,100);
-					if(shouldExplode())
-						explode = true;
+					instability = MathHelper.clamp(MathHelper.floor(instability + getSpeed(false)), 0, 100);
+					if (shouldExplode()) explode = true;
 				}
 				con.randomUnstableControl();
 			}
 		}
-		else if(flightButtonTimer != 0)
+		else if (flightButtonTimer != 0)
 		{
 			con.clearUnstableControl();
 			flightButtonTimer = 0;
@@ -363,8 +341,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			if (o instanceof EntityPlayer)
 			{
 				EntityPlayer pl = (EntityPlayer) o;
-				if ((pl.posY < -1) && !pl.capabilities.isFlying)
-					Helper.teleportEntityToSafety(pl);
+				if ((pl.posY < -1) && !pl.capabilities.isFlying) Helper.teleportEntityToSafety(pl);
 			}
 		}
 	}
@@ -379,10 +356,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void init()
 	{
-		if(ownerName == null)
-			setOwner(TardisMod.plReg.getPlayerName(WorldHelper.getWorldID(this)));
-		if (ds == null)
-			ds = Helper.getDataStore(WorldHelper.getWorldID(this));
+		if (ownerName == null) setOwner(TardisMod.plReg.getPlayerName(WorldHelper.getWorldID(this)));
+		if (ds == null) ds = Helper.getDataStore(WorldHelper.getWorldID(this));
 	}
 
 	@Override
@@ -399,8 +374,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			explode = false;
 		}
 
-		if((tt == 2) && ServerHelper.isServer())
-			refreshDoors(false);
+		if ((tt == 2) && ServerHelper.isServer()) refreshDoors(false);
 
 		if ((tt % 20) == 0)
 		{
@@ -408,15 +382,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			safetyTick();
 		}
 
-		if (inFlight())
-			flightTick();
+		if (inFlight()) flightTick();
 
 		if (!worldObj.isRemote)
 		{
 			if (((tt % 100) == 0) && (TardisMod.plReg != null))
 			{
-				if (!TardisMod.plReg.hasTardis(ownerName))
-					TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
+				if (!TardisMod.plReg.hasTardis(ownerName)) TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
 			}
 
 			if (deletingRooms)
@@ -451,8 +423,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public boolean activate(EntityPlayer player, int side)
 	{
-		if (ServerHelper.isClient())
-			return true;
+		if (ServerHelper.isClient()) return true;
 		sendDestinationStrings(player);
 		return true;
 	}
@@ -467,19 +438,16 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				TardisOutput.print("TCTE", "Key owner = " + on);
 			else
 				TardisOutput.print("TCTE", "Key owner = null");
-			if ((on != null) && on.equals(ownerName))
-				return true;
+			if ((on != null) && on.equals(ownerName)) return true;
 		}
 		else
 		{
 			InventoryPlayer inv = player.inventory;
-			if (inv == null)
-				return false;
+			if (inv == null) return false;
 			for (ItemStack is : inv.mainInventory)
 			{
 				String on = KeyItem.getOwnerName(is);
-				if ((on != null) && on.equals(ownerName))
-					return true;
+				if ((on != null) && on.equals(ownerName)) return true;
 			}
 		}
 		return false;
@@ -489,11 +457,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (isInside && !lockState.equals(LockState.Locked))
 			return true;
-		else if (isInside)
-			return false;
+		else if (isInside) return false;
 
-		if (player == null)
-			return false;
+		if (player == null) return false;
 
 		if (lockState.equals(LockState.Open))
 			return true;
@@ -501,8 +467,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			return false;
 		else if (lockState.equals(LockState.OwnerOnly))
 			return isOwner(ServerHelper.getUsername(player));
-		else if (lockState.equals(LockState.KeyOnly))
-			return isOwner(ServerHelper.getUsername(player)) || hasKey(player, false);
+		else if (lockState.equals(LockState.KeyOnly)) return isOwner(ServerHelper.getUsername(player)) || hasKey(player, false);
 		return false;
 	}
 
@@ -513,8 +478,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public void enterTardis(EntityPlayer player, boolean ignoreLock)
 	{
-		if (ServerHelper.isClient())
-			return;
+		if (ServerHelper.isClient()) return;
 		if (ignoreLock || canOpenLock(player, false))
 			enterTardis(player);
 		else
@@ -523,8 +487,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
 	{
-		if (ServerHelper.isClient())
-			return;
+		if (ServerHelper.isClient()) return;
 		if (!inFlight() && gDS().hasValidExterior())
 		{
 			if (ignoreLock || canOpenLock(player, true))
@@ -556,11 +519,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 							break;
 					}
 
-					if (softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz)
-							&& softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz))
+					if (softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz) && softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz))
 					{
-						TeleportHelper.teleportEntity(player, gDS().exteriorWorld, gDS().exteriorX + 0.5 + (dx), gDS().exteriorY,
-								gDS().exteriorZ + 0.5 + (dz), rot);
+						TeleportHelper.teleportEntity(player, gDS().exteriorWorld, gDS().exteriorX + 0.5 + (dx), gDS().exteriorY, gDS().exteriorZ + 0.5 + (dz), rot);
 					}
 					else
 						ServerHelper.sendString(player, "TARDIS", "The door is obstructed");
@@ -579,33 +540,27 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public boolean changeLock(EntityPlayer pl, boolean inside)
 	{
-		if (ServerHelper.isClient())
-			return false;
+		if (ServerHelper.isClient()) return false;
 
 		TardisOutput.print("TCTE", "Changing lock");
-		if (!hasKey(pl, true) && !inside)
-			return false;
+		if (!hasKey(pl, true) && !inside) return false;
 
 		if (lockState.equals(LockState.Locked) && !inside) // If you're outside,
 															// you can't unlock
 															// a "Locked" door
 			return false;
 		// If you're not the owner/not inside, you can't unlock an owner only door
-		if (lockState.equals(LockState.OwnerOnly) && !(inside || isOwner(pl)))
-			return false;
+		if (lockState.equals(LockState.OwnerOnly) && !(inside || isOwner(pl))) return false;
 
-		if (!pl.isSneaking())
-			return false;
+		if (!pl.isSneaking()) return false;
 
 		int num = LockState.values().length;
 		LockState[] states = LockState.values();
 		lockState = states[((lockState.ordinal() + 1) % num)];
 		// If you're not inside, you can't put the door in locked mode
-		if (lockState.equals(LockState.Locked) && !inside)
-			lockState = states[((lockState.ordinal() + 1) % num)];
+		if (lockState.equals(LockState.Locked) && !inside) lockState = states[((lockState.ordinal() + 1) % num)];
 		// If you're not the owner, you can't put the door in owner only mode
-		if (lockState.equals(LockState.OwnerOnly) && !isOwner(pl))
-			lockState = states[((lockState.ordinal() + 1) % num)];
+		if (lockState.equals(LockState.OwnerOnly) && !isOwner(pl)) lockState = states[((lockState.ordinal() + 1) % num)];
 
 		TardisOutput.print("TTE", "Lockstate:" + lockState.toString());
 		if (lockState.equals(LockState.KeyOnly))
@@ -614,8 +569,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will not open"));
 		else if (lockState.equals(LockState.Open))
 			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will open for all"));
-		else if (lockState.equals(LockState.OwnerOnly))
-			pl.addChatMessage(new ChatComponentText("[TARDIS]The door will only open for its owner"));
+		else if (lockState.equals(LockState.OwnerOnly)) pl.addChatMessage(new ChatComponentText("[TARDIS]The door will only open for its owner"));
 		return true;
 	}
 
@@ -631,10 +585,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				for (int k = 0; k < check.length; k++)
 				{
 					int zO = check[k];
-					if (isValidPos(w, current[0] + xO, current[1] + yO, current[2] + zO, mh))
-					{
-						return new int[] { current[0] + xO, current[1] + yO, current[2] + zO };
-					}
+					if (isValidPos(w, current[0] + xO, current[1] + yO, current[2] + zO, mh)) { return new int[] { current[0] + xO, current[1] + yO, current[2] + zO }; }
 				}
 			}
 		}
@@ -660,10 +611,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 						{
 							return new int[] { current[0] + xO, current[1] + yO + 1, current[2] + zO };
 						}
-						else if (((LandingPadTileEntity) te).isClearTop())
-						{
-							return new int[] { current[0] + xO, current[1] + yO + 2, current[2] + zO };
-						}
+						else if (((LandingPadTileEntity) te).isClearTop()) { return new int[] { current[0] + xO, current[1] + yO + 2, current[2] + zO }; }
 					}
 				}
 			}
@@ -685,52 +633,37 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private int[] getModifiedControls(ConsoleTileEntity con, int[] posArr)
 	{
-		if (con == null)
-			return posArr;
+		if (con == null) return posArr;
 		World w = WorldHelper.getWorld(con.getDimFromControls());
-		if (w == null)
-			return posArr;
+		if (w == null) return posArr;
 		int mh = TardisDimensionHandler.getMaxHeight(con.getDimFromControls());
-		if(posArr[1] >= mh)
-			posArr[1] = mh - 1;
+		if (posArr[1] >= mh) posArr[1] = mh - 1;
 		if (!(isValidPos(w, posArr[0], posArr[1], posArr[2], mh)))
 		{
-			if ((posArr[0] != gDS().exteriorX) || (posArr[1] != gDS().exteriorY) || (posArr[2] != gDS().exteriorZ))
-				posArr = scanForValidPos(w, posArr, mh);
+			if ((posArr[0] != gDS().exteriorX) || (posArr[1] != gDS().exteriorY) || (posArr[2] != gDS().exteriorZ)) posArr = scanForValidPos(w, posArr, mh);
 		}
-		if (con.getLandOnGroundFromControls())
-			posArr = findGround(w, posArr);
-		if (con.getLandOnPadFromControls())
-			posArr = scanForLandingPad(w, posArr);
-		if((posArr[1] == 0) && (w.getBlock(posArr[0], posArr[1], posArr[2]) == Blocks.bedrock))
-			posArr[1]++;
+		if (con.getLandOnGroundFromControls()) posArr = findGround(w, posArr);
+		if (con.getLandOnPadFromControls()) posArr = scanForLandingPad(w, posArr);
+		if ((posArr[1] == 0) && (w.getBlock(posArr[0], posArr[1], posArr[2]) == Blocks.bedrock)) posArr[1]++;
 		return posArr;
 	}
 
 	public boolean isMoving()
 	{
 		ConsoleTileEntity con = getConsole();
-		if (con == null)
-			return false;
+		if (con == null) return false;
 		int dim = con.getDimFromControls();
 		if (gDS().exteriorWorld == 10000)
 		{
-			if(oldExteriorWorld != dim)
-				return true;
+			if (oldExteriorWorld != dim) return true;
 		}
-		else if(dim != gDS().exteriorWorld)
-			return true;
-		int[] posArr = new int[] { con.getXFromControls(gDS().exteriorX), con.getYFromControls(gDS().exteriorY),
-				con.getZFromControls(gDS().exteriorZ) };
+		else if (dim != gDS().exteriorWorld) return true;
+		int[] posArr = new int[] { con.getXFromControls(gDS().exteriorX), con.getYFromControls(gDS().exteriorY), con.getZFromControls(gDS().exteriorZ) };
 		posArr = getModifiedControls(con, posArr);
-		TardisOutput.print("TCTE", "Moving to :" + Arrays.toString(posArr) + " from " + gDS().exteriorX + "," + gDS().exteriorY + ","
-				+ gDS().exteriorZ);
-		if (Math.abs(posArr[0] - gDS().exteriorX) > maxMoveForFast)
-			return true;
-		if (Math.abs(posArr[1] - gDS().exteriorY) > maxMoveForFast)
-			return true;
-		if (Math.abs(posArr[2] - gDS().exteriorZ) > maxMoveForFast)
-			return true;
+		TardisOutput.print("TCTE", "Moving to :" + Arrays.toString(posArr) + " from " + gDS().exteriorX + "," + gDS().exteriorY + "," + gDS().exteriorZ);
+		if (Math.abs(posArr[0] - gDS().exteriorX) > maxMoveForFast) return true;
+		if (Math.abs(posArr[1] - gDS().exteriorY) > maxMoveForFast) return true;
+		if (Math.abs(posArr[2] - gDS().exteriorZ) > maxMoveForFast) return true;
 		return false;
 	}
 
@@ -754,8 +687,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (!inFlight())
 		{
 			ConsoleTileEntity con = getConsole();
-			if(con == null)
-				return false;
+			if (con == null) return false;
 			if ((!con.shouldLand()) || takeOffEnergy(pl))
 			{
 				instability = 0;
@@ -789,15 +721,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private boolean isValidPos(World w, int x, int y, int z, int mh)
 	{
-		return (y > 0) && (y < (mh-1)) && softBlock(w, x, y, z) && softBlock(w, x, y + 1, z);
+		return (y > 0) && (y < (mh - 1)) && softBlock(w, x, y, z) && softBlock(w, x, y + 1, z);
 	}
 
 	private int getUnstableOffset()
 	{
-		if (forcedFlight)
-			return 0;
-		if (instability == 0)
-			return 0;
+		if (forcedFlight) return 0;
+		if (instability == 0) return 0;
 		return rand.nextInt(Math.max(0, 2 * instability)) - instability;
 	}
 
@@ -818,8 +748,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void placeBox()
 	{
-		if (ServerHelper.isClient() || gDS().hasValidExterior())
-			return;
+		if (ServerHelper.isClient() || gDS().hasValidExterior()) return;
 		ConsoleTileEntity con = getConsole();
 		if (con == null)
 		{
@@ -827,9 +756,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			return;
 		}
 		int[] posArr;
-		if((distanceToTravel == 0) || (distanceTravelled >= distanceToTravel) || (sourceLocation == null) || (destLocation == null) || forcedFlight || fast)
-			posArr = new int[] { con.getXFromControls(gDS().exteriorX) + getUnstableOffset(), con.getYFromControls(gDS().exteriorY),
-					con.getZFromControls(gDS().exteriorZ) + getUnstableOffset() };
+		if ((distanceToTravel == 0) || (distanceTravelled >= distanceToTravel) || (sourceLocation == null) || (destLocation == null) || forcedFlight || fast)
+			posArr = new int[] { con.getXFromControls(gDS().exteriorX) + getUnstableOffset(), con.getYFromControls(gDS().exteriorY), con.getZFromControls(gDS().exteriorZ) + getUnstableOffset() };
 		else
 		{
 			SimpleCoordStore newPos = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true).round();
@@ -853,13 +781,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public boolean attemptToLand()
 	{
-		if(inAbortableFlight())
+		if (inAbortableFlight())
 		{
-			if(distanceTravelled <= maxMoveForFast)
-				fast = true;
+			if (distanceTravelled <= maxMoveForFast) fast = true;
 			nextFlightState();
-			if(flightState == FlightState.LANDING)
-				return true;
+			if (flightState == FlightState.LANDING) return true;
 		}
 		return false;
 	}
@@ -881,11 +807,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				ext.forceLand();
 				List<Entity> inside = ext.getEntitiesInside();
 				for (Entity e : inside)
-					if (e instanceof EntityLivingBase)
-						enterTardis((EntityLivingBase) e);
+					if (e instanceof EntityLivingBase) enterTardis((EntityLivingBase) e);
 			}
-			if (con != null)
-				con.land();
+			if (con != null) con.land();
 			sendUpdate();
 		}
 	}
@@ -894,7 +818,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		double mod = 1;
 		if (getSpeed(false) != -1)
-			mod = getMaxSpeed() / ((getSpeed(false)+1) * 2);
+			mod = getMaxSpeed() / ((getSpeed(false) + 1) * 2);
 		else
 			mod = 0;
 		mod = MathHelper.clamp(mod, 0.5, 4);
@@ -950,32 +874,28 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public double getSpin()
 	{
 		double slowness = 3;
-		if (inFlight())
-			lastSpin = ((lastSpin + 1) % (360 * slowness));
+		if (inFlight()) lastSpin = ((lastSpin + 1) % (360 * slowness));
 		return lastSpin / slowness;
 	}
 
 	public ConsoleTileEntity getConsole()
 	{
 		TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 2, zCoord);
-		if (te instanceof ConsoleTileEntity)
-			return (ConsoleTileEntity) te;
+		if (te instanceof ConsoleTileEntity) return (ConsoleTileEntity) te;
 		return null;
 	}
 
 	public EngineTileEntity getEngine()
 	{
 		TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 5, zCoord);
-		if (te instanceof EngineTileEntity)
-			return (EngineTileEntity) te;
+		if (te instanceof EngineTileEntity) return (EngineTileEntity) te;
 		return null;
 	}
 
 	public SchemaCoreTileEntity getSchemaCore()
 	{
 		TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 10, zCoord);
-		if (te instanceof SchemaCoreTileEntity)
-			return (SchemaCoreTileEntity) te;
+		if (te instanceof SchemaCoreTileEntity) return (SchemaCoreTileEntity) te;
 		return null;
 	}
 
@@ -989,15 +909,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			Helper.loadSchema(fullName, worldObj, xCoord, yCoord - 10, zCoord, 0);
 	}
 
-	public boolean canModify(EntityPlayer player)
-	{
-		return canModify(ServerHelper.getUsername(player));
-	}
-
 	public boolean canModify(String playerName)
 	{
-		if(playerName == null)
-			return false;
+		if (playerName == null) return false;
 		return isOwner(playerName) || ((modders != null) && modders.contains(playerName.hashCode()));
 	}
 
@@ -1019,15 +933,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private boolean isOwner(EntityPlayer pl)
 	{
-		if (pl == null)
-			return false;
+		if (pl == null) return false;
 		return isOwner(ServerHelper.getUsername(pl));
 	}
 
 	public boolean isOwner(String name)
 	{
-		if (ownerName != null)
-			return ownerName.equals(name);
+		if (ownerName != null) return ownerName.equals(name);
 		return false;
 	}
 
@@ -1038,15 +950,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public void setOwner(String name)
 	{
-		if(name == null)
-			return;
+		if (name == null) return;
 		TardisOutput.print("TCTE", "Setting owner to " + name + "#" + ServerHelper.isClient(), TardisOutput.Priority.DEBUG);
 		ownerName = name;
-		if (ServerHelper.isServer() && (TardisMod.plReg != null) && !TardisMod.plReg.hasTardis(ownerName))
-			TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
+		if (ServerHelper.isServer() && (TardisMod.plReg != null) && !TardisMod.plReg.hasTardis(ownerName)) TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
 		TardisTileEntity ext = gDS().getExterior();
-		if (ext != null)
-			ext.owner = name;
+		if (ext != null) ext.owner = name;
 	}
 
 	public boolean hasFunction(TardisFunction fun)
@@ -1061,10 +970,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public double getSpeed(boolean modified)
 	{
-		if (forcedFlight)
-			return getMaxSpeed() + 1;
-		if (!modified)
-			return speed;
+		if (forcedFlight) return getMaxSpeed() + 1;
+		if (!modified) return speed;
 		double mod = ((double) getNumRooms()) / getMaxNumRooms();
 		return speed * (1 - (mod / 2.0));
 	}
@@ -1083,7 +990,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		speed = speed + a;
 		speed = MathHelper.clamp(speed, 0, getMaxSpeed());
-		System.out.println("HI!"+speed);
+		System.out.println("HI!" + speed);
 		updateMaxBlockSpeed();
 		sendUpdate();
 		return speed;
@@ -1092,14 +999,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private void updateMaxBlockSpeed()
 	{
 		maxBlockSpeed = MathHelper.floor((energyCostFlightMax * (getSpeed(true) / getMaxSpeed())) / energyPerSpeed);
-		if(maxBlockSpeed < 3)
-			maxBlockSpeed = 3;
+		if (maxBlockSpeed < 3) maxBlockSpeed = 3;
 	}
 
 	public int getNumRooms()
 	{
-		if(ServerHelper.isServer())
-			return roomSet.size();
+		if (ServerHelper.isServer()) return roomSet.size();
 		return numRooms;
 	}
 
@@ -1116,31 +1021,27 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private void refreshRoomCount()
 	{
 		Iterator<SimpleCoordStore> iter = roomSet.iterator();
-		while(iter.hasNext())
+		while (iter.hasNext())
 		{
 			SimpleCoordStore scs = iter.next();
 			TileEntity te = scs.getTileEntity();
-			if(!(te instanceof SchemaCoreTileEntity))
-				iter.remove();
+			if (!(te instanceof SchemaCoreTileEntity)) iter.remove();
 		}
 	}
 
 	private void refreshDoors(boolean isRoomBeingRemoved)
 	{
-		if (tt <= 2)
-			return;
+		if (tt <= 2) return;
 		synchronized (roomSet)
 		{
 			System.out.println("Rechecking doors");
 			for (SimpleCoordStore room : roomSet)
 			{
 				TileEntity te = room.getTileEntity();
-				if (te instanceof SchemaCoreTileEntity)
-					((SchemaCoreTileEntity) te).recheckDoors(isRoomBeingRemoved);
+				if (te instanceof SchemaCoreTileEntity) ((SchemaCoreTileEntity) te).recheckDoors(isRoomBeingRemoved);
 			}
 			SchemaCoreTileEntity te = getSchemaCore();
-			if (te != null)
-				te.recheckDoors(isRoomBeingRemoved);
+			if (te != null) te.recheckDoors(isRoomBeingRemoved);
 		}
 	}
 
@@ -1151,17 +1052,14 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		{
 			if (sub)
 			{
-				if (ServerHelper.isServer() && (te != null))
-					roomSet.remove(new SimpleCoordStore(te));
+				if (ServerHelper.isServer() && (te != null)) roomSet.remove(new SimpleCoordStore(te));
 				ret = true;
-				if(!deletingRooms)
-					refreshDoors(true);
+				if (!deletingRooms) refreshDoors(true);
 			}
 
 			if (!sub && (getNumRooms() < getMaxNumRooms()))
 			{
-				if (ServerHelper.isServer() && (te != null))
-					roomSet.add(new SimpleCoordStore(te));
+				if (ServerHelper.isServer() && (te != null)) roomSet.add(new SimpleCoordStore(te));
 				ret = true;
 				refreshDoors(false);
 			}
@@ -1172,8 +1070,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public boolean addRoom(SchemaCoreTileEntity te)
 	{
-		if (ServerHelper.isServer() && (te != null))
-			return addRoom(false, te);
+		if (ServerHelper.isServer() && (te != null)) return addRoom(false, te);
 		return false;
 	}
 
@@ -1211,8 +1108,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public int getEnergyPerSecond()
 	{
 		TardisDataStore mds = gDS();
-		if(mds == null)
-			return getEnergyPerSecond(0);
+		if (mds == null) return getEnergyPerSecond(0);
 		return getEnergyPerSecond(mds.getLevel(TardisUpgradeMode.REGEN));
 	}
 
@@ -1230,8 +1126,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public int getMaxArtronEnergy()
 	{
 		TardisDataStore mds = gDS();
-		if(mds == null)
-			return getMaxArtronEnergy(0);
+		if (mds == null) return getMaxArtronEnergy(0);
 		return getMaxArtronEnergy(mds.getLevel(TardisUpgradeMode.ENERGY));
 	}
 
@@ -1244,10 +1139,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public boolean addArtronEnergy(int amount, boolean sim)
 	{
-		if(amount == 0)
-			return true;
-		if (!sim)
-			energy += amount;
+		if (amount == 0) return true;
+		if (!sim) energy += amount;
 		energy = MathHelper.clamp(energy, 0, getMaxArtronEnergy(gDS().getLevel(TardisUpgradeMode.ENERGY)));
 		return true;
 	}
@@ -1255,12 +1148,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public boolean takeArtronEnergy(int amount, boolean sim)
 	{
-		if(amount == 0)
-			return true;
+		if (amount == 0) return true;
 		if (energy >= amount)
 		{
-			if (!sim)
-				energy -= amount;
+			if (!sim) energy -= amount;
 			return true;
 		}
 		energy = MathHelper.clamp(energy, 0, getMaxArtronEnergy(gDS().getLevel(TardisUpgradeMode.ENERGY)));
@@ -1308,21 +1199,18 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public void addGridLink(SimpleCoordStore pos)
 	{
 		TardisOutput.print("TCTE", "Adding coord:" + pos.toString());
-		if (pos != null)
-			gridLinks.add(pos);
+		if (pos != null) gridLinks.add(pos);
 	}
 
 	public DimensionalCoord[] getGridLinks(SimpleCoordStore asker)
 	{
-		if (gridLinks.size() == 0)
-			return null;
+		if (gridLinks.size() == 0) return null;
 		ArrayList<DimensionalCoord> coords = new ArrayList<DimensionalCoord>(gridLinks.size() - 1);
 		Iterator<SimpleCoordStore> iter = gridLinks.iterator();
 		while (iter.hasNext())
 		{
 			SimpleCoordStore s = iter.next();
-			if (s.equals(asker))
-				continue;
+			if (s.equals(asker)) continue;
 
 			TileEntity te = worldObj.getTileEntity(s.x, s.y, s.z);
 			if (te instanceof ComponentTileEntity)
@@ -1347,11 +1235,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public boolean canTransmatEntity(Entity ent)
 	{
-		if (!hasFunction(TardisFunction.TRANSMAT))
-			return false;
+		if (!hasFunction(TardisFunction.TRANSMAT)) return false;
+		TardisDataStore ds = gDS();
+		if ((ds != null) && (ent instanceof EntityPlayer)) if (ds.hasPermission((EntityPlayer) ent, TardisPermission.TRANSMAT)) return false;
 		int entWorld = WorldHelper.getWorldID(ent.worldObj);
 		boolean trans = false;
-		if (entWorld == WorldHelper.getWorldID(worldObj)) //if ent is in the tardis
+		if (entWorld == WorldHelper.getWorldID(worldObj)) // if ent is in the tardis
 			trans = true;
 		else if ((entWorld == gDS().exteriorWorld) && (flightState.equals(FlightState.LANDING) || flightState.equals(FlightState.LANDED)))
 		{
@@ -1359,16 +1248,14 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			distance += Math.pow(((gDS().exteriorY + 0.5) - ent.posY), 2);
 			distance += Math.pow(((gDS().exteriorZ + 0.5) - ent.posZ), 2);
 			distance = Math.pow(distance, 0.5);
-			if (distance <= getMaxTransmatDistance())
-				trans = true;
+			if (distance <= getMaxTransmatDistance()) trans = true;
 		}
 		return trans;
 	}
 
 	public boolean transmatEntity(Entity ent)
 	{
-		if (!hasFunction(TardisFunction.TRANSMAT))
-			return false;
+		if (!hasFunction(TardisFunction.TRANSMAT)) return false;
 		SimpleCoordStore to = getTransmatPoint();
 		if (canTransmatEntity(ent))
 		{
@@ -1386,8 +1273,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public SimpleCoordStore getTransmatPoint()
 	{
-		if (isTransmatPointValid())
-			return transmatPoint;
+		if (isTransmatPointValid()) return transmatPoint;
 		return new SimpleCoordStore(worldObj, xCoord + 13, yCoord - 2, zCoord);
 	}
 
@@ -1401,26 +1287,22 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	 */
 	public boolean isTransmatPoint(SimpleCoordStore other)
 	{
-		if (transmatPoint != null)
-			return transmatPoint.equals(other);
+		if (transmatPoint != null) return transmatPoint.equals(other);
 		return false;
 	}
 
 	public boolean isTransmatPointValid()
 	{
-		if (transmatPoint == null)
-			return false;
+		if (transmatPoint == null) return false;
 		World w = transmatPoint.getWorldObj();
 		for (int i = 0; i < 5; i++)
-			if (!w.isAirBlock(transmatPoint.x, transmatPoint.y - i, transmatPoint.z))
-				return true;
+			if (!w.isAirBlock(transmatPoint.x, transmatPoint.y - i, transmatPoint.z)) return true;
 		return false;
 	}
 
 	public void rescuePlayer(EntityPlayerMP pl)
 	{
-		if ((pl == null) || (pl.worldObj == null) || (pl.worldObj.provider == null))
-			return;
+		if ((pl == null) || (pl.worldObj == null) || (pl.worldObj.provider == null)) return;
 		int dim = pl.worldObj.provider.getRespawnDimension(pl);
 		pl.getBedLocation(dim);
 	}
@@ -1443,16 +1325,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				int instability = MathHelper.clamp(20 - (2 * gDS().getLevel()), 3, 20);
 				desDim = dD;
 				String[] send = new String[4];
-				if ((desStrs != null) && (desStrs.length == 4))
-					send = desStrs;
+				if ((desStrs != null) && (desStrs.length == 4)) send = desStrs;
 
 				send[0] = "The TARDIS will materialize in dimension " + getDimensionName(dD) + "[" + dD + "] near:";
-				if ((dX != desX) || (send[1] == null))
-					send[1] = "x = " + (dX + (rand.nextInt(2 * instability) - instability));
-				if ((dY != desY) || (send[2] == null))
-					send[2] = "y = " + (dY + (rand.nextInt(2 * instability) - instability));
-				if ((dZ != desZ) || (send[3] == null))
-					send[3] = "z = " + (dZ + (rand.nextInt(2 * instability) - instability));
+				if ((dX != desX) || (send[1] == null)) send[1] = "x = " + (dX + (rand.nextInt(2 * instability) - instability));
+				if ((dY != desY) || (send[2] == null)) send[2] = "y = " + (dY + (rand.nextInt(2 * instability) - instability));
+				if ((dZ != desZ) || (send[3] == null)) send[3] = "z = " + (dZ + (rand.nextInt(2 * instability) - instability));
 				desX = dX;
 				desY = dY;
 				desZ = dZ;
@@ -1472,15 +1350,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	 *            The yCoord of the bottom block of the TARDIS
 	 * @param z
 	 *            The zCoord to check
-	 * @return A boolean array of length 6.
-	 *         Element 0 = If door is not obstructed by a solid block (i.e. the
-	 *         door is openable)
-	 *         Element 1 = If door is obstructed by a dangerous block (e.g.
-	 *         lava/fire)
-	 *         Element 2 = There is a drop of 2 or more blocks
-	 *         Element 3 = The drop will result in water
-	 *         Element 4 = The drop will result in lava/fire
-	 *         Element 5 = The outside is wet
+	 * @return A boolean array of length 6. Element 0 = If door is not obstructed by a solid block (i.e. the door is openable) Element 1 = If door is obstructed by a dangerous block (e.g. lava/fire) Element 2 = There is a drop of 2 or more blocks Element 3 = The drop will result in water Element 4 =
+	 *         The drop will result in lava/fire Element 5 = The outside is wet
 	 */
 	private boolean[] getObstructData(World w, int x, int y, int z)
 	{
@@ -1496,8 +1367,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				data[1] = true;
 			else
 			{
-				if((bottom == Blocks.water) || (bottom == Blocks.flowing_water) || (top == Blocks.water) || (top == Blocks.flowing_water))
-					data[5] = true;
+				if ((bottom == Blocks.water) || (bottom == Blocks.flowing_water) || (top == Blocks.water) || (top == Blocks.flowing_water)) data[5] = true;
 				for (int i = 0; i <= 2; i++)
 				{
 					if ((y - i) < 1)
@@ -1505,18 +1375,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 						data[2] = true;
 						break;
 					}
-					if (!softBlock(w, x, y - i, z))
-						break;
-					if (i == 2)
-						data[2] = true;
+					if (!softBlock(w, x, y - i, z)) break;
+					if (i == 2) data[2] = true;
 				}
 				if (data[2])
 				{
 					boolean g = true;
 					for (int i = y - 2; (i > 0) && g; i--)
 					{
-						if (!softBlock(w, x, i, z))
-							g = true;
+						if (!softBlock(w, x, i, z)) g = true;
 						Block b = w.getBlock(x, i, z);
 						if ((b == Blocks.water) || (b == Blocks.flowing_water))
 							data[3] = true;
@@ -1541,13 +1408,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 		List<String> string = new ArrayList<String>();
 		TardisTileEntity ext = gDS().getExterior();
-		if (ext == null)
-			return;
+		if (ext == null) return;
 		World w = ext.getWorldObj();
 		int dx = 0;
 		int dz = 0;
-		string.add("Current position: Dimension " + getDimensionName(gDS().exteriorWorld) + "[" + gDS().exteriorWorld + "] : "
-				+ gDS().exteriorX + "," + gDS().exteriorY + "," + gDS().exteriorZ);
+		string.add("Current position: Dimension " + getDimensionName(gDS().exteriorWorld) + "[" + gDS().exteriorWorld + "] : " + gDS().exteriorX + "," + gDS().exteriorY + "," + gDS().exteriorZ);
 		int facing = w.getBlockMetadata(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ);
 		for (int i = 0; i < 4; i++)
 		{
@@ -1572,7 +1437,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			}
 			String s = (i == facing ? "Current facing " : "Facing ");
 			boolean[] data = getObstructData(w, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz);
-			if(data[5])
+			if (data[5])
 				s += "wet";
 			else if (!data[0])
 				s += "obstructed";
@@ -1581,10 +1446,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			else if (data[2])
 			{
 				s += "unsafe drop";
-				if (data[3])
-					s += " into water";
-				if (data[4])
-					s += " into lava";
+				if (data[3]) s += " into water";
+				if (data[4]) s += " into lava";
 			}
 			else
 				s += " safe";
@@ -1597,8 +1460,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private String getDimensionName(int worldID)
 	{
-		if (worldID != 10000)
-			return WorldHelper.getDimensionName(worldID);
+		if (worldID != 10000) return WorldHelper.getDimensionName(worldID);
 		return "The Time Vortex";
 	}
 
@@ -1618,17 +1480,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
-		if (fast)
-			nbt.setBoolean("fast", fast);
+		if (fast) nbt.setBoolean("fast", fast);
 		nbt.setInteger("oExW", oldExteriorWorld);
 		nbt.setBoolean("fF", forcedFlight);
 		nbt.setInteger("lS", lockState.ordinal());
-		if (hasFunction(TardisFunction.TRANSMAT) && isTransmatPointValid())
-			nbt.setTag("tP", transmatPoint.writeToNBT());
-		if((sourceLocation != null) && (destLocation != null))
+		if (hasFunction(TardisFunction.TRANSMAT) && isTransmatPointValid()) nbt.setTag("tP", transmatPoint.writeToNBT());
+		if ((sourceLocation != null) && (destLocation != null))
 		{
-			sourceLocation.writeToNBT(nbt,"srcLoc");
-			destLocation.writeToNBT(nbt,"dstLoc");
+			sourceLocation.writeToNBT(nbt, "srcLoc");
+			destLocation.writeToNBT(nbt, "dstLoc");
 			nbt.setDouble("dT", distanceTravelled);
 			nbt.setDouble("dtT", distanceToTravel);
 			nbt.setInteger("cbs", currentBlockSpeed);
@@ -1682,14 +1542,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		oldExteriorWorld = nbt.getInteger("oExW");
 		forcedFlight = nbt.getBoolean("fF");
 		lockState = LockState.values()[nbt.getInteger("lS")];
-		if (nbt.hasKey("tP"))
-			transmatPoint = SimpleCoordStore.readFromNBT(nbt.getCompoundTag("tP"));
-		if(nbt.hasKey("dT"))
+		if (nbt.hasKey("tP")) transmatPoint = SimpleCoordStore.readFromNBT(nbt.getCompoundTag("tP"));
+		if (nbt.hasKey("dT"))
 		{
 			sourceLocation = SimpleCoordStore.readFromNBT(nbt, "srcLoc");
-			destLocation = SimpleCoordStore.readFromNBT(nbt,"dstLoc");
+			destLocation = SimpleCoordStore.readFromNBT(nbt, "dstLoc");
 			distanceTravelled = nbt.getDouble("dT");
-			distanceToTravel  = nbt.getDouble("dtT");
+			distanceToTravel = nbt.getDouble("dtT");
 			currentBlockSpeed = nbt.getInteger("cbs");
 		}
 		if (nbt.hasKey("mods"))
@@ -1731,8 +1590,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (nbt.hasKey("ds") && ServerHelper.isClient())
 		{
 			TardisDataStore tds = gDS();
-			if (tds != null)
-				tds.readFromNBT(nbt.getCompoundTag("ds"));
+			if (tds != null) tds.readFromNBT(nbt.getCompoundTag("ds"));
 		}
 		numRooms = nbt.getInteger("numR");
 	}
@@ -1758,25 +1616,21 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public boolean canBeAccessedExternally()
 	{
 		EngineTileEntity engine = getEngine();
-		if (engine == null)
-			return false;
+		if (engine == null) return false;
 		return !engine.getInternalOnly();
 	}
 
 	public IGridNode getNode()
 	{
-		if (TardisMod.aeAPI == null)
-			return null;
-		if (node == null)
-			node = TardisMod.aeAPI.createGridNode(new CoreGrid(this));
+		if (TardisMod.aeAPI == null) return null;
+		if (node == null) node = TardisMod.aeAPI.createGridNode(new CoreGrid(this));
 		return node;
 	}
 
 	@Override
 	public IGridNode getGridNode(ForgeDirection dir)
 	{
-		if (dir != ForgeDirection.UNKNOWN)
-			return null;
+		if (dir != ForgeDirection.UNKNOWN) return null;
 		return getNode();
 	}
 

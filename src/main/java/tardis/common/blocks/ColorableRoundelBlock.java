@@ -8,7 +8,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import tardis.TardisMod;
+import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 
 public class ColorableRoundelBlock extends AbstractBlock implements IColorableBlock
@@ -42,11 +44,11 @@ public class ColorableRoundelBlock extends AbstractBlock implements IColorableBl
 	{
 		if(Helper.isTardisWorld(w))
 		{
-			CoreTileEntity core = Helper.getTardisCore(w);
-			if((core != null) && !core.canModify(pl))
+			TardisDataStore ds = Helper.getDataStore(w);
+			if((ds != null) && !ds.hasPermission(pl, TardisPermission.RECOLOUR))
 			{
 				if(ServerHelper.isServer())
-					ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
+					ServerHelper.sendString(pl, CoreTileEntity.cannotModifyRecolour);
 				return false;
 			}
 		}

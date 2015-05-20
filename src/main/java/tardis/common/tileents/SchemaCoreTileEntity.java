@@ -15,11 +15,13 @@ import net.minecraft.util.AxisAlignedBB;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.schema.CoordStore;
 import tardis.common.core.schema.PartBlueprint;
+import tardis.common.dimension.TardisDataStore;
 
 public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewable, IActivatable
 {
@@ -137,21 +139,22 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	{
 		if(ServerHelper.isClient())
 			return true;
-		CoreTileEntity core = Helper.getTardisCore(worldObj);
-		if((core == null) || core.canModify(player))
+		if(mode == ScrewdriverMode.Dismantle)
 		{
-			if(mode == ScrewdriverMode.Dismantle)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if((ds == null) || ds.hasPermission(player, TardisPermission.ROOMS))
 			{
+				CoreTileEntity core = Helper.getTardisCore(worldObj);
 				if((core== null) || core.addRoom(true,this))
 				{
 					remove();
 					return true;
 				}
 			}
-		}
-		else
-		{
-			player.addChatMessage(CoreTileEntity.cannotModifyMessage);
+			else
+			{
+				player.addChatMessage(CoreTileEntity.cannotModifyMessage);
+			}
 		}
 		return false;
 	}

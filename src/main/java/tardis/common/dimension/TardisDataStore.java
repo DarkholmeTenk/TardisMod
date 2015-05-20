@@ -1,11 +1,13 @@
 package tardis.common.dimension;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.HashMap;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -13,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import tardis.TardisMod;
 import tardis.api.TardisFunction;
+import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
@@ -45,6 +48,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 	private AspectList										aspectList		= new AspectList();
 	public int												maxSuck			= 16;
 	public Aspect											maxSuckT		= null;
+
+	private HashMap<Integer,Integer>						permissionList	= new HashMap();
 
 	public TardisDataStore(String n)
 	{
@@ -273,6 +278,15 @@ public class TardisDataStore extends AbstractWorldDataStore
 			aspectList.readFromNBT(nbt, "aspectList");
 		tardisLevel = nbt.getInteger("tL");
 		tardisXP = nbt.getDouble("txp");
+		int i = 0;
+		while(nbt.hasKey("permO"+i))
+		{
+			int h = nbt.getInteger("permO"+i);
+			int d = nbt.getInteger("permD"+i);
+			if(d != 0)
+				permissionList.put(h, d);
+			i++;
+		}
 		for (TardisUpgradeMode mode : TardisUpgradeMode.values())
 			if (nbt.hasKey("uG" + mode.ordinal()))
 			{
@@ -333,6 +347,14 @@ public class TardisDataStore extends AbstractWorldDataStore
 			aspectList.writeToNBT(nbt, "aspectList");
 		nbt.setInteger("tL", tardisLevel);
 		nbt.setDouble("txp", tardisXP);
+		int i = 0;
+		for(Integer hash : permissionList.keySet())
+		{
+			nbt.setInteger("permO"+i, hash);
+			nbt.setInteger("permD"+i, permissionList.get(hash));
+			i++;
+		}
+
 		if (upgradeLevels.size() > 0) for (TardisUpgradeMode mode : upgradeLevels.keySet())
 		{
 			int am = upgradeLevels.get(mode);
@@ -425,6 +447,55 @@ public class TardisDataStore extends AbstractWorldDataStore
 			default:
 				return false;
 		}
+	}
+
+	public boolean hasPermission(Object ent, TardisPermission perm)
+	{
+		if(ent instanceof EntityPlayer)
+			return hasPermission((EntityPlayer)ent, perm);
+		return false;
+	}
+
+	public boolean hasPermission(EntityPlayer pl, TardisPermission perm)
+	{
+		return hasPermission(ServerHelper.getUsername(pl),perm);
+	}
+
+	public boolean hasPermission(String pl, TardisPermission perm)
+	{
+		CoreTileEntity core = getCore();
+		if((core != null) && core.isOwner(pl)) return true;
+		int hash = pl.hashCode();
+		synchronized(permissionList)
+		{
+			if(permissionList.containsKey(hash))
+			{
+				int data = permissionList.get(hash);
+				return perm.isIn(data);
+			}
+		}
+		return false;
+	}
+
+	public boolean togglePermission(EntityPlayer giver, EntityPlayer givee, TardisPermission perm)
+	{
+		return togglePermission(ServerHelper.getUsername(giver),ServerHelper.getUsername(givee),perm);
+	}
+
+	public boolean togglePermission(String giver, String givee, TardisPermission perm)
+	{
+		if(hasPermission(giver,TardisPermission.PERMISSIONS))
+		{
+			int hash = givee.hashCode();
+			synchronized(permissionList)
+			{
+				int data = permissionList.containsKey(hash) ? permissionList.get(hash) : 0;
+				data = perm.toggle(data);
+				permissionList.put(hash, data);
+			}
+			return true;
+		}
+		return false;
 	}
 
 }

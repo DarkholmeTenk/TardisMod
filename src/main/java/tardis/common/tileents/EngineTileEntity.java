@@ -21,6 +21,7 @@ import net.minecraft.util.Vec3;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
 import tardis.common.core.HitPosition;
@@ -38,7 +39,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public int					lastButtonTT			= -1;
 	private TardisUpgradeMode	preparingToUpgrade		= null;
 	private int					preparingToUpgradeTT	= -1;
-	private boolean				litUp					= false;
 
 	private boolean				internalOnly			= false;
 
@@ -188,6 +188,20 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			return 72;
 		else if (hit.within(2, 0.735, 0.782, 0.813, 0.859))
 			return 73;
+		else if (hit.side == 2)
+		{
+			for(TardisPermission p : TardisPermission.values())
+			{
+				int o = p.ordinal();
+				double d = 0.078;
+				double x = 0.68 - (o * d);
+				double X = 0.68 - ((o + 1) * d);
+				if(hit.within(2, 0.33, X, 0.43, x))
+					return 80 + o;
+				if(hit.within(2, 0.43, X, 0.53, x))
+					return 90 + o;
+			}
+		}
 		return -1;
 	}
 
@@ -215,6 +229,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		return true;
 	}
 
+	private static final String hasPerm = " has permission to ";
+	private static final String hasNoPerm = " does not have permission to ";
 	@Override
 	public void activateControl(EntityPlayer pl, int control)
 	{
@@ -231,19 +247,11 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				currentUserID += control == 4 ? 1 : -1;
 				setUsername();
 			}
-			else if (control == 6)
-				pl.addChatMessage(new ChatComponentText("[TARDIS] " + currentPerson + " does "
-						+ (core.canModify(currentPerson) ? "" : "not ") + "have permission to modify this TARDIS"));
-			else if (control == 7)
-			{
-				core.toggleModifier(pl, currentPerson);
-				core.sendUpdate();
-			}
 			else if ((control >= 10) && (control < 20))
 			{
 				if (ds.unspentLevelPoints() > 0)
 				{
-					if (core.canModify(pl))
+					if (ds.hasPermission(pl, TardisPermission.POINTS))
 					{
 						TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 10);
 						TardisOutput.print("TETE", "Setting mode to " + mode.name);
@@ -318,7 +326,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				validateScrewNBT();
 				if (hasScrew)
 				{
-					if (core.canModify(pl))
+					if (ds.hasPermission(pl, TardisPermission.PERMISSIONS))
 						SonicScrewdriverItem.togglePermission(screwNBT, SonicScrewdriverItem.getMode(control - 40));
 					else
 						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
@@ -357,7 +365,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			else if (control == 73)
 			{
-				if (core.canModify(pl))
+				if (ds.hasPermission(pl, TardisPermission.ROOMS))
 				{
 					if ((prevLastButton != 73) && pl.isSneaking())
 						lastButton = -1;
@@ -379,6 +387,17 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					lastButton = -1;
 					ServerHelper.sendString(pl, "ENGINE", CoreTileEntity.cannotModifyMessage.getFormattedText());
 				}
+			}
+			else if((control >= 80) && (control < 90))
+			{
+				TardisPermission p = TardisPermission.get(control - 80);
+				if(!ds.togglePermission(ServerHelper.getUsername(pl), currentPerson, p))
+					ServerHelper.sendString(pl, CoreTileEntity.cannotModifyPermissions);
+			}
+			else if((control >= 90) && (control < 100))
+			{
+				TardisPermission p = TardisPermission.get(control - 90);
+				ServerHelper.sendString(pl, currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name);
 			}
 		}
 	}
@@ -407,10 +426,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if ((core != null) && (ds != null))
 		{
-			if ((cID == 4) || (cID == 5) || (cID == 7) || ((cID >= 10) && (cID < 20)) || ((cID >= 71) && (cID <= 73)))
+			if ((cID == 4) || (cID == 5) || ((cID >= 10) && (cID < 20)) || ((cID >= 71) && (cID <= 73)))
 				return (lastButton == cID) ? 1.0 : 0;
-			if (cID == 6)
-				return litUp ? 1 : 0.2;
 			if ((cID >= 20) && (cID < 30))
 			{
 				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(cID - 20);
@@ -447,6 +464,16 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			if (cID == 60)
 				return internalOnly ? 1 : 0;
+			if ((cID >= 80) && (cID < 90))
+			{
+				TardisPermission p = TardisPermission.get(cID-80);
+				return ds.hasPermission(currentPerson, p) ? 1 : 0;
+			}
+			if((cID >= 90) && (cID < 100))
+			{
+				TardisPermission p = TardisPermission.get(90-cID);
+				return ds.hasPermission(currentPerson, p) ? 1 : 0;
+			}
 		}
 		return (float) (((tt + cID) % 40) / 39.0);
 	}
@@ -565,9 +592,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		nbt.setBoolean("io", internalOnly);
 		nbt.setBoolean("hS", hasScrew);
 		nbt.setInteger("lB", lastButton);
-		CoreTileEntity core = Helper.getTardisCore(worldObj);
-		if (core != null)
-			nbt.setBoolean("lU", core.canModify(currentPerson));
 	}
 
 	@Override
@@ -580,7 +604,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		currentPerson = nbt.getString("cP");
 		lastButton = nbt.getInteger("lB");
 		lastButtonTT = tt;
-		litUp = nbt.getBoolean("lU");
 		preparingToUpgradeTT = tt;
 		internalOnly = nbt.getBoolean("io");
 		if (nbt.hasKey("ptU"))

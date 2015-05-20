@@ -22,6 +22,7 @@ import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
+import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
@@ -412,6 +413,42 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return true;
 	}
 
+	public boolean isMovementControl(int controlID)
+	{
+		if ((controlID >= 10) && (controlID < 40))
+			return true;
+		switch(controlID)
+		{
+			case 3:
+			case 53:
+			case 55:
+			case 60: return true;
+			default: return false;
+		}
+	}
+
+	private boolean requiresFlightPermission(int controlID)
+	{
+		if(controlID == unstableControl) return false;
+		if((controlID >= 1000) && (controlID < 1020)) return true;
+		switch(controlID)
+		{
+			case 904:
+			case 42 :
+			case 55 :
+			case 53 :
+			case 56 :
+			case 900:
+			case 902:
+			case 903:
+			case 4  :
+			case 40 :
+			case 41 :
+			case 34 : return true;
+			default: return false;
+		}
+	}
+
 	@Override
 	public void activateControl(EntityPlayer pl, int controlID)
 	{
@@ -419,6 +456,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if ((core == null) || (ds == null))
 			return;
+		if((isMovementControl(controlID) || requiresFlightPermission(controlID)) && !ds.hasPermission(pl, TardisPermission.FLY))
+		{
+			pl.addChatMessage(CoreTileEntity.cannotModifyFly);
+			return;
+		}
 		TardisOutput.print("TConTE", "Control:" + controlID, TardisOutput.Priority.DEBUG);
 		if (controlID == 0)
 			pl.addChatMessage(new ChatComponentText("Energy: " + core.getArtronEnergy() + "/" + core.getMaxArtronEnergy()));
@@ -521,7 +563,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 		if (controlID == 5)
 		{
-			if (core.canModify(pl))
+			if (ds.hasPermission(pl, TardisPermission.PERMISSIONS))
 			{
 				if (!hasScrewdriver(0) && core.takeArtronEnergy(500, false))
 				{
@@ -646,7 +688,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			}
 		}
 
-		if ((controlID == 901) && core.canModify(pl))
+		if ((controlID == 901) && ds.hasPermission(pl, TardisPermission.ROOMS))
 		{
 			if (!roomDeletePrepare)
 			{
@@ -669,28 +711,13 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		}
 		else
 		{
-			if ((controlID == 901) && !core.canModify(pl))
+			if ((controlID == 901) && !ds.hasPermission(pl, TardisPermission.ROOMS))
 				pl.addChatMessage(CoreTileEntity.cannotModifyMessage);
 			if (roomDeletePrepare)
 				roomDeletePrepare = false;
 		}
 		lastButton = controlID;
 		lastButtonTT = tt;
-	}
-
-	public boolean isMovementControl(int controlID)
-	{
-		if ((controlID >= 10) && (controlID < 40))
-			return true;
-		if (controlID == 3)
-			return true;
-		if (controlID == 53)
-			return true;
-		if (controlID == 55)
-			return true;
-		if (controlID == 60)
-			return true;
-		return false;
 	}
 
 	public boolean setControls(int dim, int exX, int exZ, int x, int y, int z, boolean allowNearest)

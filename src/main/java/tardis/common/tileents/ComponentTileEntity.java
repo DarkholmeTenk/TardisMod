@@ -29,6 +29,7 @@ import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.ComponentItem;
@@ -224,8 +225,8 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 			return true;
 		if (mode == ScrewdriverMode.Dismantle)
 		{
-			CoreTileEntity core = getCore();
-			if ((core == null) || core.canModify(player))
+			TardisDataStore ds = getDS();
+			if ((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
 			{
 
 				dismantle(player);
@@ -257,8 +258,8 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 			Item i = is.getItem();
 			if (i instanceof ComponentItem)
 			{
-				CoreTileEntity core = getCore();
-				if ((core == null) || core.canModify(pl))
+				TardisDataStore ds = getDS();
+				if ((ds == null) || ds.hasPermission(pl, TardisPermission.ROUNDEL))
 				{
 					int dam = is.getItemDamage();
 					TardisTEComponent[] possComps = TardisTEComponent.values();
