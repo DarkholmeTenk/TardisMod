@@ -20,10 +20,12 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.schema.CoordStore;
 import tardis.common.core.schema.PartBlueprint;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.CoreTileEntity;
@@ -111,8 +113,8 @@ public class InternalDoorBlock extends AbstractBlock
 					if(base instanceof SonicScrewdriverItem)
 						schemaCarrier = SonicScrewdriverItem.getMode(held).equals(ScrewdriverMode.Schematic);
 
-					CoreTileEntity te = Helper.getTardisCore(w);
-					if((te == null) || (te.canModify(player)))
+					TardisDataStore ds = Helper.getDataStore(w);
+					if((ds == null) || (ds.hasPermission(player,TardisPermission.ROOMS)))
 					{
 						if(schemaCarrier && tag.hasKey("schemaName") && tag.hasKey("schemaCat"))
 						{
@@ -129,6 +131,7 @@ public class InternalDoorBlock extends AbstractBlock
 							TardisOutput.print("TIDB","OBA"+door.x+","+door.y+","+door.z);
 							if(pb.roomFor(w, nX, nY, nZ, opposingFace(facing)))
 							{
+								CoreTileEntity te = Helper.getTardisCore(w);
 								if((te == null) || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
 									pb.reconstitute(w, nX, nY, nZ, opposingFace(facing));
 								else

@@ -9,6 +9,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
@@ -226,10 +227,10 @@ public class ComponentAspect extends AbstractComponent implements IAspectSource,
 	{
 		if(ServerHelper.isClient())
 			return true;
-		CoreTileEntity core = getCore();
 		if(mode == ScrewdriverMode.Reconfigure)
 		{
-			if((core == null) || core.canModify(player))
+			TardisDataStore ds = parentObj.getDS();
+			if((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
 			{
 				suckMode = (suckMode + 1) % 3;
 				if(suckMode == 2)

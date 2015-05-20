@@ -25,6 +25,7 @@ import tardis.api.IScrewable;
 import tardis.api.ITDismantleable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
+import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisDataStore;
@@ -311,34 +312,18 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			}
 			else if (mode.equals(ScrewdriverMode.Reconfigure))
 			{
-				if ((b == TardisMod.decoBlock) || (b == TardisMod.darkDecoBlock))
+				if (b == TardisMod.colorableRoundelBlock)
 				{
 					int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-					if ((m == 2) || (m == 4))
-					{
-						CoreTileEntity core = Helper.getTardisCore(w);
-						if ((core == null) || core.canModify(player))
-						{
-							w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.componentBlock, m == 2 ? 0 : 1, 3);
-							toolUsed(is, player, hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-							return true;
-						}
-						else
-							player.addChatMessage(CoreTileEntity.cannotModifyMessage);
-					}
-				}
-				else if (b == TardisMod.colorableRoundelBlock)
-				{
-					int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-					CoreTileEntity core = Helper.getTardisCore(w);
-					if ((core == null) || core.canModify(player))
+					TardisDataStore ds = Helper.getDataStore(w);
+					if ((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
 					{
 						w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.colorableOpenRoundelBlock, m, 3);
 						toolUsed(is, player, hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 						return true;
 					}
 					else
-						player.addChatMessage(CoreTileEntity.cannotModifyMessage);
+						player.addChatMessage(CoreTileEntity.cannotModifyRoundel);
 				}
 				else
 				{
@@ -498,9 +483,13 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		ScrewdriverMode mode = getMode(is);
 		if (ScrewdriverMode.Transmat.equals(mode) && !(hit instanceof EntityPlayer))
 		{
-			CoreTileEntity core = getLinkedCore(is);
-			if (core != null) core.transmatEntity(hit);
-			return true;
+			TardisDataStore ds = Helper.getDataStore(hitter.worldObj);
+			if(ds.hasPermission(hitter, TardisPermission.TRANSMAT))
+			{
+				CoreTileEntity core = getLinkedCore(is);
+				if (core != null) core.transmatEntity(hit);
+				return true;
+			}
 		}
 		return false;
 	}

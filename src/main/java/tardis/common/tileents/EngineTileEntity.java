@@ -21,6 +21,7 @@ import net.minecraft.util.Vec3;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
 import tardis.common.core.HitPosition;
@@ -243,7 +244,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			{
 				if (ds.unspentLevelPoints() > 0)
 				{
-					if (core.canModify(pl))
+					if (ds.hasPermission(pl, TardisPermission.POINTS))
 					{
 						TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 10);
 						TardisOutput.print("TETE", "Setting mode to " + mode.name);
@@ -318,7 +319,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				validateScrewNBT();
 				if (hasScrew)
 				{
-					if (core.canModify(pl))
+					if (ds.hasPermission(pl, TardisPermission.PERMISSIONS))
 						SonicScrewdriverItem.togglePermission(screwNBT, SonicScrewdriverItem.getMode(control - 40));
 					else
 						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
@@ -357,7 +358,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			else if (control == 73)
 			{
-				if (core.canModify(pl))
+				if (ds.hasPermission(pl, TardisPermission.ROOMS))
 				{
 					if ((prevLastButton != 73) && pl.isSneaking())
 						lastButton = -1;

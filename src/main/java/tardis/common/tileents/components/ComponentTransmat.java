@@ -5,7 +5,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 
@@ -14,22 +16,23 @@ public class ComponentTransmat extends AbstractComponent implements IScrewable
 	protected ComponentTransmat()
 	{
 	}
-	
+
 	public ComponentTransmat(ComponentTileEntity parent)
 	{
 	}
-	
-	
+
+
 	@Override
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
 		if(mode.equals(ScrewdriverMode.Reconfigure))
 		{
+			TardisDataStore ds = Helper.getDataStore(world);
 			CoreTileEntity core = Helper.getTardisCore(world);
-			if(core != null)
+			if((core != null) && (ds != null))
 			{
 				ChatComponentText c = new ChatComponentText("");
-				if(core.canModify(player))
+				if(ds.hasPermission(player, TardisPermission.ROUNDEL) && ds.hasPermission(player, TardisPermission.TRANSMAT))
 				{
 					SimpleCoordStore transPoint = new SimpleCoordStore(player);
 					if(core.isTransmatPoint(transPoint))
@@ -56,7 +59,7 @@ public class ComponentTransmat extends AbstractComponent implements IScrewable
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected void parentAdded(ComponentTileEntity parent)
 	{

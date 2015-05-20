@@ -11,6 +11,7 @@ import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
 import tardis.TardisMod;
+import tardis.api.TardisPermission;
 import tardis.client.renderer.ControlRenderer;
 import tardis.common.core.Helper;
 import tardis.common.tileents.CoreTileEntity;
@@ -20,17 +21,17 @@ public class EngineRenderer extends AbstractObjRenderer
 {
 	ControlRenderer comps = null;
 	IModelCustom engine;
-	
+
 	{
 		engine = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/engine.obj"));
 	}
-	
+
 	@Override
 	public AbstractBlock getBlock()
 	{
 		return TardisMod.tardisEngineBlock;
 	}
-	
+
 	private void renderRight(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
 	{
 		if(core != null)
@@ -42,13 +43,18 @@ public class EngineRenderer extends AbstractObjRenderer
 		comps.renderButton(tess,eng,5, 0.72,0.535,-0.0125, 90,0,0, 0.3,0.3,0.3);
 		comps.renderLight( tess,eng,6, 0.82,0.6155,-0.0125, 90,0,0, 0.3,0.3,0.3);
 		comps.renderButton(tess,eng,7, 0.81,0.535,-0.0125, 90,0,0, 0.3,0.3,0.3);
-		
+
 		comps.renderTextScreen(tess, eng, eng.getConsoleSetting(), 70,  0.65, 0.8, -0.02, 0, 0, 180,  0.3, 0.3, 0.3);
 		comps.renderButton(tess,eng,71, 0.72,0.825,-0.0125, 90,0,0, 0.3,0.3,0.3);
 		comps.renderButton(tess,eng,72, 0.72,0.735,-0.0125, 90,0,0, 0.3,0.3,0.3);
 		comps.renderButton(tess,eng,73, 0.81,0.780,-0.0125, 90,0,0, 0.3,0.3,0.3);
+		for(TardisPermission p : TardisPermission.values())
+		{
+			double d = p.ordinal()/13.0;
+			comps.renderPushSwitch(tess, eng, 80+p.ordinal(), 0.625-d,0.47,-0.02, 90,0,0,0.3,0.3,0.3);
+		}
 	}
-	
+
 	private void renderFront(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
 	{
 		double base  = 0.10625;
@@ -58,14 +64,14 @@ public class EngineRenderer extends AbstractObjRenderer
 		comps.renderGauge(tess,eng,22,	1.0125,0.7,base+delta, 180,-90,0, 0.6,0.6,0.6);
 		comps.renderGauge(tess,eng,21,	1.0125,0.7,base+(2*delta), 180,-90,0, 0.6,0.6,0.6);
 		comps.renderGauge(tess,eng,20,	1.0125,0.7,base+(3*delta), 180,-90,0, 0.6,0.6,0.6);
-		
+
 		base += 0.07375;
 		comps.renderButton(tess,eng,13,	1.04,0.45,base,			0,0,90, 0.6,0.6,0.6);
 		comps.renderButton(tess,eng,12,	1.04,0.45,base+delta,		0,0,90, 0.6,0.6,0.6);
 		comps.renderButton(tess,eng,11,	1.04,0.45,base+(2*delta),	0,0,90, 0.6,0.6,0.6);
 		comps.renderButton(tess,eng,10,	1.04,0.45,base+(3*delta),	0,0,90, 0.6,0.6,0.6);
 	}
-	
+
 	private void renderLeft(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
 	{
 		comps.renderPushSwitch(tess, eng, 60, 0.3, 0.788, 1.045, -90, 0, 0, 0.5, 0.5, 0.5);
@@ -78,10 +84,10 @@ public class EngineRenderer extends AbstractObjRenderer
 		comps.renderLight(tess, eng, 54, 0.4, 0.5, 1.02, -90, 0, 0, 0.3, 0.3, 0.3);
 		comps.renderLight(tess, eng, 55, 0.4, 0.6, 1.02, -90, 0, 0, 0.3, 0.3, 0.3);
 	}
-	
+
 	private void renderBack(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
 	{
-		
+
 	}
 
 	@Override
