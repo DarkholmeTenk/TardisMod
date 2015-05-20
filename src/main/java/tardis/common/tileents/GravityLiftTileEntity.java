@@ -25,13 +25,25 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	private static int scanPlayerInterval = 2;
 	private static double movePerTick = 0.25;
 	private static double bevel = 0.28;
-	
+
 	private int distance = -1;
 	private HashMap<EntityPlayerMP,Boolean> goingUp = new HashMap<EntityPlayerMP,Boolean>();
-	
+
+	public static void refreshConfigs()
+	{
+		if(config == null)
+		{
+			config = TardisMod.configHandler.registerConfigNeeder("GravityLift");
+			maxDistance = config.getInt("max distance", 64);
+			scanCeilingInterval = config.getInt("interval for ceiling scan", 20);
+			scanPlayerInterval = config.getInt("interval for player scan", 2);
+			movePerTick = config.getDouble("move per tick", 0.25);
+		}
+	}
+
 	private void scanForCeiling()
 	{
-		for(distance = 3; distance<maxDistance+3;distance++)
+		for(distance = 3; distance<(maxDistance+3);distance++)
 		{
 			if(!softBlock(worldObj,xCoord,yCoord+distance,zCoord))
 			{
@@ -42,10 +54,10 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		}
 		distance -= 3;
 	}
-	
+
 	private void scanForPlayers()
 	{
-		List<Object> baseList = worldObj.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox(xCoord-1+bevel, yCoord+1, zCoord-1+bevel, xCoord+2-bevel, yCoord+1+distance, zCoord+2-bevel));
+		List<Object> baseList = worldObj.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox((xCoord-1)+bevel, yCoord+1, (zCoord-1)+bevel, (xCoord+2)-bevel, yCoord+1+distance, (zCoord+2)-bevel));
 		for(Object o : baseList)
 		{
 			if(!(o instanceof EntityPlayerMP))
@@ -55,14 +67,14 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 				continue;
 			if(goingUp.keySet().contains(pl))
 				continue;
-			if(pl.posY > yCoord + 1.5 && pl.posY < yCoord + distance)
+			if((pl.posY > (yCoord + 1.5)) && (pl.posY < (yCoord + distance)))
 			{
 				boolean up = pl.posY < (yCoord + ((distance + 2) / 2));
 				goingUp.put(pl, up);
 			}
 		}
 	}
-	
+
 	//Remove player entities who are no longer valid
 	private void validatePlayers()
 	{
@@ -76,24 +88,24 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 				iter.remove();
 			else if(!worldObj.playerEntities.contains(pl))
 				iter.remove();
-			else if(pl.posY < yCoord + 1.2)
+			else if(pl.posY < (yCoord + 1.2))
 				iter.remove();
-			else if(pl.posY > yCoord + 0.5 + distance)
+			else if(pl.posY > (yCoord + 0.5 + distance))
 				iter.remove();
-			else if(pl.posX < xCoord - 1 + bevel || pl.posX > xCoord + 2 - bevel)
+			else if((pl.posX < ((xCoord - 1) + bevel)) || (pl.posX > ((xCoord + 2) - bevel)))
 				iter.remove();
-			else if(pl.posZ < zCoord - 1 + bevel || pl.posZ > zCoord + 2 - bevel)
+			else if((pl.posZ < ((zCoord - 1) + bevel)) || (pl.posZ > ((zCoord + 2) - bevel)))
 				iter.remove();
 			else if(pl.capabilities.isFlying)
 				iter.remove();
 		}
 	}
-	
+
 	private void movePlayer(EntityPlayerMP pl, boolean up)
 	{
 		double dir = 0;
 		if(up)
-			dir = Math.min(movePerTick, yCoord+distance+1.25 - pl.posY);
+			dir = Math.min(movePerTick, (yCoord+distance+1.25) - pl.posY);
 		else
 			dir = Math.max(-movePerTick, (yCoord + 1.5) - pl.posY);
 		pl.fallDistance = 0;
@@ -101,7 +113,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		pl.velocityChanged = true;
 		pl.setPosition(pl.posX, pl.posY+dir, pl.posZ);
 	}
-	
+
 	private void movePlayers()
 	{
 		Iterator<EntityPlayerMP> iter = goingUp.keySet().iterator();
@@ -111,8 +123,8 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			Boolean up = goingUp.get(pl);
 			if(up)
 			{
-				
-				if(pl.posY > yCoord + 1.25 + distance)
+
+				if(pl.posY > (yCoord + 1.6 + distance))
 				{
 					iter.remove();
 					continue;
@@ -126,7 +138,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			else
 			{
 				//TardisOutput.print("GLTE", "moving down " + Helper.getUsername(pl));
-				if(pl.posY < yCoord + 1.5)
+				if(pl.posY < (yCoord + 1.6))
 				{
 					iter.remove();
 					continue;
@@ -138,7 +150,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			}
 		}
 	}
-	
+
 	@Override
 	public void init()
 	{
@@ -146,31 +158,19 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			refreshConfigs();
 		scanForCeiling();
 	}
-	
-	public static void refreshConfigs()
-	{
-		if(config == null)
-		{
-			config = TardisMod.configHandler.registerConfigNeeder("GravityLift");
-			maxDistance = config.getInt("max distance", 64);
-			scanCeilingInterval = config.getInt("interval for ceiling scan", 20);
-			scanPlayerInterval = config.getInt("interval for player scan", 2);
-			movePerTick = config.getDouble("move per tick", 0.25);
-		}
-	}
-	
+
 	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if(tt % scanCeilingInterval == 0)
+		if((tt % scanCeilingInterval) == 0)
 			scanForCeiling();
-		if(tt % scanPlayerInterval == 0)
+		if((tt % scanPlayerInterval) == 0)
 			scanForPlayers();
 		validatePlayers();
 		movePlayers();
 	}
-	
+
 	@Override
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
