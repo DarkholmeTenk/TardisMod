@@ -94,10 +94,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 					distance += 3;
 				}
 				else
-				{
-					distances.add((yCoord + distance) - 3);
 					break;
-				}
 			}
 		}
 	}
