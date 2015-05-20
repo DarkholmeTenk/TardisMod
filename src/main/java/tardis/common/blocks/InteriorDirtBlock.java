@@ -77,7 +77,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 						CraftingComponentType.KONTRON.getIS(1),
 						CraftingComponentType.CHRONOSTEEL.getIS(1),
 						new ItemStack(Items.dye,32,15)},
-				new ItemStack[] { getIS(2, 0) },
+				new ItemStack[] { getIS(TardisMod.numDirtRecipe, 0) },
 				EnumSet.of(LabFlag.INFLIGHT),
 				100
 				));

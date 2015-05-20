@@ -9,6 +9,7 @@ import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.config.ConfigHandler;
 import io.darkcraft.darkcore.mod.config.ConfigHandlerFactory;
 import io.darkcraft.darkcore.mod.config.ConfigItem;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
 import java.io.IOException;
@@ -164,6 +165,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static int						maxEachAspect		= 16;
 	public static int						maxEachAspectInc	= 16;
 	public static int						numAspects			= 16;
+	public static int						numDirtRecipe		= 2;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
@@ -225,6 +227,8 @@ public class TardisMod implements IConfigHandlerMod
 		numAspects = miscConfig.getInt("num aspects", 32, "The number of thaumcraft aspects which can be stored in the TARDIS's cabling");
 		maxEachAspect = miscConfig.getInt("max aspect", 32, "The maximum amount of each thaumcraft aspect that can be stored");
 		maxEachAspectInc = miscConfig.getInt("max aspect inc", 16, "The amount of aspect storage gained per level");
+
+		numDirtRecipe = MathHelper.clamp(miscConfig.getInt("Number of temporal dirt to produce per recipe", 2, "Min 1, max 64"),1,64);
 
 		AbstractComponent.refreshConfigs();
 		BatteryTileEntity.refreshConfigs();
