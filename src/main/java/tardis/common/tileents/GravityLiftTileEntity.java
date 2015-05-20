@@ -4,6 +4,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +27,12 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	private static double movePerTick = 0.25;
 	private static double bevel = 0.28;
 
-	private int distance = -1;
+	private static final double amountAboveToStop = 1.25;
+	private static final double amountAboveToStart = 1.95;
+	private static final double amountBelowToStart = 0.5;
+
+	private List<Integer> distances = new ArrayList<Integer>();
+	private int maxDist = 0;
 	private HashMap<EntityPlayerMP,Boolean> goingUp = new HashMap<EntityPlayerMP,Boolean>();
 
 	public static void refreshConfigs()
@@ -41,23 +47,64 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		}
 	}
 
+	private int getBlock(double y, boolean start)
+	{
+		double p = yCoord;
+		for(int i = 0; i < distances.size(); i++)
+		{
+			int d = distances.get(i);
+			if((y > (p + amountAboveToStart)) && (y < (d + (start ? amountBelowToStart : amountAboveToStop))))
+				return i;
+			p = d;
+		}
+		return -1;
+	}
+
+	private double getStopPointAbove(double y)
+	{
+		int b = getBlock(y,false);
+		if(b == -1)
+			return -1;
+		return distances.get(b) + amountAboveToStop;
+	}
+
+	private double getStopPointBelow(double y)
+	{
+		int b = getBlock(y,false);
+		if(b == -1)
+			return -1;
+		if(b == 0)
+			return yCoord + amountAboveToStop;
+		return distances.get(b-1) + amountAboveToStop;
+	}
+
 	private void scanForCeiling()
 	{
-		for(distance = 3; distance<(maxDistance+3);distance++)
+		maxDist = -1;
+		distances.clear();
+		for(int distance = 2; distance<(maxDistance+3);distance++)
 		{
 			if(!softBlock(worldObj,xCoord,yCoord+distance,zCoord))
 			{
+				if((yCoord + distance) > maxDist)
+					maxDist = distance;
 				if(worldObj.getBlock(xCoord, yCoord+distance, zCoord)==TardisMod.forcefield)
-					distance +=3;
-				break;
+				{
+					distances.add(yCoord + distance);
+					distance += 3;
+				}
+				else
+				{
+					distances.add((yCoord + distance) - 3);
+					break;
+				}
 			}
 		}
-		distance -= 3;
 	}
 
 	private void scanForPlayers()
 	{
-		List<Object> baseList = worldObj.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox((xCoord-1)+bevel, yCoord+1, (zCoord-1)+bevel, (xCoord+2)-bevel, yCoord+1+distance, (zCoord+2)-bevel));
+		List<Object> baseList = worldObj.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox((xCoord-1)+bevel, yCoord+1, (zCoord-1)+bevel, (xCoord+2)-bevel, yCoord+maxDist, (zCoord+2)-bevel));
 		for(Object o : baseList)
 		{
 			if(!(o instanceof EntityPlayerMP))
@@ -67,10 +114,17 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 				continue;
 			if(goingUp.keySet().contains(pl))
 				continue;
-			if((pl.posY > (yCoord + 1.5)) && (pl.posY < (yCoord + distance)))
+			double prevDistance = yCoord;
+			for(Integer d : distances)
 			{
-				boolean up = pl.posY < (yCoord + ((distance + 2) / 2));
-				goingUp.put(pl, up);
+				if((pl.posY > (prevDistance + amountAboveToStart)) && (pl.posY < (d - amountBelowToStart)))
+				{
+					if(pl.posY < (((d + prevDistance + amountAboveToStart) - amountBelowToStart) / 2))
+						goingUp.put(pl, true);
+					else
+						goingUp.put(pl, false);
+				}
+				prevDistance = d;
 			}
 		}
 	}
@@ -88,15 +142,13 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 				iter.remove();
 			else if(!worldObj.playerEntities.contains(pl))
 				iter.remove();
-			else if(pl.posY < (yCoord + 1.2))
-				iter.remove();
-			else if(pl.posY > (yCoord + 0.5 + distance))
-				iter.remove();
 			else if((pl.posX < ((xCoord - 1) + bevel)) || (pl.posX > ((xCoord + 2) - bevel)))
 				iter.remove();
 			else if((pl.posZ < ((zCoord - 1) + bevel)) || (pl.posZ > ((zCoord + 2) - bevel)))
 				iter.remove();
 			else if(pl.capabilities.isFlying)
+				iter.remove();
+			else if(getBlock(pl.posY,false) == -1)
 				iter.remove();
 		}
 	}
@@ -105,9 +157,9 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	{
 		double dir = 0;
 		if(up)
-			dir = Math.min(movePerTick, (yCoord+distance+1.25) - pl.posY);
+			dir = Math.min(movePerTick, getStopPointAbove(pl.posY) - pl.posY);
 		else
-			dir = Math.max(-movePerTick, (yCoord + 1.5) - pl.posY);
+			dir = Math.max(-movePerTick, getStopPointBelow(pl.posY) - pl.posY);
 		pl.fallDistance = 0;
 		pl.motionY = dir;
 		pl.velocityChanged = true;
@@ -124,7 +176,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			if(up)
 			{
 
-				if(pl.posY > (yCoord + 1.6 + distance))
+				if(pl.posY > getStopPointAbove(pl.posY))
 				{
 					iter.remove();
 					continue;
