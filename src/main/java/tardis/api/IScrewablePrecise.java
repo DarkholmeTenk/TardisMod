@@ -1,9 +1,9 @@
 package tardis.api;
 
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
 
 public interface IScrewablePrecise
 {
-	public boolean screw(ScrewdriverMode mode, EntityPlayer player, World w, int x, int y, int z);
+	public boolean screw(ScrewdriverMode mode, EntityPlayer player, SimpleCoordStore s);
 }

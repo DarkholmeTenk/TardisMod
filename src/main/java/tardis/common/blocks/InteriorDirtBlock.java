@@ -2,11 +2,16 @@ package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
@@ -18,10 +23,14 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
+import tardis.api.IScrewablePrecise;
+import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 
-public class InteriorDirtBlock extends AbstractBlock
+public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecise
 {
 	private static double tickMult = 1;
 	private static double boneChance = 0.3;
@@ -118,6 +127,28 @@ public class InteriorDirtBlock extends AbstractBlock
 			}
 		}
 
+	}
+
+	@Override
+	public boolean screw(ScrewdriverMode mode, EntityPlayer player, SimpleCoordStore s)
+	{
+		if(mode == ScrewdriverMode.Dismantle)
+		{
+			World w = s.getWorldObj();
+			TardisDataStore ds = Helper.getDataStore(w);
+			if((ds == null) || (ds.hasPermission(player, TardisPermission.ROOMS)))
+			{
+				Block b = s.getBlock();
+				if(b instanceof InteriorDirtBlock)
+				{
+					w.setBlockToAir(s.x, s.y, s.z);
+					WorldHelper.dropItemStack(new ItemStack(this,1), new SimpleDoubleCoordStore(player));
+				}
+			}
+			else
+				ServerHelper.sendString(player, CoreTileEntity.cannotModifyMessage);
+		}
+		return false;
 	}
 
 }

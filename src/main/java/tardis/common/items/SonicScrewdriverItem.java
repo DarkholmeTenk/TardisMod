@@ -22,6 +22,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
+import tardis.api.IScrewablePrecise;
 import tardis.api.ITDismantleable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
@@ -276,32 +277,33 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		return false;
 	}
 
-	private boolean screwScrewable(Object screw, ScrewdriverMode mode, EntityPlayer player)
+	private boolean screwScrewable(Object screw, ScrewdriverMode mode, EntityPlayer player, SimpleCoordStore pos)
 	{
 		if (screw instanceof IScrewable) return ((IScrewable) screw).screw(mode, player);
+		if (screw instanceof IScrewablePrecise) return ((IScrewablePrecise)screw).screw(mode,player,pos);
 		return false;
 	}
 
 	public boolean rightClickBlock(EntityPlayer pl, SimpleCoordStore pos)
 	{
 		if (!isPlayerHoldingScrewdriver(pl)) return false;
-		return screwScrewable(pos.getTileEntity(), getMode(pl.getHeldItem()), pl);
+		if(screwScrewable(pos.getBlock(), getMode(pl.getHeldItem()), pl, pos)) return true;
+		return screwScrewable(pos.getTileEntity(), getMode(pl.getHeldItem()), pl, pos);
 	}
 
 	private boolean rightClickBlock(ItemStack is, ScrewdriverMode mode, EntityPlayer player, World w)
 	{
-		System.out.println("T");
 		if (ServerHelper.isServer())
 		{
 			MovingObjectPosition hitPos = getMovingObjectPositionFromPlayer(w, player, true);
 			if (hitPos == null) return false;
-
+			System.out.println("T");
 			TileEntity te = w.getTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 			Block b = w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-			if (screwScrewable(te, mode, player) || screwScrewable(b, mode, player)) return true;
+			SimpleCoordStore scs = new SimpleCoordStore(w,hitPos);
+			if (screwScrewable(te, mode, player, scs) || screwScrewable(b, mode, player, scs)) return true;
 			if (mode.equals(ScrewdriverMode.Dismantle))
 			{
-				SimpleCoordStore scs = new SimpleCoordStore(w, hitPos);
 				if((te instanceof ITDismantleable) && tardisDismantle((ITDismantleable)te, scs,player)) return true;
 				if((b instanceof ITDismantleable) && tardisDismantle((ITDismantleable)b, scs,player)) return true;
 				if(Loader.isModLoaded("CoFHCore"))
