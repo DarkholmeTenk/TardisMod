@@ -4,6 +4,7 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
+import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.EngineTileEntity;
@@ -36,6 +37,12 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(71), "Prev Console Room");
 		controlNames.put(new TwoIntStore(72), "Next Console Room");
 		controlNames.put(new TwoIntStore(73), "Switch Console Room");
+		for(TardisPermission p : TardisPermission.values())
+		{
+			int o = p.ordinal();
+			controlNames.put(new TwoIntStore(80+o), "Toggle permission: " + p.name);
+			controlNames.put(new TwoIntStore(90+o), "Permission light: " + p.name);
+		}
 	}
 
 	private boolean isEngine(IWailaDataAccessor accessor)
