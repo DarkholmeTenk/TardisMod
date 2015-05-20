@@ -1,0 +1,15 @@
+{
+  "modListVersion": 2,
+  "modList": [{
+    "modid": "TardisMod",
+    "name": "Tardis Mod",
+    "description": "A mod which adds functional TARDISes to minecraft",
+    "url": "http://tardis.darkcraft.io",
+    "updateUrl": "",
+    "authorList": [ "DarkholmeTenk" ],
+    "credits": "Created by DarkholmeTenk, Textures and Models by DarkholmeTenk and Kilynn",
+    "requiredMods": [ "Forge", "darkcore" ],
+    "dependencies": [ "darkcore@[0.22,]" ],
+    "useDependencyInformation": true
+  }]
+}
