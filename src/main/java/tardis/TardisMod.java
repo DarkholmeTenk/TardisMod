@@ -332,6 +332,7 @@ public class TardisMod implements IConfigHandlerMod
 		forcefield.initRecipes();
 		gravityLift.initRecipes();
 		battery.initRecipes();
+		interiorDirtBlock.initRecipes();
 		craftingComponentItem.initRecipes();
 	}
 

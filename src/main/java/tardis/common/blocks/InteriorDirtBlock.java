@@ -8,10 +8,12 @@ import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
+import java.util.EnumSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
@@ -29,6 +31,10 @@ import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.LabTileEntity;
+import tardis.common.tileents.extensions.CraftingComponentType;
+import tardis.common.tileents.extensions.LabFlag;
+import tardis.common.tileents.extensions.LabRecipe;
 
 public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecise
 {
@@ -66,8 +72,15 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 	@Override
 	public void initRecipes()
 	{
-		// TODO Auto-generated method stub
-
+		LabTileEntity.addRecipe(new LabRecipe(
+				new ItemStack[] { new ItemStack(Blocks.dirt,64),
+						CraftingComponentType.KONTRON.getIS(1),
+						CraftingComponentType.CHRONOSTEEL.getIS(1),
+						new ItemStack(Items.dye,32,15)},
+				new ItemStack[] { getIS(2, 0) },
+				EnumSet.of(LabFlag.INFLIGHT),
+				100
+				));
 	}
 
 	@Override
