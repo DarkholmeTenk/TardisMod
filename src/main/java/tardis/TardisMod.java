@@ -270,7 +270,7 @@ public class TardisMod implements IConfigHandlerMod
 
 		internalDoorBlock = new InternalDoorBlock().register();
 
-		decoBlock = new DecoBlock(true).register();
+		decoBlock = new DecoBlock().register();
 
 		decoTransBlock = new DecoTransBlock().register();
 
