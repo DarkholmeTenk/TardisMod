@@ -18,12 +18,12 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ForceFieldBlock extends AbstractBlock
 {
-	public ForceFieldBlock()
+	public ForceFieldBlock(boolean visible)
 	{
-		super(false,TardisMod.modName);
+		super(visible,TardisMod.modName);
 		setCreativeTab(TardisMod.cTab);
 	}
-	
+
 	@Override
 	public Class<? extends AbstractItemBlock> getIB()
 	{
@@ -51,30 +51,30 @@ public class ForceFieldBlock extends AbstractBlock
 		if(ent instanceof EntityPlayer)
 		{
 			if(w.getBlock(x, y+1, z) != this)
-				if(((EntityPlayer)ent).isSneaking() || ((EntityPlayer)ent).posY < y+1 || w.getBlock(x, y-1, z)==this)
+				if(((EntityPlayer)ent).isSneaking() || (((EntityPlayer)ent).posY < (y+1)) || (w.getBlock(x, y-1, z)==this))
 					return;
 		}
 		super.addCollisionBoxesToList(w, x, y, z, aabb, list, ent);
 	}
-	
-	@Override 
+
+	@Override
 	public boolean isOpaqueCube()
 	{
 		return false;
 	}
-	
+
 	@Override
 	public boolean renderAsNormalBlock()
 	{
 		return false;
 	}
-	
+
 	@Override
 	public boolean isBlockSolid(IBlockAccess w, int x, int y, int z, int s)
 	{
 		return false;
 	}
-	
+
 	@Override
 	public float getBlockHardness(World w, int x, int y, int z)
 	{
