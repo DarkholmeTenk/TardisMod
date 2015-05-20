@@ -39,6 +39,7 @@ public class SchemaComponentBlock extends AbstractBlock
 		opaque = false;
 		setBlockName("SchemaComponent");
 		setSubNames("DoorConnector","DoorConnectorHidden","ControlPanel","ConsoleBlock", "TardisDoorBottom","TardisDoorTop","ConsoleTop","Engine","TimeRotor");
+		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 	}
 
 	@Override

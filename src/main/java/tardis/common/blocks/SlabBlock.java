@@ -24,34 +24,34 @@ public class SlabBlock extends AbstractBlock
 	{
 		super(TardisMod.modName);
 	}
-	
+
 	@Override
 	public void initData()
 	{
 		setBlockName("Slab");
 		setSubNames(names);
 		setIconArray(names.length,suffixes.length);
-		setLightLevel(1F);
+		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 	}
-	
+
 	@Override
 	public String getSubName(int num)
 	{
 		return super.getSubName(num/2);
 	}
-	
+
 	@Override
 	public IIcon getIcon(int s, int d)
 	{
 		return super.getIcon(s, d/2);
 	}
-	
+
 	@Override
 	public String[] getIconSuffix()
 	{
 		return suffixes;
 	}
-	
+
 	@Override
 	public void getSubBlocks(Item itemID,CreativeTabs tab,List itemList)
 	{
@@ -67,32 +67,32 @@ public class SlabBlock extends AbstractBlock
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public void setBlockBoundsForItemRender()
     {
-        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
     }
-	
+
 	@Override
 	public void addCollisionBoxesToList(World par1World, int par2, int par3, int par4, AxisAlignedBB par5AxisAlignedBB, List par6List, Entity par7Entity)
     {
-        this.setBlockBoundsBasedOnState(par1World, par2, par3, par4);
+        setBlockBoundsBasedOnState(par1World, par2, par3, par4);
         super.addCollisionBoxesToList(par1World, par2, par3, par4, par5AxisAlignedBB, par6List, par7Entity);
     }
-	
+
 	@Override
 	public int damageDropped(int par1)
     {
         return par1 & 14;
     }
-	
+
 	@Override
 	public boolean isOpaqueCube()
     {
         return false;
     }
-	
+
 	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess w, int x, int y, int z)
 	{
@@ -100,14 +100,14 @@ public class SlabBlock extends AbstractBlock
 
 		if (flag)
 		{
-			this.setBlockBounds(0.0F, 0.5F, 0.0F, 1.0F, 1.0F, 1.0F);
+			setBlockBounds(0.0F, 0.5F, 0.0F, 1.0F, 1.0F, 1.0F);
 		}
 		else
 		{
-			this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+			setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
 		}
 	}
-	
+
 	@Override
 	public int onBlockPlaced(World w, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int metadata)
     {
@@ -115,11 +115,11 @@ public class SlabBlock extends AbstractBlock
 		int bot = metadata;
         return side == 0? top : (side == 1 ? bot :(hitY > 0.5F ? top : bot));
     }
-	
+
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x, int y, int z, int ox, int oy, int oz)
 	{
-		if(w.getBlock(x, y, z) == this && w.getBlock(ox, oy, oz) == this)
+		if((w.getBlock(x, y, z) == this) && (w.getBlock(ox, oy, oz) == this))
 		{
 			if(oy == y)
 			{
@@ -144,13 +144,13 @@ public class SlabBlock extends AbstractBlock
 		}
 		return super.shouldSideBeRendered(w, s,x,y,z,ox, oy, oz);
 	}
-	
+
 	@Override
 	public boolean renderAsNormalBlock()
     {
 		return false;
     }
-	
+
 	@Override
 	public Class<? extends AbstractItemBlock> getIB()
 	{

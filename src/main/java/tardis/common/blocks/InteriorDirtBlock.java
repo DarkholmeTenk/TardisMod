@@ -26,19 +26,19 @@ public class InteriorDirtBlock extends AbstractBlock
 	private static double tickMult = 1;
 	private static double boneChance = 0.3;
 	private static ConfigFile config = null;
-	
+
 	public static void refreshConfigs()
 	{
 		if(config == null)
 			config = TardisMod.configHandler.registerConfigNeeder("Misc");
-		
+
 		tickMult = config.getDouble("Dirt block tick mult", 0.5,
 				"The number the tick rate of the plant is multipied by to work out how often the dirt block applies a dirt tick",
 				"e.g. A mult of 0.5 means a plant which would normally get a tick every 10 ticks will get an extra growth tick every 5 ticks");
 		boneChance = config.getDouble("Dirt block bonemeal chance", 0.25,
 				"The chance for a TARDIS dirt block to apply a bonemeal affect to the plant (as well as a growth tick)");
 	}
-	
+
 	public InteriorDirtBlock()
 	{
 		super(TardisMod.modName);
@@ -51,6 +51,7 @@ public class InteriorDirtBlock extends AbstractBlock
 		setTickRandomly(true);
 		if(config == null)
 			refreshConfigs();
+		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 	}
 
 	@Override
@@ -60,30 +61,34 @@ public class InteriorDirtBlock extends AbstractBlock
 
 	}
 
+	@Override
 	public boolean isFertile(World world, int x, int y, int z)
 	{
 		return true;
 	}
 
+	@Override
 	public boolean canSustainPlant(IBlockAccess world, int x, int y, int z, ForgeDirection direction, IPlantable plantable)
 	{
 		if(Helper.isTardisWorld(world))
 			return true;
 		return false;
 	}
-	
+
+	@Override
 	public int tickRate(World w)
     {
 		if(Helper.isTardisWorld(w))
 			return 1;
 		return 100;
     }
-	
+
 	public int getNewTickRate(int old)
 	{
 		return MathHelper.ceil(old * tickMult);
 	}
-	
+
+	@Override
 	public void updateTick(World w, int x, int y, int z, Random rand)
 	{
 		if(!Helper.isTardisWorld(w))
@@ -98,7 +103,7 @@ public class InteriorDirtBlock extends AbstractBlock
 		if(b != null)
 		{
 			CoreTileEntity core = Helper.getTardisCore(w);
-			if(core != null && core.tt % getNewTickRate(b.tickRate(w)) == 0)
+			if((core != null) && ((core.tt % getNewTickRate(b.tickRate(w))) == 0))
 			{
 				if(w instanceof WorldServer)
 				{
@@ -108,7 +113,7 @@ public class InteriorDirtBlock extends AbstractBlock
 						ItemDye.applyBonemeal(is, w, x, y+1, z, pl);
 					int i;
 					for(i=1;w.getBlock(x, y+i, z)==b;i++);
-					b.updateTick(w, x, y+i-1, z, rand);
+					b.updateTick(w, x, (y+i)-1, z, rand);
 				}
 			}
 		}

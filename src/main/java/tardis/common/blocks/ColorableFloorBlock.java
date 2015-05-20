@@ -31,6 +31,7 @@ public class ColorableFloorBlock extends AbstractBlock implements IColorableBloc
 	public void initData()
 	{
 		setBlockName("ColorableFloor");
+		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 	}
 
 	@Override

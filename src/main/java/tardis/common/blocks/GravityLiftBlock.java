@@ -20,13 +20,13 @@ public class GravityLiftBlock extends AbstractBlockContainer
 		super(TardisMod.modName);
 		setCreativeTab(TardisMod.cTab);
 	}
-	
+
 	@Override
 	public Class<? extends AbstractItemBlock> getIB()
 	{
 		return GravityLiftItemBlock.class;
 	}
-	
+
 	@Override
 	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_)
 	{
@@ -38,6 +38,7 @@ public class GravityLiftBlock extends AbstractBlockContainer
 	{
 		setBlockName("GravityLift");
 		setSubNames("Normal","Craftable");
+		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 	}
 
 	@Override
@@ -48,13 +49,13 @@ public class GravityLiftBlock extends AbstractBlockContainer
 				'i', "ingotIron",
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 	}
-	
+
 	@Override
 	public String[] getIconSuffix()
 	{
 		return suffixes;
 	}
-	
+
 	@Override
 	public int getIconSuffixes()
 	{

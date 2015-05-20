@@ -18,6 +18,7 @@ public class DecoTransBlock extends AbstractBlock
 	{
 		setBlockName("DecoGlass");
 		setSubNames(subs);
+		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 	}
 
 	@Override
@@ -34,7 +35,7 @@ public class DecoTransBlock extends AbstractBlock
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x, int y, int z, int mX, int mY, int mZ)
 	{
-		if (w.getBlock(mX, mY, mZ) == this && w.getBlockMetadata(mX, mY, mZ) == w.getBlockMetadata(x, y, z))
+		if ((w.getBlock(mX, mY, mZ) == this) && (w.getBlockMetadata(mX, mY, mZ) == w.getBlockMetadata(x, y, z)))
 			return false;
 		return super.shouldSideBeRendered(w, s, x, y, z, mX, mY, mZ);
 	}

@@ -31,6 +31,7 @@ public class ColorableWallBlock extends AbstractBlock implements IColorableBlock
 	public void initData()
 	{
 		setBlockName("ColorableWall");
+		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 	}
 
 	@Override

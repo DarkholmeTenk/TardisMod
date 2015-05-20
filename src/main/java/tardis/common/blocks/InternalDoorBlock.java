@@ -48,6 +48,7 @@ public class InternalDoorBlock extends AbstractBlock
 	{
 		setBlockName("InternalDoor");
 		setSubNames("InternalDoor","InternalDoorPrimary");
+		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 	}
 
 	@Override

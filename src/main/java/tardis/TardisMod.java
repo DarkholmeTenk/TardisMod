@@ -148,6 +148,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static double					tardisVol			= 1;
 	public static boolean					deathTransmatLive	= true;
 	public static boolean					visibleSchema		= false;
+	public static boolean					lightBlocks			= false;
 	public static int						xpBase				= 80;
 	public static int						xpInc				= 20;
 	public static int						rfBase				= 50000;
@@ -205,6 +206,8 @@ public class TardisMod implements IConfigHandlerMod
 		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1, "How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
 
 		visibleSchema = modConfig.getConfigItem(new ConfigItem("Visible Schema", CType.BOOLEAN, false, "Should schema boundaries be visible (clientside config)")).getBoolean();
+		lightBlocks = modConfig.getBoolean("Normal blocks give off light", false, "If true, normal blocks (including slabs and such) give off light");
+
 
 		xpBase = miscConfig.getInt("xp base amount", 80, "The amount of xp it initially costs to level up");
 		xpInc = miscConfig.getInt("xp increase", 20, "The amount that is added on to the xp cost every time the TARDIS levels up");

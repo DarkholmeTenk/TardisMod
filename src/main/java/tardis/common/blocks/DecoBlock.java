@@ -2,7 +2,6 @@ package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,15 +16,13 @@ import tardis.TardisMod;
 
 public class DecoBlock extends AbstractBlock
 {
-	private final boolean				lit;
 	private static final String[]		subs		= { "Wall" };
 	private static String[]				suffixes	= { "topbottom", "side" };
 	public HashMap<Integer, Boolean>	litUpDim	= new HashMap<Integer, Boolean>();
 
-	public DecoBlock(boolean light)
+	public DecoBlock()
 	{
 		super(TardisMod.modName);
-		lit = light;
 		initData();
 	}
 
@@ -38,12 +35,8 @@ public class DecoBlock extends AbstractBlock
 	@Override
 	public void initData()
 	{
-		setBlockName("DecoBlock" + (lit ? "" : "Dark"));
-		setSubNames(subs);
-		if (lit)
-			setLightLevel(1F);
-		else
-			setLightLevel(0F);
+		setBlockName("DecoBlock");
+		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 		// setTickRandomly(!lit);
 	}
 
@@ -118,14 +111,6 @@ public class DecoBlock extends AbstractBlock
 	@Override
 	public void updateTick(World w, int x, int y, int z, Random p_149674_5_)
 	{
-		if (litUpDim.containsKey(WorldHelper.getWorldID(w)))
-		{
-			boolean b = litUpDim.get(WorldHelper.getWorldID(w));
-			if (b && !lit)
-				w.setBlock(x, y, z, TardisMod.decoBlock, w.getBlockMetadata(x, y, z), 3);
-			else if (!b && lit)
-				w.setBlock(x, y, z, TardisMod.darkDecoBlock, w.getBlockMetadata(x, y, z), 3);
-		}
 	}
 
 	@Override
