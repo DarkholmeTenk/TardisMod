@@ -43,7 +43,13 @@ import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
 import cofh.api.energy.IEnergyHandler;
+import cpw.mods.fml.common.Optional;
 
+@Optional.InterfaceList(value={
+		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid="CoFHLib"),
+		@Optional.Interface(iface="appeng.api.networking.IGridHost",modid="appliedenergistics2"),
+		@Optional.Interface(iface="thaumcraft.api.aspects.IEssentiaTransport",modid="Thaumcraft")
+})
 public class ComponentTileEntity extends AbstractTileEntity implements IScrewable, IActivatable, IBlockUpdateDetector,
 		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport
 {

@@ -10,6 +10,7 @@ import tardis.common.core.TardisOutput;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import thaumcraft.api.ItemApi;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ComponentItem extends AbstractItem
@@ -32,10 +33,11 @@ public class ComponentItem extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
-		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.ENERGY), true, "grg","iii","grg",
-				'g', Items.gold_nugget,
-				'r', Items.redstone,
-				'i', Items.iron_ingot));
+		if(Loader.isModLoaded("CoFHLib"))
+			GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.ENERGY), true, "grg","iii","grg",
+					'g', Items.gold_nugget,
+					'r', Items.redstone,
+					'i', Items.iron_ingot));
 
 		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.FLUID), true, "grg","iii","grg",
 				'g', Items.gold_nugget,

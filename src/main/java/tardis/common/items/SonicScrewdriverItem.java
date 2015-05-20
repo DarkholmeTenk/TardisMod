@@ -22,6 +22,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
+import tardis.api.ITDismantleable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
 import tardis.common.core.Helper;
@@ -35,6 +36,7 @@ import buildcraft.api.tools.IToolWrench;
 import cofh.api.block.IDismantleable;
 import cofh.api.item.IToolHammer;
 import cofh.api.tileentity.IReconfigurableFacing;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
@@ -245,14 +247,29 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	}
 
 	@Optional.Method(modid="CoFHLib")
-	private boolean dismantle(IDismantleable dis, SimpleCoordStore pos, EntityPlayer player, ItemStack is)
+	private boolean dismantle(Object o, SimpleCoordStore pos, EntityPlayer player, ItemStack is)
 	{
+		if(!(o instanceof IDismantleable)) return false;
+		IDismantleable dis = (IDismantleable)o;
 		if (dis.canDismantle(player, pos.getWorldObj(), pos.x, pos.y, pos.z))
 		{
 			ArrayList<ItemStack> s = dis.dismantleBlock(player, pos.getWorldObj(), pos.x, pos.y, pos.z, false);
 			for (ItemStack tis : s)
 				if (tis != null) WorldHelper.giveItemStack(player, tis);
 			toolUsed(is, player, pos.x, pos.y, pos.z);
+			return true;
+		}
+		return false;
+	}
+
+	private boolean tardisDismantle(ITDismantleable dis, SimpleCoordStore scs, EntityPlayer pl)
+	{
+		if(dis.canDismantle(scs, pl))
+		{
+			List<ItemStack> s = dis.dismantle(scs, pl);
+			for (ItemStack tis : s)
+				if (tis != null) WorldHelper.giveItemStack(pl, tis);
+			toolUsed(pl.getHeldItem(), pl, scs.x, scs.y, scs.z);
 			return true;
 		}
 		return false;
@@ -283,8 +300,14 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			if (screwScrewable(te, mode, player) || screwScrewable(b, mode, player)) return true;
 			if (mode.equals(ScrewdriverMode.Dismantle))
 			{
-				if (b instanceof IDismantleable) if (dismantle((IDismantleable) b, new SimpleCoordStore(w, hitPos), player, is)) return true;
-				if (te instanceof IDismantleable) if (dismantle((IDismantleable) te, new SimpleCoordStore(w, hitPos), player, is)) return true;
+				SimpleCoordStore scs = new SimpleCoordStore(w, hitPos);
+				if((te instanceof ITDismantleable) && tardisDismantle((ITDismantleable)te, scs,player)) return true;
+				if((b instanceof ITDismantleable) && tardisDismantle((ITDismantleable)b, scs,player)) return true;
+				if(Loader.isModLoaded("CoFHCore"))
+				{
+					if (dismantle(b,scs,player,is)) return true;
+					if (dismantle(te,scs,player,is)) return true;
+				}
 			}
 			else if (mode.equals(ScrewdriverMode.Reconfigure))
 			{

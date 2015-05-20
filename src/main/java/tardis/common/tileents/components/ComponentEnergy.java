@@ -10,13 +10,16 @@ import tardis.TardisMod;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import cofh.api.energy.IEnergyHandler;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
 
+@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid="CoFHLib")
 public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 {
 	private HashMap<ForgeDirection,AtomicInteger> hasFilled = new HashMap<ForgeDirection,AtomicInteger>(ForgeDirection.VALID_DIRECTIONS.length);
 	protected ComponentEnergy() {}
 	private int rfc = 0;
-	
+
 	public ComponentEnergy(ComponentTileEntity parent)
 	{
 		blankHashmap();
@@ -27,7 +30,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	{
 		return new ComponentEnergy(parent);
 	}
-	
+
 	private void blankHashmap()
 	{
 		for(ForgeDirection f : ForgeDirection.VALID_DIRECTIONS)
@@ -38,7 +41,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 				hasFilled.put(f,new AtomicInteger(0));
 		}
 	}
-	
+
 	private void scanNearby()
 	{
 		World w = parentObj.getWorldObj();
@@ -50,7 +53,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 				//max = Math.min(max, b/2);
 				max = 0;
 			TileEntity te = w.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
-			if(te instanceof IEnergyHandler && !(te instanceof ComponentTileEntity))
+			if((te instanceof IEnergyHandler) && !(te instanceof ComponentTileEntity))
 			{
 				IEnergyHandler ieh = (IEnergyHandler)te;
 				if(ieh.canConnectEnergy(dir.getOpposite()))
@@ -62,10 +65,11 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 			}
 		}
 	}
-	
+
 	@Override
 	public void updateTick()
 	{
+		if(!Loader.isModLoaded("CoFHLib")) return;
 		rfc = 0;
 		scanNearby();
 	}
@@ -116,7 +120,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 			return ds.getMaxRF();
 		return 0;
 	}
-	
-	
+
+
 
 }

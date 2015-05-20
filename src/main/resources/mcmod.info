@@ -8,8 +8,8 @@
     "updateUrl": "",
     "authorList": [ "DarkholmeTenk" ],
     "credits": "Created by DarkholmeTenk, Textures and Models by DarkholmeTenk and Kilynn",
-    "requiredMods": [ "Forge", "darkcore", "CoFHCore" ],
-    "dependencies": [ "darkcore@[0.22,]", "CoFHCore" ],
+    "requiredMods": [ "Forge", "darkcore" ],
+    "dependencies": [ "darkcore@[0.22,]" ],
     "useDependencyInformation": true
   }]
 }

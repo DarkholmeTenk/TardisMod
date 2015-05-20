@@ -28,18 +28,24 @@ import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
 
+@Optional.InterfaceList(value={
+@Optional.Interface(iface="appeng.api.networking.IGridHost",modid="appliedenergistics2"),
+@Optional.Interface(iface="appeng.api.networking.IGridBlock",modid="appliedenergistics2")
+})
 public class ComponentGrid extends AbstractComponent implements IGridHost, IGridBlock, IBlockUpdateDetector
 {
 	private boolean inited = false;
 	private SimpleCoordStore myCoords = null;
 	private IGridNode node = null;
 	private boolean linkedToCore = false;
-	
+
 	private ArrayList<IGridConnection> connections = new ArrayList<IGridConnection>();
-	
+
 	private static EnumSet validDirs = EnumSet.copyOf(Arrays.asList(ForgeDirection.VALID_DIRECTIONS));
-	
+
 	protected ComponentGrid()	{	}
 	public ComponentGrid(ComponentTileEntity parent)
 	{
@@ -51,11 +57,12 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	{
 		return new ComponentGrid(parent);
 	}
-	
+
 	@Override
 	public void updateTick()
 	{
-		if(!inited && parentObj != null)
+		if(!Loader.isModLoaded("appliedenergistics2")) return;
+		if(!inited && (parentObj != null))
 		{
 			inited = true;
 			CoreTileEntity core = getCore();
@@ -67,21 +74,22 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		if(!linkedToCore)
 			linkToCore();
 	}
-	
+
 	@Override
 	public void parentAdded(ComponentTileEntity parent)
 	{
 		super.parentAdded(parent);
 		myCoords = new SimpleCoordStore(parent);
 	}
-	
+
 	@Override
 	public void revive(ComponentTileEntity parent)
 	{
 		super.revive(parent);
+		if(!Loader.isModLoaded("appliedenergistics2")) return;
 		createNode();
 	}
-	
+
 	@Override
 	public void die()
 	{
@@ -92,7 +100,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		}
 		super.die();
 	}
-	
+
 	@Override
 	public IGridNode getGridNode(ForgeDirection dir)
 	{
@@ -100,23 +108,24 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		createNode();
 		return node;
 	}
-	
+
 	@Override
 	public AECableType getCableConnectionType(ForgeDirection dir)
 	{
 		return AECableType.SMART;
 	}
-	
+
 	@Override
 	public void securityBreak()
 	{
-		
+
 	}
-	
+
 	private void linkToCore()
 	{
 		if(ServerHelper.isClient())
 			return;
+		if(!Loader.isModLoaded("appliedenergistics2")) return;
 		CoreTileEntity core = getCore();
 		if(core != null)
 		{
@@ -124,12 +133,12 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 			addConnection(core.getNode());
 		}
 	}
-	
+
 	private void createNode()
 	{
 		if(TardisMod.aeAPI == null)
 			return;
-		if(node == null && ServerHelper.isServer())
+		if((node == null) && ServerHelper.isServer())
 		{
 			TardisOutput.print("TCG","Grid node creation! " + WorldHelper.getWorldID(parentObj));
 			node = TardisMod.aeAPI.createGridNode(this);
@@ -139,10 +148,10 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		}
 		linkToCore();
 	}
-	
+
 	private boolean doesConnectionExist(IGridNode aNode, IGridNode oNode)
 	{
-		if(aNode == null || oNode == null)
+		if((aNode == null) || (oNode == null))
 			return false;
 		for(IGridConnection c : connections)
 		{
@@ -153,7 +162,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 			return true;
 		return false;
 	}
-	
+
 	private boolean addConnection(IGridNode otherNode)
 	{
 		if(ServerHelper.isClient())
@@ -173,11 +182,11 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		}
 		catch(Exception c)
 		{
-			
+
 		}
 		return false;
 	}
-	
+
 	private void scan()
 	{
 		if(parentObj == null)
@@ -200,13 +209,13 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		if(upd)
 			parentObj.sendUpdate();
 	}
-	
+
 	@Override
 	public void blockUpdated(Block neighbourBlockID)
 	{
 		scan();
 	}
-	
+
 	@Override
 	public double getIdlePowerUsage()
 	{
@@ -217,17 +226,18 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	{
 		return EnumSet.of(GridFlags.DENSE_CAPACITY);
 	}
-	
+
 	public boolean isWorldAccessable()
 	{
 		return true;
 	}
-	
+
+	@Override
 	public boolean isWorldAccessible()
 	{
 		return isWorldAccessable();
 	}
-	
+
 	@Override
 	public DimensionalCoord getLocation()
 	{
@@ -244,12 +254,12 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	{
 		//TardisOutput.print("TCG", "Grid note " + parentObj.getWorldObj().provider.dimensionId);
 	}
-	
+
 	@Override
 	public void setNetworkStatus(IGrid grid, int channelsInUse)
 	{
 	}
-	
+
 	@Override
 	public EnumSet<ForgeDirection> getConnectableSides()
 	{
@@ -267,7 +277,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		}
 		return EnumSet.copyOf(dirs);
 	}
-	
+
 	@Override
 	public IGridHost getMachine()
 	{
@@ -277,7 +287,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	public void gridChanged()
 	{
 	}
-	
+
 	@Override
 	public ItemStack getMachineRepresentation()
 	{
