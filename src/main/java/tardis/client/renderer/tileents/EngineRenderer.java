@@ -59,17 +59,17 @@ public class EngineRenderer extends AbstractObjRenderer
 	{
 		double base  = 0.10625;
 		double delta = 0.2;
-		comps.renderGauge(tess,eng,30,  1.0125,0.875,base+(3*delta), 180,-90,0, 0.6,0.6,0.6);
-		comps.renderGauge(tess,eng,23,	1.0125,0.7,base, 180,-90,0, 0.6,0.6,0.6);
-		comps.renderGauge(tess,eng,22,	1.0125,0.7,base+delta, 180,-90,0, 0.6,0.6,0.6);
-		comps.renderGauge(tess,eng,21,	1.0125,0.7,base+(2*delta), 180,-90,0, 0.6,0.6,0.6);
-		comps.renderGauge(tess,eng,20,	1.0125,0.7,base+(3*delta), 180,-90,0, 0.6,0.6,0.6);
+		comps.renderGauge(tess,eng,30,  0.995,0.875,base+(3*delta), 180,-90,0, 0.6,0.6,0.6);
+		comps.renderGauge(tess,eng,23,	0.995,0.7,base, 180,-90,0, 0.6,0.6,0.6);
+		comps.renderGauge(tess,eng,22,	0.995,0.7,base+delta, 180,-90,0, 0.6,0.6,0.6);
+		comps.renderGauge(tess,eng,21,	0.995,0.7,base+(2*delta), 180,-90,0, 0.6,0.6,0.6);
+		comps.renderGauge(tess,eng,20,	0.995,0.7,base+(3*delta), 180,-90,0, 0.6,0.6,0.6);
 
 		base += 0.07375;
-		comps.renderButton(tess,eng,13,	1.04,0.45,base,			0,0,90, 0.6,0.6,0.6);
-		comps.renderButton(tess,eng,12,	1.04,0.45,base+delta,		0,0,90, 0.6,0.6,0.6);
-		comps.renderButton(tess,eng,11,	1.04,0.45,base+(2*delta),	0,0,90, 0.6,0.6,0.6);
-		comps.renderButton(tess,eng,10,	1.04,0.45,base+(3*delta),	0,0,90, 0.6,0.6,0.6);
+		comps.renderButton(tess,eng,13,	1.035,0.45,base,			0,0,90, 0.6,0.6,0.6);
+		comps.renderButton(tess,eng,12,	1.035,0.45,base+delta,		0,0,90, 0.6,0.6,0.6);
+		comps.renderButton(tess,eng,11,	1.035,0.45,base+(2*delta),	0,0,90, 0.6,0.6,0.6);
+		comps.renderButton(tess,eng,10,	1.035,0.45,base+(3*delta),	0,0,90, 0.6,0.6,0.6);
 	}
 
 	private void renderLeft(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
