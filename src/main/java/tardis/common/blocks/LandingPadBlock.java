@@ -16,6 +16,7 @@ public class LandingPadBlock extends AbstractScrewableBlock
 	public LandingPadBlock()
 	{
 		super(TardisMod.modName);
+		setCreativeTab(TardisMod.cTab);
 	}
 
 	@Override
