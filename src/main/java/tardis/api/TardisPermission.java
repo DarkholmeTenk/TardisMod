@@ -29,4 +29,11 @@ public enum TardisPermission
 	{
 		return data ^ mask;
 	}
+
+	public static TardisPermission get(int i)
+	{
+		if((i >= 0) && (i < values().length))
+			return values()[i];
+		return PERMISSIONS;
+	}
 }

@@ -429,12 +429,21 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	private boolean requiresFlightPermission(int controlID)
 	{
+		if(controlID == unstableControl) return false;
+		if((controlID >= 1000) && (controlID < 1020)) return true;
 		switch(controlID)
 		{
 			case 904:
 			case 42 :
 			case 55 :
 			case 53 :
+			case 56 :
+			case 900:
+			case 902:
+			case 903:
+			case 4  :
+			case 40 :
+			case 41 :
 			case 34 : return true;
 			default: return false;
 		}
@@ -447,7 +456,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if ((core == null) || (ds == null))
 			return;
-		if((isMovementControl(controlID) || requiresFlightPermission(controlID)) && ds.hasPermission(pl, TardisPermission.FLY))
+		if((isMovementControl(controlID) || requiresFlightPermission(controlID)) && !ds.hasPermission(pl, TardisPermission.FLY))
 		{
 			pl.addChatMessage(CoreTileEntity.cannotModifyFly);
 			return;

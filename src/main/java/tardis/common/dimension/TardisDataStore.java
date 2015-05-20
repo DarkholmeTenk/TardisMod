@@ -449,18 +449,23 @@ public class TardisDataStore extends AbstractWorldDataStore
 		}
 	}
 
-	public synchronized boolean hasPermission(Object ent, TardisPermission perm)
+	public boolean hasPermission(Object ent, TardisPermission perm)
 	{
 		if(ent instanceof EntityPlayer)
 			return hasPermission((EntityPlayer)ent, perm);
 		return false;
 	}
 
-	public synchronized boolean hasPermission(EntityPlayer pl, TardisPermission perm)
+	public boolean hasPermission(EntityPlayer pl, TardisPermission perm)
+	{
+		return hasPermission(ServerHelper.getUsername(pl),perm);
+	}
+
+	public boolean hasPermission(String pl, TardisPermission perm)
 	{
 		CoreTileEntity core = getCore();
-		if((core != null) && core.isOwner(ServerHelper.getUsername(pl))) return true;
-		int hash = ServerHelper.getUsername(pl).hashCode();
+		if((core != null) && core.isOwner(pl)) return true;
+		int hash = pl.hashCode();
 		synchronized(permissionList)
 		{
 			if(permissionList.containsKey(hash))
@@ -474,9 +479,14 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public boolean togglePermission(EntityPlayer giver, EntityPlayer givee, TardisPermission perm)
 	{
+		return togglePermission(ServerHelper.getUsername(giver),ServerHelper.getUsername(givee),perm);
+	}
+
+	public boolean togglePermission(String giver, String givee, TardisPermission perm)
+	{
 		if(hasPermission(giver,TardisPermission.PERMISSIONS))
 		{
-			int hash = ServerHelper.getUsername(givee).hashCode();
+			int hash = givee.hashCode();
 			synchronized(permissionList)
 			{
 				int data = permissionList.containsKey(hash) ? permissionList.get(hash) : 0;

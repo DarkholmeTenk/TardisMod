@@ -60,6 +60,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public static final ChatComponentText	cannotModifyRecolour	= new ChatComponentText("[TARDIS] You do not have permission to recolour this block");
 	public static final ChatComponentText	cannotModifyRoundel		= new ChatComponentText("[TARDIS] You do not have permission to modify this roundel");
 	public static final ChatComponentText	cannotModifyMessage		= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS");
+	public static final ChatComponentText	cannotModifyPermissions	= new ChatComponentText("[TARDIS] You do not have permission to modify this TARDIS's permissions");
 	public static final ChatComponentText	cannotUpgradeMessage	= new ChatComponentText("[TARDIS] You do not have enough upgrade points");
 	private int								oldExteriorWorld		= 0;
 

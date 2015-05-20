@@ -41,8 +41,8 @@ public class EngineRenderer extends AbstractObjRenderer
 		comps.renderTextScreen(tess, eng, eng.currentPerson, 3,  0.65, 0.6, -0.02, 0, 0, 180,  0.3, 0.3, 0.3);
 		comps.renderButton(tess,eng,4, 0.72,0.625,-0.0125, 90,0,0, 0.3,0.3,0.3);
 		comps.renderButton(tess,eng,5, 0.72,0.535,-0.0125, 90,0,0, 0.3,0.3,0.3);
-		comps.renderLight( tess,eng,6, 0.82,0.6155,-0.0125, 90,0,0, 0.3,0.3,0.3);
-		comps.renderButton(tess,eng,7, 0.81,0.535,-0.0125, 90,0,0, 0.3,0.3,0.3);
+		//comps.renderLight( tess,eng,6, 0.82,0.6155,-0.0125, 90,0,0, 0.3,0.3,0.3);
+		//comps.renderButton(tess,eng,7, 0.81,0.535,-0.0125, 90,0,0, 0.3,0.3,0.3);
 
 		comps.renderTextScreen(tess, eng, eng.getConsoleSetting(), 70,  0.65, 0.8, -0.02, 0, 0, 180,  0.3, 0.3, 0.3);
 		comps.renderButton(tess,eng,71, 0.72,0.825,-0.0125, 90,0,0, 0.3,0.3,0.3);
@@ -51,7 +51,8 @@ public class EngineRenderer extends AbstractObjRenderer
 		for(TardisPermission p : TardisPermission.values())
 		{
 			double d = p.ordinal()/13.0;
-			comps.renderPushSwitch(tess, eng, 80+p.ordinal(), 0.625-d,0.47,-0.02, 90,0,0,0.3,0.3,0.3);
+			comps.renderLight(tess, eng, 90+p.ordinal(), 0.635-d,0.47,-0.02, 90,0,0,0.3,0.3,0.3);
+			comps.renderPushSwitch(tess, eng, 80+p.ordinal(), 0.625-d,0.4,-0.02, 90,0,0,0.3,0.3,0.3);
 		}
 	}
 
