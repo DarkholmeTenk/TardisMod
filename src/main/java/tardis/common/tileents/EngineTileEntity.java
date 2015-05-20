@@ -391,7 +391,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			else if((control >= 80) && (control < 90))
 			{
 				TardisPermission p = TardisPermission.get(control - 80);
-				if(!ds.togglePermission(ServerHelper.getUsername(pl), currentPerson, p))
+				if(ds.togglePermission(ServerHelper.getUsername(pl), currentPerson, p))
+					core.sendUpdate();
+				else
 					ServerHelper.sendString(pl, CoreTileEntity.cannotModifyPermissions);
 			}
 			else if((control >= 90) && (control < 100))
