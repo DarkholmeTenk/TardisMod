@@ -630,4 +630,13 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 	}
 
+	public String[] getExtraInfo(int control)
+	{
+		switch(control)
+		{
+			case 60: return new String[] { "Current mode: " + (internalOnly ? "Only interfaces inside the TARDIS can interact" : "All interfaces can interact") };
+		}
+		return null;
+	}
+
 }

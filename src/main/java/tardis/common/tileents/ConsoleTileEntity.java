@@ -1120,6 +1120,10 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				return new String[] { "Current mode: " + (landOnPad ? "Land on landing pads" : "Ignore landing pads") };
 			if (controlID == 34)
 				return new String[] { "Current mode: " + (landGroundControl ? "Land on ground" : "Land in midair") };
+			if (controlID == 56)
+				return new String[] { "Current mode: " + (stable ? "Stable flight" : "Unstable flight")};
+			if (controlID == 52)
+				return new String[] { "Current mode: " + (dayNightControl ? "Daytime" : "Nighttime")};
 			if (controlID == 55)
 				return new String[] { "Current mode: "
 						+ (uncoordinated ? "Uncoordinated flight (Drifting)" : "Coordinated flight") };

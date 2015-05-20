@@ -55,6 +55,13 @@ public class WailaEngineProvider extends AbstractWailaProvider
 	@Override
 	public String[] extraInfo(IWailaDataAccessor accessor, int control)
 	{
+		if(isEngine(accessor))
+		{
+			World w = accessor.getWorld();
+			EngineTileEntity eng = Helper.getTardisEngine(w);
+			if(eng != null)
+				return eng.getExtraInfo(control);
+		}
 		return null;
 	}
 
