@@ -29,6 +29,7 @@ public class PartBlueprint
 {
 	private int[]							bounds			= new int[5];								// -X, -Z, X, Z, Y
 
+	private static boolean					unsafeDoors		= true;
 	private ArrayList<CoordStore>			doors			= new ArrayList();
 	private CoordStore						primaryDoor		= null;
 	private int								primaryDoorFace	= -1;
@@ -65,7 +66,7 @@ public class PartBlueprint
 		while (cont)
 		{
 			cont = false;
-			if (world.getBlock(x - tmp, y, z) == schemaBlock && scanning[0])
+			if ((world.getBlock(x - tmp, y, z) == schemaBlock) && scanning[0])
 			{
 				cont = true;
 				bounds[0] = tmp;
@@ -73,7 +74,7 @@ public class PartBlueprint
 			else
 				scanning[0] = false;
 
-			if (world.getBlock(x, y, z - tmp) == schemaBlock && scanning[1])
+			if ((world.getBlock(x, y, z - tmp) == schemaBlock) && scanning[1])
 			{
 				cont = true;
 				bounds[1] = tmp;
@@ -81,7 +82,7 @@ public class PartBlueprint
 			else
 				scanning[1] = false;
 
-			if (world.getBlock(x + tmp, y, z) == schemaBlock && scanning[2])
+			if ((world.getBlock(x + tmp, y, z) == schemaBlock) && scanning[2])
 			{
 				cont = true;
 				bounds[2] = tmp;
@@ -89,7 +90,7 @@ public class PartBlueprint
 			else
 				scanning[2] = false;
 
-			if (world.getBlock(x, y, z + tmp) == schemaBlock && scanning[3])
+			if ((world.getBlock(x, y, z + tmp) == schemaBlock) && scanning[3])
 			{
 				cont = true;
 				bounds[3] = tmp;
@@ -112,7 +113,7 @@ public class PartBlueprint
 			tmp++;
 		}
 	}
-	
+
 	public ArrayList<CoordStore> getDoors()
 	{
 		return doors;
@@ -143,24 +144,24 @@ public class PartBlueprint
 			for (int zL = -bounds[1]; zL <= bounds[3]; zL++)
 			{
 				int xL = -bounds[0];
-	
+
 				for (int yL = 0; yL <= bounds[4]; yL++)
 					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
 						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 0);
-	
+
 				xL = bounds[2];
 				for (int yL = 0; yL <= bounds[4]; yL++)
 					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
 						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 2);
 			}
-	
+
 			for (int xL = -bounds[0]; xL <= bounds[2]; xL++)
 			{
 				int zL = -bounds[1];
 				for (int yL = 0; yL <= bounds[4]; yL++)
 					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
 						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 1);
-	
+
 				zL = bounds[3];
 				for (int yL = 0; yL <= bounds[4]; yL++)
 					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
@@ -329,7 +330,7 @@ public class PartBlueprint
 
 	private boolean matchingBounds(int[] a, int[] b)
 	{
-		if (a == null || b == null)
+		if ((a == null) || (b == null))
 			return false;
 		if (a.length != b.length)
 			return false;
@@ -341,8 +342,8 @@ public class PartBlueprint
 
 	public PartBlueprint(PartBlueprint to, PartBlueprint from) throws UnmatchingSchemaException
 	{
-		if (to.primaryDoorFace == to.primaryDoorFace && matchingBounds(to.bounds, from.bounds)
-				&& to.primaryDoor.equals(from.primaryDoor))
+		if ((to.primaryDoorFace == to.primaryDoorFace) && matchingBounds(to.bounds, from.bounds)
+				&& (to.primaryDoor.equals(from.primaryDoor) || unsafeDoors))
 		{
 
 			for (CoordStore coord : to.storage.keySet())
@@ -374,8 +375,9 @@ public class PartBlueprint
 			myName = to.myName + "." + from.myName + ".diff";
 		}
 		else
-			throw new UnmatchingSchemaException(to, from, to.primaryDoorFace != to.primaryDoorFace, !matchingBounds(to.bounds,
-					from.bounds), !to.primaryDoor.equals(from.primaryDoor));
+			throw new UnmatchingSchemaException(to, from, to.primaryDoorFace != to.primaryDoorFace,
+				!matchingBounds(to.bounds,from.bounds),
+				!to.primaryDoor.equals(from.primaryDoor));
 	}
 
 	public CoordStore getPrimaryDoorPos(int facing)
@@ -387,9 +389,9 @@ public class PartBlueprint
 	{
 		if (cFace == dFace)
 			return key;
-		if ((cFace == 1 && dFace == 3) || (cFace == 3 && dFace == 1) || (cFace == 0 && dFace == 2) || (cFace == 2 && dFace == 0))
+		if (((cFace == 1) && (dFace == 3)) || ((cFace == 3) && (dFace == 1)) || ((cFace == 0) && (dFace == 2)) || ((cFace == 2) && (dFace == 0)))
 			return key.rotate();
-		if (cFace == 0 && dFace == 3 || (dFace < cFace && !(cFace == 3 && dFace == 0)))
+		if (((cFace == 0) && (dFace == 3)) || ((dFace < cFace) && !((cFace == 3) && (dFace == 0))))
 			return key.rotateRight();
 		else
 			return key.rotateLeft();
@@ -446,7 +448,7 @@ public class PartBlueprint
 
 	public boolean roomFor(World w, int x, int y, int z, int facing)
 	{
-		if (y < 1 || y + bounds[4] > 255)
+		if ((y < 1) || ((y + bounds[4]) > 255))
 			return false;
 		for (CoordStore coord : storage.keySet())
 		{
@@ -487,9 +489,9 @@ public class PartBlueprint
 		}
 		getDoor(w, x, y, z, facing);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param w the world to do this in
 	 * @param x the pos of the core
 	 * @param y the pos of the core
@@ -507,7 +509,7 @@ public class PartBlueprint
 		{
 			SchemaStore st = storage.get(oldBlock);
 			int newMeta = SchemaRotationHandler.getNewMetadata(st.getBlock(), st.getBlockMeta(), primaryDoorFace, facing);
-			if(w.getBlock(nx,ny,nz) != st.getBlock() || w.getBlockMetadata(nx, ny, nz) != newMeta)
+			if((w.getBlock(nx,ny,nz) != st.getBlock()) || (w.getBlockMetadata(nx, ny, nz) != newMeta))
 			{
 				System.out.println("Repaired:" + nx +","+ny+","+nz+":" + newMeta);
 				st.loadToWorld(w, newMeta, nx, ny, nz);
