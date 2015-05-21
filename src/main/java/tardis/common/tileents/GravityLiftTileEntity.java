@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -33,7 +32,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 
 	private List<Integer> distances = new ArrayList<Integer>();
 	private int maxDist = 0;
-	private HashMap<EntityPlayerMP,Boolean> goingUp = new HashMap<EntityPlayerMP,Boolean>();
+	private HashMap<EntityPlayer,Boolean> goingUp = new HashMap<EntityPlayer,Boolean>();
 
 	public static void refreshConfigs()
 	{
@@ -104,9 +103,9 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		List<Object> baseList = worldObj.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox((xCoord-1)+bevel, yCoord+1, (zCoord-1)+bevel, (xCoord+2)-bevel, yCoord+maxDist, (zCoord+2)-bevel));
 		for(Object o : baseList)
 		{
-			if(!(o instanceof EntityPlayerMP))
+			if(!(o instanceof EntityPlayer))
 				continue;
-			EntityPlayerMP pl = (EntityPlayerMP)o;
+			EntityPlayer pl = (EntityPlayer)o;
 			if(pl.capabilities.isFlying)
 				continue;
 			if(goingUp.keySet().contains(pl))
@@ -129,10 +128,10 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	//Remove player entities who are no longer valid
 	private void validatePlayers()
 	{
-		Iterator<EntityPlayerMP> iter = goingUp.keySet().iterator();
+		Iterator<EntityPlayer> iter = goingUp.keySet().iterator();
 		while(iter.hasNext())
 		{
-			EntityPlayerMP pl = iter.next();
+			EntityPlayer pl = iter.next();
 			if(pl.isDead)
 				iter.remove();
 			else if(pl.worldObj != worldObj)
@@ -150,7 +149,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		}
 	}
 
-	private void movePlayer(EntityPlayerMP pl, boolean up)
+	private void movePlayer(EntityPlayer pl, boolean up)
 	{
 		double dir = 0;
 		if(up)
@@ -165,10 +164,10 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 
 	private void movePlayers()
 	{
-		Iterator<EntityPlayerMP> iter = goingUp.keySet().iterator();
+		Iterator<EntityPlayer> iter = goingUp.keySet().iterator();
 		while(iter.hasNext())
 		{
-			EntityPlayerMP pl = iter.next();
+			EntityPlayer pl = iter.next();
 			Boolean up = goingUp.get(pl);
 			if(up)
 			{
