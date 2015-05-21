@@ -248,7 +248,7 @@ public class TardisDimensionHandler
 		else
 		{
 			World w = WorldHelper.getWorldServer(dim);
-			if (w != null)
+			if ((w != null) && !Helper.isTardisWorld(w) && !blacklistedIDs.contains(WorldHelper.getWorldID(w)) && !blacklistedNames.contains(WorldHelper.getDimensionName(w)))
 			{
 				addDimension(w);
 				return getControlFromDim(dim,level);
