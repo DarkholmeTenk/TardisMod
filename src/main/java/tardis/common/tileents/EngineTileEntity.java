@@ -512,6 +512,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		// return c.substring(13);
 	}
 
+	private static double[] colors = new double[] { 0.2, 0.3, 0.9 };
 	@Override
 	public double[] getColorRatio(int controlID)
 	{
@@ -524,6 +525,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			// TardisOutput.print("TETE","Colors: "+ m.c[0] + "," + m.c[1] + "," + m.c[2]);
 			return m.c;
 		}
+		if((controlID >= 90) && (controlID < 100))
+			retVal = colors;
 		return retVal;
 	}
 
