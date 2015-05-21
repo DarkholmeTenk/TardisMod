@@ -485,8 +485,8 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		ScrewdriverMode mode = getMode(is);
 		if (ScrewdriverMode.Transmat.equals(mode) && !(hit instanceof EntityPlayer))
 		{
-			TardisDataStore ds = Helper.getDataStore(hitter.worldObj);
-			if(ds.hasPermission(hitter, TardisPermission.TRANSMAT))
+			TardisDataStore ds = Helper.getDataStore(getLinkedDim(is));
+			if((ds != null) && ds.hasPermission(hitter, TardisPermission.TRANSMAT))
 			{
 				CoreTileEntity core = getLinkedCore(is);
 				if (core != null) core.transmatEntity(hit);
