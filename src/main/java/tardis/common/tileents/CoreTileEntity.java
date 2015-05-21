@@ -359,6 +359,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void init()
 	{
+		if(TardisMod.plReg == null) return;
 		if (ownerName == null) setOwner(TardisMod.plReg.getPlayerName(WorldHelper.getWorldID(this)));
 		if (ds == null) ds = Helper.getDataStore(WorldHelper.getWorldID(this));
 	}
