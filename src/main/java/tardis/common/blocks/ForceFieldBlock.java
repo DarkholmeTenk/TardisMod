@@ -83,4 +83,12 @@ public class ForceFieldBlock extends AbstractBlock
 			return 6;
 		return super.getBlockHardness(w, x, y, z);
 	}
+
+	@Override
+	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x, int y, int z, int mX, int mY, int mZ)
+	{
+		if ((w.getBlock(mX, mY, mZ) == this) && (w.getBlockMetadata(mX, mY, mZ) == w.getBlockMetadata(x, y, z)))
+			return false;
+		return super.shouldSideBeRendered(w, s, x, y, z, mX, mY, mZ);
+	}
 }
