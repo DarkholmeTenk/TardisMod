@@ -41,6 +41,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private int									hasScrewdriver			= 1;
 
 	private int									facing					= 0;
+	private Integer								dc						= null;
 	private int									dimControl				= 0;
 	private int[]								xControls				= new int[7];
 	private int[]								zControls				= new int[7];
@@ -115,6 +116,12 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		super.updateEntity();
 		if (((++tickTimer % cycleLength) == 0) && (tickTimer != 0))
 			tickTimer = 0;
+
+		if((dc != null) && (Helper.getDataStore(this) != null) && ServerHelper.isServer())
+		{
+			dimControl = getControlFromDim(dc);
+			dc = null;
+		}
 
 		if ((lastButtonTT != -1) && (tt > (lastButtonTT + (importantButton(lastButton) ? TardisMod.shiftPressTime : 20))))
 		{
@@ -726,6 +733,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		}
 		lastButton = controlID;
 		lastButtonTT = tt;
+		markDirty();
 	}
 
 	public boolean setControls(int dim, int exX, int exZ, int x, int y, int z, boolean allowNearest)
@@ -1284,9 +1292,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		super.readFromNBT(nbt);
 		schemaNum = nbt.getInteger("schemaNum");
-		int dC = nbt.getInteger("dC");
-		TardisOutput.print("TConTE", "Attempting to set dim controls to dim: " + dC);
-		dimControl = getControlFromDim(dC);
+		dc = nbt.getInteger("dC");
 		if (nbt.hasKey("scNBT"))
 			screwNBT = nbt.getCompoundTag("scNBT");
 		for (int i = 0; i < 20; i++)
@@ -1305,6 +1311,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
+		System.out.println("Writing");
 		nbt.setInteger("schemaNum", schemaNum);
 		int dimID = getDimFromControls();
 		nbt.setInteger("dC", dimID);
