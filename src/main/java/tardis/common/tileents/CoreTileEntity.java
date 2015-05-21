@@ -1348,9 +1348,18 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				if ((desStrs != null) && (desStrs.length == 4)) send = desStrs;
 
 				send[0] = "The TARDIS will materialize in dimension " + getDimensionName(dD) + "[" + dD + "] near:";
-				if ((dX != desX) || (send[1] == null)) send[1] = "x = " + (dX + (rand.nextInt(2 * instability) - instability));
-				if ((dY != desY) || (send[2] == null)) send[2] = "y = " + (dY + (rand.nextInt(2 * instability) - instability));
-				if ((dZ != desZ) || (send[3] == null)) send[3] = "z = " + (dZ + (rand.nextInt(2 * instability) - instability));
+				if(!hasFunction(TardisFunction.CLARITY))
+				{
+					if ((dX != desX) || (send[1] == null)) send[1] = "x = " + (dX + (rand.nextInt(2 * instability) - instability));
+					if ((dY != desY) || (send[2] == null)) send[2] = "y = " + (dY + (rand.nextInt(2 * instability) - instability));
+					if ((dZ != desZ) || (send[3] == null)) send[3] = "z = " + (dZ + (rand.nextInt(2 * instability) - instability));
+				}
+				else
+				{
+					if ((dX != desX) || (send[1] == null)) send[1] = "x = " + dX;
+					if ((dY != desY) || (send[2] == null)) send[2] = "y = " + dY;
+					if ((dZ != desZ) || (send[3] == null)) send[3] = "z = " + dZ;
+				}
 				desX = dX;
 				desY = dY;
 				desZ = dZ;

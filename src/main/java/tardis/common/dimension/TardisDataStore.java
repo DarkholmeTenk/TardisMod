@@ -444,6 +444,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 				return getLevel() >= 11;
 			case TRANQUILITY:
 				return getLevel() >= 15;
+			case CLARITY:
+				return getLevel() >= 13;
 			default:
 				return false;
 		}

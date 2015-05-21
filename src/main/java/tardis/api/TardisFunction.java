@@ -7,7 +7,8 @@ public enum TardisFunction
 	SENSORS ("Exterior sensors"),
 	STABILISE ("Blue stabilizers"),
 	RECALL ("Remote recall"),
-	TRANQUILITY ("Tranquility zone");
+	TRANQUILITY ("Tranquility zone"),
+	CLARITY ("Perfect destination guesser");
 
 	public final String name;
 
