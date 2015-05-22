@@ -166,7 +166,6 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		pl.fallDistance = 0;
 		pl.motionY = dir;
 		pl.velocityChanged = true;
-		System.out.println("U:"+ up + ": "+ dir + ": "+ yCoord + ": "+ posY(pl) + ": " + pl.height +  ": " + ServerHelper.isServer());
 		pl.setPosition(pl.posX, pl.posY+dir, pl.posZ);
 	}
 
