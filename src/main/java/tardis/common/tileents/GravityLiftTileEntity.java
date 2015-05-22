@@ -2,6 +2,7 @@ package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.ArrayList;
@@ -98,6 +99,12 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		}
 	}
 
+	private double posY(EntityPlayer player)
+	{
+		if(ServerHelper.isClient()) return (player.posY - player.height) + player.eyeHeight;
+		return player.posY;
+	}
+
 	private void scanForPlayers()
 	{
 		List<Object> baseList = worldObj.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox((xCoord-1)+bevel, yCoord+1, (zCoord-1)+bevel, (xCoord+2)-bevel, yCoord+maxDist, (zCoord+2)-bevel));
@@ -113,9 +120,9 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			double prevDistance = yCoord;
 			for(Integer d : distances)
 			{
-				if((pl.posY > (prevDistance + amountAboveToStart)) && (pl.posY < (d - amountBelowToStart)))
+				if((posY(pl) > (prevDistance + amountAboveToStart)) && (posY(pl) < (d - amountBelowToStart)))
 				{
-					if(pl.posY < (((d + prevDistance + amountAboveToStart) - amountBelowToStart) / 2))
+					if(posY(pl) < (((d + prevDistance + amountAboveToStart) - amountBelowToStart) / 2))
 						goingUp.put(pl, true);
 					else
 						goingUp.put(pl, false);
@@ -144,7 +151,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 				iter.remove();
 			else if(pl.capabilities.isFlying)
 				iter.remove();
-			else if(getBlock(pl.posY,false) == -1)
+			else if(getBlock(posY(pl),false) == -1)
 				iter.remove();
 		}
 	}
@@ -153,12 +160,13 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	{
 		double dir = 0;
 		if(up)
-			dir = Math.min(movePerTick, getStopPointAbove(pl.posY) - pl.posY);
+			dir = Math.min(movePerTick, getStopPointAbove(posY(pl)) - posY(pl));
 		else
-			dir = Math.max(-movePerTick, getStopPointBelow(pl.posY) - pl.posY);
+			dir = Math.max(-movePerTick, getStopPointBelow(posY(pl)) - posY(pl));
 		pl.fallDistance = 0;
 		pl.motionY = dir;
 		pl.velocityChanged = true;
+		System.out.println("U:"+ up + ": "+ dir + ": "+ yCoord + ": "+ posY(pl) + ": " + pl.height +  ": " + ServerHelper.isServer());
 		pl.setPosition(pl.posX, pl.posY+dir, pl.posZ);
 	}
 
@@ -172,7 +180,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			if(up)
 			{
 
-				if(pl.posY > getStopPointAbove(pl.posY))
+				if(posY(pl) > getStopPointAbove(posY(pl)))
 				{
 					iter.remove();
 					continue;
@@ -186,7 +194,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			else
 			{
 				//TardisOutput.print("GLTE", "moving down " + Helper.getUsername(pl));
-				if(pl.posY < (yCoord + 1.6))
+				if(posY(pl) < (yCoord + 1.6))
 				{
 					iter.remove();
 					continue;
