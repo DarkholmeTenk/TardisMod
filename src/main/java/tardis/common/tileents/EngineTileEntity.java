@@ -6,8 +6,7 @@ import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,6 +15,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
 import tardis.TardisMod;
@@ -97,19 +97,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	private void getUsernames()
 	{
-		currentUsers = new String[0];
-		ArrayList<String> users = new ArrayList<String>();
-		List plList = worldObj.playerEntities;
-		if ((plList != null) && (plList.size() > 0))
-		{
-			for (Object o : plList)
-			{
-				if (o instanceof EntityPlayer)
-					users.add(((EntityPlayer) o).getCommandSenderName());
-			}
-			Collections.sort(users, String.CASE_INSENSITIVE_ORDER);
-			currentUsers = users.toArray(currentUsers);
-		}
+		currentUsers = MinecraftServer.getServer().getAllUsernames();
+		Arrays.sort(currentUsers);
 		setUsername();
 	}
 
