@@ -22,8 +22,8 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(7), "Toggle player modification permission");
 		controlNames.put(new TwoIntStore(10), "Upgrade energy level");
 		controlNames.put(new TwoIntStore(11), "Upgrade energy regeneration level");
-		controlNames.put(new TwoIntStore(12), "Upgrade max rooms level");
-		controlNames.put(new TwoIntStore(13), "Upgrade shields level");
+		controlNames.put(new TwoIntStore(12), "Upgrade shields level");
+		controlNames.put(new TwoIntStore(13), "Upgrade max rooms level");
 		controlNames.put(new TwoIntStore(20), "Energy level gauge");
 		controlNames.put(new TwoIntStore(21), "Energy regen level gauge");
 		controlNames.put(new TwoIntStore(22), "Shields level gauge");
