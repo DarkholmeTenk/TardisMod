@@ -61,14 +61,13 @@ public class LandingPadTileEntity extends ComponentTileEntity
 	@Override
 	public IArtronEnergyProvider getArtronEnergyProvider()
 	{
+		IArtronEnergyProvider prov = Helper.getArtronProvider(this, true);
+		if(prov != null)
+			return prov;
 		CoreTileEntity core = getCore();
 		if(core != null)
 			return core;
-		TileEntity te = worldObj.getTileEntity(xCoord, yCoord+1, zCoord);
-		if(te instanceof IArtronEnergyProvider)
-			return (IArtronEnergyProvider)te;
-		IArtronEnergyProvider prov = Helper.getArtronProvider(this, true);
-		return prov;
+		return null;
 	}
 
 	public boolean hasTardis()
