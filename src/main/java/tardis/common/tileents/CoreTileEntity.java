@@ -814,11 +814,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (inFlight())
 		{
-			fast = false;
 			ConsoleTileEntity con = getConsole();
 			forcedFlight = false;
 			currentBlockSpeed = 1;
-			gDS().addXP((con != null) && con.isStable() ? 15 : (45 - instability));
+			if(!forcedFlight)
+				gDS().addXP((con != null) && !fast && con.isStable() ? 15 : (45 - instability));
+			fast = false;
 			flightState = FlightState.LANDED;
 			SoundHelper.playSound(this, "tardismod:engineDrum", 0.75F);
 			TardisTileEntity ext = gDS().getExterior();
