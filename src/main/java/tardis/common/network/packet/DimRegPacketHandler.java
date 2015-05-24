@@ -15,7 +15,7 @@ public class DimRegPacketHandler implements IDataPacketHandler
 		{
 			System.out.println("Recieved new dimensions list from server");
 			if(TardisMod.dimReg == null)
-				TardisDimensionRegistry.loadAll();
+				TardisMod.dimReg = new TardisDimensionRegistry();
 			TardisMod.dimReg.readFromNBT(nbt);
 			TardisMod.dimReg.registerDims();
 		}
