@@ -46,6 +46,7 @@ processResources
 {
 	exclude '**/*.wav'
 	exclude '**/*.psd'
+	exclude '**/*.PSD'
 	exclude '**/*.blend'
 	exclude '**/*.tga'
     // replace stuff in mcmod.info, nothing else
