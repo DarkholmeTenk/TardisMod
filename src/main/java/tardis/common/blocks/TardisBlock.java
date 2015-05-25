@@ -35,7 +35,6 @@ public class TardisBlock extends AbstractBlockContainer
 	public void initData()
 	{
 		setBlockName("Tardis");
-		setBlockBounds(0,0,0,1,2,1);
 	}
 
 	@Override

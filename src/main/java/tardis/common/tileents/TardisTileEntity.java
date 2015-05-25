@@ -23,6 +23,8 @@ import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisDataStore;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector
 {
@@ -318,4 +320,11 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		if((!takingOff) && (worldObj.getBlock(xCoord, yCoord+1, zCoord) != TardisMod.tardisTopBlock))
 			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.tardisTopBlock, worldObj.getBlockMetadata(xCoord, yCoord, zCoord),3);
 	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+		return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord+1, yCoord+2, zCoord+1);
+    }
 }

@@ -27,7 +27,6 @@ public class TopBlock extends AbstractBlock
 	{
 		setLightLevel(1.0F);
 		setBlockName("TardisTop");
-		setBlockBounds(0,-1,0,1,1,1);
 	}
 
 	@Override

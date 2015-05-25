@@ -15,6 +15,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
@@ -775,7 +776,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			yControls = yCont;
 			zControls = zCont;
 			sendUpdate();
-			set = allowNearest ? ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)) : true;
+			set = true;
 		}
 		if (!set)
 		{
@@ -1412,4 +1413,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		System.out.println(lastButtonTT + ":"+tt);
 		attemptToLand = nbt.getBoolean("attemptToLand");
 	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+		return AxisAlignedBB.getBoundingBox(xCoord-1, yCoord, zCoord-1, xCoord+2, yCoord+2, zCoord+2);
+    }
 }

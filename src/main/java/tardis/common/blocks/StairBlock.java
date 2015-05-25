@@ -14,7 +14,7 @@ public class StairBlock extends BlockStairs
 
 	public StairBlock()
 	{
-		super(TardisMod.decoBlock,3);
+		super(TardisMod.colorableFloorBlock,15);
 		setHardness(-1.0f);
 		setCreativeTab(TardisMod.tab);
 		setBlockName("StairBlock");

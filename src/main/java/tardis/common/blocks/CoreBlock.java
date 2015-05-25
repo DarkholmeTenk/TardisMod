@@ -28,7 +28,6 @@ public class CoreBlock extends AbstractBlockContainer
 	public void initData()
 	{
 		setBlockName("TardisCore");
-		setBlockBounds(0,-1,0,1,4,1);
 		setLightLevel(1.0F);
 	}
 

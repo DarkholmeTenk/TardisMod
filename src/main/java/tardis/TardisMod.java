@@ -276,7 +276,6 @@ public class TardisMod implements IConfigHandlerMod
 		decoBlock = new DecoBlock().register();
 		decoTransBlock = new DecoTransBlock().register();
 		interiorDirtBlock = new InteriorDirtBlock().register();
-		stairBlock = new StairBlock().register();
 		schemaBlock = new SchemaBlock(visibleSchema).register();
 		schemaCoreBlock = new SchemaCoreBlock(visibleSchema).register();
 		schemaComponentBlock = new SchemaComponentBlock().register();
@@ -292,6 +291,7 @@ public class TardisMod implements IConfigHandlerMod
 		colorableOpenRoundelBlock = new ColorableOpenRoundelBlock().register();
 		manualBlock = new ManualBlock().register();
 		manualHelperBlock = new ManualHelperBlock().register();
+		stairBlock = new StairBlock().register();
 	}
 
 	private void initItems()
