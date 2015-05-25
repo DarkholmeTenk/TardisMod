@@ -10,6 +10,7 @@ import java.util.List;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import tardis.TardisMod;
+import tardis.common.core.Helper;
 
 public class TeleportCommand extends AbstractCommand
 {
@@ -90,7 +91,7 @@ public class TeleportCommand extends AbstractCommand
 								return;
 							}
 							for(EntityPlayerMP plx : pls)
-								TeleportHelper.teleportEntity(plx,w,2,30,0);
+								TeleportHelper.teleportEntity(plx,w,2,Helper.tardisCoreY,0);
 						}
 						else
 						{
