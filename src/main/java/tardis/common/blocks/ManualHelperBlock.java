@@ -6,9 +6,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import tardis.TardisMod;
+import tardis.api.IRotatableBlock;
 import tardis.common.tileents.ManualTileEntity;
 
-public class ManualHelperBlock extends AbstractBlock
+public class ManualHelperBlock extends AbstractBlock implements IRotatableBlock
 {
 
 	public ManualHelperBlock()
@@ -58,6 +59,16 @@ public class ManualHelperBlock extends AbstractBlock
 	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x, int y, int z, int mX, int mY, int mZ)
 	{
 		return TardisMod.manualBlock.shouldSideBeRendered(w, s, x, y, z, mX, mY, mZ);
+	}
+
+	@Override
+	public int rotatedMeta(int oldMeta, int oldFacing, int newFacing)
+	{
+		int diff = newFacing - oldFacing;
+		int meta = oldMeta + diff;
+		if(meta < 0) meta += 4;
+		if(meta >= 3) meta -= 4;
+		return meta;
 	}
 
 }
