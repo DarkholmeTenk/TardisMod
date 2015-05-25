@@ -13,6 +13,7 @@ Corridor.Tiny.schema
 Rooms.Big Chamber.schema
 Rooms.Med Chamber.schema
 Rooms.Med Farm.schema
+Rooms.Library.schema
 tardisConsoleMain.tardisConsoleFull.diff.schema
 tardisConsoleMain.schema
 tardisConsoleFull.tardisConsoleMain.diff.schema
