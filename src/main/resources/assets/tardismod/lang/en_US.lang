@@ -35,6 +35,8 @@ tile.TardisMod.SchemaComponent.Engine.name=Temporal Engine
 tile.TardisMod.Lab.name=Temporal Laboratory
 tile.TardisMod.LandingPad.name=TARDIS Landing Pad
 tile.TardisMod.TardisDirt.name=Temporal Dirt
+tile.TardisMod.Manual.name=Manual
+tile.TardisMod.ManualHelper.name=Manual
 
 tile.TardisMod.GravityLift.Normal.name=Solid Gravity Lift
 tile.TardisMod.GravityLift.Craftable.name=Gravity Lift
