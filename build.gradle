@@ -48,6 +48,7 @@ processResources
 	exclude '**/*.psd'
 	exclude '**/*.PSD'
 	exclude '**/*.blend'
+	exclude '**/*.blend1'
 	exclude '**/*.tga'
     // replace stuff in mcmod.info, nothing else
     // this will ensure that this task is redone when the versions change.
