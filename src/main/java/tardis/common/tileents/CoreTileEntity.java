@@ -1676,6 +1676,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 	}
 
+	@Override
+	@SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+		return AxisAlignedBB.getBoundingBox(xCoord-2, yCoord, zCoord-2, xCoord+3, yCoord+4, zCoord+3);
+    }
+
 	private enum FlightState
 	{
 		LANDED, TAKINGOFF, DRIFT, FLIGHT, LANDING;
