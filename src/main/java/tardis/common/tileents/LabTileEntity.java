@@ -123,6 +123,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	{
 		if(components == null)
 			return;
+		nextItem:
 		for(ItemStack comp : components)
 		{
 			for(int i = 0;i<5;i++)
@@ -135,7 +136,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 						invIS.stackSize-=comp.stackSize;
 						if(invIS.stackSize == 0)
 							inventory[i] = null;
-						continue;
+						continue nextItem;
 					}
 				}
 			}
