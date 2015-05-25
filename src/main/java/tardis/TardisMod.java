@@ -282,7 +282,6 @@ public class TardisMod implements IConfigHandlerMod
 
 		interiorDirtBlock = new InteriorDirtBlock().register();
 
-		stairBlock = new StairBlock().register();
 
 //		debugBlock = new DebugBlock().register();
 
@@ -311,6 +310,7 @@ public class TardisMod implements IConfigHandlerMod
 		colorableRoundelBlock = new ColorableRoundelBlock().register();
 
 		colorableOpenRoundelBlock = new ColorableOpenRoundelBlock().register();
+		stairBlock = new StairBlock().register();
 	}
 
 	private void initItems()
