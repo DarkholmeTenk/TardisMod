@@ -34,6 +34,8 @@ import tardis.common.blocks.InteriorDirtBlock;
 import tardis.common.blocks.InternalDoorBlock;
 import tardis.common.blocks.LabBlock;
 import tardis.common.blocks.LandingPadBlock;
+import tardis.common.blocks.ManualBlock;
+import tardis.common.blocks.ManualHelperBlock;
 import tardis.common.blocks.SchemaBlock;
 import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.blocks.SchemaCoreBlock;
@@ -130,6 +132,8 @@ public class TardisMod implements IConfigHandlerMod
 	public static StairBlock				stairBlock;
 	public static AbstractBlock				slabBlock;
 	public static AbstractBlock				interiorDirtBlock;
+	public static AbstractBlock				manualBlock;
+	public static AbstractBlock				manualHelperBlock;
 
 	public static AbstractBlock				colorableWallBlock;
 	public static AbstractBlock				colorableFloorBlock;
@@ -263,54 +267,31 @@ public class TardisMod implements IConfigHandlerMod
 	private void initBlocks()
 	{
 		tardisBlock = new TardisBlock().register();
-
 		tardisTopBlock = new TopBlock().register();
-
 		tardisCoreBlock = new CoreBlock().register();
-
 		tardisConsoleBlock = new ConsoleBlock().register();
-
 		tardisEngineBlock = new EngineBlock().register();
-
 		componentBlock = new ComponentBlock().register();
-
 		internalDoorBlock = new InternalDoorBlock().register();
-
 		decoBlock = new DecoBlock().register();
-
 		decoTransBlock = new DecoTransBlock().register();
-
 		interiorDirtBlock = new InteriorDirtBlock().register();
-
 		stairBlock = new StairBlock().register();
-
-//		debugBlock = new DebugBlock().register();
-
 		schemaBlock = new SchemaBlock(visibleSchema).register();
-
 		schemaCoreBlock = new SchemaCoreBlock(visibleSchema).register();
-
 		schemaComponentBlock = new SchemaComponentBlock().register();
-
 		slabBlock = new SlabBlock().register();
-
 		landingPad = new LandingPadBlock().register();
-
 		labBlock = (LabBlock) new LabBlock().register();
-
 		gravityLift = new GravityLiftBlock().register();
-
 		forcefield = new ForceFieldBlock(visibleForceField).register();
-
 		battery = new BatteryBlock().register();
-
 		colorableWallBlock = new ColorableWallBlock().register();
-
 		colorableFloorBlock = new ColorableFloorBlock().register();
-
 		colorableRoundelBlock = new ColorableRoundelBlock().register();
-
 		colorableOpenRoundelBlock = new ColorableOpenRoundelBlock().register();
+		manualBlock = new ManualBlock().register();
+		manualHelperBlock = new ManualHelperBlock().register();
 	}
 
 	private void initItems()
