@@ -776,7 +776,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			yControls = yCont;
 			zControls = zCont;
 			sendUpdate();
-			set = allowNearest ? ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)) : true;
+			set = true;
 		}
 		if (!set)
 		{
