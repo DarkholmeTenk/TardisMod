@@ -252,6 +252,10 @@ public class TardisDataStore extends AbstractWorldDataStore
 		exteriorX = nbt.getInteger("extX");
 		exteriorY = nbt.getInteger("extY");
 		exteriorZ = nbt.getInteger("extZ");
+		pExtW = nbt.getInteger("pExtW");
+		pExtX = nbt.getInteger("pExtX");
+		pExtY = nbt.getInteger("pExtY");
+		pExtZ = nbt.getInteger("pExtZ");
 		rfStored = nbt.getInteger("rS");
 		if (nbt.hasKey("invStore"))
 		{
@@ -334,6 +338,10 @@ public class TardisDataStore extends AbstractWorldDataStore
 		nbt.setInteger("extX", exteriorX);
 		nbt.setInteger("extY", exteriorY);
 		nbt.setInteger("extZ", exteriorZ);
+		nbt.setInteger("pExtW", pExtW);
+		nbt.setInteger("pExtX", pExtX);
+		nbt.setInteger("pExtY", pExtY);
+		nbt.setInteger("pExtZ", pExtZ);
 		nbt.setInteger("rS", rfStored);
 		storeInv(nbt);
 		storeFlu(nbt);
