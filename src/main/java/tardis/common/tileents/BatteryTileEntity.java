@@ -13,7 +13,6 @@ import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
 import tardis.common.tileents.extensions.LabFlag;
 
 public class BatteryTileEntity extends AbstractTileEntity implements IArtronEnergyProvider, IScrewable, IActivatable
@@ -157,7 +156,6 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 	@Override
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
-		TardisOutput.print("BTE", "Writing stuff to nbt");
 		nbt.setInteger("ae", artronEnergy);
 		nbt.setInteger("l", level);
 		nbt.setInteger("m", mode);

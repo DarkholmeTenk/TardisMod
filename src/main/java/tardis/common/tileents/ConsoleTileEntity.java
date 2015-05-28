@@ -1312,7 +1312,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		super.writeToNBT(nbt);
-		System.out.println("Writing");
 		nbt.setInteger("schemaNum", schemaNum);
 		int dimID = getDimFromControls();
 		nbt.setInteger("dC", dimID);
@@ -1408,9 +1407,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		dimControlState = nbt.getFloat("dCS");
 		screwMode = nbt.getInteger("scMo");
 		lastButton = nbt.getInteger("lastButton");
-		System.out.println("LB" + lastButton);
 		lastButtonTT = nbt.getInteger("lastButtonTT");
-		System.out.println(lastButtonTT + ":"+tt);
 		attemptToLand = nbt.getBoolean("attemptToLand");
 	}
 
