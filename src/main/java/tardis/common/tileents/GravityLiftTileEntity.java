@@ -27,7 +27,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	private static double movePerTick = 0.25;
 	private static double bevel = 0.28;
 
-	private static final double amountAboveToStop = 1.25;
+	private static final double amountAboveToStop = 1.1;
 	private static final double amountAboveToStart = 1.95;
 	private static final double amountBelowToStart = 0.5;
 
