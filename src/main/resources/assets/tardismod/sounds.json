@@ -1,4 +1,5 @@
 {
+	"ambient": {"category": "master","sounds": [{ "name": "ambient","stream": "false" }]},
 	"engines": {"category": "master","sounds": [{ "name": "engines","stream": "false" }]},
 	"engineDrum": {"category": "master","sounds": [{ "name": "engineDrum","stream": "false" }]},
 	"landing": {"category": "master","sounds": [{ "name": "landing","stream": "false" }]},

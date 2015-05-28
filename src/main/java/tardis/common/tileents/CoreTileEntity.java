@@ -375,6 +375,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		super.updateEntity();
 
+		if(ServerHelper.isClient() && ((tt % 580) == 1) && !inFlight())
+			SoundHelper.playSound(this, "tardismod:ambient", 0.1f);
+
 		if (explode)
 		{
 			double xO = (rand.nextDouble() * 3) - 1.5;
