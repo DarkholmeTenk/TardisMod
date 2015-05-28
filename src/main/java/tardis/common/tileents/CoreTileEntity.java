@@ -98,7 +98,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private int								desX					= 0;
 	private int								desY					= 0;
 	private int								desZ					= 0;
-	private String[]						desStrs					= null;
+	private Integer[]						desLocs					= null;
+	private String							desDimName				= "Overworld";
+	private int								screenAngle				= 0;
 
 	private enum LockState
 	{
@@ -288,7 +290,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void flightTick()
 	{
-		if (ServerHelper.isClient()) return;
+
 		if ((currentBlockSpeed == 0) || (maxBlockSpeed == 0))
 		{
 			currentBlockSpeed = 1;
@@ -297,12 +299,14 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		ConsoleTileEntity con = getConsole();
 		if (con == null) return;
 		totalFlightTimer++;
-		handleSound();
+		if(ServerHelper.isServer())
+			handleSound();
 		flightTimer++;
 		if ((flightState == FlightState.TAKINGOFF) && (flightTimer >= takeOffTicks)) nextFlightState();
 		if ((flightState == FlightState.LANDING) && (flightTimer >= (fast ? landFastTicks : landSlowTicks))) nextFlightState();
 		if (((flightState == FlightState.DRIFT) && con.shouldLand()) || ((flightState == FlightState.FLIGHT) && !con.shouldLand())) nextFlightState();
 		if ((flightState == FlightState.FLIGHT) && (distanceTravelled >= distanceToTravel)) nextFlightState();
+
 		if (flightState == FlightState.FLIGHT)
 		{
 			if (((flightTimer % 20) == 0) && (currentBlockSpeed < maxBlockSpeed) && takeArtronEnergy(energyPerSpeed, false))
@@ -353,6 +357,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void sendUpdate()
 	{
+		getDestinationLocations();
 		super.sendUpdate();
 		gDS().markMaybeDirty();
 	}
@@ -429,7 +434,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public boolean activate(EntityPlayer player, int side)
 	{
 		if (ServerHelper.isClient()) return true;
-		sendDestinationStrings(player);
+		double mx = xCoord + 0.5;
+		double mz = zCoord + 0.5;
+		if(mz > player.posZ)
+			screenAngle = 90 + MathHelper.round((180 / Math.PI) * Math.atan((mx-player.posX)/(mz-player.posZ)));
+		else
+			screenAngle = -90 + MathHelper.round((180 / Math.PI) * Math.atan((mx-player.posX)/(mz-player.posZ)));
+		sendUpdate();
 		return true;
 	}
 
@@ -754,6 +765,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void removeOldBox()
 	{
+		if(ServerHelper.isClient())return;
 		World w = WorldHelper.getWorld(gDS().exteriorWorld);
 		if (w != null)
 		{
@@ -1329,47 +1341,69 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		pl.getBedLocation(dim);
 	}
 
-	public void sendDestinationStrings(EntityPlayer pl)
+	private static final Integer[] nullArray = new Integer[]{0,0,0,0};
+	private Integer[] getDestinationLocations()
 	{
-		ConsoleTileEntity console = getConsole();
-		if (console != null)
+		if(ServerHelper.isServer())
 		{
+			ConsoleTileEntity console = getConsole();
+			if(console == null) return nullArray;
 			int dD = console.getDimFromControls();
 			int dX = console.getXFromControls(gDS().exteriorX);
 			int dY = console.getYFromControls(gDS().exteriorY);
 			int dZ = console.getZFromControls(gDS().exteriorZ);
-			TardisOutput.print("TCTE", "Dest:" + dD + "," + dX + "," + dY + "," + dZ);
-			if ((dD == desDim) && (dX == desX) && (dY == desY) && (dZ == desZ) && (desStrs != null))
-				for (String s : desStrs)
-					pl.addChatMessage(new ChatComponentText(s));
+			if ((dD == desDim) && (dX == desX) && (dY == desY) && (dZ == desZ) && (desLocs != null))
+				return desLocs;
+			int instability = MathHelper.clamp(20 - (2 * gDS().getLevel()), 3, 20);
+			if(desLocs == null) desLocs = new Integer[]{null,null,null,null};
+			desLocs[0] = dD;
+			if(!hasFunction(TardisFunction.CLARITY))
+			{
+				if ((dX != desX) || (desLocs[1] == null)) desLocs[1] = (dX + (rand.nextInt(2 * instability) - instability));
+				if ((dY != desY) || (desLocs[2] == null)) desLocs[2] = (dY + (rand.nextInt(2 * instability) - instability));
+				if ((dZ != desZ) || (desLocs[3] == null)) desLocs[3] = (dZ + (rand.nextInt(2 * instability) - instability));
+			}
 			else
 			{
-				int instability = MathHelper.clamp(20 - (2 * gDS().getLevel()), 3, 20);
-				desDim = dD;
-				String[] send = new String[4];
-				if ((desStrs != null) && (desStrs.length == 4)) send = desStrs;
-
-				send[0] = "The TARDIS will materialize in dimension " + getDimensionName(dD) + "[" + dD + "] near:";
-				if(!hasFunction(TardisFunction.CLARITY))
-				{
-					if ((dX != desX) || (send[1] == null)) send[1] = "x = " + (dX + (rand.nextInt(2 * instability) - instability));
-					if ((dY != desY) || (send[2] == null)) send[2] = "y = " + (dY + (rand.nextInt(2 * instability) - instability));
-					if ((dZ != desZ) || (send[3] == null)) send[3] = "z = " + (dZ + (rand.nextInt(2 * instability) - instability));
-				}
-				else
-				{
-					if ((dX != desX) || (send[1] == null)) send[1] = "x = " + dX;
-					if ((dY != desY) || (send[2] == null)) send[2] = "y = " + dY;
-					if ((dZ != desZ) || (send[3] == null)) send[3] = "z = " + dZ;
-				}
-				desX = dX;
-				desY = dY;
-				desZ = dZ;
-				desStrs = send;
-				for (String s : desStrs)
-					pl.addChatMessage(new ChatComponentText(s));
+				if ((dX != desX) || (desLocs[1] == null)) desLocs[1] = dX;
+				if ((dY != desY) || (desLocs[2] == null)) desLocs[2] = dY;
+				if ((dZ != desZ) || (desLocs[3] == null)) desLocs[3] = dZ;
 			}
+			desX = dX;
+			desY = dY;
+			desZ = dZ;
+			return desLocs;
 		}
+		else if(desLocs != null)
+			return desLocs;
+		return nullArray;
+	}
+
+	private String[] getDestinationStrings(Integer[] locs)
+	{
+		String[] toRet = new String[4];
+		if(ServerHelper.isServer())
+			toRet[0] = "Dim: " + getDimensionName(locs[0]) + "[" + locs[0] + "]";
+		else
+		{
+			toRet[0] = "Dim: " + desDimName + "[" + locs[0] + "]";
+			if(toRet[0].length() > 24)
+				toRet[0] = "Dim: ["+locs[0]+"]";
+			else if(toRet[0].length() > 18)
+				toRet[0] = "D:" + desDimName;
+			else if(toRet[0].length() > 15)
+				toRet[0] = "D:" + desDimName + "[" + locs[0] + "]";
+		}
+		toRet[1] = "X: " + locs[1];
+		toRet[2] = "Y: " + locs[2];
+		toRet[3] = "Z: " + locs[3];
+		return toRet;
+	}
+
+	public void sendDestinationStrings(EntityPlayer pl)
+	{
+		for (String s : getDestinationStrings(getDestinationLocations()))
+			pl.addChatMessage(new ChatComponentText(s));
 	}
 
 	/**
@@ -1516,14 +1550,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		nbt.setBoolean("fF", forcedFlight);
 		nbt.setInteger("lS", lockState.ordinal());
 		if (hasFunction(TardisFunction.TRANSMAT) && isTransmatPointValid()) nbt.setTag("tP", transmatPoint.writeToNBT());
-		if ((sourceLocation != null) && (destLocation != null))
-		{
-			sourceLocation.writeToNBT(nbt, "srcLoc");
-			destLocation.writeToNBT(nbt, "dstLoc");
-			nbt.setDouble("dT", distanceTravelled);
-			nbt.setDouble("dtT", distanceToTravel);
-			nbt.setInteger("cbs", currentBlockSpeed);
-		}
 		if ((modders != null) && (modders.size() > 0))
 		{
 			int[] mods = new int[modders.size()];
@@ -1550,6 +1576,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 			nbt.setInteger("shld", shields);
 			nbt.setInteger("hull", hull);
+			nbt.setInteger("scrAng", screenAngle);
+			if ((sourceLocation != null) && (destLocation != null))
+			{
+				sourceLocation.writeToNBT(nbt, "srcLoc");
+				destLocation.writeToNBT(nbt, "dstLoc");
+				nbt.setDouble("dT", distanceTravelled);
+				nbt.setDouble("dtT", distanceToTravel);
+				nbt.setInteger("cbs", currentBlockSpeed);
+			}
 		}
 	}
 
@@ -1562,6 +1597,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			gDS().writeToNBT(dsTC);
 			nbt.setTag("ds", dsTC);
 			nbt.setInteger("numR", getNumRooms());
+			getDestinationLocations();
+			nbt.setInteger("dld", desLocs[0]);
+			nbt.setString("dldn", WorldHelper.getDimensionName(desLocs[0]));
+			nbt.setInteger("dlx", desLocs[1]);
+			nbt.setInteger("dly", desLocs[2]);
+			nbt.setInteger("dlz", desLocs[3]);
 		}
 	}
 
@@ -1578,9 +1619,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		{
 			sourceLocation = SimpleCoordStore.readFromNBT(nbt, "srcLoc");
 			destLocation = SimpleCoordStore.readFromNBT(nbt, "dstLoc");
-			distanceTravelled = nbt.getDouble("dT");
-			distanceToTravel = nbt.getDouble("dtT");
-			currentBlockSpeed = nbt.getInteger("cbs");
 		}
 		if (nbt.hasKey("mods"))
 		{
@@ -1599,6 +1637,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		super.readTransmittable(nbt);
 		if (nbt.hasKey("ownerName"))
 		{
+			if(nbt.hasKey("dT"))
+			{
+				distanceTravelled = nbt.getDouble("dT");
+				distanceToTravel = nbt.getDouble("dtT");
+				currentBlockSpeed = nbt.getInteger("cbs");
+			}
 			explode = nbt.getBoolean("explode");
 			ownerName = nbt.getString("ownerName");
 
@@ -1612,6 +1656,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 			shields = nbt.getInteger("shld");
 			hull = nbt.getInteger("hull");
+			screenAngle = nbt.getInteger("scrAng");
 		}
 	}
 
@@ -1623,6 +1668,17 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			TardisDataStore tds = gDS();
 			if (tds != null) tds.readFromNBT(nbt.getCompoundTag("ds"));
 		}
+		if (nbt.hasKey("dld"))
+		{
+			if(desLocs == null) desLocs = new Integer[4];
+			desLocs[0] = nbt.getInteger("dld");
+			desLocs[1] = nbt.getInteger("dlx");
+			desLocs[2] = nbt.getInteger("dly");
+			desLocs[3] = nbt.getInteger("dlz");
+			desDimName = nbt.getString("dldn");
+		}
+		else
+			desLocs = nullArray.clone();
 		numRooms = nbt.getInteger("numR");
 	}
 
@@ -1681,7 +1737,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox()
     {
-		return AxisAlignedBB.getBoundingBox(xCoord-2, yCoord, zCoord-2, xCoord+3, yCoord+4, zCoord+3);
+		return AxisAlignedBB.getBoundingBox(xCoord-2, yCoord-1, zCoord-2, xCoord+3, yCoord+4, zCoord+3);
     }
 
 	private enum FlightState
@@ -1693,6 +1749,41 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			i = MathHelper.clamp(i, 0, vals.length - 1);
 			return vals[i];
 		}
+	}
+
+	public int getScreenAngle()
+	{
+		return screenAngle;
+	}
+
+	private static final String[] empty = new String[]{"TARDIS"," Data","  Interface"};
+	private static final String[] takeoff = new String[]{"Taking off"};
+	private static final String[] landing = new String[]{"Landing"};
+	public String[] getScreenText()
+	{
+		TardisDataStore ds = gDS();
+		String[] locs = getDestinationStrings(getDestinationLocations());
+		if((screenAngle > 45) && (screenAngle < 135))
+			return new String[]{"","",locs[1]};
+		if((screenAngle >-135) && (screenAngle < -45))
+			return new String[]{"","",locs[3]};
+		if((screenAngle <= -135) || (screenAngle >= 135))
+			return new String[]{"","",locs[0],locs[2]};
+		if(flightState == FlightState.TAKINGOFF)
+			return takeoff;
+		if(flightState == FlightState.FLIGHT)
+		{
+			if((ds == null) || !ds.hasFunction(TardisFunction.CLARITY))
+				return new String[]{"Speed: "+currentBlockSpeed+"b/t",
+						String.format("Travel: %04.1f%%", (100*distanceTravelled)/distanceToTravel)};
+			else
+				return new String[]{"Speed: "+currentBlockSpeed+"b/t",
+					String.format("Travel: %04.1f%%", (100*distanceTravelled)/distanceToTravel),
+					String.format("ETA: %ds", MathHelper.ceil((distanceToTravel-distanceTravelled)/(currentBlockSpeed*20)))};
+		}
+		if(flightState == FlightState.LANDING)
+			return landing;
+		return empty;
 	}
 
 }

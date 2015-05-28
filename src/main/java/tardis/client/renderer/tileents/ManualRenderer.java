@@ -6,7 +6,6 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
 import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -24,7 +23,6 @@ public class ManualRenderer extends AbstractObjRenderer
 {
 	private static IModelCustom							model		= AdvancedModelLoader.loadModel(new ResourceLocation("tardismod", "models/manualscreen.obj"));
 	private static HashMap<String, ResourceLocation>	resources	= new HashMap();
-	private static FontRenderer							fr;
 
 	public static final double textSize = 0.03;
 
@@ -59,8 +57,6 @@ public class ManualRenderer extends AbstractObjRenderer
 
 	private void renderText(ManualTileEntity mte)
 	{
-		if(fr == null)
-			fr = func_147498_b();
 		GL11.glPushMatrix();
 		GL11.glDepthMask(false);
 		GL11.glTranslated(0, 0, -1.001);

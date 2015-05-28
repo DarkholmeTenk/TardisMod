@@ -735,6 +735,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		lastButton = controlID;
 		lastButtonTT = tt;
 		markDirty();
+		core.sendUpdate();
 	}
 
 	public boolean setControls(int dim, int exX, int exZ, int x, int y, int z, boolean allowNearest)
