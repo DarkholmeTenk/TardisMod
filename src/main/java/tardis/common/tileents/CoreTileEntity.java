@@ -1737,7 +1737,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox()
     {
-		return AxisAlignedBB.getBoundingBox(xCoord-2, yCoord, zCoord-2, xCoord+3, yCoord+4, zCoord+3);
+		return AxisAlignedBB.getBoundingBox(xCoord-2, yCoord-1, zCoord-2, xCoord+3, yCoord+4, zCoord+3);
     }
 
 	private enum FlightState
@@ -1756,7 +1756,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return screenAngle;
 	}
 
-	private static final String[] empty = new String[]{"Hi"};
+	private static final String[] empty = new String[]{"TARDIS"," Data","  Interface"};
 	private static final String[] takeoff = new String[]{"Taking off"};
 	private static final String[] landing = new String[]{"Landing"};
 	public String[] getScreenText()
@@ -1764,11 +1764,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		TardisDataStore ds = gDS();
 		String[] locs = getDestinationStrings(getDestinationLocations());
 		if((screenAngle > 45) && (screenAngle < 135))
-			return new String[]{locs[1]};
+			return new String[]{"","",locs[1]};
 		if((screenAngle >-135) && (screenAngle < -45))
-			return new String[]{locs[3]};
+			return new String[]{"","",locs[3]};
 		if((screenAngle <= -135) || (screenAngle >= 135))
-			return new String[]{locs[0],locs[2]};
+			return new String[]{"","",locs[0],locs[2]};
 		if(flightState == FlightState.TAKINGOFF)
 			return takeoff;
 		if(flightState == FlightState.FLIGHT)
