@@ -290,7 +290,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void flightTick()
 	{
-		if (ServerHelper.isClient()) return;
+
 		if ((currentBlockSpeed == 0) || (maxBlockSpeed == 0))
 		{
 			currentBlockSpeed = 1;
@@ -299,12 +299,14 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		ConsoleTileEntity con = getConsole();
 		if (con == null) return;
 		totalFlightTimer++;
-		handleSound();
+		if(ServerHelper.isServer())
+			handleSound();
 		flightTimer++;
 		if ((flightState == FlightState.TAKINGOFF) && (flightTimer >= takeOffTicks)) nextFlightState();
 		if ((flightState == FlightState.LANDING) && (flightTimer >= (fast ? landFastTicks : landSlowTicks))) nextFlightState();
 		if (((flightState == FlightState.DRIFT) && con.shouldLand()) || ((flightState == FlightState.FLIGHT) && !con.shouldLand())) nextFlightState();
 		if ((flightState == FlightState.FLIGHT) && (distanceTravelled >= distanceToTravel)) nextFlightState();
+
 		if (flightState == FlightState.FLIGHT)
 		{
 			if (((flightTimer % 20) == 0) && (currentBlockSpeed < maxBlockSpeed) && takeArtronEnergy(energyPerSpeed, false))
@@ -763,6 +765,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void removeOldBox()
 	{
+		if(ServerHelper.isClient())return;
 		World w = WorldHelper.getWorld(gDS().exteriorWorld);
 		if (w != null)
 		{
@@ -1349,7 +1352,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			int dX = console.getXFromControls(gDS().exteriorX);
 			int dY = console.getYFromControls(gDS().exteriorY);
 			int dZ = console.getZFromControls(gDS().exteriorZ);
-			TardisOutput.print("TCTE", "Dest:" + dD + "," + dX + "," + dY + "," + dZ);
 			if ((dD == desDim) && (dX == desX) && (dY == desY) && (dZ == desZ) && (desLocs != null))
 				return desLocs;
 			int instability = MathHelper.clamp(20 - (2 * gDS().getLevel()), 3, 20);
@@ -1755,8 +1757,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	}
 
 	private static final String[] empty = new String[]{"Hi"};
+	private static final String[] takeoff = new String[]{"Taking off"};
+	private static final String[] landing = new String[]{"Landing"};
 	public String[] getScreenText()
 	{
+		TardisDataStore ds = gDS();
 		String[] locs = getDestinationStrings(getDestinationLocations());
 		if((screenAngle > 45) && (screenAngle < 135))
 			return new String[]{locs[1]};
@@ -1764,7 +1769,20 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			return new String[]{locs[3]};
 		if((screenAngle <= -135) || (screenAngle >= 135))
 			return new String[]{locs[0],locs[2]};
-
+		if(flightState == FlightState.TAKINGOFF)
+			return takeoff;
+		if(flightState == FlightState.FLIGHT)
+		{
+			if((ds == null) || !ds.hasFunction(TardisFunction.CLARITY))
+				return new String[]{"Speed: "+currentBlockSpeed+"b/t",
+						String.format("Travel: %04.1f%%", (100*distanceTravelled)/distanceToTravel)};
+			else
+				return new String[]{"Speed: "+currentBlockSpeed+"b/t",
+					String.format("Travel: %04.1f%%", (100*distanceTravelled)/distanceToTravel),
+					String.format("ETA: %ds", MathHelper.ceil((distanceToTravel-distanceTravelled)/(currentBlockSpeed*20)))};
+		}
+		if(flightState == FlightState.LANDING)
+			return landing;
 		return empty;
 	}
 
