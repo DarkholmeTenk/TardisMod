@@ -129,12 +129,17 @@ public class Helper
 		}
 	}
 
-	public static void summonOldTardis(EntityPlayer player)
+	public static boolean summonOldTardis(EntityPlayer player)
 	{
 		Integer dim = TardisMod.plReg.getDimension(player);
 		if (dim == null)
-			return;
+			return false;
 
+		CoreTileEntity oldCore =TardisMod.plReg.getCore(player);
+		if(oldCore != null)
+			oldCore.removeOldBox();
+		else
+			return false;
 		TardisTileEntity te = summonTardis(player);
 		if (te != null)
 		{
@@ -143,9 +148,11 @@ public class Helper
 			ConsoleTileEntity con = getTardisConsole(dim);
 			if (con != null)
 				con.setControls(te, true);
+			return true;
 		}
 		else
 			TardisOutput.print("Helper", "No exterior :(");
+		return false;
 	}
 
 	private static TardisTileEntity summonTardis(EntityPlayer player)

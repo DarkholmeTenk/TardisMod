@@ -41,6 +41,7 @@ import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.blocks.SchemaCoreBlock;
 import tardis.common.blocks.SlabBlock;
 import tardis.common.blocks.StairBlock;
+import tardis.common.blocks.SummonerBlock;
 import tardis.common.blocks.TardisBlock;
 import tardis.common.blocks.TopBlock;
 import tardis.common.command.CommandRegister;
@@ -134,6 +135,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock				interiorDirtBlock;
 	public static AbstractBlock				manualBlock;
 	public static AbstractBlock				manualHelperBlock;
+	public static AbstractBlock				summonerBlock;
 
 	public static AbstractBlock				colorableWallBlock;
 	public static AbstractBlock				colorableFloorBlock;
@@ -292,20 +294,16 @@ public class TardisMod implements IConfigHandlerMod
 		manualBlock = new ManualBlock().register();
 		manualHelperBlock = new ManualHelperBlock().register();
 		stairBlock = new StairBlock().register();
+		summonerBlock = new SummonerBlock().register();
 	}
 
 	private void initItems()
 	{
 		schemaItem = new SchemaItem().register();
-
 		screwItem = (SonicScrewdriverItem) new SonicScrewdriverItem().register();
-
 		keyItem = (KeyItem) new KeyItem().register();
-
 		componentItem = new ComponentItem().register();
-
 		craftingComponentItem = (CraftingComponentItem) new CraftingComponentItem().register();
-
 	}
 
 	private void initRecipes()
@@ -319,6 +317,7 @@ public class TardisMod implements IConfigHandlerMod
 		battery.initRecipes();
 		interiorDirtBlock.initRecipes();
 		craftingComponentItem.initRecipes();
+		summonerBlock.initRecipes();
 	}
 
 	@EventHandler

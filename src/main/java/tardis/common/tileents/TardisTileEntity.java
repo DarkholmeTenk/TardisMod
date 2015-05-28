@@ -145,12 +145,13 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		landingSoundPlayed = true;
 	}
 
-	public void land(boolean fast)
+	public synchronized void land(boolean fast)
 	{
 		fadeTimer = 0;
+		if(!landing)
+			playLandSound();
 		landing = true;
 		landFast = fast;
-		playLandSound();
 		TardisOutput.print("TTE", "LANDING!!!! " + (fast ? "FAST " : "SLOW ") + (ServerHelper.isClient()?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
 		sendUpdate();
 	}

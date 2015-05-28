@@ -766,7 +766,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return rand.nextInt(Math.max(0, 2 * instability)) - instability;
 	}
 
-	private void removeOldBox()
+	public void removeOldBox()
 	{
 		if(ServerHelper.isClient())return;
 		World w = WorldHelper.getWorld(gDS().exteriorWorld);

@@ -17,6 +17,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
 import tardis.client.renderer.SonicScrewdriverRenderer;
+import tardis.client.renderer.SummonerRenderer;
 import tardis.client.renderer.tileents.BatteryRenderer;
 import tardis.client.renderer.tileents.ClosedRoundelRenderer;
 import tardis.client.renderer.tileents.ComponentRenderer;
@@ -37,6 +38,7 @@ import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.ManualTileEntity;
+import tardis.common.tileents.SummonerTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import tardis.common.tileents.extensions.DummyRoundelTE;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -47,6 +49,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TardisClientProxy extends TardisProxy
 {
 	private TardisRenderer tardisRenderer = new TardisRenderer();
+	private SummonerRenderer summonerRenderer;
+
 	public HashMap<String,ResourceLocation> skins = new HashMap<String,ResourceLocation>();
 	public static World cWorld = null;
 	public TardisClientProxy()
@@ -82,10 +86,12 @@ public class TardisClientProxy extends TardisProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(BatteryTileEntity.class, new BatteryRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(DummyRoundelTE.class, new ClosedRoundelRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(ManualTileEntity.class, new ManualRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(SummonerTileEntity.class, summonerRenderer = new SummonerRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.labBlock), new LabRenderer());
 		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, screwRenderer = new SonicScrewdriverRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.battery), new BatteryRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.tardisBlock), tardisRenderer);
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.summonerBlock), summonerRenderer);
 	}
 
 	@Override
