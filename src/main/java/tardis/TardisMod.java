@@ -213,7 +213,7 @@ public class TardisMod implements IConfigHandlerMod
 		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1, "How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
 
 		visibleSchema = modConfig.getConfigItem(new ConfigItem("Visible Schema", CType.BOOLEAN, false, "Should schema boundaries be visible (clientside config)")).getBoolean();
-		visibleForceField = modConfig.getBoolean("Visible forcefields", false, "Should the forcefields be visible or not");
+		visibleForceField = modConfig.getBoolean("Visible forcefields", true, "Should the forcefields be visible or not");
 		lightBlocks = modConfig.getBoolean("Normal blocks give off light", false, "If true, normal blocks (including slabs and such) give off light");
 
 

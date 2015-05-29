@@ -24,7 +24,8 @@ public enum ManualPage
 	LANDPAD("Landing Pad","LandPad"),
 	GRAVLIFT("Gravity Lift","GravLift"),
 	ENGINE("Engine","Engine"),
-	SONIC("Sonic Screwdriver","Sonic");
+	SONIC("Screwdriver","Sonic"),
+	CREDITS("Credits","Credits");
 
 	public final String title;
 	public final String tex;

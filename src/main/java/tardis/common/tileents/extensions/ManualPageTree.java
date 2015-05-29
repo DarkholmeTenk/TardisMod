@@ -34,7 +34,8 @@ public class ManualPageTree
 		ManualPageTree engine	= new ManualPageTree(ManualPage.ENGINE, nullT);
 		ManualPageTree sonic	= new ManualPageTree(ManualPage.SONIC, nullT);
 		ManualPageTree tools	= new ManualPageTree(ManualPage.TOOLS, sonic, grav, batt, roundels, landpad, engine);
-		topTree = new ManualPageTree(ManualPage.MAIN, flight, craft, tools);
+		ManualPageTree creds	= new ManualPageTree(ManualPage.CREDITS, nullT);
+		topTree = new ManualPageTree(ManualPage.MAIN, flight, craft, tools, creds);
 	}
 
 	public ManualPageTree(ManualPage _page, ManualPageTree... _children)
