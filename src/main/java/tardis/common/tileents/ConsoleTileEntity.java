@@ -1231,6 +1231,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public void land()
 	{
+		if(ServerHelper.isClient())return;
 		attemptToLand = false;
 		lastLanding = currentLanding;
 		currentLanding = getCurrentControlState();

@@ -136,11 +136,12 @@ public class SchemaComponentBlock extends AbstractBlock
     {
 		boolean ser = ServerHelper.isServer();
     	int meta = w.getBlockMetadata(x, y, z);
-    	if(((meta == 6) && (j > 0.5) && ser) || (meta == 8))
+    	if(((meta == 6) && (j > 0.4) && ser) || (meta == 8))
 		{
 			CoreTileEntity core = Helper.getTardisCore(w);
 			if(core != null)
 				core.activate(pl, s);
+			return true;
 		}
     	if((meta == 2) && ser)
     	{
