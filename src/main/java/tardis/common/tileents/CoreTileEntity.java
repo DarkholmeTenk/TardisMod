@@ -837,17 +837,20 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				gDS().addXP((con != null) && !fast && con.isStable() ? 15 : (45 - instability));
 			fast = false;
 			flightState = FlightState.LANDED;
-			SoundHelper.playSound(this, "tardismod:engineDrum", 0.75F);
-			TardisTileEntity ext = gDS().getExterior();
-			if (ext != null)
+			if(ServerHelper.isServer())
 			{
-				ext.forceLand();
-				List<Entity> inside = ext.getEntitiesInside();
-				for (Entity e : inside)
-					if (e instanceof EntityLivingBase) enterTardis((EntityLivingBase) e);
+				SoundHelper.playSound(this, "tardismod:engineDrum", 0.75F);
+				TardisTileEntity ext = gDS().getExterior();
+				if (ext != null)
+				{
+					ext.forceLand();
+					List<Entity> inside = ext.getEntitiesInside();
+					for (Entity e : inside)
+						if (e instanceof EntityLivingBase) enterTardis((EntityLivingBase) e);
+				}
+				if (con != null) con.land();
+				sendUpdate();
 			}
-			if (con != null) con.land();
-			sendUpdate();
 		}
 	}
 
