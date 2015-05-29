@@ -27,8 +27,9 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	private static double movePerTick = 0.25;
 	private static double bevel = 0.28;
 
-	private static final double amountAboveToStop = 1.1;
-	private static final double amountAboveToStart = 1.95;
+	private static final double amountAboveToStopUp = 1.05;
+	private static final double amountAboveToStopDown = 1.05;
+	private static final double amountAboveToStart = 2.05;
 	private static final double amountBelowToStart = 0.5;
 
 	private List<Integer> distances = new ArrayList<Integer>();
@@ -53,7 +54,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		for(int i = 0; i < distances.size(); i++)
 		{
 			int d = distances.get(i);
-			if((y > (p + amountAboveToStart)) && (y < (d + (start ? amountBelowToStart : amountAboveToStop))))
+			if((y > (p + amountAboveToStart)) && (y < (d + (start ? amountBelowToStart : amountAboveToStopUp))))
 				return i;
 			p = d;
 		}
@@ -65,7 +66,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		int b = getBlock(y,false);
 		if(b == -1)
 			return -1;
-		return distances.get(b) + amountAboveToStop;
+		return distances.get(b) + amountAboveToStopUp;
 	}
 
 	private double getStopPointBelow(double y)
@@ -74,8 +75,8 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		if(b == -1)
 			return -1;
 		if(b == 0)
-			return yCoord + amountAboveToStop;
-		return distances.get(b-1) + amountAboveToStop;
+			return yCoord + amountAboveToStopDown;
+		return distances.get(b-1) + amountAboveToStopDown;
 	}
 
 	private void scanForCeiling()
@@ -164,7 +165,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		else
 			dir = Math.max(-movePerTick, getStopPointBelow(posY(pl)) - posY(pl));
 		pl.fallDistance = 0;
-		pl.motionY = dir;
+		pl.motionY = dir / 3;
 		pl.velocityChanged = true;
 		pl.setPosition(pl.posX, pl.posY+dir, pl.posZ);
 	}
@@ -179,21 +180,19 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			if(up)
 			{
 
-				if(posY(pl) > getStopPointAbove(posY(pl)))
+				if(posY(pl) >= getStopPointAbove(posY(pl)))
 				{
 					iter.remove();
 					continue;
 				}
 				else
 				{
-					//TardisOutput.print("GLTE", "moving up " + Helper.getUsername(pl));
 					movePlayer(pl,true);
 				}
 			}
 			else
 			{
-				//TardisOutput.print("GLTE", "moving down " + Helper.getUsername(pl));
-				if(posY(pl) < (yCoord + 1.6))
+				if(posY(pl) < (yCoord + amountAboveToStopUp))
 				{
 					iter.remove();
 					continue;
