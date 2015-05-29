@@ -40,14 +40,17 @@ public class DimensionEventHandler
 		DamageSource source = event.source;
 		if((!handleTranquility(w,event,ent,source)) && (ent instanceof EntityPlayer))
 		{
+			float damAmount = event.ammount;
 			EntityPlayer player = (EntityPlayer)ent;
+			damAmount = (damAmount * (25 - player.getTotalArmorValue())) / 25.0f;
 			//TardisOutput.print("TDEH", "Handling hurt event");
-			if(player.getHealth() <= event.ammount)
+			if(player.getHealth() <= damAmount)
 			{
 				handleDead(w,player,event,source);
 			}
 		}
 	}
+
 
 	private boolean handleTranquility(World w, LivingHurtEvent event, EntityLivingBase ent, DamageSource source)
 	{
