@@ -118,6 +118,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 
 	private void playTakeoffSound()
 	{
+		if(ServerHelper.isClient())return;
 		SoundHelper.playSound(this, "tardismod:takeoff", 1);
 		takingOffSoundPlayed = true;
 	}
@@ -138,6 +139,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 
 	private void playLandSound()
 	{
+		if(ServerHelper.isClient())return;
 		if(!landFast)
 			SoundHelper.playSound(this, "tardismod:landing", 1);
 		else
