@@ -744,7 +744,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		int[] xCont = getControlsFromDest(x - exX);
 		int[] yCont = getYControls(y);
 		int[] zCont = getControlsFromDest(z - exZ);
-		if ((allowNearest || ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)))
+		if ((allowNearest || ((getFromControls(xCont) == (x-exX)) && (getFromControls(zCont) == (z-exZ))))
 				&& (getDimFromControl(dCont) == dim))
 		{
 			relativeCoords = true;
@@ -753,7 +753,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			yControls = yCont;
 			zControls = zCont;
 			sendUpdate();
-			return allowNearest ? ((getFromControls(xCont) == x) && (getFromControls(zCont) == z)) : true;
+			return true;
 		}
 		return false;
 	}
