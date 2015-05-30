@@ -7,11 +7,12 @@ public enum ScrewdriverMode
 	Schematic		(1,1,0.3,		null),
 	Dismantle		(0.7,0.1,0.1,	null),
 	Transmat		(0.8,0.3,1.0,	TardisFunction.TRANSMAT),
-	Recall			(1.0,0.6,0.1,	TardisFunction.RECALL);
-	
+	Recall			(1.0,0.6,0.1,	TardisFunction.RECALL),
+	Link			(0.7,0.4,0.0,	null);
+
 	public TardisFunction requiredFunction;
 	public final double[] c;
-	
+
 	ScrewdriverMode(double r, double g, double b, TardisFunction req)
 	{
 		requiredFunction = req;

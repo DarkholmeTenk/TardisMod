@@ -21,6 +21,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
+import tardis.api.ILinkable;
 import tardis.api.IScrewable;
 import tardis.api.IScrewablePrecise;
 import tardis.api.ITDismantleable;
@@ -195,6 +196,9 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			}
 			ScrewdriverMode mode = getMode(is);
 			addModeInfo(mode, is, infoList);
+			SimpleCoordStore scs = getSCS(is);
+			if(scs != null)
+				infoList.add("Link: " + scs.toString());
 		}
 	}
 
@@ -501,6 +505,56 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				switchMode(is, world, player, mode);
 		}
 		return is;
+	}
+
+	private SimpleCoordStore getSCS(ItemStack is)
+	{
+		if(is == null) return null;
+		NBTTagCompound nbt = is.stackTagCompound;
+		if((nbt != null) && nbt.hasKey("linkscs"))
+		{
+			return SimpleCoordStore.readFromNBT(nbt, "linkscs");
+		}
+		return null;
+	}
+
+	private void setSCS(ItemStack is, SimpleCoordStore scs)
+	{
+		if(is == null) return;
+		if(is.stackTagCompound == null) is.stackTagCompound = getNewNBT();
+		if(scs != null)
+			scs.writeToNBT(is.stackTagCompound, "linkscs");
+		else if(is.stackTagCompound.hasKey("linkscs"))
+			is.stackTagCompound.removeTag("linkscs");
+	}
+
+	public boolean link(EntityPlayer pl, ItemStack is, SimpleCoordStore toSCS)
+	{
+		if(is == null) return false;
+		SimpleCoordStore fromSCS = getSCS(is);
+		if(fromSCS == null)
+		{
+			setSCS(is,toSCS);
+			return true;
+		}
+		TileEntity from = fromSCS.getTileEntity();
+		TileEntity to = toSCS.getTileEntity();
+		if(fromSCS.equals(toSCS) && (from instanceof ILinkable))
+		{
+			setSCS(is,null);
+			return ((ILinkable)from).unlink(pl,toSCS);
+		}
+		if((from instanceof ILinkable) && (to instanceof ILinkable))
+		{
+			if(((ILinkable)from).link(pl, toSCS))
+			{
+				if(((ILinkable)to).link(pl, fromSCS))
+					return true;
+				else
+					((ILinkable)from).unlink(pl, toSCS);
+			}
+		}
+		return false;
 	}
 
 	@Override

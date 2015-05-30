@@ -11,6 +11,7 @@ import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,6 +28,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
+import tardis.api.ILinkable;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
@@ -52,7 +54,7 @@ import cpw.mods.fml.common.Optional;
 		@Optional.Interface(iface="thaumcraft.api.aspects.IEssentiaTransport",modid="Thaumcraft")
 })
 public class ComponentTileEntity extends AbstractTileEntity implements IScrewable, IActivatable, IBlockUpdateDetector,
-		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport
+		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport, ILinkable
 {
 	private HashMap<Integer, ITardisComponent>	comps			= new HashMap<Integer, ITardisComponent>();
 	private boolean								valid			= false;
@@ -234,6 +236,10 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 			}
 			else
 				player.addChatMessage(CoreTileEntity.cannotModifyMessage);
+		}
+		if (mode == ScrewdriverMode.Link)
+		{
+
 		}
 
 		boolean screwed = false;
@@ -951,6 +957,34 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 	public boolean renderExtendedTube()
 	{
 		return false;
+	}
+
+	@Override
+	public boolean link(EntityPlayer pl, SimpleCoordStore other)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean unlink(EntityPlayer pl, SimpleCoordStore other)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean unlink(EntityPlayer pl)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Set<SimpleCoordStore> getLinked()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
