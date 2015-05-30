@@ -221,6 +221,8 @@ public class TardisDimensionHandler
 	private List<Integer> getDims(int level)
 	{
 		ArrayList<Integer> list = new ArrayList();
+		if(!dimensionIDs.contains(0))
+			dimensionIDs.add(0);
 		for(Integer dim : dimensionIDs)
 		{
 			if(minLevels.containsKey(dim) && (minLevels.get(dim) > level))
