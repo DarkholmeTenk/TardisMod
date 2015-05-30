@@ -1375,6 +1375,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				if ((dY != desY) || (desLocs[2] == null)) desLocs[2] = dY;
 				if ((dZ != desZ) || (desLocs[3] == null)) desLocs[3] = dZ;
 			}
+			desDim = dD;
 			desX = dX;
 			desY = dY;
 			desZ = dZ;
