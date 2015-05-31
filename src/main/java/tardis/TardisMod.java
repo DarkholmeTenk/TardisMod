@@ -120,7 +120,6 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock				componentBlock;
 	public static AbstractBlock				internalDoorBlock;
 	public static AbstractBlock				decoBlock;
-	public static AbstractBlock				darkDecoBlock;
 	public static AbstractBlock				decoTransBlock;
 	public static AbstractBlock				schemaBlock;
 	public static AbstractBlock				schemaCoreBlock;

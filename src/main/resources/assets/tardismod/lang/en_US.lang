@@ -2,6 +2,7 @@ tile.TardisMod.DecoBlock.name=Decorative Block
 tile.TardisMod.Tardis.name=TARDIS
 
 tile.TardisMod.DecoBlock.Wall.name=Wall
+tile.TardisMod.DecoBlock.Floor.name=Walkway
 tile.TardisMod.DecoGlass.name=Glass
 
 tile.TardisMod.Component.Roundel.name=Open Roundel
