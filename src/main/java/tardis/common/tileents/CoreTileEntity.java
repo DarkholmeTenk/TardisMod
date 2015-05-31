@@ -4,6 +4,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
@@ -485,8 +486,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		else if (lockState.equals(LockState.Locked))
 			return false;
 		else if (lockState.equals(LockState.OwnerOnly))
-			return isOwner(ServerHelper.getUsername(player));
-		else if (lockState.equals(LockState.KeyOnly)) return isOwner(ServerHelper.getUsername(player)) || hasKey(player, false);
+			return isOwner(player);
+		else if (lockState.equals(LockState.KeyOnly)) return isOwner(player) || hasKey(player, false);
 		return false;
 	}
 
@@ -949,32 +950,18 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			Helper.loadSchema(fullName, worldObj, xCoord, yCoord - 10, zCoord, 0);
 	}
 
-	public boolean canModify(String playerName)
-	{
-		if (playerName == null) return false;
-		return isOwner(playerName) || ((modders != null) && modders.contains(playerName.hashCode()));
-	}
-
-	public void toggleModifier(EntityPlayer modder, String name)
-	{
-		if (isOwner(modder.getCommandSenderName()))
-		{
-			if (!modder.getCommandSenderName().equals(name))
-			{
-				if (modders.contains(name.hashCode()))
-					modders.remove(name.hashCode());
-				else
-					modders.add(name.hashCode());
-			}
-		}
-		else
-			modder.addChatMessage(cannotModifyMessage);
-	}
-
-	private boolean isOwner(EntityPlayer pl)
+	public boolean isOwner(EntityPlayer pl)
 	{
 		if (pl == null) return false;
-		return isOwner(ServerHelper.getUsername(pl));
+		if (ownerName != null)
+		{
+			if(PlayerHelper.isEqual(ownerName, pl))
+			{
+				ownerName = ServerHelper.getUsername(pl);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean isOwner(String name)

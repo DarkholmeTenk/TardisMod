@@ -468,6 +468,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public boolean hasPermission(EntityPlayer pl, TardisPermission perm)
 	{
+		CoreTileEntity core = getCore();
+		if((core != null) && core.isOwner(pl)) return true;
 		return hasPermission(ServerHelper.getUsername(pl),perm);
 	}
 
