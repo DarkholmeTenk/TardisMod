@@ -42,7 +42,7 @@ public class DimensionEventHandler
 		{
 			float damAmount = event.ammount;
 			EntityPlayer player = (EntityPlayer)ent;
-			damAmount = (damAmount * (25 - player.getTotalArmorValue())) / 25.0f;
+			//damAmount = (damAmount * (25 - player.getTotalArmorValue())) / 25.0f;
 			//TardisOutput.print("TDEH", "Handling hurt event");
 			if(player.getHealth() <= damAmount)
 			{
