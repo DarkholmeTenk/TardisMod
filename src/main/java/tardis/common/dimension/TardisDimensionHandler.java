@@ -119,37 +119,49 @@ public class TardisDimensionHandler
 		return CoreTileEntity.energyCostDimChange;
 	}
 
-	private synchronized void addDimension(int id)
+	private boolean isBlacklisted(int id)
+	{
+		if(blacklistedIDs.contains(id)) return true;
+		World w = WorldHelper.getWorld(id);
+		if(Helper.isTardisWorld(w)) return true;
+		String worldName = WorldHelper.getDimensionName(w);
+		if(blacklistedNames.contains(worldName)) return true;
+		for(String potential : blacklistedNames)
+		{
+			if(potential.endsWith("*"))
+			{
+				String subPotential = potential.substring(0,potential.length()-1);
+				if(worldName.startsWith(subPotential)) return true;
+			}
+		}
+		return false;
+	}
+
+	private synchronized boolean addDimension(int id)
 	{
 		try
 		{
-			World w = WorldHelper.getWorld(id);
-			if (Helper.isTardisWorld(w)) return;
 			if (!dimensionIDs.contains(id))
 			{
-				if (blacklistedIDs.contains(id) || blacklistedNames.contains(WorldHelper.getDimensionName(w))) return;
+				if (isBlacklisted(id)) return false;
 				dimensionIDs.add(id);
-				TardisOutput.print("TDimH", "Adding dimension: " + id + ", " + WorldHelper.getDimensionName(w));
+				TardisOutput.print("TDimH", "Adding dimension: " + id + ", " + WorldHelper.getDimensionName(id));
 				cleanUp();
+				return true;
 			}
 		}
 		catch (Exception e)
 		{
 			TardisOutput.print("TDimH", "Failed to add dimension: " + id);
 		}
+		return false;
 	}
 
-	private synchronized void addDimension(World w)
+	private boolean addDimension(World w)
 	{
-		if (Helper.isTardisWorld(w)) return;
+		if(Helper.isTardisWorld(w)) return false;
 		int id = WorldHelper.getWorldID(w);
-		if (!dimensionIDs.contains(id))
-		{
-			if (blacklistedIDs.contains(id) || blacklistedNames.contains(WorldHelper.getDimensionName(w))) return;
-			dimensionIDs.add(id);
-			TardisOutput.print("TDimH", "Adding dimension: " + id + ", " + WorldHelper.getDimensionName(w));
-			cleanUp();
-		}
+		return addDimension(id);
 	}
 
 	private synchronized void cleanUp()
@@ -252,8 +264,8 @@ public class TardisDimensionHandler
 			World w = WorldHelper.getWorldServer(dim);
 			if ((w != null) && !Helper.isTardisWorld(w) && !blacklistedIDs.contains(WorldHelper.getWorldID(w)) && !blacklistedNames.contains(WorldHelper.getDimensionName(w)))
 			{
-				addDimension(w);
-				return getControlFromDim(dim,level);
+				if(addDimension(w))
+					return getControlFromDim(dim,level);
 			}
 		}
 		if (dimensionIDs.contains(0)) return dimensionIDs.indexOf(0);
