@@ -55,10 +55,12 @@ public class Helper
 				if (core != null)
 					core.enterTardis((EntityPlayer) ent, true);
 				else
-					TeleportHelper.teleportEntity(ent, 0, ent.posX, ent.posY, ent.posZ);
+					TeleportHelper.teleportEntity(ent, 0, tardisCoreX-2, tardisCoreY, tardisCoreZ);
 			}
 			else
-				TeleportHelper.teleportEntity(ent, 0, ent.posX, ent.posY, ent.posZ);
+			{
+				TeleportHelper.teleportEntity(ent, 0, tardisCoreX-2, tardisCoreY, tardisCoreZ);
+			}
 		}
 	}
 
