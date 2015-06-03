@@ -38,6 +38,8 @@ public class SummonerTileEntity extends AbstractTileEntity implements IActivatab
 	@Override
 	public List<ItemStack> dismantle(SimpleCoordStore scs, EntityPlayer pl)
 	{
+		System.out.println("X");
+		worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 		List<ItemStack> is = new ArrayList<ItemStack>();
 		is.add(new ItemStack(TardisMod.summonerBlock,1));
 		return is;

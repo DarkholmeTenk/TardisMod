@@ -249,16 +249,17 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	}
 
 	@Optional.Method(modid="CoFHCore")
-	private boolean dismantle(Object o, SimpleCoordStore pos, EntityPlayer player, ItemStack is)
+	private boolean dismantle(Object o, SimpleCoordStore pos, EntityPlayer player)
 	{
 		if(!(o instanceof IDismantleable)) return false;
 		IDismantleable dis = (IDismantleable)o;
 		if (dis.canDismantle(player, pos.getWorldObj(), pos.x, pos.y, pos.z))
 		{
+			if(ServerHelper.isClient()) return true;
 			ArrayList<ItemStack> s = dis.dismantleBlock(player, pos.getWorldObj(), pos.x, pos.y, pos.z, false);
 			for (ItemStack tis : s)
 				if (tis != null) WorldHelper.giveItemStack(player, tis);
-			toolUsed(is, player, pos.x, pos.y, pos.z);
+			toolUsed(player.getHeldItem(), player, pos.x, pos.y, pos.z);
 			return true;
 		}
 		return false;
@@ -268,6 +269,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	{
 		if(dis.canDismantle(scs, pl))
 		{
+			if(ServerHelper.isClient()) return true;
 			List<ItemStack> s = dis.dismantle(scs, pl);
 			for (ItemStack tis : s)
 				if (tis != null) WorldHelper.giveItemStack(pl, tis);
@@ -281,6 +283,23 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	{
 		if (screw instanceof IScrewable) return ((IScrewable) screw).screw(mode, player);
 		if (screw instanceof IScrewablePrecise) return ((IScrewablePrecise)screw).screw(mode,player,pos);
+		return false;
+	}
+
+	public boolean handleBlock(SimpleCoordStore pos, EntityPlayer pl)
+	{
+		if (!isPlayerHoldingScrewdriver(pl)) return false;
+		ScrewdriverMode mode = getMode(pl.getHeldItem());
+		TileEntity te = pos.getTileEntity();
+		if(mode == ScrewdriverMode.Dismantle)
+		{
+			if(te instanceof ITDismantleable)
+				if(tardisDismantle((ITDismantleable)te,pos,pl)) return true;
+			if(Loader.isModLoaded("CoFHCore"))
+				if(dismantle(te,pos,pl)) return true;
+		}
+		if(screwScrewable(te,mode,pl,pos)) return true;
+		if(screwScrewable(pos.getBlock(),mode,pl,pos)) return true;
 		return false;
 	}
 
@@ -308,8 +327,8 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				if((b instanceof ITDismantleable) && tardisDismantle((ITDismantleable)b, scs,player)) return true;
 				if(Loader.isModLoaded("CoFHCore"))
 				{
-					if (dismantle(b,scs,player,is)) return true;
-					if (dismantle(te,scs,player,is)) return true;
+					if (dismantle(b,scs,player)) return true;
+					if (dismantle(te,scs,player)) return true;
 				}
 			}
 			else if (mode.equals(ScrewdriverMode.Reconfigure))
@@ -523,6 +542,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	@Override
 	public void toolUsed(ItemStack is, EntityLivingBase player, int x, int y, int z)
 	{
+		if(ServerHelper.isClient()) return;
 		float speed = (float) (player.getRNG().nextDouble() * 0.5) + 0.75f;
 		SoundHelper.playSound(WorldHelper.getWorldID(player.worldObj), x, y, z, "tardismod:sonic", 0.25F, speed);
 		player.swingItem();

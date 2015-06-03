@@ -1,6 +1,5 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -8,7 +7,7 @@ import tardis.TardisMod;
 import tardis.common.tileents.SummonerTileEntity;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class SummonerBlock extends AbstractBlockContainer
+public class SummonerBlock extends AbstractScrewableBlock
 {
 	public SummonerBlock()
 	{

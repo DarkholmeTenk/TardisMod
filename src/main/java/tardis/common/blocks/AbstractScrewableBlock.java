@@ -1,11 +1,11 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import tardis.api.IScrewable;
-import tardis.common.items.SonicScrewdriverItem;
+import tardis.TardisMod;
 
 public abstract class AbstractScrewableBlock extends AbstractBlockContainer
 {
@@ -29,11 +29,7 @@ public abstract class AbstractScrewableBlock extends AbstractBlockContainer
 	{
 		boolean cont = false;
 		TileEntity te = w.getTileEntity(x, y, z);
-		if(te instanceof IScrewable)
-		{
-			if(SonicScrewdriverItem.isPlayerHoldingScrewdriver(pl))
-				cont = ((IScrewable)te).screw(SonicScrewdriverItem.getMode(pl.getHeldItem()), pl);
-		}
+		if(TardisMod.screwItem.handleBlock(new SimpleCoordStore(w,x,y,z), pl)) return true;
 		if(!cont)
 			return super.onBlockActivated(w,x,y,z,pl,s,i,j,k);
 		return true;
