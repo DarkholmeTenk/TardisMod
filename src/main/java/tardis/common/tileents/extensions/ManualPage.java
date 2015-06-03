@@ -18,7 +18,14 @@ public enum ManualPage
 	LRCHRONO("Chronosteel","LRChrono"),
 	LRDALEK("Dalekanium","LRDalek"),
 	LRKONTRON("Kontron","LRKontron"),
-	LRTEMPDIRT("Temporal Dirt","LRDirt");
+	LRTEMPDIRT("Temporal Dirt","LRDirt"),
+	TOOLS("Tools","Tools"),
+	ROUNDELS("Roundels","Roundels"),
+	LANDPAD("Landing Pad","LandPad"),
+	GRAVLIFT("Gravity Lift","GravLift"),
+	ENGINE("Engine","Engine"),
+	SONIC("Screwdriver","Sonic"),
+	CREDITS("Credits","Credits");
 
 	public final String title;
 	public final String tex;

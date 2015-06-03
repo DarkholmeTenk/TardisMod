@@ -27,7 +27,15 @@ public class ManualPageTree
 		ManualPageTree recDir	= new ManualPageTree(ManualPage.LRTEMPDIRT, nullT);
 		ManualPageTree lab		= new ManualPageTree(ManualPage.LAB, recChr, recDal, recKon, recDir);
 		ManualPageTree craft	= new ManualPageTree(ManualPage.CRAFTING, lab);
-		topTree = new ManualPageTree(ManualPage.MAIN, flight, craft);
+		ManualPageTree grav		= new ManualPageTree(ManualPage.GRAVLIFT, nullT);
+		ManualPageTree batt		= new ManualPageTree(ManualPage.BATTERY, nullT);
+		ManualPageTree roundels	= new ManualPageTree(ManualPage.ROUNDELS, nullT);
+		ManualPageTree landpad	= new ManualPageTree(ManualPage.LANDPAD, nullT);
+		ManualPageTree engine	= new ManualPageTree(ManualPage.ENGINE, nullT);
+		ManualPageTree sonic	= new ManualPageTree(ManualPage.SONIC, nullT);
+		ManualPageTree tools	= new ManualPageTree(ManualPage.TOOLS, sonic, grav, batt, roundels, landpad, engine);
+		ManualPageTree creds	= new ManualPageTree(ManualPage.CREDITS, nullT);
+		topTree = new ManualPageTree(ManualPage.MAIN, flight, craft, tools, creds);
 	}
 
 	public ManualPageTree(ManualPage _page, ManualPageTree... _children)
