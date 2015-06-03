@@ -156,7 +156,7 @@ public class TardisDimensionHandler
 
 	private synchronized boolean addDimension(World w, int id)
 	{
-		if(Helper.isTardisWorld(w))
+		if(Helper.isTardisWorld(w)) return false;
 		try
 		{
 			if (!dimensionIDs.contains(id))
