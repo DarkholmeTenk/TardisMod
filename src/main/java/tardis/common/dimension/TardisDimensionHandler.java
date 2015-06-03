@@ -123,6 +123,12 @@ public class TardisDimensionHandler
 	{
 		if(blacklistedIDs.contains(id)) return true;
 		World w = WorldHelper.getWorld(id);
+		return isBlacklisted(id,w);
+	}
+
+	private boolean isBlacklisted(int id, World w)
+	{
+		if(blacklistedIDs.contains(id)) return true;
 		if(Helper.isTardisWorld(w)) return true;
 		String worldName = WorldHelper.getDimensionName(w);
 		if(blacklistedNames.contains(worldName)) return true;
@@ -137,8 +143,20 @@ public class TardisDimensionHandler
 		return false;
 	}
 
-	private synchronized boolean addDimension(int id)
+	private boolean addDimension(int id)
 	{
+		World w = WorldHelper.getWorld(id);
+		return addDimension(w,id);
+	}
+
+	private boolean addDimension(World w)
+	{
+		return addDimension(w, WorldHelper.getWorldID(w));
+	}
+
+	private synchronized boolean addDimension(World w, int id)
+	{
+		if(Helper.isTardisWorld(w))
 		try
 		{
 			if (!dimensionIDs.contains(id))
@@ -155,13 +173,6 @@ public class TardisDimensionHandler
 			TardisOutput.print("TDimH", "Failed to add dimension: " + id);
 		}
 		return false;
-	}
-
-	private boolean addDimension(World w)
-	{
-		if(Helper.isTardisWorld(w)) return false;
-		int id = WorldHelper.getWorldID(w);
-		return addDimension(id);
 	}
 
 	private synchronized void cleanUp()
@@ -214,7 +225,7 @@ public class TardisDimensionHandler
 		if (ServerHelper.isClient()) return;
 		WorldServer[] loadedWorlds = DimensionManager.getWorlds();
 		for (WorldServer w : loadedWorlds)
-			addDimension(w);
+			addDimension(w, WorldHelper.getWorldID(w));
 		internalFindDimensions();
 	}
 
