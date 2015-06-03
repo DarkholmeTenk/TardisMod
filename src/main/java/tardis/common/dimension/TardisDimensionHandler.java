@@ -145,18 +145,27 @@ public class TardisDimensionHandler
 
 	private boolean addDimension(int id)
 	{
+		if(dimensionIDs.contains(id)) return true;
 		World w = WorldHelper.getWorld(id);
 		return addDimension(w,id);
 	}
 
 	private boolean addDimension(World w)
 	{
+		String name = WorldHelper.getDimensionName(w);
+		if((name == null) || name.isEmpty())
+		{
+			scanAfterDelayThread = new Thread(scanAfterDelay);
+			scanAfterDelayThread.start();
+			return false;
+		}
 		return addDimension(w, WorldHelper.getWorldID(w));
 	}
 
 	private synchronized boolean addDimension(World w, int id)
 	{
 		if(Helper.isTardisWorld(w)) return false;
+		if(dimensionIDs.contains(id)) return true;
 		try
 		{
 			if (!dimensionIDs.contains(id))
