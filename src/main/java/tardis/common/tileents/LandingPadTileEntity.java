@@ -41,8 +41,6 @@ public class LandingPadTileEntity extends ComponentTileEntity
 				{
 					if(core.canBeAccessedExternally())
 						return core;
-					else
-						System.out.println("NE");
 				}
 			}
 		}
