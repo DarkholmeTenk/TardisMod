@@ -1,5 +1,6 @@
 package tardis.common.tileents.components;
 
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -9,7 +10,7 @@ import tardis.common.tileents.ComponentTileEntity;
 public class ComponentInventory extends AbstractComponent implements IInventory
 {
 	protected ComponentInventory(){}
-	
+
 	public ComponentInventory(ComponentTileEntity parent)
 	{
 		parentObj = parent;
@@ -85,8 +86,15 @@ public class ComponentInventory extends AbstractComponent implements IInventory
 		TardisDataStore ds = getDatastore();
 		if(ds != null)
 		{
-			if(ds.getIS(i) == null)
+			ItemStack currentIS = ds.getIS(i);
+			if(WorldHelper.sameItem(currentIS, itemstack))
 				return true;
+			for(int j = 0; j < getSizeInventory(); j++)
+			{
+				currentIS = ds.getIS(j);
+				if(WorldHelper.sameItem(currentIS, itemstack))
+					return false;
+			}
 		}
 		return false;
 	}
@@ -116,14 +124,14 @@ public class ComponentInventory extends AbstractComponent implements IInventory
 	public void openInventory()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void closeInventory()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
