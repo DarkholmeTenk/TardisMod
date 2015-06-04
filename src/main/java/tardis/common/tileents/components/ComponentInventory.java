@@ -89,11 +89,15 @@ public class ComponentInventory extends AbstractComponent implements IInventory
 			ItemStack currentIS = ds.getIS(i);
 			if(WorldHelper.sameItem(currentIS, itemstack))
 				return true;
-			for(int j = 0; j < getSizeInventory(); j++)
+			if(currentIS == null)
 			{
-				currentIS = ds.getIS(j);
-				if(WorldHelper.sameItem(currentIS, itemstack))
-					return false;
+				for(int j = 0; j < getSizeInventory(); j++)
+				{
+					currentIS = ds.getIS(j);
+					if(WorldHelper.sameItem(currentIS, itemstack))
+						return false;
+				}
+				return true;
 			}
 		}
 		return false;
