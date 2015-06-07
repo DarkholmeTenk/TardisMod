@@ -171,6 +171,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static int						maxEachAspectInc	= 16;
 	public static int						numAspects			= 16;
 	public static int						numDirtRecipe		= 2;
+	public static boolean					deleteDisconnected	= true;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
@@ -216,7 +217,7 @@ public class TardisMod implements IConfigHandlerMod
 		visibleSchema = modConfig.getConfigItem(new ConfigItem("Visible Schema", CType.BOOLEAN, false, "Should schema boundaries be visible (clientside config)")).getBoolean();
 		visibleForceField = modConfig.getBoolean("Visible forcefields", false, "Should the forcefields be visible or not");
 		lightBlocks = modConfig.getBoolean("Normal blocks give off light", false, "If true, normal blocks (including slabs and such) give off light");
-
+		deleteDisconnected = modConfig.getBoolean("Delete disconnected", true, "Delete rooms which aren't connected to the console room when the connecting room is deleted");
 
 		xpBase = miscConfig.getInt("xp base amount", 80, "The amount of xp it initially costs to level up");
 		xpInc = miscConfig.getInt("xp increase", 20, "The amount that is added on to the xp cost every time the TARDIS levels up");

@@ -213,8 +213,9 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 					lastScrewTT = tt;
 					Set<SimpleCoordStore> others = getDependentCores();
 					ServerHelper.sendString(player, "Right click then sneak right click with a dismantle screwdriver to remove this room");
-					if(others.size() > 0)
-						ServerHelper.sendString(player, others.size() + " rooms will be removed");
+					if(TardisMod.deleteDisconnected)
+						if(others.size() > 0)
+							ServerHelper.sendString(player, others.size() + " rooms will be removed");
 					return true;
 				}
 				else if(player.isSneaking())
@@ -222,7 +223,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 					CoreTileEntity core = Helper.getTardisCore(worldObj);
 					if((core== null) || core.addRoom(true,this))
 					{
-						remove(true);
+						remove(TardisMod.deleteDisconnected);
 						return true;
 					}
 				}
