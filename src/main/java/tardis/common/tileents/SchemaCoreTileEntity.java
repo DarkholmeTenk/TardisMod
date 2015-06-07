@@ -6,11 +6,15 @@ import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
@@ -32,7 +36,9 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	private PartBlueprint pb = null;
 
 	private boolean addedToCore = false;
+	private int lastScrewTT = -1;
 
+	private int traversed = 0;
 	public SchemaCoreTileEntity()
 	{
 	}
@@ -106,9 +112,15 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 				core.addRoom(this);
 			addedToCore = true;
 		}
+		if(ServerHelper.isServer())
+		{
+			traversed = 0;
+			if((lastScrewTT + TardisMod.shiftPressTime) < tt)
+				lastScrewTT = -1;
+		}
 	}
 
-	public void remove()
+	public void remove(boolean deleteUnconnected)
 	{
 		if(name != null)
 		{
@@ -123,15 +135,67 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 						if(((x != xCoord) || (y != yCoord) || (z != zCoord)) && !worldObj.isAirBlock(x, y, z) && Helper.isBlockRemovable(worldObj.getBlock(x, y, z)))
 							worldObj.setBlockToAir(x, y, z);
 					}
+			if(deleteUnconnected)
+			{
+				Set<SimpleCoordStore> dependantCores = getDependentCores();
+				for(SimpleCoordStore scs : dependantCores)
+				{
+					TileEntity te = scs.getTileEntity();
+					if(te instanceof SchemaCoreTileEntity)
+						((SchemaCoreTileEntity)te).remove(false);
+				}
+			}
 			worldObj.setBlockToAir(xCoord, yCoord, zCoord);
-			/*PartBlueprint ohGod = new PartBlueprint(TardisMod.configHandler.getSchemaFile(name));
-			TardisOutput.print("TSCTE", "Hollowing " + name);
-			ohGod.clear(worldObj,xCoord,yCoord,zCoord,facing);*/
 		}
 		else
 		{
 			TardisOutput.print("TSCTE", "No name, can't remove?");
 		}
+	}
+
+	/**
+	 * @return A set of schema cores which are dependent on this core for a connection to the console room
+	 */
+	public Set<SimpleCoordStore> getDependentCores()
+	{
+		traversed = rand.nextInt(1000)+1;
+		if(doors.isEmpty()) setDoorArray();
+		HashSet<SimpleCoordStore> toReturn = new HashSet<SimpleCoordStore>();
+		SimpleCoordStore me = coords;
+		mainLoop:
+		for(DoorDS myDDS : doors)
+		{
+			HashSet<SimpleCoordStore> current = new HashSet<SimpleCoordStore>();
+			LinkedBlockingQueue<DoorDS> queue = new LinkedBlockingQueue<DoorDS>();
+			queue.add(myDDS);
+			DoorDS currentDoorDS = null;
+			while((currentDoorDS = queue.poll()) != null)
+			{
+				if(currentDoorDS.other == null) continue;
+				SimpleCoordStore other = currentDoorDS.other;
+				if(other.equals(me)) continue;
+				TileEntity tempTE = other.getTileEntity();
+				if(!(tempTE instanceof SchemaCoreTileEntity)) continue;
+				SchemaCoreTileEntity te = (SchemaCoreTileEntity)tempTE;
+				if(te.traversed == traversed)
+				{
+					if(!current.contains(other) && !toReturn.contains(other))
+						continue mainLoop;
+					continue;
+				}
+				te.traversed = traversed;
+				if(te.isCore())
+				{
+					continue mainLoop;
+				}
+				current.add(other);
+				te.setDoorArray();
+				for(DoorDS dds : te.doors)
+					queue.add(dds);
+			}
+			toReturn.addAll(current);
+		}
+		return toReturn;
 	}
 
 	@Override
@@ -144,11 +208,23 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			TardisDataStore ds = Helper.getDataStore(worldObj);
 			if((ds == null) || ds.hasPermission(player, TardisPermission.ROOMS))
 			{
-				CoreTileEntity core = Helper.getTardisCore(worldObj);
-				if((core== null) || core.addRoom(true,this))
+				if(lastScrewTT == -1)
 				{
-					remove();
+					lastScrewTT = tt;
+					Set<SimpleCoordStore> others = getDependentCores();
+					ServerHelper.sendString(player, "Right click then sneak right click with a dismantle screwdriver to remove this room");
+					if(others.size() > 0)
+						ServerHelper.sendString(player, others.size() + " rooms will be removed");
 					return true;
+				}
+				else if(player.isSneaking())
+				{
+					CoreTileEntity core = Helper.getTardisCore(worldObj);
+					if((core== null) || core.addRoom(true,this))
+					{
+						remove(true);
+						return true;
+					}
 				}
 			}
 			else
@@ -180,7 +256,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 					facing = 1;
 				if(rot.z == bounds[3])
 					facing = 3;
-				doors.add(new DoorDS(facing,scs));
+				doors.add(new DoorDS(facing,scs,(scs.getMetadata() % 8) >=4));
 			}
 		}
 	}
@@ -196,14 +272,17 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			SimpleCoordStore scs = dds.scs;
 			int facing = dds.facing;
 			boolean foundPair = false;
+			SimpleCoordStore other = null;
 			switch(facing)
 			{
-				case 0: foundPair = Helper.isExistingDoor(scs.getWorldObj(), scs.x-1, scs.y, scs.z); break;
-				case 1: foundPair = Helper.isExistingDoor(scs.getWorldObj(), scs.x, scs.y, scs.z-1); break;
-				case 2: foundPair = Helper.isExistingDoor(scs.getWorldObj(), scs.x+1, scs.y, scs.z); break;
-				case 3: foundPair = Helper.isExistingDoor(scs.getWorldObj(), scs.x, scs.y, scs.z+1); break;
+				case 0: other = Helper.getExistingDoor(scs.getWorldObj(), scs.x-1, scs.y, scs.z); break;
+				case 1: other = Helper.getExistingDoor(scs.getWorldObj(), scs.x, scs.y, scs.z-1); break;
+				case 2: other = Helper.getExistingDoor(scs.getWorldObj(), scs.x+1, scs.y, scs.z); break;
+				case 3: other = Helper.getExistingDoor(scs.getWorldObj(), scs.x, scs.y, scs.z+1); break;
 			}
 
+			dds.other = other;
+			foundPair = other != null;
 			if(!foundPair && isRoomBeingRemoved)
 			{
 				if(scs.getBlock() != TardisMod.internalDoorBlock)
@@ -284,6 +363,15 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 		return false;
 	}
 
+	public boolean isCore()
+	{
+		if(!Helper.isTardisWorld(getWorldObj())) return true;
+		CoreTileEntity core = Helper.getTardisCore(this);
+		if(core.getSchemaCore() == this)
+			return true;
+		return false;
+	}
+
 	@Override
 	public void writeToNBT(NBTTagCompound nbt)
 	{
@@ -293,6 +381,9 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			nbt.setString("name",name);
 			nbt.setIntArray("bounds", bounds);
 			nbt.setInteger("facing", facing);
+			int i = 0;
+			for(DoorDS ds : doors)
+				ds.writeToNBT(nbt, "door"+(i++));
 		}
 	}
 
@@ -306,7 +397,9 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			name = nbt.getString("name");
 			bounds = nbt.getIntArray("bounds");
 			facing = nbt.getInteger("facing");
-			//setDoorArray();
+			int i = 0;
+			while(nbt.hasKey("door"+i))
+				doors.add(DoorDS.readFromNBT(nbt, "door"+(i++)));
 		}
 	}
 
@@ -320,14 +413,35 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	{
 	}
 
-	private class DoorDS
+	private static class DoorDS
 	{
-		private int facing;
-		private SimpleCoordStore scs;
-		public DoorDS(int f, SimpleCoordStore s)
+		private final int facing;
+		private final SimpleCoordStore scs;
+		public SimpleCoordStore other = null;
+		private final boolean primary;
+		public DoorDS(int f, SimpleCoordStore s, boolean p)
 		{
 			facing = f;
 			scs = s;
+			primary = p;
+		}
+
+		public void writeToNBT(NBTTagCompound nbt, String name)
+		{
+			NBTTagCompound tempNBT = scs.writeToNBT();
+			tempNBT.setInteger("f", facing);
+			tempNBT.setBoolean("p", primary);
+			nbt.setTag(name, tempNBT);
+		}
+
+		public static DoorDS readFromNBT(NBTTagCompound nbt, String name)
+		{
+			if(!nbt.hasKey(name)) return null;
+			NBTTagCompound temp = nbt.getCompoundTag(name);
+			int f = temp.getInteger("f");
+			boolean p = temp.getBoolean("p");
+			SimpleCoordStore scs = SimpleCoordStore.readFromNBT(temp);
+			return new DoorDS(f,scs,p);
 		}
 	}
 

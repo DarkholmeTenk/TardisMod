@@ -65,7 +65,7 @@ public class SchemaReloadCommand extends AbstractCommand
 						SchemaSaveCommand.save(s, pl, pl.worldObj, x, y, z);
 						TileEntity te = pl.worldObj.getTileEntity(x, y, z);
 						if(te instanceof SchemaCoreTileEntity)
-							((SchemaCoreTileEntity)te).remove();
+							((SchemaCoreTileEntity)te).remove(false);
 					}
 				}
 				catch(Exception e)

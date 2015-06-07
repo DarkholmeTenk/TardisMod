@@ -462,7 +462,15 @@ public class Helper
 		return false;
 	}
 
-	public static boolean isExistingDoor(World w, int x, int y, int z)
+	/**
+	 *
+	 * @param w the world of the expected door position
+	 * @param x the location of the expected door
+	 * @param y the location of the expected door
+	 * @param z the location of the expected door
+	 * @return the simple coord store of the schema core which has the door specified or null if none found
+	 */
+	public static SimpleCoordStore getExistingDoor(World w, int x, int y, int z)
 	{
 		if (isTardisWorld(w))
 		{
@@ -476,14 +484,15 @@ public class Helper
 					TileEntity te = scs.getTileEntity();
 					if (te instanceof SchemaCoreTileEntity)
 						if (((SchemaCoreTileEntity) te).isDoor(pos))
-							return true;
+							return scs;
 				}
 				SchemaCoreTileEntity te = core.getSchemaCore();
 				if (te != null)
-					return te.isDoor(pos);
+					if(te.isDoor(pos))
+						return new SimpleCoordStore(te);
 			}
 		}
-		return false;
+		return null;
 	}
 
 }

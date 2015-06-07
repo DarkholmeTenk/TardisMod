@@ -416,7 +416,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					{
 						TardisOutput.print("TCTE", "Removing room @ " + coord);
 						SchemaCoreTileEntity schemaCore = (SchemaCoreTileEntity) te;
-						schemaCore.remove();
+						schemaCore.remove(false);
 					}
 					i.remove();
 				}
@@ -1119,7 +1119,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				{
 					TardisOutput.print("TCTE", "Removing room @ " + coord);
 					SchemaCoreTileEntity schemaCore = (SchemaCoreTileEntity) te;
-					schemaCore.remove();
+					schemaCore.remove(false);
 				}
 			}
 			roomSet.clear();
