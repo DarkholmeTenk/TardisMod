@@ -18,5 +18,5 @@
 /screenshots/
 options.txt
 usernamecache.json
-*.blend1
 *.jar
+**.blend1
