@@ -497,6 +497,8 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				if(!rightClickBlock(is, mode, player, world))
 					switchMode(is, world, player, mode);
 			}
+			else
+				switchMode(is, world, player, mode);
 		}
 		return is;
 	}
