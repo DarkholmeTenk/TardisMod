@@ -19,4 +19,4 @@
 options.txt
 usernamecache.json
 *.jar
-**.blend1
+**/*.blend1
