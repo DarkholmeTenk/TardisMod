@@ -147,6 +147,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private static int					maxMoveForFast		= 3;
 	private static int					energyPerSpeed		= 200;
 	private IGridNode					node				= null;
+	private int							unstableTicks		= 0;
+	private int							flightTicks			= 0;
 
 	static
 	{
@@ -303,6 +305,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if(ServerHelper.isServer())
 			handleSound();
 		flightTimer++;
+		if ((flightState == FlightState.DRIFT) || (flightState == FlightState.FLIGHT))
+		{
+			flightTicks++;
+			if(!con.isStable())
+				unstableTicks++;
+		}
 		if ((flightState == FlightState.TAKINGOFF) && (flightTimer >= takeOffTicks)) nextFlightState();
 		if ((flightState == FlightState.LANDING) && (flightTimer >= (fast ? landFastTicks : landSlowTicks))) nextFlightState();
 		if (((flightState == FlightState.DRIFT) && con.shouldLand()) || ((flightState == FlightState.FLIGHT) && !con.shouldLand())) nextFlightState();
@@ -726,6 +734,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			if (con == null) return false;
 			if (takeOffEnergy(pl))
 			{
+				unstableTicks = 0;
+				flightTicks = 0;
 				instability = 0;
 				flightState = FlightState.TAKINGOFF;
 				flightTimer = 0;
@@ -835,7 +845,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			forcedFlight = false;
 			currentBlockSpeed = 1;
 			if(!forcedFlight)
-				gDS().addXP((con != null) && !fast && con.isStable() ? 15 : (45 - instability));
+				gDS().addXP((con != null) && !fast && (unstableTicks >= (flightTicks/2)) ? 15 : (45 - instability));
 			fast = false;
 			flightState = FlightState.LANDED;
 			if(ServerHelper.isServer())
