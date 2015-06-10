@@ -724,7 +724,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		{
 			ConsoleTileEntity con = getConsole();
 			if (con == null) return false;
-			if ((!con.shouldLand()) || takeOffEnergy(pl))
+			if (takeOffEnergy(pl))
 			{
 				instability = 0;
 				flightState = FlightState.TAKINGOFF;
