@@ -21,9 +21,15 @@ public class EngineRenderer extends AbstractObjRenderer
 {
 	ControlRenderer comps = null;
 	IModelCustom engine;
+	ResourceLocation engineTex;
+	IModelCustom enginePanel;
+	ResourceLocation panelTex;
 
 	{
 		engine = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/engine.obj"));
+		engineTex = new ResourceLocation("tardismod","textures/models/engine.png");
+		enginePanel = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/enginepanel.obj"));
+		panelTex = new ResourceLocation("tardismod","textures/models/enginepanel.png");
 	}
 
 	@Override
@@ -88,7 +94,19 @@ public class EngineRenderer extends AbstractObjRenderer
 
 	private void renderBack(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
 	{
-
+		if(eng.visibility > 0)
+		{
+			GL11.glPushMatrix();
+			GL11.glColor4d(1, 1, 1, eng.visibility);
+			GL11.glTranslated(0.49, -1, 0.5);
+			bindTexture(panelTex);
+			enginePanel.renderAll();
+			GL11.glColor4d(1, 1, 1, 1);
+			GL11.glPopMatrix();
+		}
+		GL11.glPushMatrix();
+		comps.renderButton(tess, eng, 100, -0.01, 0.5, 0.04, 0, 0, 270, 0.3, 0.3, 0.3);
+		GL11.glPopMatrix();
 	}
 
 	@Override
@@ -104,7 +122,7 @@ public class EngineRenderer extends AbstractObjRenderer
 			/**/
 			GL11.glPushMatrix();
 			GL11.glTranslated(0, -1.5, 0);
-			bindTexture(new ResourceLocation("tardismod","textures/models/engine.png"));
+			bindTexture(engineTex);
 			engine.renderAll();
 			GL11.glPopMatrix();
 			GL11.glPushMatrix();

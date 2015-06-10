@@ -50,6 +50,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	private String				consoleSettingString	= "Main";	// The string displayed on the console room selection screen.
 	private static String[]		availableConsoleRooms	= null;
 
+	public boolean				isEngineOpen			= false;
+	public double				visibility				= 1;
+
 	public static void updateConsoleRooms()
 	{
 		availableConsoleRooms = TardisMod.schemaHandler.getSchemas(true);
@@ -72,6 +75,13 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public void updateEntity()
 	{
 		super.updateEntity();
+		if(ServerHelper.isClient())
+		{
+			if(!isEngineOpen && (visibility < 1))
+				visibility += 0.1;
+			else if(isEngineOpen && (visibility > 0))
+				visibility -= 0.1;
+		}
 		if (((tt % 40) == 1) && ServerHelper.isServer())
 		{
 			if (availableConsoleRooms == null)
@@ -189,6 +199,22 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					return 80 + o;
 				if(hit.within(2, 0.43, X, 0.53, x))
 					return 90 + o;
+			}
+		}
+		else if(hit.within(4, 0.450, 0.01, 0.525, 0.09))
+			return 100;
+		else if(hit.within(4,0.12, 0.1, 1.12, 0.9) && isEngineOpen)
+		{
+			if(hit.side == 4)
+			{
+				double d = 0.095;
+				for(int i = 0; i < 8; i++)
+				{
+					double x = 0.14 + (d * i);
+					double X = x + 0.05;
+					if(hit.within(4, 0.94, x, 1.05, X))
+						return 100 + i + 1;
+				}
 			}
 		}
 		return -1;
@@ -390,6 +416,19 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				TardisPermission p = TardisPermission.get(control - 90);
 				ServerHelper.sendString(pl, currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name);
 			}
+			if(control == 100)
+			{
+				if(ds.hasPermission(pl, TardisPermission.POINTS))
+					isEngineOpen = !isEngineOpen;
+			}
+			sendUpdate();
+		}
+		else if(isEngineOpen)
+		{
+			if((control >= 101) && (control <= 108))
+			{
+				int slot = control - 101;
+			}
 		}
 	}
 
@@ -465,6 +504,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				TardisPermission p = TardisPermission.get(90-cID);
 				return ds.hasPermission(currentPerson, p) ? 1 : 0;
 			}
+			if(cID == 100)
+				return 1 - visibility;
 		}
 		return (float) (((tt + cID) % 40) / 39.0);
 	}
@@ -586,6 +627,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		nbt.setBoolean("io", internalOnly);
 		nbt.setBoolean("hS", hasScrew);
 		nbt.setInteger("lB", lastButton);
+		nbt.setBoolean("eO", isEngineOpen);
 	}
 
 	@Override
@@ -600,6 +642,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		lastButtonTT = tt;
 		preparingToUpgradeTT = tt;
 		internalOnly = nbt.getBoolean("io");
+		isEngineOpen = nbt.getBoolean("eO");
 		if (nbt.hasKey("ptU"))
 			preparingToUpgrade = TardisUpgradeMode.getUpgradeMode(nbt.getInteger("ptU"));
 		else if (nbt.hasKey("ptUN"))
