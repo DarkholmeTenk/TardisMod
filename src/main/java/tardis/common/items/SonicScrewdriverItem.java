@@ -8,6 +8,7 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -126,27 +127,6 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		return null;
 	}
 
-	public static SimpleCoordStore getStoredCoords(ItemStack is)
-	{
-		if (is != null)
-		{
-			NBTTagCompound nbt = is.stackTagCompound;
-			if ((nbt != null) && nbt.hasKey("coordStore")) { return SimpleCoordStore.readFromNBT(nbt.getCompoundTag("coordStore")); }
-		}
-		return null;
-	}
-
-	public static void setStoredCoords(ItemStack is, SimpleCoordStore toStore)
-	{
-		if ((is != null) && (is.getItem() instanceof SonicScrewdriverItem))
-		{
-			NBTTagCompound nbt = is.stackTagCompound;
-			if (nbt == null) nbt = is.stackTagCompound = new NBTTagCompound();
-			NBTTagCompound storeNBT = toStore.writeToNBT();
-			nbt.setTag("coordStore", storeNBT);
-		}
-	}
-
 	public static double[] getColors(ScrewdriverMode m)
 	{
 		if (m != null) return m.c;
@@ -168,6 +148,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		return is.stackTagCompound.getString("owner");
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addModeInfo(ScrewdriverMode mode, ItemStack is, List infoList)
 	{
 		infoList.add("Mode: " + mode.toString());
@@ -180,6 +161,14 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				infoList.add("Schematic: --None--");
 			else
 				infoList.add("Schematic: " + schemaCat + " - " + schemaName);
+		}
+		if (mode == ScrewdriverMode.Link)
+		{
+			SimpleCoordStore link = getSCS(is);
+			if(link == null)
+				infoList.add("Link: Target not set");
+			else
+				infoList.add("Link: " + link.toString());
 		}
 	}
 
@@ -196,9 +185,6 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			}
 			ScrewdriverMode mode = getMode(is);
 			addModeInfo(mode, is, infoList);
-			SimpleCoordStore scs = getSCS(is);
-			if(scs != null)
-				infoList.add("Link: " + scs.toString());
 		}
 	}
 
@@ -293,25 +279,60 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	public boolean handleBlock(SimpleCoordStore pos, EntityPlayer pl)
 	{
 		if (!isPlayerHoldingScrewdriver(pl)) return false;
-		ScrewdriverMode mode = getMode(pl.getHeldItem());
+		ItemStack is = pl.getHeldItem();
+		ScrewdriverMode mode = getMode(is);
 		TileEntity te = pos.getTileEntity();
+		Block b = pos.getBlock();
+		int m = pos.getMetadata();
 		if(mode == ScrewdriverMode.Dismantle)
 		{
 			if(te instanceof ITDismantleable)
 				if(tardisDismantle((ITDismantleable)te,pos,pl)) return true;
 			if(Loader.isModLoaded("CoFHCore"))
-				if(dismantle(te,pos,pl)) return true;
+				if(dismantle(te,pos,pl) || dismantle(b,pos,pl)) return true;
 		}
-		if(screwScrewable(te,mode,pl,pos)) return true;
-		if(screwScrewable(pos.getBlock(),mode,pl,pos)) return true;
+		else if(mode == ScrewdriverMode.Link)
+		{
+			if(te instanceof ILinkable)
+			{
+				if(link(pl, is, pos))
+				{
+					toolUsed(is,pl,pos.x,pos.y,pos.z);
+				}
+			}
+			else
+				setSCS(is,null);
+			return true;
+		}
+		else if(mode == ScrewdriverMode.Reconfigure)
+		{
+			if (b == TardisMod.colorableRoundelBlock)
+			{
+				TardisDataStore ds = Helper.getDataStore(pos.world);
+				if ((ds == null) || ds.hasPermission(pl, TardisPermission.ROUNDEL))
+				{
+					pos.getWorldObj().setBlock(pos.x, pos.y, pos.z, TardisMod.colorableOpenRoundelBlock, m, 3);
+					toolUsed(is, pl, pos.x, pos.y, pos.z);
+					return true;
+				}
+				else
+					pl.addChatMessage(CoreTileEntity.cannotModifyRoundel);
+			}
+			else
+			{
+				if (te instanceof IReconfigurableFacing)
+				{
+					if (((IReconfigurableFacing) te).rotateBlock())
+					{
+						toolUsed(is, pl, pos.x, pos.y, pos.z);
+						return true;
+					}
+				}
+				return te != null;
+			}
+		}
+		if(screwScrewable(te,mode,pl,pos) || screwScrewable(b, mode, pl, pos)) return true;
 		return false;
-	}
-
-	public boolean rightClickBlock(EntityPlayer pl, SimpleCoordStore pos)
-	{
-		if (!isPlayerHoldingScrewdriver(pl)) return false;
-		if(screwScrewable(pos.getBlock(), getMode(pl.getHeldItem()), pl, pos)) return true;
-		return screwScrewable(pos.getTileEntity(), getMode(pl.getHeldItem()), pl, pos);
 	}
 
 	private boolean rightClickBlock(ItemStack is, ScrewdriverMode mode, EntityPlayer player, World w)
@@ -321,48 +342,8 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			MovingObjectPosition hitPos = getMovingObjectPositionFromPlayer(w, player, true);
 			if (hitPos == null) return false;
 			System.out.println("T");
-			TileEntity te = w.getTileEntity(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-			Block b = w.getBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-			SimpleCoordStore scs = new SimpleCoordStore(w,hitPos);
-			if (screwScrewable(te, mode, player, scs) || screwScrewable(b, mode, player, scs)) return true;
-			if (mode.equals(ScrewdriverMode.Dismantle))
-			{
-				if((te instanceof ITDismantleable) && tardisDismantle((ITDismantleable)te, scs,player)) return true;
-				if((b instanceof ITDismantleable) && tardisDismantle((ITDismantleable)b, scs,player)) return true;
-				if(Loader.isModLoaded("CoFHCore"))
-				{
-					if (dismantle(b,scs,player)) return true;
-					if (dismantle(te,scs,player)) return true;
-				}
-			}
-			else if (mode.equals(ScrewdriverMode.Reconfigure))
-			{
-				if (b == TardisMod.colorableRoundelBlock)
-				{
-					int m = w.getBlockMetadata(hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-					TardisDataStore ds = Helper.getDataStore(w);
-					if ((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
-					{
-						w.setBlock(hitPos.blockX, hitPos.blockY, hitPos.blockZ, TardisMod.colorableOpenRoundelBlock, m, 3);
-						toolUsed(is, player, hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-						return true;
-					}
-					else
-						player.addChatMessage(CoreTileEntity.cannotModifyRoundel);
-				}
-				else
-				{
-					if (te instanceof IReconfigurableFacing)
-					{
-						if (((IReconfigurableFacing) te).rotateBlock())
-						{
-							toolUsed(is, player, hitPos.blockX, hitPos.blockY, hitPos.blockZ);
-							return true;
-						}
-					}
-					return te != null;
-				}
-			}
+			SimpleCoordStore pos = new SimpleCoordStore(w,hitPos);
+			return handleBlock(pos, player);
 		}
 		return false;
 	}
@@ -489,7 +470,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 						player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS recall failed"));
 				}
 			}
-			else if (mode.equals(ScrewdriverMode.Dismantle) || mode.equals(ScrewdriverMode.Reconfigure))
+			else
 			{
 				rightClickBlock(is, mode, player, world);
 			}
@@ -542,17 +523,15 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		if(fromSCS.equals(toSCS) && (from instanceof ILinkable))
 		{
 			setSCS(is,null);
-			return ((ILinkable)from).unlink(pl,toSCS);
+			return ((ILinkable)from).unlink(pl);
 		}
 		if((from instanceof ILinkable) && (to instanceof ILinkable))
 		{
-			if(((ILinkable)from).link(pl, toSCS))
-			{
-				if(((ILinkable)to).link(pl, fromSCS))
-					return true;
-				else
-					((ILinkable)from).unlink(pl, toSCS);
-			}
+			Set<SimpleCoordStore> linked = ((ILinkable)from).getLinked();
+			if(linked.contains(toSCS))
+				return ((ILinkable)from).unlink(pl,toSCS);
+			else
+				return ((ILinkable)from).link(pl, toSCS);
 		}
 		return false;
 	}

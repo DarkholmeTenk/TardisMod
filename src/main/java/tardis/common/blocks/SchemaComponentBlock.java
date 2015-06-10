@@ -150,7 +150,7 @@ public class SchemaComponentBlock extends AbstractBlock
     		{
     			if(w.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
     			{
-    				if(TardisMod.screwItem.rightClickBlock(pl, new SimpleCoordStore(w,x,y-i,z)))
+    				if(TardisMod.screwItem.handleBlock(new SimpleCoordStore(w,x,y-i,z), pl))
     					return true;
     				else
     				{
