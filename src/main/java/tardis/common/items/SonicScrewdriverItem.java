@@ -346,7 +346,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 					else
 						player.addChatMessage(CoreTileEntity.cannotModifyRoundel);
 				}
-				else
+				else if(Loader.isModLoaded("CoFHCore"))
 				{
 					if (te instanceof IReconfigurableFacing)
 					{
@@ -355,8 +355,8 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 							toolUsed(is, player, hitPos.blockX, hitPos.blockY, hitPos.blockZ);
 							return true;
 						}
+						return te != null;
 					}
-					return te != null;
 				}
 			}
 		}
