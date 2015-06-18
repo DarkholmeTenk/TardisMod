@@ -152,6 +152,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static boolean					tcInstalled			= false;
 
 	public static double					tardisVol			= 1;
+	public static boolean					deathTransmat		= true;
 	public static boolean					deathTransmatLive	= true;
 	public static boolean					visibleSchema		= false;
 	public static boolean					visibleForceField	= false;
@@ -187,7 +188,6 @@ public class TardisMod implements IConfigHandlerMod
 		miscConfig = configHandler.registerConfigNeeder("Misc");
 		refreshConfigs();
 
-		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
 		initBlocks();
 		initItems();
@@ -218,6 +218,8 @@ public class TardisMod implements IConfigHandlerMod
 		visibleForceField = modConfig.getBoolean("Visible forcefields", false, "Should the forcefields be visible or not");
 		lightBlocks = modConfig.getBoolean("Normal blocks give off light", false, "If true, normal blocks (including slabs and such) give off light");
 		deleteDisconnected = modConfig.getBoolean("Delete disconnected", true, "Delete rooms which aren't connected to the console room when the connecting room is deleted");
+		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
+		deathTransmat = modConfig.getBoolean("Do death transmat", true, "If true, when you die within range of your TARDIS you will be transmatted");
 
 		xpBase = miscConfig.getInt("xp base amount", 80, "The amount of xp it initially costs to level up");
 		xpInc = miscConfig.getInt("xp increase", 20, "The amount that is added on to the xp cost every time the TARDIS levels up");
