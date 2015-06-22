@@ -12,6 +12,8 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -38,6 +40,9 @@ import buildcraft.api.tools.IToolWrench;
 import cofh.api.block.IDismantleable;
 import cofh.api.item.IToolHammer;
 import cofh.api.tileentity.IReconfigurableFacing;
+
+import com.google.common.collect.Multimap;
+
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
@@ -573,5 +578,17 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	{
 		toolUsed(null, pl, x, y, z);
 	}
+
+	/**
+     * Gets a map of item attribute modifiers, used by ItemSword to increase hit damage.
+     */
+    @SuppressWarnings({ "unchecked", "deprecation", "rawtypes" })
+	@Override
+	public Multimap getItemAttributeModifiers()
+    {
+        Multimap multimap = super.getItemAttributeModifiers();
+        multimap.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(), new AttributeModifier(field_111210_e, "Weapon modifier", 0, 0));
+        return multimap;
+    }
 
 }

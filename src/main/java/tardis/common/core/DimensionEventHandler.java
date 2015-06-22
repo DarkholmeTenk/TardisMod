@@ -35,6 +35,17 @@ public class DimensionEventHandler
 	{
 		if(ServerHelper.isClient())
 			return;
+		if(event.isCancelable() && event.source.getDamageType().equals("player") && !event.source.equals(DamageSource.magic))
+		{
+			if(event.source.getSourceOfDamage() instanceof EntityPlayer)
+			{
+				if(SonicScrewdriverItem.isPlayerHoldingScrewdriver((EntityPlayer)event.source.getSourceOfDamage()))
+				{
+					event.setCanceled(true);
+					return;
+				}
+			}
+		}
 		EntityLivingBase ent = event.entityLiving;
 		World w = ent.worldObj;
 		DamageSource source = event.source;
