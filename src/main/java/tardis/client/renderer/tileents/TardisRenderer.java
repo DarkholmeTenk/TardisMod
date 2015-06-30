@@ -1,13 +1,16 @@
 package tardis.client.renderer.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.model.AdvancedModelLoader;
+import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
@@ -17,9 +20,11 @@ import tardis.client.renderer.model.TardisModel;
 import tardis.common.TardisProxy;
 import tardis.common.tileents.TardisTileEntity;
 
-public class TardisRenderer extends AbstractBlockRenderer implements IItemRenderer
+public class TardisRenderer extends AbstractObjRenderer implements IItemRenderer
 {
 	TardisModel model;
+	private static IModelCustom tardis;
+
 
 	public TardisRenderer()
 	{
@@ -29,6 +34,8 @@ public class TardisRenderer extends AbstractBlockRenderer implements IItemRender
 	@Override
 	public void renderBlock(Tessellator tesselator, TileEntity te, int x, int y, int z)
 	{
+		if(tardis == null)
+			tardis = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/tardis.obj"));
 		World world = te.getWorldObj();
 		TardisTileEntity tte = null;
 		if((te != null) && (te instanceof TardisTileEntity))
@@ -38,14 +45,15 @@ public class TardisRenderer extends AbstractBlockRenderer implements IItemRender
 		{
 			GL11.glPushMatrix();
 			//This line actually rotates the renderer.
-			GL11.glTranslatef(0.5F, 0, 0.5F);
+			//GL11.glTranslatef(0.5F, 0, 0.5F);
 			GL11.glRotatef(dir * (-90F), 0F, 1F, 0F);
-			GL11.glRotatef(180F, 0F, 0, 1F);
-			GL11.glTranslatef(0F, -1.5F, 0F);
+			//GL11.glRotatef(180F, 0F, 0, 1F);
+			GL11.glTranslatef(0F, 1F, 0F);
 			if(TardisMod.proxy instanceof TardisClientProxy)
 				bindTexture(((TardisClientProxy)TardisMod.proxy).getSkin(field_147501_a.field_147553_e,tte));
 			GL11.glColor4f(1F, 1F, 1F, tte.getTransparency());
-			model.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+			//model.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+			tardis.renderAll();
 			GL11.glPopMatrix();
 		}
 	}
@@ -101,7 +109,8 @@ public class TardisRenderer extends AbstractBlockRenderer implements IItemRender
 	{
 		GL11.glPushMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(TardisProxy.defaultSkin);
-		model.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		//model.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		tardis.renderAll();
 		GL11.glPopMatrix();
 	}
 }
