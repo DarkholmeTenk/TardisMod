@@ -1,6 +1,7 @@
 package tardis.common.dimension;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
@@ -109,6 +110,11 @@ public class TardisDataStore extends AbstractWorldDataStore
 		return null;
 	}
 
+	public World getExteriorWorld()
+	{
+		return WorldHelper.getWorld(exteriorWorld);
+	}
+
 	public boolean hasValidExterior()
 	{
 		World w = WorldHelper.getWorld(exteriorWorld);
@@ -117,6 +123,45 @@ public class TardisDataStore extends AbstractWorldDataStore
 			if (w.getBlock(exteriorX, exteriorY, exteriorZ) == TardisMod.tardisBlock) return true;
 		}
 		return false;
+	}
+
+	public int getFacing()
+	{
+		TardisTileEntity ext = getExterior();
+		if (ext != null)
+		{
+			return ext.getBlockMetadata();
+		}
+		return 0;
+	}
+
+	public SimpleDoubleCoordStore getExitPosition()
+	{
+		if(getExterior() == null) return null;
+		int facing = getFacing();
+		int dx = 0;
+		int dz = 0;
+		switch (facing)
+		{
+			case 0:	dz = -1;	break;
+			case 1:	dx = 1;		break;
+			case 2:	dz = 1;		break;
+			case 3:	dx = -1;	break;
+		}
+		return new SimpleDoubleCoordStore(exteriorWorld, exteriorX+0.5+dx, exteriorY, exteriorZ + 0.5 + dz);
+	}
+
+	public double getExitRotation()
+	{
+		int facing = getFacing();
+		switch (facing)
+		{
+			case 0:	return 180;
+			case 1:	return -90;
+			case 2:	return 0;
+			case 3:	return 90;
+		}
+		return 0;
 	}
 
 	public double getXP()
