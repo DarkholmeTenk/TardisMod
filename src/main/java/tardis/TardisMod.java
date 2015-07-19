@@ -154,6 +154,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static double					tardisVol			= 1;
 	public static boolean					deathTransmat		= true;
 	public static boolean					deathTransmatLive	= true;
+	public static double					transmatExitDist	= 2;
 	public static boolean					visibleSchema		= false;
 	public static boolean					visibleForceField	= false;
 	public static boolean					lightBlocks			= false;
@@ -220,6 +221,7 @@ public class TardisMod implements IConfigHandlerMod
 		deleteDisconnected = modConfig.getBoolean("Delete disconnected", true, "Delete rooms which aren't connected to the console room when the connecting room is deleted");
 		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
 		deathTransmat = modConfig.getBoolean("Do death transmat", true, "If true, when you die within range of your TARDIS you will be transmatted");
+		transmatExitDist = modConfig.getDouble("Transmat exit distance", 2, "The distance from the transmat point beneath which you will be transmatted out of the TARDIS");
 
 		xpBase = miscConfig.getInt("xp base amount", 80, "The amount of xp it initially costs to level up");
 		xpInc = miscConfig.getInt("xp increase", 20, "The amount that is added on to the xp cost every time the TARDIS levels up");

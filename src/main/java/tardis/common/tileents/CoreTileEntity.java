@@ -3,6 +3,7 @@ package tardis.common.tileents;
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
@@ -526,6 +527,29 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 	}
 
+	private boolean teleportOutside(Entity ent)
+	{
+		EntityPlayer player = null;
+		if(ent instanceof EntityPlayer) player = (EntityPlayer) ent;
+		World ext = gDS().getExteriorWorld();
+		if (ext != null)
+		{
+			SimpleDoubleCoordStore exitPos = gDS().getExitPosition();
+			double rotation = gDS().getExitRotation();
+
+			if (softBlock(exitPos) && softBlock(exitPos))
+			{
+				TeleportHelper.teleportEntity(ent, exitPos, rotation);
+				return true;
+			}
+			else
+				ServerHelper.sendString(player, "TARDIS", "The door is obstructed");
+		}
+		else
+			ServerHelper.sendString(player, "TARDIS", "The door refuses to open");
+		return false;
+	}
+
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
 	{
 		if (ServerHelper.isClient()) return;
@@ -533,36 +557,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		{
 			if (ignoreLock || canOpenLock(player, true))
 			{
-				World ext = WorldHelper.getWorld(gDS().exteriorWorld);
+				World ext = gDS().getExteriorWorld();
 				if (ext != null)
 				{
-					int facing = ext.getBlockMetadata(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ);
-					int dx = 0;
-					int dz = 0;
-					double rot = 0;
-					switch (facing)
-					{
-						case 0:
-							dz = -1;
-							rot = 180;
-							break;
-						case 1:
-							dx = 1;
-							rot = -90;
-							break;
-						case 2:
-							dz = 1;
-							rot = 0;
-							break;
-						case 3:
-							dx = -1;
-							rot = 90;
-							break;
-					}
+					SimpleDoubleCoordStore exitPos = gDS().getExitPosition();
+					double rotation = gDS().getExitRotation();
 
-					if (softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz) && softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz))
+					if (softBlock(exitPos) && softBlock(exitPos))
 					{
-						TeleportHelper.teleportEntity(player, gDS().exteriorWorld, gDS().exteriorX + 0.5 + (dx), gDS().exteriorY, gDS().exteriorZ + 0.5 + (dz), rot);
+						TeleportHelper.teleportEntity(player, exitPos, rotation);
 					}
 					else
 						ServerHelper.sendString(player, "TARDIS", "The door is obstructed");
@@ -1274,7 +1277,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (!hasFunction(TardisFunction.TRANSMAT)) return false;
 		TardisDataStore ds = gDS();
-		if ((ds != null) && (ent instanceof EntityPlayer)) if (!ds.hasPermission((EntityPlayer) ent, TardisPermission.TRANSMAT)) return false;
+		if ((ds != null) && (ent instanceof EntityPlayer))
+			if (!ds.hasPermission((EntityPlayer) ent, TardisPermission.TRANSMAT)) return false;
 		int entWorld = WorldHelper.getWorldID(ent.worldObj);
 		boolean trans = false;
 		if (entWorld == WorldHelper.getWorldID(worldObj)) // if ent is in the tardis
@@ -1296,6 +1300,22 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		SimpleCoordStore to = getTransmatPoint();
 		if (canTransmatEntity(ent))
 		{
+			if(ent instanceof EntityLivingBase)
+			{
+				EntityLivingBase livingEnt = (EntityLivingBase) ent;
+				SimpleDoubleCoordStore entPos = new SimpleDoubleCoordStore(livingEnt);
+				double dist = entPos.distance(to);
+				if((dist < TardisMod.transmatExitDist) && (entPos.world == to.world))
+				{
+					if(teleportOutside(ent))
+					{
+						SimpleDoubleCoordStore exitPos = gDS().getExitPosition();
+						SoundHelper.playSound(ent, "tardismod:transmat", 0.6F, 1);
+						SoundHelper.playSound(exitPos, "tardismod:transmat", 0.6F);
+						return true;
+					}
+				}
+			}
 			SoundHelper.playSound(ent, "tardismod:transmat", 0.6F, 1);
 			TeleportHelper.teleportEntity(ent, WorldHelper.getWorldID(worldObj), to.x + 0.5, to.y + 1, to.z + 0.5, 90);
 			SoundHelper.playSound(worldObj, to.x, to.y + 1, to.z, "tardismod:transmat", 0.6F);
