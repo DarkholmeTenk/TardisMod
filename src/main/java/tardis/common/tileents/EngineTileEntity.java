@@ -462,7 +462,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			if((cID >= 90) && (cID < 100))
 			{
-				TardisPermission p = TardisPermission.get(90-cID);
+				TardisPermission p = TardisPermission.get(cID-90);
 				return ds.hasPermission(currentPerson, p) ? 1 : 0;
 			}
 		}
