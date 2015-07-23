@@ -4,21 +4,24 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
 
 import java.util.EnumSet;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.TardisMod;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import tardis.common.tileents.extensions.LabFlag;
 import tardis.common.tileents.extensions.LabRecipe;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CraftingComponentItem extends AbstractItem
 {
-	
+
 	private static String[] names;
-	
+
 	static
 	{
 		names = new String[CraftingComponentType.values().length];
@@ -26,7 +29,7 @@ public class CraftingComponentItem extends AbstractItem
 		for(int i = 0;i<names.length;i++)
 			names[i] = types[i].name;
 	}
-	
+
 	public CraftingComponentItem()
 	{
 		super(TardisMod.modName);
@@ -38,6 +41,12 @@ public class CraftingComponentItem extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
+		if(TardisMod.kontronCraftable)
+			GameRegistry.addRecipe(new ShapedOreRecipe(CraftingComponentType.KONTRON.getIS(1),false,"gdg","ded","gdg",
+					'g', Blocks.glass,
+					'd', Items.diamond,
+					'e', Items.ender_eye));
+
 		LabRecipe currentRecipe = new LabRecipe(
 				new ItemStack[] { new ItemStack(Items.iron_ingot)},
 				new ItemStack[]{CraftingComponentType.CHRONOSTEEL.getIS(1)},
@@ -56,10 +65,10 @@ public class CraftingComponentItem extends AbstractItem
 				EnumSet.noneOf(LabFlag.class),
 				100);
 		LabTileEntity.addRecipe(currentRecipe);
-		
-		ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,4));
-		ChestGenHooks.getInfo(ChestGenHooks.VILLAGE_BLACKSMITH).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,4));
-		ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,4));
+
+		ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,TardisMod.kontronRarity));
+		ChestGenHooks.getInfo(ChestGenHooks.VILLAGE_BLACKSMITH).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,TardisMod.kontronRarity));
+		ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,TardisMod.kontronRarity));
 	}
 
 }

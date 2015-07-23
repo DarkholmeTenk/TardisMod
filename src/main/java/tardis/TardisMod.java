@@ -169,6 +169,8 @@ public class TardisMod implements IConfigHandlerMod
 	public static int						shiftPressTime		= 60;
 	public static boolean					keyCraftable		= true;
 	public static boolean					keyReqKontron		= true;
+	public static boolean					kontronCraftable	= false;
+	public static int						kontronRarity		= 4;
 	public static int						maxEachAspect		= 16;
 	public static int						maxEachAspectInc	= 16;
 	public static int						numAspects			= 16;
@@ -212,6 +214,8 @@ public class TardisMod implements IConfigHandlerMod
 		keyCraftable = modConfig.getBoolean("keyCraftable", true, "True if the key is craftable.", "False if they can only be spawned");
 
 		keyReqKontron = modConfig.getBoolean("keyRequiresKontron", true, "True if the key requires a Kontron crystal to craft");
+		kontronCraftable = modConfig.getBoolean("kontronCraftable",false,"If true, a standard crafting recipe is added for the kontron crystal");
+		kontronRarity = modConfig.getInt("kontronRarity",20,"The higher this value, the more likely you are to find kontron crystals in chests");
 
 		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1, "How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
 
