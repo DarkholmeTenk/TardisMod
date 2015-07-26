@@ -28,6 +28,8 @@ import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SonicScrewdriverItem;
+import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
+import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
 
 public class EngineTileEntity extends AbstractTileEntity implements IControlMatrix
 {
@@ -203,21 +205,30 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		}
 		else if(hit.within(4, 0.450, 0.01, 0.525, 0.09))
 			return 100;
-		else if(hit.within(4,0.12, 0.1, 1.12, 0.9) && isEngineOpen)
+		return -1;
+	}
+
+	private int getControlFromEngineHit(HitPosition hit)
+	{
+		if(hit.side == 4)
 		{
-			if(hit.side == 4)
+			//System.out.println("EHIT!");
+			double d = 0.094;
+			for(int i = 0; i < 8; i++)
 			{
-				double d = 0.095;
-				for(int i = 0; i < 8; i++)
-				{
-					double x = 0.14 + (d * i);
-					double X = x + 0.05;
-					if(hit.within(4, 0.94, x, 1.05, X))
-						return 100 + i + 1;
-				}
+				double x = 0.135 + (d * i);
+				double X = x + 0.07;
+				if(hit.within(4, 0.950, x, 1.083, X))
+					return 100 + i + 1;
 			}
 		}
 		return -1;
+	}
+
+	private double posY(EntityPlayer player)
+	{
+		if(ServerHelper.isClient()) return player.posY;
+		return player.posY;
 	}
 
 	public int getControlFromHit(int blockX, int blockY, int blockZ, Vec3 hitPos, EntityPlayer pl)
@@ -226,6 +237,13 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		float relativeY = (float) (hitPos.yCoord - blockY);
 		float relativeX = (float) ((side >= 4) ? hitPos.zCoord : hitPos.xCoord);
 		HitPosition hit = new HitPosition(relativeX, relativeY, side);
+		if(hit.within(4,0.1, 0.1, 1.12, 0.9) && isEngineOpen)
+		{
+			double extraX = 0.1;
+			double x = -pl.posX;
+			double mult = ((x+extraX)/x);
+			double yO = (hitPos.yCoord - posY(pl)) * mult;
+		}
 		return getControlFromHit(hit);
 	}
 
@@ -236,7 +254,19 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		float relativeY = (blockY - yCoord) + y;
 		float relativeX = (side >= 4) ? z : x;
 		HitPosition hit = new HitPosition(relativeX, relativeY, side);
-		int control = getControlFromHit(hit);
+		int control = -1;
+		if(hit.within(4,0.1, 0.1, 1.12, 0.9) && isEngineOpen)
+		{
+			double extraX = 0.05;
+			double xD = -pl.posX;
+			double mult = ((xD+extraX)/xD) - 1;
+			double yO = relativeY + (((blockY+y) - posY(pl)) * mult);
+			double zO = relativeX + ((z - pl.posZ) * mult);
+			hit = new HitPosition((float) zO,(float) yO,side);
+			control = getControlFromEngineHit(hit);
+		}
+		else
+			control = getControlFromHit(hit);
 		if (control != -1)
 			Helper.activateControl(this, pl, control);
 		else
@@ -416,19 +446,67 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				TardisPermission p = TardisPermission.get(control - 90);
 				ServerHelper.sendString(pl, currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name);
 			}
-			if(control == 100)
+			else if(control == 100)
 			{
 				if(ds.hasPermission(pl, TardisPermission.POINTS))
 					isEngineOpen = !isEngineOpen;
 			}
+			else if(isEngineOpen)
+			{
+				if((control >= 101) && (control <= 108))
+				{
+					if(ds.hasPermission(pl, TardisPermission.POINTS))
+					{
+						int slot = control - 101;
+						if(!addUpgrade(slot, pl, ds))
+							removeUpgrade(slot, pl, ds);
+						core.sendUpdate();
+					}
+					else
+						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
+				}
+			}
 			sendUpdate();
 		}
-		else if(isEngineOpen)
+	}
+
+	private boolean addUpgrade(int slot, EntityPlayer pl, TardisDataStore ds)
+	{
+		ItemStack is = pl.getHeldItem();
+		if(is != null)
 		{
-			if((control >= 101) && (control <= 108))
+			AbstractUpgrade up = UpgradeFactory.createUpgrade(is);
+			if(up != null)
 			{
-				int slot = control - 101;
+				if(ds.upgrades[slot] == null)
+				{
+					if(up.isValid(ds.upgrades))
+					{
+						ds.upgrades[slot] = up;
+						up.setEnginePos(coords);
+						if (!pl.capabilities.isCreativeMode)
+						{
+							pl.inventory.decrStackSize(pl.inventory.currentItem, 1);
+							pl.inventory.markDirty();
+						}
+						System.out.println("Added upgrade:" + up);
+						ds.markDirty();
+						return true;
+					}
+				}
 			}
+		}
+		return false;
+	}
+
+	private void removeUpgrade(int slot, EntityPlayer pl, TardisDataStore ds)
+	{
+		AbstractUpgrade up = ds.upgrades[slot];
+		if(up != null)
+		{
+			ds.upgrades[slot] = null;
+			WorldHelper.giveItemStack(pl, up.getIS());
+			ds.markDirty();
 		}
 	}
 
@@ -672,6 +750,17 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		switch(control)
 		{
 			case 60: return new String[] { "Current mode: " + (internalOnly ? "Only interfaces inside the TARDIS can interact" : "All interfaces can interact") };
+		}
+		if((control >= 101) && (control <= 108))
+		{
+			TardisDataStore ds = Helper.getDataStore(this);
+			if(ds != null)
+			{
+				int slot = control - 101;
+				AbstractUpgrade up = ds.upgrades[slot];
+				if(up != null)
+					return up.getExtraInfo();
+			}
 		}
 		return null;
 	}
