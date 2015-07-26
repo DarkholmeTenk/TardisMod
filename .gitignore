@@ -16,6 +16,7 @@
 /gradlew
 /gradlew.bat
 /screenshots/
+/assets/
 options.txt
 usernamecache.json
 *.jar
