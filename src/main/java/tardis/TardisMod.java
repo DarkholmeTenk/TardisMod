@@ -60,6 +60,7 @@ import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.KeyItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
+import tardis.common.items.UpgradeItem;
 import tardis.common.network.TardisPacketHandler;
 import tardis.common.tileents.BatteryTileEntity;
 import tardis.common.tileents.ComponentTileEntity;
@@ -149,6 +150,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static CraftingComponentItem		craftingComponentItem;
 	public static KeyItem					keyItem;
 	public static SonicScrewdriverItem		screwItem;
+	public static UpgradeItem				upgradeItem;
 
 	public static boolean					tcInstalled			= false;
 
@@ -306,6 +308,7 @@ public class TardisMod implements IConfigHandlerMod
 		keyItem = (KeyItem) new KeyItem().register();
 		componentItem = new ComponentItem().register();
 		craftingComponentItem = (CraftingComponentItem) new CraftingComponentItem().register();
+		upgradeItem = (UpgradeItem) new UpgradeItem().register();
 	}
 
 	private void initRecipes()
