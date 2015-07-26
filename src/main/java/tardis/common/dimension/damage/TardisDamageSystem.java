@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 
 /**
  * A subsystem of the TARDIS Data Store which handles all of the damage
@@ -49,6 +50,18 @@ public class TardisDamageSystem
 		hull = getMaxHull();
 	}
 
+	private int handleDamageReductions(TardisDamageType damageType, int damage)
+	{
+		int damSoFar = damage;
+		for(int i = 0; i < ds.upgrades.length; i++)
+		{
+			AbstractUpgrade up = ds.upgrades[i];
+			if(up != null)
+				damSoFar = up.takeDamage(damageType, damSoFar);
+		}
+		return damSoFar;
+	}
+
 	/**
 	 * Damages the shields
 	 * @param amount the amount of damage to apply
@@ -71,8 +84,11 @@ public class TardisDamageSystem
 
 	public void damage(TardisDamageType damageType, int amount)
 	{
-		System.out.println("[TDS] Damage amount: " + amount);
-		int hullDamage = damageShields(amount);
+		if(amount == 0) return;
+		ds.markDirty();
+		int damage = handleDamageReductions(damageType, amount);
+		System.out.println("[TDS] Damage amount: " + amount+">"+damage);
+		int hullDamage = damageShields(damage);
 		if(ServerHelper.isServer())
 			System.out.println("Newshields:" + shields);
 		if(hullDamage == 0) return;
@@ -123,6 +139,8 @@ public class TardisDamageSystem
 			if(regen >= 1)
 			{
 				shields = MathHelper.clamp(shields + MathHelper.round(regen), 0, getMaxShields());
+				if((tt % (20 * 60)) == 0)
+					ds.markDirty();
 			}
 			else if(regen != 0)
 			{
@@ -130,8 +148,7 @@ public class TardisDamageSystem
 				if((tt  % rate) == 0)
 				{
 					shields = MathHelper.clamp(shields + 1, 0, getMaxShields());
-					if(shields < getMaxShields())
-					System.out.println("Regshields:" + shields);
+					ds.markDirty();
 				}
 			}
 		}
