@@ -20,6 +20,7 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(5), "Screwdriver Button");
 		controlNames.put(new TwoIntStore(6,7), "Screwdriver Slot");
 		controlNames.put(new TwoIntStore(8), "XP Gauge");
+		controlNames.put(new TwoIntStore(9), "Shields");
 		controlNames.put(new TwoIntStore(10,16), "X Control");
 		controlNames.put(new TwoIntStore(20,26), "Z Control");
 		controlNames.put(new TwoIntStore(30,33), "Y Control");
@@ -46,14 +47,14 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(1000,1019), "Save Slots");
 		controlNames.put(new TwoIntStore(1020,1032), "Flight Controls");
 	}
-	
+
 	private boolean isConsole(IWailaDataAccessor accessor)
 	{
 		Block b = accessor.getBlock();
 		if(b == TardisMod.schemaComponentBlock)
 		{
 			int metaData = accessor.getMetadata();
-			return (metaData==3 || metaData == 6);
+			return ((metaData==3) || (metaData == 6));
 		}
 		return false;
 	}
@@ -68,7 +69,7 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 			if(con != null)
 			{
 				MovingObjectPosition pos = accessor.getPosition();
-				if(pos.hitVec.yCoord <= con.yCoord+1.5)
+				if(pos.hitVec.yCoord <= (con.yCoord+1.5))
 					return con.getControlFromHit(pos.blockX,pos.blockY,pos.blockZ,pos.hitVec, accessor.getPlayer());
 			}
 		}

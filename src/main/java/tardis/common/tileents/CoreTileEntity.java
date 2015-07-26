@@ -87,8 +87,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private int								numRooms				= 0;
 
 	private SimpleCoordStore				transmatPoint			= null;
-	private int								shields;
-	private int								hull;
 	private boolean							deletingRooms			= false;
 	private static double					explodeChance			= 0.25;
 	private boolean							explode					= false;
@@ -135,9 +133,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private static int					maxNumRooms			= 30;
 	private static int					maxNumRoomsInc		= 10;
-	private static int					maxShields			= 1000;
-	private static int					maxShieldsInc		= 500;
-	private static int					maxHull;
+
 	private static int					maxEnergy			= 1000;
 	private static int					maxEnergyInc		= 1000;
 	private static int					energyPerSecond		= 1;
@@ -163,16 +159,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		// this();
 		worldObj = w;
 		ds = Helper.getDataStore(WorldHelper.getWorldID(w));
-		shields = maxShields;
-		hull = maxHull;
 
 		energy = 100;
 	}
 
 	public CoreTileEntity()
 	{
-		shields = maxShields;
-		hull = maxHull;
 		energy = 100;
 	}
 
@@ -189,10 +181,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		maxSpeed = config.getDouble("max speed", 8, "The maximum speed setting that can be reached");
 		maxEnergy = config.getInt("Max energy", 1000, "The base maximum energy");
 		maxNumRooms = config.getInt("Max rooms", 30, "The base maximum number of rooms");
-		maxShields = config.getInt("Max shields", 1000, "The base maximum amount of shielding");
-		maxHull = config.getInt("Max hull", 1000, "The maximum hull strength");
 		maxNumRoomsInc = config.getInt("Max rooms increase", 10, "How much a level of max rooms increases the maximum number of rooms");
-		maxShieldsInc = config.getInt("Max shields increase", 500, "How much a level of max shields increases the amount of shielding");
 		maxEnergyInc = config.getInt("Max energy increase", 1000, "How much a level of energy increases the max amount of energy");
 		energyPerSecondInc = config.getInt("Energy Rate increase", 1, "How much a level of energy rate increases the amount of energy per second");
 		energyCostDimChange = config.getInt("Dimension jump cost", 2000, "How much energy it costs to jump between dimensions");
@@ -378,6 +367,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 		if(ServerHelper.isClient() && ((tt % 580) == 1) && !inFlight())
 			SoundHelper.playSound(this, "tardismod:ambient", 0.1f);
+
+		TardisDataStore ds = gDS();
+		if(ds != null) ds.tick();
 
 		if (explode)
 		{
@@ -1203,26 +1195,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 	}
 
-	public int getShields()
-	{
-		return shields;
-	}
-
-	public int getMaxShields(int level)
-	{
-		return maxShields + (level * maxShieldsInc);
-	}
-
-	public int getHull()
-	{
-		return hull;
-	}
-
-	public int getMaxHull(int level)
-	{
-		return maxHull;
-	}
-
 	public void addGridLink(SimpleCoordStore pos)
 	{
 		TardisOutput.print("TCTE", "Adding coord:" + pos.toString());
@@ -1568,8 +1540,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			nbt.setDouble("sped", speed);
 			nbt.setInteger("fS", flightState.ordinal());
 
-			nbt.setInteger("shld", shields);
-			nbt.setInteger("hull", hull);
 			nbt.setInteger("scrAng", screenAngle);
 			if ((sourceLocation != null) && (destLocation != null))
 			{
@@ -1648,8 +1618,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			speed = nbt.getDouble("sped");
 			flightState = FlightState.get(nbt.getInteger("fS"));
 
-			shields = nbt.getInteger("shld");
-			hull = nbt.getInteger("hull");
 			screenAngle = nbt.getInteger("scrAng");
 		}
 	}

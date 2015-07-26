@@ -2,10 +2,13 @@ package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +21,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.dimension.damage.TardisDamageSystem;
+import tardis.common.dimension.damage.TardisDamageType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector
+public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector, IExplodable
 {
 	private int fadeTimer = 0;
 
@@ -233,6 +239,13 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		}
 	}
 
+	public TardisDataStore getDataStore()
+	{
+		if((linkedDimension != null) && (linkedDimension != 0))
+			return Helper.getDataStore(linkedDimension);
+		return null;
+	}
+
 	public CoreTileEntity getCore()
 	{
 		if((linkedDimension != null) && (linkedDimension != 0))
@@ -330,4 +343,20 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
     {
 		return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord+1, yCoord+2, zCoord+1);
     }
+
+	@Override
+	public void explode(SimpleCoordStore pos, Explosion explosion)
+	{
+		TardisDataStore ds = getDataStore();
+		if(ds != null)
+		{
+			int w = pos.world;
+			SimpleDoubleCoordStore explosionPos = new SimpleDoubleCoordStore(w,explosion.explosionX, explosion.explosionY, explosion.explosionZ);
+			double distance = explosionPos.distance(pos);
+			distance = Math.max(1, distance);
+			int damageAmount = MathHelper.round((explosion.explosionSize / distance) * TardisDamageSystem.explosionDamageMult);
+			if(damageAmount > 0)
+				ds.damage.damage(TardisDamageType.EXPLOSION,damageAmount);
+		}
+	}
 }

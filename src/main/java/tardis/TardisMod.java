@@ -54,6 +54,7 @@ import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisOwnershipRegistry;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.KeyItem;
@@ -245,6 +246,7 @@ public class TardisMod implements IConfigHandlerMod
 		InteriorDirtBlock.refreshConfigs();
 
 		TardisDimensionHandler.refreshConfigs();
+		TardisDamageSystem.refreshConfigs();
 	}
 
 	@EventHandler

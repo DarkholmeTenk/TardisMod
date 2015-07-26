@@ -18,6 +18,7 @@ import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
+import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
@@ -27,7 +28,8 @@ import thaumcraft.api.aspects.AspectList;
 
 public class TardisDataStore extends AbstractWorldDataStore
 {
-	private final int										dimID;
+	public final int										dimID;
+	public final TardisDamageSystem							damage;
 
 	private int												pExtW			= 0;
 	private int												pExtX			= 0;
@@ -55,12 +57,14 @@ public class TardisDataStore extends AbstractWorldDataStore
 	{
 		super(n);
 		dimID = -1;
+		damage = new TardisDamageSystem(this);
 	}
 
 	public TardisDataStore(int _dimID)
 	{
 		super("tardisIDS");
 		dimID = _dimID;
+		damage = new TardisDamageSystem(this);
 	}
 
 	public void markMaybeDirty()
@@ -297,6 +301,10 @@ public class TardisDataStore extends AbstractWorldDataStore
 				int am = nbt.getInteger("uG" + mode.ordinal());
 				if (am > 0) upgradeLevels.put(mode, am);
 			}
+
+		NBTTagCompound damageNBT = nbt.getCompoundTag("damage");
+		if(damageNBT != null)
+			damage.readFromNBT(damageNBT);
 	}
 
 	private void storeFlu(NBTTagCompound nbt)
@@ -368,6 +376,9 @@ public class TardisDataStore extends AbstractWorldDataStore
 			int am = upgradeLevels.get(mode);
 			if (am > 0) nbt.setInteger("uG" + mode.ordinal(), am);
 		}
+		NBTTagCompound damageNBT = new NBTTagCompound();
+		damage.writeToNBT(damageNBT);
+		nbt.setTag("damage", damageNBT);
 	}
 
 	private ConsoleTileEntity getConsole()
@@ -511,6 +522,11 @@ public class TardisDataStore extends AbstractWorldDataStore
 			return true;
 		}
 		return false;
+	}
+
+	public void tick()
+	{
+		damage.tick();
 	}
 
 }

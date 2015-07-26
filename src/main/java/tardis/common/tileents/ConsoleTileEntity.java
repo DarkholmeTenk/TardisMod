@@ -233,6 +233,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			return 1;
 		if (hit.within(0, 1.517, 0.138, 1.750, 0.265))
 			return 8;
+		if (hit.within(0, 1.210, 0.138, 1.441, 0.265))
+			return 9;
 		if (hit.within(0, 1.10, 0.271, 1.335, 0.400))
 			return 2;
 		if (hit.within(0, 0.865, 0.55, 1.327, 0.868))
@@ -489,6 +491,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			pl.addChatMessage(new ChatComponentText("XP: " + ds.getXP() + "/" + ds.getXPNeeded()));
 			pl.addChatMessage(new ChatComponentText("Level:" + ds.getLevel()));
 		}
+		else if (controlID == 9)
+			pl.addChatMessage(new ChatComponentText("Shields: " + ds.damage.getShields() + "/" + ds.damage.getMaxShields()));
 		else if (controlID == 4) // Speed lever
 		{
 			int d = 1;
@@ -1064,6 +1068,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				return facing / 4.0;
 			if (controlID == 8) // XP
 				return (ds.getXP() / ds.getXPNeeded());
+			if (controlID == 9) // Shields
+				return (((double) ds.damage.getShields()) / ds.damage.getMaxShields());
 			if (((controlID >= 10) && (controlID < 14)) || (controlID == 16))
 				return ((double) (xControls[controlID - 10] + 6) / 12);
 			if ((controlID >= 14) && (controlID < 16))
