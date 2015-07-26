@@ -279,8 +279,6 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 								if (!pl.capabilities.isCreativeMode)
 								{
 									pl.inventory.decrStackSize(pl.inventory.currentItem, 1);
-									// pl.inventory.setInventorySlotContents(pl.inventory.currentItem,
-									// null);
 									pl.inventory.markDirty();
 								}
 								return true;
