@@ -14,8 +14,10 @@ import tardis.TardisMod;
 import tardis.api.TardisPermission;
 import tardis.client.renderer.ControlRenderer;
 import tardis.common.core.Helper;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
+import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 
 public class EngineRenderer extends AbstractObjRenderer
 {
@@ -104,8 +106,30 @@ public class EngineRenderer extends AbstractObjRenderer
 			GL11.glColor4d(1, 1, 1, 1);
 			GL11.glPopMatrix();
 		}
+		TardisDataStore ds = Helper.getDataStore(eng);
+		if((eng.visibility < 1) && (ds != null))
+			renderUnderPanel(tess,eng,core,ds);
 		GL11.glPushMatrix();
 		comps.renderButton(tess, eng, 100, -0.01, 0.5, 0.04, 0, 0, 270, 0.3, 0.3, 0.3);
+		GL11.glPopMatrix();
+	}
+
+	private void renderUnderPanel(Tessellator tess, EngineTileEntity eng, CoreTileEntity core, TardisDataStore ds)
+	{
+		GL11.glPushMatrix();
+		GL11.glTranslated(0.045, 0.96, 0.148);
+		GL11.glScaled(0.4, 0.31, 0.8);
+		for(int i = 0; i < ds.upgrades.length; i++)
+		{
+			AbstractUpgrade up = ds.upgrades[i];
+			if(up != null)
+			{
+				GL11.glPushMatrix();
+				GL11.glTranslated(0, 0, i * 0.117);
+				up.render();
+				GL11.glPopMatrix();
+			}
+		}
 		GL11.glPopMatrix();
 	}
 
