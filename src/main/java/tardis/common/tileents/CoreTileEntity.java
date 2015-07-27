@@ -1331,7 +1331,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public SimpleCoordStore getTransmatPoint()
 	{
 		if (isTransmatPointValid()) return transmatPoint;
-		return new SimpleCoordStore(worldObj, xCoord + 13, yCoord - 2, zCoord);
+		return new SimpleCoordStore(worldObj, xCoord + 10, yCoord - 2, zCoord);
 	}
 
 	public void setTransmatPoint(SimpleCoordStore s)
