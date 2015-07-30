@@ -8,6 +8,7 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -83,6 +84,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public String								schemaCategoryString	= "";
 	private float								dimControlState			= 0;
 	private int									screwMode				= 0;
+	private LinkedList<Integer>					unstableQueue			= new LinkedList<Integer>();
 
 	{
 		for (int i = 0; i < 7; i++)
@@ -93,6 +95,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				yControls[i] = 0;
 		}
 		clampControls();
+		if(ServerHelper.isServer())
+			refillUnstableQueue();
 	}
 
 	public ConsoleTileEntity(){}
@@ -1185,6 +1189,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	private void pressedUnstable()
 	{
+		if(ServerHelper.isServer())
+			System.out.println("Correct!");
 		unstableControl = -1;
 		unstablePressed = true;
 	}
@@ -1194,18 +1200,37 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return !stable;
 	}
 
-	public void randomUnstableControl()
+	private static final int minUnstable = 1010;
+	private static final int maxUnstable = 1032;
+	private void refillUnstableQueue()
 	{
-		int min = 1010;
-		int max = 1032;
-		int ran = 0;
-		if (min != max)
-			ran = rand.nextInt((1 + max) - min);
-		if (ran < 10)
-			ran = (ran * 2) - 20;
-		unstableControl = min + ran;
+		int size = unstableQueue.size();
+		while(size < 8)
+		{
+			int ran = 0;
+			if (minUnstable != maxUnstable)
+				ran = rand.nextInt((1 + maxUnstable) - minUnstable);
+			if (ran < 10)
+				ran = (ran * 2) - 20;
+			int newControl = minUnstable + ran;
+			if((size == 0) || (unstableQueue.getLast() != newControl))
+			{
+				unstableQueue.add(newControl);
+				size++;
+			}
+		}
+	}
+
+	public void getNextUnstableControl()
+	{
+		if(ServerHelper.isServer())
+			if(unstableQueue.size() < 3) refillUnstableQueue();
+		if(ServerHelper.isClient())
+			unstableControl = unstableQueue.size() > 0 ? unstableQueue.remove() : minUnstable;
+		else
+			unstableControl = unstableQueue.remove();
 		unstablePressed = false;
-		System.out.println(unstableControl);
+		System.out.println("UC:" + unstableControl + ":" + ServerHelper.isServer() + ":"+unstableQueue);
 		sendUpdate();
 	}
 
@@ -1366,7 +1391,12 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		regulated = nbt.getBoolean("regulated");
 		saveCoords = nbt.getBoolean("saveCoords");
 		landGroundControl = nbt.getBoolean("landGroundControl");
-		unstableControl = nbt.getInteger("unstableControl");
+		/*{
+			int newUnstable = nbt.getInteger("unstableControl");
+			if(newUnstable != unstableControl)
+				System.out.println("NewUnstable:"+ newUnstable + " vs OldUnstable:"+unstableControl + " mismatch");
+			unstableControl = newUnstable;
+		}*/
 		landOnPad = nbt.getBoolean("lOP");
 		clampControls();
 	}
@@ -1405,6 +1435,13 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		nbt.setInteger("lastButton", lastButton);
 		nbt.setInteger("lastButtonTT", lastButtonTT);
 		nbt.setBoolean("attemptToLand", attemptToLand);
+		if(ServerHelper.isServer())
+		{
+			nbt.setInteger("unstableQueue0", unstableControl);
+			int i = unstableControl == -1 ? 0 : 1;
+			for(Integer unst : unstableQueue)
+				nbt.setInteger("unstableQueue"+(i++), unst);
+		}
 	}
 
 	@Override
@@ -1416,7 +1453,13 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		screwMode = nbt.getInteger("scMo");
 		lastButton = nbt.getInteger("lastButton");
 		lastButtonTT = nbt.getInteger("lastButtonTT");
+		if(lastButton == unstableControl)
+			pressedUnstable();
 		attemptToLand = nbt.getBoolean("attemptToLand");
+		if(nbt.hasKey("unstableQueue0"))
+			unstableQueue.clear();
+		for(int i = 0; nbt.hasKey("unstableQueue"+i); i++)
+			unstableQueue.add(nbt.getInteger("unstableQueue"+i));
 	}
 
 	@Override
