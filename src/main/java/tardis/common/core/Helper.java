@@ -88,7 +88,12 @@ public class Helper
 		{
 			te.setOwner(ownerName);
 			if (exterior != null)
+			{
 				ds.linkToExterior(exterior);
+				ConsoleTileEntity con = te.getConsole();
+				if(con != null)
+					con.setControls(exterior, true);
+			}
 		}
 	}
 
