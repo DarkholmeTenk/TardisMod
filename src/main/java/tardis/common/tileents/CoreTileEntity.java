@@ -311,17 +311,21 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			int buttonTime = getButtonTime();
 			if ((flightButtonTimer++ % buttonTime) == 0)
 			{
-				if (con.unstableControlPressed() && (flightButtonTimer > 0))
+				if(ServerHelper.isServer())
 				{
-					instability = MathHelper.clamp(MathHelper.floor(instability - (0.5 * getSpeed(false))), 0, 100);
-					gDS().addXP(getSpeed(false) + 4);
+					if (con.unstableControlPressed() && (flightButtonTimer > 0))
+					{
+						instability = MathHelper.clamp(MathHelper.floor(instability - (0.5 * getSpeed(false))), 0, 100);
+						gDS().addXP(getSpeed(false) + 4);
+					}
+					else if (flightButtonTimer > 0)
+					{
+						instability = MathHelper.clamp(MathHelper.floor(instability + getSpeed(false)), 0, 100);
+						if (shouldExplode()) explode = true;
+						System.out.println("Miss:"+flightButtonTimer+":"+buttonTime+":"+ServerHelper.isServer());
+					}
 				}
-				else if (flightButtonTimer > 0)
-				{
-					instability = MathHelper.clamp(MathHelper.floor(instability + getSpeed(false)), 0, 100);
-					if (shouldExplode()) explode = true;
-				}
-				con.randomUnstableControl();
+				con.getNextUnstableControl();
 			}
 		}
 		else if (flightButtonTimer != 0)
