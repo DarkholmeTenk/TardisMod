@@ -80,7 +80,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private int									categoryNum				= 0;
 	private NBTTagCompound						screwNBT				= null;
 
-	private int									unstableControl			= -1;
+	public int									unstableControl			= -1;
 	private boolean								unstablePressed			= false;
 
 	public String								schemaChooserString		= "";
