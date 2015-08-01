@@ -467,6 +467,12 @@ public class Helper
 		return false;
 	}
 
+	public static boolean isTardisWorld(int dim)
+	{
+		World w = WorldHelper.getWorld(dim);
+		return isTardisWorld(w);
+	}
+
 	/**
 	 *
 	 * @param w the world of the expected door position

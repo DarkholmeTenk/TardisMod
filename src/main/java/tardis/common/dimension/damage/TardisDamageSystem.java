@@ -184,4 +184,14 @@ public class TardisDamageSystem
 	{
 		return 0.1;
 	}
+
+	public void setShields(int v)
+	{
+		shields = MathHelper.clamp(v, 0, getMaxShields());
+	}
+
+	public void setHull(int v)
+	{
+		hull = MathHelper.clamp(v, 0, getMaxHull());
+	}
 }
