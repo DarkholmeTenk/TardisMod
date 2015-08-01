@@ -1394,12 +1394,17 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		regulated = nbt.getBoolean("regulated");
 		saveCoords = nbt.getBoolean("saveCoords");
 		landGroundControl = nbt.getBoolean("landGroundControl");
-		/*{
+		{
 			int newUnstable = nbt.getInteger("unstableControl");
 			if(newUnstable != unstableControl)
-				System.out.println("NewUnstable:"+ newUnstable + " vs OldUnstable:"+unstableControl + " mismatch");
+			{
+				if(newUnstable == unstableQueue.peek())
+					unstableQueue.remove();
+				else
+					System.out.println("NewUnstable:"+ newUnstable + " vs OldUnstable:"+unstableControl + " mismatch");
+			}
 			unstableControl = newUnstable;
-		}*/
+		}
 		landOnPad = nbt.getBoolean("lOP");
 		clampControls();
 	}
