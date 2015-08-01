@@ -41,7 +41,7 @@ public class ControlPacketHandler implements IDataPacketHandler
 						{
 							matrix.activateControl(player, controlID);
 							if(te instanceof AbstractTileEntity)
-								((AbstractTileEntity)te).sendUpdate();
+								((AbstractTileEntity)te).queueUpdate();
 						}
 					}
 				}
