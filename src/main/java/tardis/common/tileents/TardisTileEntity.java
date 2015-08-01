@@ -2,8 +2,6 @@ package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
@@ -27,8 +25,7 @@ import tardis.TardisMod;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisDataStore;
-import tardis.common.dimension.damage.TardisDamageSystem;
-import tardis.common.dimension.damage.TardisDamageType;
+import tardis.common.dimension.damage.ExplosionDamageHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -349,14 +346,6 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	{
 		TardisDataStore ds = getDataStore();
 		if(ds != null)
-		{
-			int w = pos.world;
-			SimpleDoubleCoordStore explosionPos = new SimpleDoubleCoordStore(w,explosion.explosionX, explosion.explosionY, explosion.explosionZ);
-			double distance = explosionPos.distance(pos);
-			distance = Math.max(1, distance);
-			int damageAmount = MathHelper.round((explosion.explosionSize / distance) * TardisDamageSystem.explosionDamageMult);
-			if(damageAmount > 0)
-				ds.damage.damage(TardisDamageType.EXPLOSION,damageAmount);
-		}
+			ExplosionDamageHelper.damage(ds.damage, pos, explosion, 1);
 	}
 }

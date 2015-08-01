@@ -1,9 +1,11 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +20,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.Explosion;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.ScrewdriverMode;
@@ -27,11 +30,12 @@ import tardis.common.core.Helper;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
 
-public class EngineTileEntity extends AbstractTileEntity implements IControlMatrix
+public class EngineTileEntity extends AbstractTileEntity implements IControlMatrix, IExplodable
 {
 	private String[]			currentUsers;
 	private int					currentUserID;
@@ -466,7 +470,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
 				}
 			}
-			sendUpdate();
 		}
 	}
 
@@ -688,6 +691,14 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public ScrewdriverMode getScrewMode(int slot)
 	{
 		return SonicScrewdriverItem.getMode(screwMode);
+	}
+
+	@Override
+	public void explode(SimpleCoordStore pos, Explosion explosion)
+	{
+		TardisDataStore ds = Helper.getDataStore(this);
+		if(ds != null)
+			ExplosionDamageHelper.damage(ds.damage, pos, explosion, 0.9);
 	}
 
 	@Override

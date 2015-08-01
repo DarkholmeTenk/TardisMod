@@ -11,6 +11,7 @@ import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
@@ -43,6 +45,8 @@ import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisDimensionHandler;
+import tardis.common.dimension.damage.ExplosionDamageHelper;
+import tardis.common.dimension.damage.TardisDamageType;
 import tardis.common.items.KeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CoreGrid;
@@ -54,7 +58,7 @@ import appeng.api.util.DimensionalCoord;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class CoreTileEntity extends AbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider
+public class CoreTileEntity extends AbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider, IExplodable
 {
 	private static ConfigFile				config					= null;
 	public static final ChatComponentText	cannotModifyFly			= new ChatComponentText("[TARDIS] You do not have permission to fly this TARDIS");
@@ -320,6 +324,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					}
 					else if (flightButtonTimer > 0)
 					{
+						ds.damage.damage(TardisDamageType.MISSEDCONTROL, 5+rand.nextInt(5));
 						instability = MathHelper.clamp(MathHelper.floor(instability + getSpeed(false)), 0, 100);
 						if (shouldExplode()) explode = true;
 						System.out.println("Miss:"+flightButtonTimer+":"+buttonTime+":"+ServerHelper.isServer());
@@ -1497,6 +1502,14 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (worldID != 10000) return WorldHelper.getDimensionName(worldID);
 		return "The Time Vortex";
+	}
+
+	@Override
+	public void explode(SimpleCoordStore pos, Explosion explosion)
+	{
+		TardisDataStore ds = Helper.getDataStore(this);
+		if(ds != null)
+			ExplosionDamageHelper.damage(ds.damage, pos, explosion, 0.7);
 	}
 
 	// ////////////////////////////

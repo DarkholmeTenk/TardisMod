@@ -18,11 +18,13 @@ public class TardisDamageSystem
 {
 	// THESE ARE CLASS WIDE
 	private static ConfigFile	config				= null;
-	private static int			maxShields			= 1000;
+	public static int			maxShields			= 1000;
 	private static int			maxShieldsInc		= 500;
-	private static int			maxHull;
+	public static int			maxHull;
 
 	public static double		explosionDamageMult	= 50;
+	public static double		missedDamageMult	= 10;
+	public static double		combatDamageMult	= 30;
 
 	public static void refreshConfigs()
 	{
@@ -30,6 +32,9 @@ public class TardisDamageSystem
 		maxHull = config.getInt("Max hull", 1000, "The maximum hull strength");
 		maxShields = config.getInt("Max shields", 1000, "The base maximum amount of shielding");
 		maxShieldsInc = config.getInt("Max shields increase", 500, "How much a level of max shields increases the amount of shielding");
+
+		explosionDamageMult = config.getDouble("explosionDamageMult", 50, "Explosion damage is multiplied by this number before being applied to a TARDIS");
+		// missedDamageMult = config.getDouble("missedDamageMult", 10, "Damage from missing a blue control is multiplied by this number before being applied to a TARDIS");
 	}
 
 	// *******************
@@ -53,25 +58,26 @@ public class TardisDamageSystem
 	private int handleDamageReductions(TardisDamageType damageType, int damage)
 	{
 		int damSoFar = damage;
-		for(int i = 0; i < ds.upgrades.length; i++)
+		for (int i = 0; i < ds.upgrades.length; i++)
 		{
 			AbstractUpgrade up = ds.upgrades[i];
-			if(up != null)
-				damSoFar = up.takeDamage(damageType, damSoFar);
+			if (up != null) damSoFar = up.takeDamage(damageType, damSoFar);
 		}
 		return damSoFar;
 	}
 
 	/**
 	 * Damages the shields
-	 * @param amount the amount of damage to apply
+	 *
+	 * @param amount
+	 *            the amount of damage to apply
 	 * @return the amount of damage left over after damaging the shields
 	 */
 	private int damageShields(int amount)
 	{
-		synchronized(this)
+		synchronized (this)
 		{
-			if(shields >= amount)
+			if (shields >= amount)
 			{
 				shields -= amount;
 				return 0;
@@ -82,16 +88,30 @@ public class TardisDamageSystem
 		}
 	}
 
-	public void damage(TardisDamageType damageType, int amount)
+	public void damage(TardisDamageType damageType, double damageAmount)
 	{
-		if(amount == 0) return;
+		switch (damageType)
+		{
+			case EXPLOSION:
+				damageAmount *= explosionDamageMult;
+				break;
+			case MISSEDCONTROL:
+				damageAmount *= missedDamageMult;
+				break;
+			case COMBAT:
+				damageAmount *= combatDamageMult;
+				break;
+			default:
+				damageAmount = 0;
+		}
+		int amount = MathHelper.round(damageAmount);
+		if (amount == 0) return;
 		ds.markDirty();
 		int damage = handleDamageReductions(damageType, amount);
-		System.out.println("[TDS] Damage amount: " + amount+">"+damage);
+		System.out.println("[TDS] Damage amount: " + amount + ">" + damage);
 		int hullDamage = damageShields(damage);
-		if(ServerHelper.isServer())
-			System.out.println("Newshields:" + shields);
-		if(hullDamage == 0) return;
+		if (ServerHelper.isServer()) System.out.println("Newshields:" + shields);
+		if (hullDamage == 0) return;
 	}
 
 	public int getShields()
@@ -133,19 +153,18 @@ public class TardisDamageSystem
 
 	private void regenShields()
 	{
-		synchronized(this)
+		synchronized (this)
 		{
 			double regen = getShieldRegenRate();
-			if(regen >= 1)
+			if (regen >= 1)
 			{
 				shields = MathHelper.clamp(shields + MathHelper.round(regen), 0, getMaxShields());
-				if((tt % (20 * 60)) == 0)
-					ds.markDirty();
+				if ((tt % (20 * 60)) == 0) ds.markDirty();
 			}
-			else if(regen != 0)
+			else if (regen != 0)
 			{
-				int rate = MathHelper.round(1/regen);
-				if((tt  % rate) == 0)
+				int rate = MathHelper.round(1 / regen);
+				if ((tt % rate) == 0)
 				{
 					shields = MathHelper.clamp(shields + 1, 0, getMaxShields());
 					ds.markDirty();
@@ -156,7 +175,7 @@ public class TardisDamageSystem
 
 	public synchronized void tick()
 	{
-		if(ServerHelper.isIntegratedClient()) return;
+		if (ServerHelper.isIntegratedClient()) return;
 		tt = (tt + 1) % 1000000;
 		regenShields();
 	}

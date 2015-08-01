@@ -5,6 +5,7 @@ import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
@@ -31,11 +33,12 @@ import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.ControlStateStore;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.items.SonicScrewdriverItem;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ConsoleTileEntity extends AbstractTileEntity implements IControlMatrix
+public class ConsoleTileEntity extends AbstractTileEntity implements IControlMatrix, IExplodable
 {
 	public static final float					cycleLength				= 80;
 	private int									tickTimer;
@@ -1468,4 +1471,12 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
     {
 		return AxisAlignedBB.getBoundingBox(xCoord-1, yCoord, zCoord-1, xCoord+2, yCoord+2, zCoord+2);
     }
+
+	@Override
+	public void explode(SimpleCoordStore pos, Explosion explosion)
+	{
+		TardisDataStore ds = Helper.getDataStore(this);
+		if(ds != null)
+			ExplosionDamageHelper.damage(ds.damage, pos, explosion, 0.6);
+	}
 }
