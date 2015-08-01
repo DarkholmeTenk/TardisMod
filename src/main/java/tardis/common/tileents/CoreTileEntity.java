@@ -1584,6 +1584,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			nbt.setInteger("dlx", desLocs[1]);
 			nbt.setInteger("dly", desLocs[2]);
 			nbt.setInteger("dlz", desLocs[3]);
+			if(flightButtonTimer > 0)
+				nbt.setInteger("fBT",flightButtonTimer);
 		}
 	}
 
@@ -1659,6 +1661,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		else
 			desLocs = nullArray.clone();
 		numRooms = nbt.getInteger("numR");
+		if(nbt.hasKey("fBT"))
+			flightButtonTimer = nbt.getInteger("fBT");
 	}
 
 	@Override
