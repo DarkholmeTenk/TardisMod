@@ -52,6 +52,7 @@ import tardis.common.core.SchemaHandler;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisOwnershipRegistry;
+import tardis.common.core.events.internal.DamageEventHandler;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.dimension.damage.TardisDamageSystem;
@@ -334,6 +335,7 @@ public class TardisMod implements IConfigHandlerMod
 		dimReg = null;
 		Helper.datastoreMap.clear();
 		MinecraftForge.EVENT_BUS.register(otherDims);
+		DamageEventHandler.i.register();
 	}
 
 	@EventHandler

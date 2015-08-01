@@ -140,6 +140,8 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 
 	protected void reviveComps()
 	{
+		if (comps == null)
+			return;
 		if (comps.size() > 0)
 		{
 			for (ITardisComponent comp : comps.values())
