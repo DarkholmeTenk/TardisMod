@@ -884,6 +884,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return inFlight() && (flightState != FlightState.DRIFT);
 	}
 
+	/**
+	 * @return true if the core is not landed
+	 */
 	public boolean inFlight()
 	{
 		return flightState != FlightState.LANDED;
