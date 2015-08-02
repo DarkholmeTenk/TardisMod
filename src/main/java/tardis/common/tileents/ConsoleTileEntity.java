@@ -295,6 +295,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			return 41;
 		if (hit.within(0, 2.110, 0.562, 2.441, 0.872)) // Flight Takeoff
 			return 42;
+		if (hit.within(0, 0.523, 0.687, 0.651, 0.783))
+			return 43;
 		if (hit.within(2, 2.251, 0.728, 2.371, 0.816))
 			return 50;
 		if (hit.within(2, 2.251, 0.822, 2.371, 0.902))
@@ -405,8 +407,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				controlArray[2] = worldObj.rand.nextInt(13) - 6;
 				controlArray[3] = worldObj.rand.nextInt(13) - 6;
 				controlArray[6] = worldObj.rand.nextInt(13) - 6;
-				controlArray[4] = worldObj.rand.nextInt(4);
-				controlArray[5] = worldObj.rand.nextInt(4);
+				controlArray[4] = worldObj.rand.nextInt(6);
+				controlArray[5] = worldObj.rand.nextInt(7);
 				clampControls(controlArray);
 			}
 			yControls[0] = worldObj.rand.nextInt(4);
@@ -447,6 +449,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			case 3:
 			case 53:
 			case 55:
+			case 43:
 			case 60: return true;
 			default: return false;
 		}
@@ -576,6 +579,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 					newDimControl = MathHelper.clamp(newDimControl, 0, getNumDims() - 1);
 					dimControl = newDimControl;
 				}
+				else if (controlID ==43)
+					randomiseControls(core);
 			}
 			else if (!core.inFlight())
 			{
@@ -1096,7 +1101,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if (controlID == 42)
 				return ((!attemptToLand) && core.inFlight()) ? 1 : 0;
 			if ((controlID == 50) || (controlID == 51) || (controlID == 5) || (controlID == 902) || (controlID == 903) || (controlID == 57)
-					|| (controlID == 58))
+					|| (controlID == 58) || (controlID == 43))
 				return lastButton == controlID ? 1 : 0;
 			if (controlID == 52)
 				return dayNightControl ? 1 : 0;

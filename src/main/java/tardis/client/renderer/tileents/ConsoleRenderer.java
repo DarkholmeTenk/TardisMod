@@ -96,6 +96,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 		compRender.renderPushSwitch(tess, tce, 1030, -1.08, -0.43, 0, 43, 90, 0, 0.5, 0.5, 0.5);
 		compRender.renderPushSwitch(tess, tce, 1031, -1.18, -0.34, 0, 43, 90, 0, 0.5, 0.5, 0.5);
 		compRender.renderPushSwitch(tess, tce, 1032, -1.28, -0.25, 0, 43, 90, 0, 0.5, 0.5, 0.5);
+		compRender.renderButton (tess, tce, 43, -1.25, -0.3, -0.9, 45, 90, -0, 0.5, 0.5, 0.5);			//ID 43 Randomizer
 	}
 
 	private void renderRightPanel(Tessellator tess, ConsoleTileEntity tce, CoreTileEntity core)

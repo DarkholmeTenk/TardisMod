@@ -28,6 +28,7 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(40), "Temporal Primer");
 		controlNames.put(new TwoIntStore(41), "Helmic Regulator");
 		controlNames.put(new TwoIntStore(42), "Quantum Handbrake");
+		controlNames.put(new TwoIntStore(43), "Zigzag Plotter");
 		controlNames.put(new TwoIntStore(50), "Prev Schema Button");
 		controlNames.put(new TwoIntStore(51), "Next Schema Button");
 		controlNames.put(new TwoIntStore(52), "Interior Temporal Control");
