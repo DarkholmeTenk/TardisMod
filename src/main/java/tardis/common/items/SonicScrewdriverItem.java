@@ -9,6 +9,7 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
@@ -48,8 +49,9 @@ import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface="buildcraft.api.tools.IToolWrench",modid="BuildCraftAPI|core"),
-		@Optional.Interface(iface="cofh.api.item.IToolHammer",modid="CoFHCore")})
-public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, IToolWrench
+		@Optional.Interface(iface="cofh.api.item.IToolHammer",modid="CoFHCore"),
+		@Optional.Interface(iface="mrtjp.projectred.api.IScrewdriver", modid="ProjRed|Core")})
+public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, IToolWrench, IScrewdriver
 {
 	public static final int	maxPerms	= 0xFF;
 	public static final int	minPerms	= 0xCD;
@@ -590,5 +592,19 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
         multimap.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(), new AttributeModifier(field_111210_e, "Weapon modifier", 0, 0));
         return multimap;
     }
+
+	@Override
+	public boolean canUse(EntityPlayer pl, ItemStack is)
+	{
+		if(getMode(is) == ScrewdriverMode.Reconfigure)
+			return true;
+		return false;
+	}
+
+	@Override
+	public void damageScrewdriver(EntityPlayer pl, ItemStack is)
+	{
+
+	}
 
 }
