@@ -10,10 +10,12 @@ import io.darkcraft.darkcore.mod.config.ConfigHandler;
 import io.darkcraft.darkcore.mod.config.ConfigHandlerFactory;
 import io.darkcraft.darkcore.mod.config.ConfigItem;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
 import java.io.IOException;
 
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
@@ -171,6 +173,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static boolean					keyReqKontron		= true;
 	public static boolean					kontronCraftable	= false;
 	public static int						kontronRarity		= 4;
+	public static boolean					keyOnFirstJoin		= true;
 	public static int						maxEachAspect		= 16;
 	public static int						maxEachAspectInc	= 16;
 	public static int						numAspects			= 16;
@@ -213,6 +216,7 @@ public class TardisMod implements IConfigHandlerMod
 
 		keyCraftable = modConfig.getBoolean("keyCraftable", true, "True if the key is craftable.", "False if they can only be spawned");
 
+		keyOnFirstJoin = modConfig.getBoolean("keyOnJoin", false, "If true, all players get a new key when they first join");
 		keyReqKontron = modConfig.getBoolean("keyRequiresKontron", true, "True if the key requires a Kontron crystal to craft");
 		kontronCraftable = modConfig.getBoolean("kontronCraftable",false,"If true, a standard crafting recipe is added for the kontron crystal");
 		kontronRarity = modConfig.getInt("kontronRarity",20,"The higher this value, the more likely you are to find kontron crystals in chests");
@@ -272,6 +276,8 @@ public class TardisMod implements IConfigHandlerMod
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		inited = true;
 		tcInstalled = ItemApi.getItem("itemResource", 0) != null;
+		if(keyOnFirstJoin)
+			PlayerHelper.registerJoinItem(new ItemStack(keyItem,1));
 	}
 
 	private void initBlocks()
