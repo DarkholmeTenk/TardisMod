@@ -3,6 +3,7 @@ package tardis.common.tileents.components;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -18,7 +19,7 @@ import tardis.api.TardisPermission;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 
-public class ComponentFluid extends AbstractComponent implements IFluidHandler, IScrewable
+public class ComponentFluid extends AbstractComponent implements IFluidHandler, IScrewable, IActivatable
 {
 	private int currentTank=-1;
 	protected ComponentFluid() { }
@@ -215,6 +216,25 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 			return retVal;
 		}
 		return null;
+	}
+
+	@Override
+	public boolean activate(EntityPlayer ent, int side)
+	{
+		FluidStack[] tanks = getTanks(false);
+		for(int i = 0; i < tanks.length; i++)
+		{
+			FluidStack ft = tanks[i];
+			if(ft == null)
+			{
+				ServerHelper.sendString(ent, "Tank " + (i+1) + ": Empty");
+				continue;
+			}
+			Fluid f = ft.getFluid();
+			String name = f.getLocalizedName(ft);
+			ServerHelper.sendString(ent, "Tank " + (i+1) + ": " + name + " " + ft.amount +"/"+TardisMod.maxFlu+"mb");
+		}
+		return true;
 	}
 
 	@Override
