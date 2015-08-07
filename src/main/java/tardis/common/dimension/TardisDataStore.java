@@ -49,6 +49,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	private AspectList										aspectList		= new AspectList();
 	public int												maxSuck			= 16;
 	public Aspect											maxSuckT		= null;
+	public int												desiredDim		= 0;
 
 	private HashMap<Integer,Integer>						permissionList	= new HashMap();
 
@@ -302,6 +303,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		pExtY = nbt.getInteger("pExtY");
 		pExtZ = nbt.getInteger("pExtZ");
 		rfStored = nbt.getInteger("rS");
+		desiredDim = nbt.getInteger("desDim");
 		if (nbt.hasKey("invStore"))
 		{
 			NBTTagCompound invTag = nbt.getCompoundTag("invStore");
@@ -388,6 +390,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		nbt.setInteger("pExtY", pExtY);
 		nbt.setInteger("pExtZ", pExtZ);
 		nbt.setInteger("rS", rfStored);
+		nbt.setInteger("desDim", desiredDim);
 		storeInv(nbt);
 		storeFlu(nbt);
 

@@ -681,9 +681,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private int[] getModifiedControls(ConsoleTileEntity con, int[] posArr)
 	{
 		if (con == null) return posArr;
-		World w = WorldHelper.getWorld(con.getDimFromControls());
+		World w = WorldHelper.getWorld(gDS().desiredDim);
 		if (w == null) return posArr;
-		int mh = TardisDimensionHandler.getMaxHeight(con.getDimFromControls());
+		int mh = TardisDimensionHandler.getMaxHeight(gDS().desiredDim);
 		if (posArr[1] >= mh) posArr[1] = mh - 1;
 		if (!(isValidPos(w, posArr[0], posArr[1], posArr[2], mh)))
 		{
@@ -699,7 +699,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		ConsoleTileEntity con = getConsole();
 		if (con == null) return false;
-		int dim = con.getDimFromControls();
+		int dim = gDS().desiredDim;
 		if (gDS().exteriorWorld == 10000)
 		{
 			if (oldExteriorWorld != dim) return true;
@@ -723,7 +723,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 			int extW = inFlight() ? oldExteriorWorld : gDS().exteriorWorld;
 			int enCost = (dDim != extW ? Math.max(TardisDimensionHandler.getEnergyCost(dDim), TardisDimensionHandler.getEnergyCost(extW)) : 0);
-			return takeArtronEnergy(enCost, false);
+			if(takeArtronEnergy(enCost, false))
+			{
+				gDS().desiredDim = dDim;
+				return true;
+			}
+			return false;
 		}
 		return false;
 	}
@@ -815,7 +820,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 		int facing = con.getFacingFromControls();
 		posArr = getModifiedControls(con, posArr);
-		World w = WorldHelper.getWorld(con.getDimFromControls());
+		World w = WorldHelper.getWorld(gDS().desiredDim);
 		w.setBlock(posArr[0], posArr[1], posArr[2], TardisMod.tardisBlock, facing, 3);
 		w.setBlock(posArr[0], posArr[1] + 1, posArr[2], TardisMod.tardisTopBlock, facing, 3);
 
