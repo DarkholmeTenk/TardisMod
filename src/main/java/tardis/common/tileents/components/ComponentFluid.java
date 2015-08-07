@@ -1,6 +1,10 @@
 package tardis.common.tileents.components;
 
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -8,11 +12,15 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import tardis.TardisMod;
+import tardis.api.IScrewable;
+import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 
-public class ComponentFluid extends AbstractComponent implements IFluidHandler
+public class ComponentFluid extends AbstractComponent implements IFluidHandler, IScrewable
 {
+	private int currentTank=-1;
 	protected ComponentFluid() { }
 
 	public ComponentFluid(ComponentTileEntity parent)
@@ -26,15 +34,39 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 		return new ComponentFluid(parent);
 	}
 
-	private FluidStack[] getTanks()
+	private FluidStack[] getTanks(boolean limit)
 	{
 		if((parentObj != null) && (parentObj.getWorldObj() != null))
 		{
 			TardisDataStore ds = getDatastore();
 			if(ds != null)
-				return ds.getTanks();
+			{
+				FluidStack[] tanks = ds.getTanks();
+				if((currentTank < 0) || (currentTank >= tanks.length) || !limit)
+					return tanks;
+				return new FluidStack[] {tanks[currentTank]};
+			}
+
 		}
 		return null;
+	}
+
+	private int fill(FluidStack[] tanks, int i, boolean doFill, FluidStack resource)
+	{
+		if(tanks[i] == null)
+		{
+			if(doFill)
+				tanks[i] = new FluidStack(resource,Math.min(TardisMod.maxFlu, resource.amount));
+			return Math.min(TardisMod.maxFlu, resource.amount);
+		}
+		else if(tanks[i].equals(resource))
+		{
+			int maxFill = Math.min(TardisMod.maxFlu - tanks[i].amount,resource.amount);
+			if(doFill)
+				tanks[i].amount += maxFill;
+			return maxFill;
+		}
+		return 0;
 	}
 
 	@Override
@@ -42,27 +74,34 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 	{
 		if(resource == null)
 			return 0;
-		FluidStack[] tanks = getTanks();
+		FluidStack[] tanks = getTanks(false);
+		int ret = 0;
 		if(tanks != null)
 		{
-			for(int i = 0;i<tanks.length;i++)
-			{
-				if(tanks[i] == null)
-				{
-					if(doFill)
-						tanks[i] = new FluidStack(resource,Math.min(TardisMod.maxFlu, resource.amount));
-					return Math.min(TardisMod.maxFlu, resource.amount);
-				}
-				else if(tanks[i].equals(resource))
-				{
-					int maxFill = Math.min(TardisMod.maxFlu - tanks[i].amount,resource.amount);
-					if(doFill)
-						tanks[i].amount += maxFill;
-					return maxFill;
-				}
-			}
+			if(currentTank == -1)
+				for(int i = 0;(i<tanks.length)&&(ret==0);i++)
+					ret = fill(tanks, i, doFill, resource);
+			else
+				ret = fill(tanks, currentTank, doFill, resource);
 		}
-		return 0;
+		return ret;
+	}
+
+	private FluidStack drain(FluidStack[] tanks, int i, FluidStack resource, boolean doDrain)
+	{
+		if((tanks[i] != null) && tanks[i].equals(resource))
+		{
+			int toDrain = Math.min(tanks[i].amount,resource.amount);
+			if(doDrain)
+			{
+				if(toDrain == tanks[i].amount)
+					tanks[i] = null;
+				else
+					tanks[i].amount -= toDrain;
+			}
+			return new FluidStack(resource,toDrain);
+		}
+		return null;
 	}
 
 	@Override
@@ -70,24 +109,38 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 	{
 		if(resource == null)
 			return null;
-		FluidStack[] tanks = getTanks();
+		FluidStack[] tanks = getTanks(false);
+		FluidStack ret = null;
 		if(tanks != null)
 		{
-			for(int i = 0;i<tanks.length;i++)
+			if(currentTank == -1)
+				for(int i = 0;(i<tanks.length)&& (ret != null);i++)
+					ret = drain(tanks, i, resource, doDrain);
+			else
+				ret = drain(tanks, currentTank, resource, doDrain);
+		}
+		return ret;
+	}
+
+	private FluidStack drain(FluidStack[] tanks, ForgeDirection from, IFluidHandler other, int i, int maxDrain, boolean doDrain)
+	{
+		if(tanks == null)
+			return null;
+		if(tanks[i] != null)
+		{
+			Fluid f = tanks[i].getFluid();
+			if((other != null) && !other.canFill(from.getOpposite(), f))
+				return null;
+			int toDrain = Math.min(tanks[i].amount,maxDrain);
+			Fluid fluidID = tanks[i].getFluid();
+			if(doDrain)
 			{
-				if((tanks[i] != null) && tanks[i].equals(resource))
-				{
-					int toDrain = Math.min(tanks[i].amount,resource.amount);
-					if(doDrain)
-					{
-						if(toDrain == tanks[i].amount)
-							tanks[i] = null;
-						else
-							tanks[i].amount -= toDrain;
-					}
-					return new FluidStack(resource,toDrain);
-				}
+				if(toDrain == tanks[i].amount)
+					tanks[i] = null;
+				else
+					tanks[i].amount -= toDrain;
 			}
+			return new FluidStack(fluidID,toDrain);
 		}
 		return null;
 	}
@@ -95,7 +148,8 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 	@Override
 	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain)
 	{
-		FluidStack[] tanks = getTanks();
+		FluidStack[] tanks = getTanks(false);
+		FluidStack ret = null;
 		if(tanks != null)
 		{
 			SimpleCoordStore n = parentObj.coords().getNearby(from);
@@ -103,33 +157,19 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 			IFluidHandler other = null;
 			if(te instanceof IFluidHandler)
 				other = (IFluidHandler)te;
-			for(int i = 0;i<tanks.length;i++)
-			{
-				if(tanks[i] != null)
-				{
-					Fluid f = tanks[i].getFluid();
-					if((other != null) && !other.canFill(from.getOpposite(), f))
-						continue;
-					int toDrain = Math.min(tanks[i].amount,maxDrain);
-					Fluid fluidID = tanks[i].getFluid();
-					if(doDrain)
-					{
-						if(toDrain == tanks[i].amount)
-							tanks[i] = null;
-						else
-							tanks[i].amount -= toDrain;
-					}
-					return new FluidStack(fluidID,toDrain);
-				}
-			}
+			if(currentTank == -1)
+				for(int i = 0;(i<tanks.length)&&(ret==null);i++)
+					ret = drain(tanks, from, other, i, maxDrain, doDrain);
+			else
+				ret = drain(tanks,from,other,currentTank,maxDrain,doDrain);
 		}
-		return null;
+		return ret;
 	}
 
 	@Override
 	public boolean canFill(ForgeDirection from, Fluid fluid)
 	{
-		FluidStack[] tanks = getTanks();
+		FluidStack[] tanks = getTanks(true);
 		if(tanks != null)
 		{
 			for(int i = 0;i<tanks.length;i++)
@@ -146,7 +186,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 	@Override
 	public boolean canDrain(ForgeDirection from, Fluid fluid)
 	{
-		FluidStack[] tanks = getTanks();
+		FluidStack[] tanks = getTanks(true);
 		if(tanks != null)
 		{
 			for(int i = 0;i<tanks.length;i++)
@@ -163,7 +203,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 	@Override
 	public FluidTankInfo[] getTankInfo(ForgeDirection from)
 	{
-		FluidStack[] tanks = getTanks();
+		FluidStack[] tanks = getTanks(true);
 		if(tanks != null)
 		{
 			FluidTankInfo[] retVal = new FluidTankInfo[tanks.length];
@@ -175,5 +215,37 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler
 			return retVal;
 		}
 		return null;
+	}
+
+	@Override
+	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
+	{
+		TardisDataStore ds = getDatastore();
+		if((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
+		{
+			currentTank = MathHelper.cycle(currentTank + (player.isSneaking() ? -1 : 1), -1, TardisMod.numTanks);
+			if(currentTank == -1)
+				ServerHelper.sendString(player, "Fluid interface configured to all tanks");
+			else
+				ServerHelper.sendString(player, "Fluid interface configured to tank " + (currentTank+1)	);
+			return true;
+		}
+		else
+		{
+			ServerHelper.sendString(player, "You do not have permission to modify this");
+		}
+		return false;
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound nbt)
+	{
+		nbt.setInteger("cT", currentTank);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbt)
+	{
+		currentTank = nbt.hasKey("cT") ? nbt.getInteger("cT") : -1;
 	}
 }
