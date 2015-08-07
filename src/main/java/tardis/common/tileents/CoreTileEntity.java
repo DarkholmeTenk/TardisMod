@@ -1079,7 +1079,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (tt <= 2) return;
 		synchronized (roomSet)
 		{
-			System.out.println("Rechecking doors");
 			for (SimpleCoordStore room : roomSet)
 			{
 				TileEntity te = room.getTileEntity();
