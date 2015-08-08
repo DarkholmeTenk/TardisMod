@@ -246,7 +246,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				if (con.shouldLand())
 					flightState = FlightState.FLIGHT;
 				else
+				{
+					calculateFlightDistances();
 					flightState = FlightState.DRIFT;
+				}
 			}
 		}
 		else if (flightState == FlightState.DRIFT)
@@ -268,7 +271,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				flightState = FlightState.LANDING;
 			}
 			else
+			{
 				flightState = FlightState.DRIFT;
+			}
 		}
 		else if (flightState == FlightState.LANDING) land();
 		flightTimer = 0;
@@ -1379,6 +1384,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			int dX = console.getXFromControls(gDS().exteriorX);
 			int dY = console.getYFromControls(gDS().exteriorY);
 			int dZ = console.getZFromControls(gDS().exteriorZ);
+			if(sourceLocation != null)
+			{
+				dX = console.getXFromControls(sourceLocation.x);
+				dY = console.getYFromControls(sourceLocation.y);
+				dZ = console.getZFromControls(sourceLocation.z);
+			}
 			if ((dD == desDim) && (dX == desX) && (dY == desY) && (dZ == desZ) && (desLocs != null))
 				return desLocs;
 			int instability = MathHelper.clamp(20 - (2 * gDS().getLevel()), 3, 20);
