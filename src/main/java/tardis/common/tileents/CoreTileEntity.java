@@ -719,21 +719,28 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return false;
 	}
 
-	public boolean takeOffEnergy(EntityPlayer pl)
+	private int getEnergyCost(int dDim, EntityPlayer pl)
+	{
+		int extW = inFlight() ? oldExteriorWorld : gDS().exteriorWorld;
+		int enCost = (dDim != extW ? Math.max(TardisDimensionHandler.getEnergyCost(dDim), TardisDimensionHandler.getEnergyCost(extW)) : 0);
+		return enCost;
+	}
+
+	private Integer getConsoleDim()
 	{
 		ConsoleTileEntity con = getConsole();
 		if (con != null)
-		{
-			int dDim = con.getDimFromControls();
+			return con.getDimFromControls();
+		return null;
+	}
 
-			int extW = inFlight() ? oldExteriorWorld : gDS().exteriorWorld;
-			int enCost = (dDim != extW ? Math.max(TardisDimensionHandler.getEnergyCost(dDim), TardisDimensionHandler.getEnergyCost(extW)) : 0);
-			if(takeArtronEnergy(enCost, false))
-			{
-				gDS().desiredDim = dDim;
-				return true;
-			}
-			return false;
+	public boolean takeOffEnergy(EntityPlayer pl)
+	{
+		Integer dDim = getConsoleDim();
+		if((dDim != null) && takeArtronEnergy(getEnergyCost(dDim, pl), false))
+		{
+			gDS().desiredDim = dDim;
+			return true;
 		}
 		return false;
 	}
@@ -768,7 +775,17 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				return true;
 			}
 			else
-				ServerHelper.sendString(pl, "TARDIS", "Not enough energy to take off");
+			{
+				Integer dDim = getConsoleDim();
+				ServerHelper.sendString(pl, "TARDIS", "Not enough energy to change dimensions");
+				if(dDim != null)
+				{
+					int enCost = getEnergyCost(dDim, pl);
+					ServerHelper.sendString(pl, "TARDIS", "- At least " + enCost + " energy is required");
+					if(enCost > getMaxArtronEnergy())
+						ServerHelper.sendString(pl, "TARDIS", "- TARDIS Upgrades are required");
+				}
+			}
 		}
 		return false;
 	}
