@@ -18,8 +18,6 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		controlNames.put(new TwoIntStore(3), "Currently selected player");
 		controlNames.put(new TwoIntStore(4), "Next player");
 		controlNames.put(new TwoIntStore(5), "Previous player");
-		controlNames.put(new TwoIntStore(6), "Player modification permission");
-		controlNames.put(new TwoIntStore(7), "Toggle player modification permission");
 		controlNames.put(new TwoIntStore(10), "Upgrade energy level");
 		controlNames.put(new TwoIntStore(11), "Upgrade energy regeneration level");
 		controlNames.put(new TwoIntStore(12), "Upgrade shields level");
