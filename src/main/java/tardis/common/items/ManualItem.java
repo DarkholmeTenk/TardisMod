@@ -14,6 +14,7 @@ public class ManualItem extends AbstractItem
 	{
 		super(TardisMod.modName);
 		setUnlocalizedName("ManualItem");
+		setCreativeTab(TardisMod.cTab);
 	}
 
 	@Override
