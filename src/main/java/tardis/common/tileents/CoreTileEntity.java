@@ -358,7 +358,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void safetyTick()
 	{
-		List<Object> players = worldObj.playerEntities;
+		List players = worldObj.playerEntities;
 		for (Object o : players)
 		{
 			if (o instanceof EntityPlayer)
@@ -375,6 +375,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		getDestinationLocations();
 		super.sendUpdate();
 		gDS().markMaybeDirty();
+		gDS().sendUpdate();
 	}
 
 	@Override
@@ -1650,7 +1651,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (ServerHelper.isServer() && (gDS() != null))
 		{
 			NBTTagCompound dsTC = new NBTTagCompound();
-			gDS().writeToNBT(dsTC);
 			nbt.setTag("ds", dsTC);
 			nbt.setInteger("numR", getNumRooms());
 			getDestinationLocations();
@@ -1719,11 +1719,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void readTransmittableOnly(NBTTagCompound nbt)
 	{
-		if (nbt.hasKey("ds") && ServerHelper.isClient())
-		{
-			TardisDataStore tds = gDS();
-			if (tds != null) tds.readFromNBT(nbt.getCompoundTag("ds"));
-		}
 		if (nbt.hasKey("dld"))
 		{
 			if(desLocs == null) desLocs = new Integer[4];
