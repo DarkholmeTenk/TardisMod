@@ -28,7 +28,6 @@ import thaumcraft.api.aspects.AspectList;
 
 public class TardisDataStore extends AbstractWorldDataStore
 {
-	private final int										dimID;
 
 	private int												pExtW			= 0;
 	private int												pExtX			= 0;
@@ -56,13 +55,11 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public TardisDataStore(String n)
 	{
 		super(n);
-		dimID = -1;
 	}
 
-	public TardisDataStore(int _dimID)
+	public TardisDataStore(int dim)
 	{
-		super("tardisIDS");
-		dimID = _dimID;
+		super("tardisIDS", dim);
 	}
 
 	public void markMaybeDirty()
@@ -78,12 +75,6 @@ public class TardisDataStore extends AbstractWorldDataStore
 		pExtY = exteriorY;
 		pExtZ = exteriorZ;
 		super.markDirty();
-	}
-
-	@Override
-	public int getDimension()
-	{
-		return dimID;
 	}
 
 	public void setExterior(World w, int x, int y, int z)
