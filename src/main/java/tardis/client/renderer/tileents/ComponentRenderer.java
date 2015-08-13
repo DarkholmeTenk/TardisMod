@@ -53,7 +53,7 @@ public class ComponentRenderer extends AbstractBlockRenderer
 	{
 		ResourceLocation res = new ResourceLocation("tardismod","textures/models/"+tn+".png");
 		renderStick(res,x,y,0,0,yaw);
-		renderStick(res,x,y,-90,0,yaw);
+		renderStick(res,x,y,-90,0,180-yaw);
 		renderStick(res,x,y,90,0,yaw);
 		renderStick(res,x,y,0,180,yaw);
 		renderStick(res,x,y,0,90,yaw);
@@ -153,7 +153,7 @@ public class ComponentRenderer extends AbstractBlockRenderer
 					count++;
 			if(count > 0)
 			{
-				double ang = 360 / count;
+				double ang = -360 / count;
 				int i = 0;
 				for(TardisTEComponent comp : TardisTEComponent.values())
 					if(tcte.hasComponent(comp))

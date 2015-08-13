@@ -225,7 +225,13 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 
 	public static boolean isPlayerHoldingScrewdriver(EntityPlayer pl)
 	{
-		ItemStack is = pl.getHeldItem();
+		if(pl != null)
+			return isScrewdriver(pl.getHeldItem());
+		return false;
+	}
+
+	public static boolean isScrewdriver(ItemStack is)
+	{
 		if (is != null)
 		{
 			if (is.getItem() == TardisMod.screwItem) return true;
