@@ -12,34 +12,34 @@ import tardis.common.tileents.EngineTileEntity;
 public class WailaEngineProvider extends AbstractWailaProvider
 {
 	{
-		controlNames.put(new TwoIntStore(0), "Owner display");
-		controlNames.put(new TwoIntStore(1), "Hull gauge");
-		controlNames.put(new TwoIntStore(2), "Shields gauge");
-		controlNames.put(new TwoIntStore(3), "Currently selected player");
-		controlNames.put(new TwoIntStore(4), "Next player");
-		controlNames.put(new TwoIntStore(5), "Previous player");
-		controlNames.put(new TwoIntStore(10), "Upgrade energy level");
-		controlNames.put(new TwoIntStore(11), "Upgrade energy regeneration level");
-		controlNames.put(new TwoIntStore(12), "Upgrade shields level");
-		controlNames.put(new TwoIntStore(13), "Upgrade max rooms level");
-		controlNames.put(new TwoIntStore(20), "Energy level gauge");
-		controlNames.put(new TwoIntStore(21), "Energy regen level gauge");
-		controlNames.put(new TwoIntStore(22), "Shields level gauge");
-		controlNames.put(new TwoIntStore(23), "Max rooms level gauge");
-		controlNames.put(new TwoIntStore(30), "Unspent points gauge");
-		controlNames.put(new TwoIntStore(39), "Screwdriver slot");
-		controlNames.put(new TwoIntStore(40,49), "Screwdriver permissions buttons");
-		controlNames.put(new TwoIntStore(50,59), "Screwdriver permissions lights");
-		controlNames.put(new TwoIntStore(60), "TARDIS Landing Pad lockdown");
-		controlNames.put(new TwoIntStore(70), "Console Room setting");
-		controlNames.put(new TwoIntStore(71), "Prev Console Room");
-		controlNames.put(new TwoIntStore(72), "Next Console Room");
-		controlNames.put(new TwoIntStore(73), "Switch Console Room");
+		addControl(new TwoIntStore(0), "Owner display","Shows who the owner of this TARDIS is");
+		addControl(new TwoIntStore(1), "Hull gauge","Shows the level of the hull");
+		addControl(new TwoIntStore(2), "Shields gauge","Shows the level of the shields");
+		addControl(new TwoIntStore(3), "Currently selected player","The player whose permissions are being modified");
+		addControl(new TwoIntStore(4), "Next player","Select the next online player");
+		addControl(new TwoIntStore(5), "Previous player","Select the previous online player");
+		addControl(new TwoIntStore(10), "Upgrade energy level","Upgrades the Maximum Artron Energy of the TARDIS");
+		addControl(new TwoIntStore(11), "Upgrade energy regeneration level","Upgrades the rate at which Artron Energy is generated");
+		addControl(new TwoIntStore(12), "Upgrade shields level","Increases the maximum Shield points");
+		addControl(new TwoIntStore(13), "Upgrade max rooms level","Increases the maximum number of rooms");
+		addControl(new TwoIntStore(20), "Energy level gauge","Shows the current Energy upgrade level");
+		addControl(new TwoIntStore(21), "Energy regen level gauge","Shows the current Energy Regen upgrade level");
+		addControl(new TwoIntStore(22), "Shields level gauge","Shows the current Shields upgrade level");
+		addControl(new TwoIntStore(23), "Max rooms level gauge","Shows the current Max Rooms upgrade level");
+		addControl(new TwoIntStore(30), "Unspent points gauge","Shows how many upgrade points are left to spend");
+		addControl(new TwoIntStore(39), "Screwdriver slot");
+		addControl(new TwoIntStore(40,49), "Screwdriver permissions buttons");
+		addControl(new TwoIntStore(50,59), "Screwdriver permissions lights");
+		addControl(new TwoIntStore(60), "Landing Pad lockdown");
+		addControl(new TwoIntStore(70), "Console Room setting");
+		addControl(new TwoIntStore(71), "Prev Console Room");
+		addControl(new TwoIntStore(72), "Next Console Room");
+		addControl(new TwoIntStore(73), "Switch Console Room");
 		for(TardisPermission p : TardisPermission.values())
 		{
 			int o = p.ordinal();
-			controlNames.put(new TwoIntStore(80+o), "Toggle permission: " + p.name);
-			controlNames.put(new TwoIntStore(90+o), "Permission light: " + p.name);
+			addControl(new TwoIntStore(80+o), "Toggle permission: " + p.name);
+			addControl(new TwoIntStore(90+o), "Permission light: " + p.name);
 		}
 	}
 
