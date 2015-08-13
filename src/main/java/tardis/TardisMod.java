@@ -59,6 +59,7 @@ import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.KeyItem;
+import tardis.common.items.ManualItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.network.TardisPacketHandler;
@@ -150,6 +151,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static CraftingComponentItem		craftingComponentItem;
 	public static KeyItem					keyItem;
 	public static SonicScrewdriverItem		screwItem;
+	public static ManualItem				manualItem;
 
 	public static boolean					tcInstalled			= false;
 
@@ -318,12 +320,14 @@ public class TardisMod implements IConfigHandlerMod
 		keyItem = (KeyItem) new KeyItem().register();
 		componentItem = new ComponentItem().register();
 		craftingComponentItem = (CraftingComponentItem) new CraftingComponentItem().register();
+		manualItem = (ManualItem) new ManualItem().register();
 	}
 
 	private void initRecipes()
 	{
 		keyItem.initRecipes();
 		componentItem.initRecipes();
+		manualItem.initRecipes();
 		labBlock.initRecipes();
 		landingPad.initRecipes();
 		forcefield.initRecipes();
