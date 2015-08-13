@@ -360,7 +360,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					{
 						ServerHelper
 								.sendString(pl, "ENGINE",
-										"Warning: Performing this function may cause loss of items. Please right click, then sneak-right click this button to proceed");
+										"Warning: Changing console rooms may replace blocks. Please right click, then sneak-right click this button to proceed");
 					}
 					else
 					{

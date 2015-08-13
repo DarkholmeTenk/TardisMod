@@ -78,7 +78,7 @@ public class ManualItemRenderer implements IItemRenderer
 			int y = 0;
 			for(String s : data)
 			{
-				List<String> inData = fr.listFormattedStringToWidth(s, 160);
+				List<String> inData = fr.listFormattedStringToWidth(s, 155);
 				for(String text : inData)
 				{
 					fr.drawString(text, 0, y, 16579836);

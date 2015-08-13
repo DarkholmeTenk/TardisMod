@@ -28,13 +28,13 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		addControl(new TwoIntStore(23), "Max rooms level gauge","Shows the current Max Rooms upgrade level");
 		addControl(new TwoIntStore(30), "Unspent points gauge","Shows how many upgrade points are left to spend");
 		addControl(new TwoIntStore(39), "Screwdriver slot");
-		addControl(new TwoIntStore(40,49), "Screwdriver permissions buttons");
-		addControl(new TwoIntStore(50,59), "Screwdriver permissions lights");
+		addControl(new TwoIntStore(40,49), "Screwdriver permissions buttons","Allows you to toggle permissions on a screwdriver");
+		addControl(new TwoIntStore(50,59), "Screwdriver permissions lights","Displays which permissions a screwdriver has");
 		addControl(new TwoIntStore(60), "Landing Pad lockdown");
 		addControl(new TwoIntStore(70), "Console Room setting");
 		addControl(new TwoIntStore(71), "Prev Console Room");
 		addControl(new TwoIntStore(72), "Next Console Room");
-		addControl(new TwoIntStore(73), "Switch Console Room");
+		addControl(new TwoIntStore(73), "Switch Console Room","Right click then sneak right click to change console room");
 		for(TardisPermission p : TardisPermission.values())
 		{
 			int o = p.ordinal();
