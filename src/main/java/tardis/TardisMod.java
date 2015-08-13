@@ -346,6 +346,7 @@ public class TardisMod implements IConfigHandlerMod
 		plReg = null;
 		dimReg = null;
 		Helper.datastoreMap.clear();
+		Helper.ssnDatastoreMap.clear();
 		MinecraftForge.EVENT_BUS.register(otherDims);
 	}
 

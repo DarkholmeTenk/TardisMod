@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -29,6 +30,7 @@ import tardis.common.core.Helper;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.store.ControlStateStore;
+import tardis.common.dimension.SaveSlotNamesDataStore;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SonicScrewdriverItem;
 import cpw.mods.fml.relauncher.Side;
@@ -84,6 +86,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private float								dimControlState			= 0;
 	private int									screwMode				= 0;
 
+	private SaveSlotNamesDataStore	ssnds;
+
 	{
 		for (int i = 0; i < 7; i++)
 		{
@@ -109,6 +113,12 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			case 901: return true;
 			default: return false;
 		}
+	}
+
+	@Override
+	public void init()
+	{
+		ssnds = Helper.getSSNDataStore(WorldHelper.getWorldID(this));
 	}
 
 	@Override
@@ -681,21 +691,41 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				lastButton = controlID;
 				lastButtonTT = tickTimer;
 			}
-			if (!core.inFlight() && (controlID >= 1000) && (controlID < 1020))
+			boolean run = true;
+			if((controlID >= 1000) && (controlID < 1020))
 			{
-				int num = controlID - 1000;
-				if (saveCoords)
+				ItemStack is = pl.getHeldItem();
+				if((is != null) && (is.getItem() instanceof ItemNameTag) && (ssnds != null))
 				{
-					saveControls(num);
+					if(is.hasDisplayName())
+					{
+						String n = is.getDisplayName();
+						if(ssnds.setName(n, controlID-1000))
+						{
+							run = false;
+							if(!pl.capabilities.isCreativeMode)
+								is.stackSize--;
+						}
+					}
 				}
-				else
+				if(run)
+					ssnds.sendUpdate();
+				if ((run == true) && !core.inFlight())
 				{
-					loadControls(num);
+					int num = controlID - 1000;
+					if (saveCoords)
+					{
+						saveControls(num);
+					}
+					else
+					{
+						loadControls(num);
+					}
+					primed = false;
+					regulated = false;
 				}
-				primed = false;
-				regulated = false;
 			}
-			if (core.inFlight())
+			if (run && core.inFlight())
 			{
 				if (unstableControl == controlID)
 					pressedUnstable();
@@ -1133,20 +1163,27 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				return new String[] { "Set to " + yControls[controlID - 30] };
 
 			if (controlID == 900)
-				return new String[] { "Current mode: " + (saveCoords ? "Save" : "Load") };
+				return new String[] { "Current: " + (saveCoords ? "Save" : "Load") };
 			if (controlID == 904)
-				return new String[] { "Current mode: " + (landOnPad ? "Land on landing pads" : "Ignore landing pads") };
+				return new String[] { "Current: " + (landOnPad ? "Use landing pads" : "Ignore landing pads") };
 			if (controlID == 34)
-				return new String[] { "Current mode: " + (landGroundControl ? "Land on ground" : "Land in midair") };
+				return new String[] { "Current: " + (landGroundControl ? "Land on ground" : "Land in midair") };
 			if (controlID == 56)
-				return new String[] { "Current mode: " + (stable ? "Stable flight" : "Unstable flight")};
+				return new String[] { "Current: " + (stable ? "Stable flight" : "Unstable flight")};
 			if (controlID == 52)
-				return new String[] { "Current mode: " + (dayNightControl ? "Daytime" : "Nighttime")};
+				return new String[] { "Current: " + (dayNightControl ? "Daytime" : "Nighttime")};
 			if (controlID == 55)
-				return new String[] { "Current mode: "
+				return new String[] { "Current: "
 						+ (uncoordinated ? "Uncoordinated flight (Drifting)" : "Coordinated flight") };
 			if (controlID == 53)
-				return new String[] { "Current mode: " + (relativeCoords ? "Relative coordinates" : "Absolute coordinates") };
+				return new String[] { "Current: " + (relativeCoords ? "Relative coordinates" : "Absolute coordinates") };
+			if ((controlID >= 1000) && (controlID < 1020) && (ssnds != null))
+			{
+				int slot = controlID - 1000;
+				String name = ssnds.getName(slot);
+				if(name != null)
+					return new String[] {"Name: " + name};
+			}
 		}
 		return null;
 	}

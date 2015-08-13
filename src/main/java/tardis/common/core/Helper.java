@@ -24,6 +24,7 @@ import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.PartBlueprint;
+import tardis.common.dimension.SaveSlotNamesDataStore;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.entities.particles.ParticleType;
@@ -36,10 +37,11 @@ import tardis.common.tileents.TardisTileEntity;
 
 public class Helper
 {
-	public static final int							tardisCoreX		= 0;
-	public static final int							tardisCoreY		= 70;
-	public static final int							tardisCoreZ		= 0;
-	public static HashMap<Integer, TardisDataStore>	datastoreMap	= new HashMap();
+	public static final int									tardisCoreX		= 0;
+	public static final int									tardisCoreY		= 70;
+	public static final int									tardisCoreZ		= 0;
+	public static HashMap<Integer, TardisDataStore>			datastoreMap	= new HashMap();
+	public static HashMap<Integer, SaveSlotNamesDataStore>	ssnDatastoreMap	= new HashMap();
 
 	// /////////////////////////////////////////////////
 	// /////////////TELEPORT STUFF//////////////////////
@@ -55,11 +57,11 @@ public class Helper
 				if (core != null)
 					core.enterTardis((EntityPlayer) ent, true);
 				else
-					TeleportHelper.teleportEntity(ent, 0, tardisCoreX-2, tardisCoreY, tardisCoreZ);
+					TeleportHelper.teleportEntity(ent, 0, tardisCoreX - 2, tardisCoreY, tardisCoreZ);
 			}
 			else
 			{
-				TeleportHelper.teleportEntity(ent, 0, tardisCoreX-2, tardisCoreY, tardisCoreZ);
+				TeleportHelper.teleportEntity(ent, 0, tardisCoreX - 2, tardisCoreY, tardisCoreZ);
 			}
 		}
 	}
@@ -87,15 +89,13 @@ public class Helper
 		if ((te != null) && (ds != null))
 		{
 			te.setOwner(ownerName);
-			if (exterior != null)
-				ds.linkToExterior(exterior);
+			if (exterior != null) ds.linkToExterior(exterior);
 		}
 	}
 
 	public static int generateTardisInterior(String ownerName, TardisTileEntity exterior)
 	{
-		if(ServerHelper.isClient())
-			return 0;
+		if (ServerHelper.isClient()) return 0;
 		int dimID = DimensionManager.getNextFreeDimId();
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
 		TardisMod.dimReg.addDimension(dimID);
@@ -109,15 +109,13 @@ public class Helper
 	{
 		int dimID = generateTardisInterior(player.getCommandSenderName(), exterior);
 		CoreTileEntity te = getTardisCore(dimID);
-		if (te != null)
-			te.enterTardis(player, true);
+		if (te != null) te.enterTardis(player, true);
 		return dimID;
 	}
 
 	public static void summonNewTardis(EntityPlayer player)
 	{
-		if (TardisMod.plReg.hasTardis(player.getCommandSenderName()))
-			return;
+		if (TardisMod.plReg.hasTardis(player.getCommandSenderName())) return;
 
 		TardisTileEntity te = summonTardis(player);
 		if (te != null)
@@ -126,19 +124,17 @@ public class Helper
 			te.linkToDimension(dimID);
 			te.land(true);
 			ConsoleTileEntity con = getTardisConsole(dimID);
-			if (con != null)
-				con.setControls(te, true);
+			if (con != null) con.setControls(te, true);
 		}
 	}
 
 	public static boolean summonOldTardis(EntityPlayer player)
 	{
 		Integer dim = TardisMod.plReg.getDimension(player);
-		if (dim == null)
-			return false;
+		if (dim == null) return false;
 
-		CoreTileEntity oldCore =TardisMod.plReg.getCore(player);
-		if(oldCore != null)
+		CoreTileEntity oldCore = TardisMod.plReg.getCore(player);
+		if (oldCore != null)
 			oldCore.removeOldBox();
 		else
 			return false;
@@ -148,8 +144,7 @@ public class Helper
 			te.land(true);
 			te.linkToDimension(dim);
 			ConsoleTileEntity con = getTardisConsole(dim);
-			if (con != null)
-				con.setControls(te, true);
+			if (con != null) con.setControls(te, true);
 			return true;
 		}
 		else
@@ -160,8 +155,7 @@ public class Helper
 	private static TardisTileEntity summonTardis(EntityPlayer player)
 	{
 		World w = player.worldObj;
-		if (ServerHelper.isClient())
-			return null;
+		if (ServerHelper.isClient()) return null;
 
 		int x = (int) Math.floor(player.posX);
 		int y = (int) Math.floor(player.posY);
@@ -171,19 +165,16 @@ public class Helper
 		SimpleCoordStore place = null;
 		for (int yOf = 0; yOf < 7; yOf++)
 		{
-			if (place != null)
-				break;
+			if (place != null) break;
 
 			int yO = yOf > 3 ? 3 - yOf : yOf;
 			for (int xO : validSpotRanges)
 			{
-				if (place != null)
-					break;
+				if (place != null) break;
 
 				for (int zO : validSpotRanges)
 				{
-					if((xO == 0) && (yO == 0) && (zO == 0))
-						continue;
+					if ((xO == 0) && (yO == 0) && (zO == 0)) continue;
 					if ((y > 1) && (y < 253))
 					{
 						if (w.isAirBlock(x + xO, y + yO, z + zO) && w.isAirBlock(x + xO, y + yO + 1, z + zO))
@@ -201,33 +192,26 @@ public class Helper
 			w.setBlock(place.x, place.y, place.z, TardisMod.tardisBlock, 0, 3);
 			w.setBlock(place.x, place.y + 1, place.z, TardisMod.tardisTopBlock, 0, 3);
 			TileEntity te = w.getTileEntity(place.x, place.y, place.z);
-			if (te instanceof TardisTileEntity)
-				return (TardisTileEntity) te;
+			if (te instanceof TardisTileEntity) return (TardisTileEntity) te;
 		}
 		return null;
 	}
 
 	public static void repairConsole(World w)
 	{
-		if(!Helper.isTardisWorld(w))
-			return;
+		if (!Helper.isTardisWorld(w)) return;
 		int y = tardisCoreY - 2;
-		for(int x = -1; x<= 1; x++)
+		for (int x = -1; x <= 1; x++)
 		{
-			for(int z = -1; z<= 1; z++)
+			for (int z = -1; z <= 1; z++)
 			{
-				if((x == 0) && (z == 0))
-					continue;
-				if(w.getBlock(x, y, z) != TardisMod.schemaComponentBlock)
-					w.setBlock(x, y, z, TardisMod.schemaComponentBlock, 3, 3);
+				if ((x == 0) && (z == 0)) continue;
+				if (w.getBlock(x, y, z) != TardisMod.schemaComponentBlock) w.setBlock(x, y, z, TardisMod.schemaComponentBlock, 3, 3);
 			}
 		}
-		if(w.getBlock(0, y+1, 0) != TardisMod.schemaComponentBlock)
-			w.setBlock(0, y+1, 0, TardisMod.schemaComponentBlock, 6, 3);
-		if(w.getBlock(0, tardisCoreY+1, 0) != TardisMod.schemaComponentBlock)
-			w.setBlock(0, tardisCoreY + 1, 0, TardisMod.schemaComponentBlock, 8, 3);
-		if(w.getBlock(0, tardisCoreY-5, 0) != TardisMod.tardisEngineBlock)
-			w.setBlock(0, tardisCoreY - 5, 0, TardisMod.tardisEngineBlock);
+		if (w.getBlock(0, y + 1, 0) != TardisMod.schemaComponentBlock) w.setBlock(0, y + 1, 0, TardisMod.schemaComponentBlock, 6, 3);
+		if (w.getBlock(0, tardisCoreY + 1, 0) != TardisMod.schemaComponentBlock) w.setBlock(0, tardisCoreY + 1, 0, TardisMod.schemaComponentBlock, 8, 3);
+		if (w.getBlock(0, tardisCoreY - 5, 0) != TardisMod.tardisEngineBlock) w.setBlock(0, tardisCoreY - 5, 0, TardisMod.tardisEngineBlock);
 	}
 
 	public static boolean isBlockRemovable(Block blockID)
@@ -237,7 +221,7 @@ public class Helper
 		else if (blockID == TardisMod.tardisConsoleBlock)
 			return false;
 		else if (blockID == TardisMod.tardisEngineBlock)
-			;
+		;
 		return true;
 	}
 
@@ -248,7 +232,7 @@ public class Helper
 
 	public static void loadSchema(String name, File schemaFile, World w, int x, int y, int z, int facing)
 	{
-		PartBlueprint pb = new PartBlueprint(name,schemaFile);
+		PartBlueprint pb = new PartBlueprint(name, schemaFile);
 		pb.reconstitute(w, x, y, z, facing);
 	}
 
@@ -258,11 +242,9 @@ public class Helper
 		loadSchema(name, schemaFile, w, x, y, z, facing);
 	}
 
-	public static void loadSchemaDiff(String fromName, String toName, World worldObj, int xCoord, int yCoord, int zCoord,
-			int facing)
+	public static void loadSchemaDiff(String fromName, String toName, World worldObj, int xCoord, int yCoord, int zCoord, int facing)
 	{
-		if (fromName.equals(toName))
-			return;
+		if (fromName.equals(toName)) return;
 
 		long mstime = System.currentTimeMillis();
 		File schemaDiff = TardisMod.schemaHandler.getSchemaFile(toName + "." + fromName + ".diff");
@@ -312,8 +294,7 @@ public class Helper
 
 	public static void spawnParticle(ParticleType type, int dim, double x, double y, double z, int count, boolean rand)
 	{
-		if (ServerHelper.isClient())
-			return;
+		if (ServerHelper.isClient()) return;
 		NBTTagCompound data = new NBTTagCompound();
 		data.setInteger("dim", dim);
 		data.setDouble("x", x);
@@ -328,8 +309,7 @@ public class Helper
 
 	public static void activateControl(TileEntity te, EntityPlayer player, int control)
 	{
-		if (ServerHelper.isServer())
-			return;
+		if (ServerHelper.isServer()) return;
 		NBTTagCompound data = new NBTTagCompound();
 		data.setInteger("cID", control);
 		data.setString("pl", ServerHelper.getUsername(player));
@@ -343,8 +323,7 @@ public class Helper
 
 	public static CoreTileEntity getTardisCore(int dimensionID)
 	{
-		if (dimensionID == 0)
-			return null;
+		if (dimensionID == 0) return null;
 		World tardisWorld = WorldHelper.getWorld(dimensionID);
 		if (tardisWorld != null)
 			return getTardisCore(tardisWorld);
@@ -358,10 +337,7 @@ public class Helper
 		if (tardisWorld != null)
 		{
 			TileEntity te = tardisWorld.getTileEntity(tardisCoreX, tardisCoreY, tardisCoreZ);
-			if (te instanceof CoreTileEntity)
-			{
-				return (CoreTileEntity) te;
-			}
+			if (te instanceof CoreTileEntity) { return (CoreTileEntity) te; }
 		}
 		else
 		{
@@ -375,8 +351,7 @@ public class Helper
 		if (te != null)
 		{
 			World w = te.getWorldObj();
-			if (w != null)
-				return getTardisCore(w);
+			if (w != null) return getTardisCore(w);
 		}
 		return null;
 	}
@@ -389,47 +364,42 @@ public class Helper
 	public static EngineTileEntity getTardisEngine(IBlockAccess w)
 	{
 		CoreTileEntity core = getTardisCore(w);
-		if (core != null)
-			return core.getEngine();
+		if (core != null) return core.getEngine();
 		return null;
 	}
 
 	public static ConsoleTileEntity getTardisConsole(int dimID)
 	{
 		World w = WorldHelper.getWorldServer(dimID);
-		if (w != null)
-			return getTardisConsole(w);
+		if (w != null) return getTardisConsole(w);
 		return null;
 	}
 
 	public static ConsoleTileEntity getTardisConsole(IBlockAccess tardisWorld)
 	{
 		CoreTileEntity core = getTardisCore(tardisWorld);
-		if (core != null)
-			return core.getConsole();
+		if (core != null) return core.getConsole();
 		return null;
 	}
 
 	public static IArtronEnergyProvider getArtronProvider(TileEntity source, boolean search)
 	{
 		World w = source.getWorldObj();
-		if (w == null)
-			return null;
+		if (w == null) return null;
 		int x = source.xCoord;
 		int y = source.yCoord;
 		int z = source.zCoord;
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
 		{
 			TileEntity te = w.getTileEntity(x + dir.offsetX, y + dir.offsetY, z + dir.offsetZ);
-			if (te instanceof IArtronEnergyProvider)
-				return (IArtronEnergyProvider) te;
+			if (te instanceof IArtronEnergyProvider) return (IArtronEnergyProvider) te;
 		}
 		return getTardisCore(w);
 	}
 
 	public static TardisDataStore getDataStore(World w)
 	{
-		if(Helper.isTardisWorld(w))
+		if (Helper.isTardisWorld(w))
 			return getDataStore(WorldHelper.getWorldID(w));
 		else
 			return null;
@@ -437,10 +407,8 @@ public class Helper
 
 	public static TardisDataStore getDataStore(int dimID)
 	{
-		if(dimID == 0)
-			return null;
-		if (datastoreMap.containsKey(dimID))
-			return datastoreMap.get(dimID);
+		if (dimID == 0) return null;
+		if (datastoreMap.containsKey(dimID)) return datastoreMap.get(dimID);
 		TardisDataStore store = new TardisDataStore(dimID);
 		store.load();
 		store.save();
@@ -450,24 +418,36 @@ public class Helper
 
 	public static TardisDataStore getDataStore(TileEntity te)
 	{
-		if (te != null)
-			return getDataStore(te.getWorldObj());
+		if (te != null) return getDataStore(te.getWorldObj());
 		return null;
+	}
+
+	public static SaveSlotNamesDataStore getSSNDataStore(int dimID)
+	{
+		if (dimID == 0) return null;
+		if (ssnDatastoreMap.containsKey(dimID)) return ssnDatastoreMap.get(dimID);
+		SaveSlotNamesDataStore store = new SaveSlotNamesDataStore(dimID);
+		store.load();
+		store.save();
+		ssnDatastoreMap.put(dimID, store);
+		return store;
 	}
 
 	public static boolean isTardisWorld(IBlockAccess world)
 	{
-		if (world instanceof World)
-			return ((World) world).provider instanceof TardisWorldProvider;
+		if (world instanceof World) return ((World) world).provider instanceof TardisWorldProvider;
 		return false;
 	}
 
 	/**
-	 *
-	 * @param w the world of the expected door position
-	 * @param x the location of the expected door
-	 * @param y the location of the expected door
-	 * @param z the location of the expected door
+	 * @param w
+	 *            the world of the expected door position
+	 * @param x
+	 *            the location of the expected door
+	 * @param y
+	 *            the location of the expected door
+	 * @param z
+	 *            the location of the expected door
 	 * @return the simple coord store of the schema core which has the door specified or null if none found
 	 */
 	public static SimpleCoordStore getExistingDoor(World w, int x, int y, int z)
@@ -482,14 +462,10 @@ public class Helper
 				for (SimpleCoordStore scs : rooms)
 				{
 					TileEntity te = scs.getTileEntity();
-					if (te instanceof SchemaCoreTileEntity)
-						if (((SchemaCoreTileEntity) te).isDoor(pos))
-							return scs;
+					if (te instanceof SchemaCoreTileEntity) if (((SchemaCoreTileEntity) te).isDoor(pos)) return scs;
 				}
 				SchemaCoreTileEntity te = core.getSchemaCore();
-				if (te != null)
-					if(te.isDoor(pos))
-						return new SimpleCoordStore(te);
+				if (te != null) if (te.isDoor(pos)) return new SimpleCoordStore(te);
 			}
 		}
 		return null;
