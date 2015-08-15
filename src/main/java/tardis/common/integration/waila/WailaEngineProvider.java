@@ -43,6 +43,7 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		}
 		addControl(new TwoIntStore(100), "Engine Panel Release","Opens or closes the engine panel");
 		addControl(new TwoIntStore(101,108), "Upgrade Slot","Allows you to insert upgrades");
+		addControl(new TwoIntStore(110,119), "Repair bobble [WIP]");
 	}
 
 	private boolean isEngine(IWailaDataAccessor accessor)

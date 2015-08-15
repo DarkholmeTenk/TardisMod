@@ -15,6 +15,7 @@ import tardis.api.TardisPermission;
 import tardis.client.renderer.ControlRenderer;
 import tardis.common.core.Helper;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
@@ -26,12 +27,18 @@ public class EngineRenderer extends AbstractObjRenderer
 	ResourceLocation engineTex;
 	IModelCustom enginePanel;
 	ResourceLocation panelTex;
+	IModelCustom bubble;
+	ResourceLocation bubbleUp;
+	ResourceLocation bubbleDown;
 
 	{
 		engine = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/engine.obj"));
 		engineTex = new ResourceLocation("tardismod","textures/models/engine.png");
 		enginePanel = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/enginepanel.obj"));
 		panelTex = new ResourceLocation("tardismod","textures/models/enginepanel.png");
+		bubble = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/breakableTemp.obj"));
+		bubbleUp = new ResourceLocation("tardismod","textures/models/capup.png");
+		bubbleDown = new ResourceLocation("tardismod","textures/models/cap.png");
 	}
 
 	@Override
@@ -114,6 +121,37 @@ public class EngineRenderer extends AbstractObjRenderer
 		GL11.glPopMatrix();
 	}
 
+	private void renderBreakable(Tessellator tess, EngineTileEntity eng, CoreTileEntity core, TardisDataStore ds, int comp)
+	{
+		double x = 0.5;
+		double y = 0.6;
+		double z = -0.05;
+		double scale = 0.1;
+		switch(comp)
+		{
+			case 0: break;
+			case 1: x += 0.2;	y += 0.2;	scale *= 0.5; break;
+			case 2: x += 0.25;	y += 0; 	scale *= 0.5; break;
+			case 3: x += 0.2;	y -= 0.2;	scale *= 0.5; break;
+			case 4: x -= 0.2;	y += 0.2;	scale *= 0.5; break;
+			case 5: x -= 0.25;	y += 0; 	scale *= 0.5; break;
+			case 6: x -= 0.2;	y -= 0.2;	scale *= 0.5; break;
+			case 7: x -= 0.28;	y -= 0.365;	scale *= 0.7; break;
+			case 8: x += 0.15;	y -= 0.35; 	scale *= 0.4; break;
+			case 9: x -= 0; 	y -= 0.35;	scale *= 0.8; break;
+		}
+		GL11.glPushMatrix();
+		GL11.glRotated(90, 0, 0, 1);
+		GL11.glTranslated(y, z, x);
+		GL11.glScaled(scale, scale, scale);
+		if(ds.damage.isComponentBroken(comp))
+			bindTexture(bubbleDown);
+		else
+			bindTexture(bubbleUp);
+		bubble.renderAll();
+		GL11.glPopMatrix();
+	}
+
 	private void renderUnderPanel(Tessellator tess, EngineTileEntity eng, CoreTileEntity core, TardisDataStore ds)
 	{
 		GL11.glPushMatrix();
@@ -131,6 +169,8 @@ public class EngineRenderer extends AbstractObjRenderer
 			}
 		}
 		GL11.glPopMatrix();
+		for(int i = 0; i < TardisDamageSystem.numBreakables; i++)
+			renderBreakable(tess,eng,core,ds,i);
 	}
 
 	@Override

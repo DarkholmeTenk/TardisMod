@@ -475,7 +475,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		return Helper.getTardisConsole(dimID);
 	}
 
-	private EngineTileEntity getEngine()
+	public EngineTileEntity getEngine()
 	{
 		return Helper.getTardisEngine(dimID);
 	}

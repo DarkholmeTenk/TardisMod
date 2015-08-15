@@ -221,6 +221,26 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				if(hit.within(4, 0.950, x, 1.083, X))
 					return 100 + i + 1;
 			}
+			if(hit.within(4, 0.495, 0.400, 0.700, 0.600))
+				return 110;
+			else if(hit.within(4, 0.75, 0.65, 0.85, 0.75))
+				return 111;
+			else if(hit.within(4, 0.55, 0.70, 0.65, 0.80))
+				return 112;
+			else if(hit.within(4, 0.35, 0.64, 0.45, 0.75))
+				return 113;
+			else if(hit.within(4, 0.75, 0.25, 0.85, 0.35))
+				return 114;
+			else if(hit.within(4, 0.55, 0.20, 0.66, 0.30))
+				return 115;
+			else if(hit.within(4, 0.35, 0.25, 0.45, 0.35))
+				return 116;
+			else if(hit.within(4, 0.15, 0.15, 0.30, 0.30))
+				return 117;
+			else if(hit.within(4, 0.15, 0.40, 0.32, 0.58))
+				return 119;
+			else if(hit.within(4, 0.21, 0.61, 0.29, 0.69))
+				return 118;
 		}
 		return -1;
 	}
@@ -470,6 +490,11 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					}
 					else
 						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
+				}
+				if((control >= 110) && (control <= 119))
+				{
+					int component = control - 110;
+					ds.damage.repairComponent(component);
 				}
 			}
 		}

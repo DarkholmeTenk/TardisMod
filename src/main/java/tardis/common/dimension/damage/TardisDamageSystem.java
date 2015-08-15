@@ -3,6 +3,10 @@ package tardis.common.dimension.damage;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+
+import java.util.Random;
+
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.TardisUpgradeMode;
@@ -25,6 +29,7 @@ public class TardisDamageSystem
 	public static double		explosionDamageMult	= 50;
 	public static double		missedDamageMult	= 10;
 	public static double		combatDamageMult	= 30;
+	private static Random		rand				= new Random();
 
 	public static void refreshConfigs()
 	{
@@ -46,6 +51,9 @@ public class TardisDamageSystem
 	private int						tt	= 0;
 	private int						shields;
 	private int						hull;
+	private int						prevHull;
+	public static final int 		numBreakables = 10;
+	private boolean[]				breakables = new boolean[numBreakables];
 
 	public TardisDamageSystem(TardisDataStore parent)
 	{
@@ -53,6 +61,9 @@ public class TardisDamageSystem
 		dimID = ds.getDimension();
 		shields = getMaxShields();
 		hull = getMaxHull();
+		prevHull = hull;
+		for(int i = 0; i < breakables.length; i++)
+			breakables[i] = false;
 	}
 
 	private int handleDamageReductions(TardisDamageType damageType, int damage)
@@ -88,6 +99,16 @@ public class TardisDamageSystem
 		}
 	}
 
+	private int getHullClass(int hull)
+	{
+		return hull / (getMaxHull() / numBreakables);
+	}
+
+	private void damageHull(int amount)
+	{
+		hull = MathHelper.clamp(hull-Math.abs(amount), 0, getMaxHull());
+	}
+
 	public void damage(TardisDamageType damageType, double damageAmount)
 	{
 		switch (damageType)
@@ -112,6 +133,51 @@ public class TardisDamageSystem
 		int hullDamage = damageShields(damage);
 		//if (ServerHelper.isServer()) System.out.println("Newshields:" + shields);
 		if (hullDamage == 0) return;
+		damageHull(hullDamage);
+	}
+
+	private void playBreakSound()
+	{
+		SoundHelper.playSound(dimID, "tardismod:crack", 3, 1);
+	}
+
+	private void breakComponent()
+	{
+		int count = 0;
+		while(count++ < 5)
+		{
+			int slot = rand.nextInt(numBreakables);
+			if(!breakables[slot])
+			{
+				breakables[slot] = true;
+				playBreakSound();
+				return;
+			}
+		}
+		for(int i = 0; i < numBreakables; i++)
+			if(!breakables[i])
+			{
+				breakables[i] = true;
+				playBreakSound();
+				return;
+			}
+	}
+
+	public boolean repairComponent(int component)
+	{
+		if((component < 0) || (component >= numBreakables)) return false;
+		if(!breakables[component]) return false;
+		breakables[component] = false;
+		hull = hull + (getMaxHull() / numBreakables);
+		hull = MathHelper.clamp(hull, 0, getMaxHull());
+		ds.sendUpdate();
+		return true;
+	}
+
+	public boolean isComponentBroken(int component)
+	{
+		if((component < 0) || (component >= numBreakables)) return false;
+		return breakables[component];
 	}
 
 	public int getShields()
@@ -139,7 +205,10 @@ public class TardisDamageSystem
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		nbt.setInteger("hull", hull);
+		nbt.setInteger("prevHull", prevHull);
 		nbt.setInteger("shields", shields);
+		for(int i = 0; i < numBreakables; i++)
+			nbt.setBoolean("b"+i, breakables[i]);
 	}
 
 	public void readFromNBT(NBTTagCompound nbt)
@@ -147,7 +216,11 @@ public class TardisDamageSystem
 		if (nbt.hasKey("shields"))
 		{
 			hull = nbt.getInteger("hull");
+			prevHull = nbt.getInteger("prevHull");
 			shields = nbt.getInteger("shields");
+			for(int i = 0; i<numBreakables; i++)
+				if(nbt.hasKey("b"+i))
+					breakables[i] = nbt.getBoolean("b"+i);
 		}
 	}
 
@@ -175,6 +248,15 @@ public class TardisDamageSystem
 
 	public synchronized void tick()
 	{
+		if(prevHull != hull)
+		{
+			int prevHullClass = getHullClass(prevHull);
+			int currentClass = getHullClass(hull);
+			while(currentClass < prevHullClass--)
+				breakComponent();
+			prevHull = hull;
+			ds.sendUpdate();
+		}
 		if (ServerHelper.isIntegratedClient()) return;
 		tt = (tt + 1) % 1000000;
 		regenShields();
