@@ -335,7 +335,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				if (mode != null)
 				{
 					int level = ds.getLevel(mode);
-					pl.addChatMessage(new ChatComponentText("[ENGINE] " + mode.name + " lvl: " + level + "/"
+					int tlevel = ds.getLevel(mode, true);
+					pl.addChatMessage(new ChatComponentText("[ENGINE] " + mode.name + " lvl: " + level + "(" + tlevel + ")/"
 							+ ds.maxUnspentLevelPoints()));
 				}
 			}
@@ -441,7 +442,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			else if((control >= 80) && (control < 90))
 			{
 				TardisPermission p = TardisPermission.get(control - 80);
-				if(ds.togglePermission(ServerHelper.getUsername(pl), currentPerson, p))
+				if(ds.togglePermission(pl, currentPerson, p))
 					core.sendUpdate();
 				else
 					ServerHelper.sendString(pl, CoreTileEntity.cannotModifyPermissions);
@@ -544,7 +545,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			{
 				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(cID - 20);
 				if ((mode != null) && (ds.maxUnspentLevelPoints() > 0))
-					return ((double) ds.getLevel(mode)) / ((double) ds.maxUnspentLevelPoints());
+					return ((double) ds.getLevel(mode,true)) / ((double) ds.maxUnspentLevelPoints());
 				return 0;
 			}
 			if (cID == 30)
@@ -759,13 +760,13 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	public String[] getExtraInfo(int control)
 	{
+		TardisDataStore ds = Helper.getDataStore(this);
 		switch(control)
 		{
 			case 60: return new String[] { "Current mode: " + (internalOnly ? "Only interfaces inside the TARDIS can interact" : "All interfaces can interact") };
 		}
 		if((control >= 101) && (control <= 108))
 		{
-			TardisDataStore ds = Helper.getDataStore(this);
 			if(ds != null)
 			{
 				int slot = control - 101;
@@ -773,6 +774,16 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				if(up != null)
 					return up.getExtraInfo();
 			}
+		}
+		if ((control >= 20) && (control < 30) && (ds != null))
+		{
+			TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 20);
+			return new String[] {"Level: " + ds.getLevel(mode) + "("+ds.getLevel(mode, true)+")"};
+		}
+		else if((control >= 90) && (control < 100) && (ds != null))
+		{
+			TardisPermission p = TardisPermission.get(control - 90);
+			return new String[]{ currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name};
 		}
 		return null;
 	}
