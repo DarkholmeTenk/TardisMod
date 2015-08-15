@@ -96,6 +96,8 @@ public class RepairCoreCommand extends AbstractCommand
 			//TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);
 			if((tce != null) && (ds != null))
 			{
+				tce.sendUpdate();
+				ds.sendUpdate();
 				if(total)
 				{
 					tce.removeAllRooms(true);
