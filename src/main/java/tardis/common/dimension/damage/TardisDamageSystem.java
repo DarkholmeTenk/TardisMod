@@ -50,7 +50,7 @@ public class TardisDamageSystem
 	public TardisDamageSystem(TardisDataStore parent)
 	{
 		ds = parent;
-		dimID = ds.dimID;
+		dimID = ds.getDimension();
 		shields = getMaxShields();
 		hull = getMaxHull();
 	}

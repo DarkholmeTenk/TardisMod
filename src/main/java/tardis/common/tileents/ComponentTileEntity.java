@@ -12,7 +12,6 @@ import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +27,6 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
-import tardis.api.ILinkable;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
@@ -1016,34 +1014,6 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	public boolean renderExtendedTube()
 	{
 		return false;
-	}
-
-	@Override
-	public boolean link(EntityPlayer pl, SimpleCoordStore other)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean unlink(EntityPlayer pl, SimpleCoordStore other)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean unlink(EntityPlayer pl)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Set<SimpleCoordStore> getLinked()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
