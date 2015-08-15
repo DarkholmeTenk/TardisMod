@@ -199,6 +199,16 @@ public class TardisDataStore extends AbstractWorldDataStore
 		return tardisLevel;
 	}
 
+	public int getLevel(TardisUpgradeMode mode, boolean trueValue)
+	{
+		if(trueValue)
+		{
+			if (upgradeLevels.containsKey(mode)) return upgradeLevels.get(mode);
+			return 0;
+		}
+		return getLevel(mode);
+	}
+
 	public int getLevel(TardisUpgradeMode mode)
 	{
 		int level = 0;
@@ -215,7 +225,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	{
 		if (unspentLevelPoints() >= am)
 		{
-			upgradeLevels.put(mode, am + getLevel(mode));
+			upgradeLevels.put(mode, am + getLevel(mode,true));
 			markDirty();
 		}
 	}
