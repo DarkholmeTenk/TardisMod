@@ -6,10 +6,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
+import tardis.api.TardisUpgradeMode;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import tardis.common.tileents.extensions.upgrades.DamReduceCombat;
 import tardis.common.tileents.extensions.upgrades.DamReduceExplosion;
 import tardis.common.tileents.extensions.upgrades.DamReduceMissedControl;
+import tardis.common.tileents.extensions.upgrades.LevelUpgrade;
 
 public class UpgradeFactory implements IUpgradeFactory
 {
@@ -60,6 +62,8 @@ public class UpgradeFactory implements IUpgradeFactory
 				return new DamReduceCombat(nbt);
 			if(id.equals("protMiss"))
 				return new DamReduceMissedControl(nbt);
+			if(id.equals("levelUp"))
+				return new LevelUpgrade(TardisUpgradeMode.getUpgradeMode(nbt.getInteger("tum")));
 		}
 		return null;
 	}
@@ -84,6 +88,11 @@ public class UpgradeFactory implements IUpgradeFactory
 					case 1: return new DamReduceExplosion();
 					case 2: return new DamReduceCombat();
 					case 3: return new DamReduceMissedControl();
+					case 4: return new LevelUpgrade(TardisUpgradeMode.SPEED);
+					case 5: return new LevelUpgrade(TardisUpgradeMode.SHIELDS);
+					case 6: return new LevelUpgrade(TardisUpgradeMode.ROOMS);
+					case 7: return new LevelUpgrade(TardisUpgradeMode.ENERGY);
+					case 8: return new LevelUpgrade(TardisUpgradeMode.REGEN);
 				}
 			}
 		}
