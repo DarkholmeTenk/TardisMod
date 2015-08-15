@@ -711,7 +711,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if((controlID >= 1000) && (controlID < 1020))
 			{
 				ItemStack is = pl.getHeldItem();
-				if((is != null) && (is.getItem() instanceof ItemNameTag) && (ssnds != null))
+				if((is != null) && ((is.getItem() instanceof ItemNameTag) || (is.getItem() instanceof NameTagItem)) && (ssnds != null))
 				{
 					if(is.hasDisplayName())
 					{

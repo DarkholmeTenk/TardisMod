@@ -68,6 +68,7 @@ item.TardisMod.Component.Nanogene.name=Nanogene Canister
 item.TardisMod.Component.Aspects.name=TARDIS Cable Interface - Essentia
 
 item.TardisMod.ManualItem.name=Handheld Manual
+item.TardisMod.NameTag.name=Temporal Name Tag
 
 item.TardisMod.CraftingComponent.IngotDalek.name=Dalekanium Ingot
 item.TardisMod.CraftingComponent.IngotChronosteel.name=Chronosteel Ingot
