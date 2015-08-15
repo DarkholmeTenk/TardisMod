@@ -72,6 +72,17 @@ item.TardisMod.ManualItem.name=Handheld Manual
 item.TardisMod.CraftingComponent.IngotDalek.name=Dalekanium Ingot
 item.TardisMod.CraftingComponent.IngotChronosteel.name=Chronosteel Ingot
 item.TardisMod.CraftingComponent.CrystalKontron.name=Kontron Crystal
+item.TardisMod.CraftingComponent.Upgrade.name=Upgrade Template
+
+item.TardisMod.UpgradeItem.broken.name=Broken Upgrade
+item.TardisMod.UpgradeItem.protExpl.name=Upgrade - Explosion Protection
+item.TardisMod.UpgradeItem.protComb.name=Upgrade - Combat Protection
+item.TardisMod.UpgradeItem.protMiss.name=Upgrade - Missed Control Protection
+item.TardisMod.UpgradeItem.speed.name=Upgrade - Speed Level
+item.TardisMod.UpgradeItem.shield.name=Upgrade - Shield Level
+item.TardisMod.UpgradeItem.room.name=Upgrade - Max Rooms Level
+item.TardisMod.UpgradeItem.energy.name=Upgrade - Energy Level
+item.TardisMod.UpgradeItem.energyRegen.name=Upgrade - Energy Regen Level
 
 itemGroup.TardisModTab=Tardis Mod
 itemGroup.TardisModCraftableTab=Tardis Mod - Craftable
