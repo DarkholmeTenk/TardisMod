@@ -234,15 +234,19 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public int getControlFromHit(int blockX, int blockY, int blockZ, Vec3 hitPos, EntityPlayer pl)
 	{
 		int side = hitPos.xCoord == 0 ? 4 : (hitPos.xCoord == 1 ? 5 : (hitPos.zCoord == 0 ? 2 : 3));
-		float relativeY = (float) (hitPos.yCoord - blockY);
+		float relativeY = (float) (hitPos.yCoord - yCoord);
 		float relativeX = (float) ((side >= 4) ? hitPos.zCoord : hitPos.xCoord);
 		HitPosition hit = new HitPosition(relativeX, relativeY, side);
 		if(hit.within(4,0.1, 0.1, 1.12, 0.9) && isEngineOpen)
 		{
-			double extraX = 0.1;
-			double x = -pl.posX;
-			double mult = ((x+extraX)/x);
-			double yO = (hitPos.yCoord - posY(pl)) * mult;
+			double extraX = 0.05;
+			double xD = -pl.posX;
+			double mult = ((xD+extraX)/xD) - 1;
+			double yD = (hitPos.yCoord) - posY(pl);
+			double yO = relativeY + (yD * mult);
+			double zO = relativeX + ((hitPos.zCoord - pl.posZ) * mult);
+			hit = new HitPosition((float) zO,(float) yO,side);
+			return getControlFromEngineHit(hit);
 		}
 		return getControlFromHit(hit);
 	}
@@ -260,7 +264,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			double extraX = 0.05;
 			double xD = -pl.posX;
 			double mult = ((xD+extraX)/xD) - 1;
-			double yO = relativeY + (((blockY+y) - posY(pl)) * mult);
+			double yD = (blockY+y) - posY(pl);
+			double yO = relativeY + (yD * mult);
 			double zO = relativeX + ((z - pl.posZ) * mult);
 			hit = new HitPosition((float) zO,(float) yO,side);
 			control = getControlFromEngineHit(hit);
