@@ -573,7 +573,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public boolean hasPermission(String pl, TardisPermission perm)
 	{
-		if ((pl == null) || (perm == null)) return false;
+		if ((pl == null) || pl.isEmpty() || (perm == null)) return false;
 		CoreTileEntity core = getCore();
 		if ((core != null) && core.isOwner(pl)) return true;
 		int hash = pl.hashCode();
