@@ -2,6 +2,7 @@ package tardis.common.dimension;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
@@ -31,7 +32,6 @@ import thaumcraft.api.aspects.AspectList;
 
 public class TardisDataStore extends AbstractWorldDataStore
 {
-	public final int										dimID;
 	public final TardisDamageSystem							damage;
 
 	private int												pExtW			= 0;
@@ -53,6 +53,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	private AspectList										aspectList		= new AspectList();
 	public int												maxSuck			= 16;
 	public Aspect											maxSuckT		= null;
+	public int												desiredDim		= 0;
 
 	private HashMap<Integer, Integer>						permissionList	= new HashMap();
 	public AbstractUpgrade[]								upgrades		= new AbstractUpgrade[8];
@@ -61,14 +62,12 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public TardisDataStore(String n)
 	{
 		super(n);
-		dimID = -1;
 		damage = new TardisDamageSystem(this);
 	}
 
-	public TardisDataStore(int _dimID)
+	public TardisDataStore(int dim)
 	{
 		super("tardisIDS");
-		dimID = _dimID;
 		damage = new TardisDamageSystem(this);
 	}
 
@@ -85,12 +84,6 @@ public class TardisDataStore extends AbstractWorldDataStore
 		pExtY = exteriorY;
 		pExtZ = exteriorZ;
 		super.markDirty();
-	}
-
-	@Override
-	public int getDimension()
-	{
-		return dimID;
 	}
 
 	public void setExterior(World w, int x, int y, int z)
@@ -118,6 +111,11 @@ public class TardisDataStore extends AbstractWorldDataStore
 		return null;
 	}
 
+	public World getExteriorWorld()
+	{
+		return WorldHelper.getWorld(exteriorWorld);
+	}
+
 	public boolean hasValidExterior()
 	{
 		World w = WorldHelper.getWorld(exteriorWorld);
@@ -126,6 +124,45 @@ public class TardisDataStore extends AbstractWorldDataStore
 			if (w.getBlock(exteriorX, exteriorY, exteriorZ) == TardisMod.tardisBlock) return true;
 		}
 		return false;
+	}
+
+	public int getFacing()
+	{
+		TardisTileEntity ext = getExterior();
+		if (ext != null)
+		{
+			return ext.getBlockMetadata();
+		}
+		return 0;
+	}
+
+	public SimpleDoubleCoordStore getExitPosition()
+	{
+		if(getExterior() == null) return null;
+		int facing = getFacing();
+		int dx = 0;
+		int dz = 0;
+		switch (facing)
+		{
+			case 0:	dz = -1;	break;
+			case 1:	dx = 1;		break;
+			case 2:	dz = 1;		break;
+			case 3:	dx = -1;	break;
+		}
+		return new SimpleDoubleCoordStore(exteriorWorld, exteriorX+0.5+dx, exteriorY, exteriorZ + 0.5 + dz);
+	}
+
+	public double getExitRotation()
+	{
+		int facing = getFacing();
+		switch (facing)
+		{
+			case 0:	return 180;
+			case 1:	return -90;
+			case 2:	return 0;
+			case 3:	return 90;
+		}
+		return 0;
 	}
 
 	public double getXP()
@@ -271,6 +308,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		pExtY = nbt.getInteger("pExtY");
 		pExtZ = nbt.getInteger("pExtZ");
 		rfStored = nbt.getInteger("rS");
+		desiredDim = nbt.getInteger("desDim");
 		if (nbt.hasKey("invStore"))
 		{
 			NBTTagCompound invTag = nbt.getCompoundTag("invStore");
@@ -315,8 +353,6 @@ public class TardisDataStore extends AbstractWorldDataStore
 		NBTTagCompound damageNBT = nbt.getCompoundTag("damage");
 		if (damageNBT != null) damage.readFromNBT(damageNBT);
 
-		if(dimID == 8)
-			System.out.println("");
 		EngineTileEntity eng = getEngine();
 		SimpleCoordStore engPos = null;
 		if(eng != null)
@@ -383,6 +419,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		nbt.setInteger("pExtY", pExtY);
 		nbt.setInteger("pExtZ", pExtZ);
 		nbt.setInteger("rS", rfStored);
+		nbt.setInteger("desDim", desiredDim);
 		storeInv(nbt);
 		storeFlu(nbt);
 		writeTransmittable(nbt);
@@ -421,8 +458,6 @@ public class TardisDataStore extends AbstractWorldDataStore
 				nbt.setTag("upgrade"+i, upgradeNBT);
 			}
 		}
-		if(dimID == 8)
-			System.out.println("");
 	}
 
 	private ConsoleTileEntity getConsole()

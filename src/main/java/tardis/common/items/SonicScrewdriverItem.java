@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,13 +43,17 @@ import buildcraft.api.tools.IToolWrench;
 import cofh.api.block.IDismantleable;
 import cofh.api.item.IToolHammer;
 import cofh.api.tileentity.IReconfigurableFacing;
+
+import com.google.common.collect.Multimap;
+
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface="buildcraft.api.tools.IToolWrench",modid="BuildCraftAPI|core"),
-		@Optional.Interface(iface="cofh.api.item.IToolHammer",modid="CoFHCore")})
-public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, IToolWrench
+		@Optional.Interface(iface="cofh.api.item.IToolHammer",modid="CoFHCore"),
+		@Optional.Interface(iface="mrtjp.projectred.api.IScrewdriver", modid="ProjRed|Core")})
+public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, IToolWrench, IScrewdriver
 {
 	public static final int	maxPerms	= 0xFF;
 	public static final int	minPerms	= 0xCD;
@@ -208,7 +215,13 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 
 	public static boolean isPlayerHoldingScrewdriver(EntityPlayer pl)
 	{
-		ItemStack is = pl.getHeldItem();
+		if(pl != null)
+			return isScrewdriver(pl.getHeldItem());
+		return false;
+	}
+
+	public static boolean isScrewdriver(ItemStack is)
+	{
 		if (is != null)
 		{
 			if (is.getItem() == TardisMod.screwItem) return true;
@@ -318,7 +331,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				else
 					pl.addChatMessage(CoreTileEntity.cannotModifyRoundel);
 			}
-			else
+			else if(Loader.isModLoaded("CoFHCore"))
 			{
 				if (te instanceof IReconfigurableFacing)
 				{
@@ -328,7 +341,6 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 						return true;
 					}
 				}
-				return te != null;
 			}
 		}
 		if(screwScrewable(te,mode,pl,pos) || screwScrewable(b, mode, pl, pos)) return true;
@@ -605,6 +617,32 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	public void wrenchUsed(EntityPlayer pl, int x, int y, int z)
 	{
 		toolUsed(null, pl, x, y, z);
+	}
+
+	/**
+     * Gets a map of item attribute modifiers, used by ItemSword to increase hit damage.
+     */
+    @SuppressWarnings({ "unchecked", "deprecation", "rawtypes" })
+	@Override
+	public Multimap getItemAttributeModifiers()
+    {
+        Multimap multimap = super.getItemAttributeModifiers();
+        multimap.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(), new AttributeModifier(field_111210_e, "Weapon modifier", 0, 0));
+        return multimap;
+    }
+
+	@Override
+	public boolean canUse(EntityPlayer pl, ItemStack is)
+	{
+		if(getMode(is) == ScrewdriverMode.Reconfigure)
+			return true;
+		return false;
+	}
+
+	@Override
+	public void damageScrewdriver(EntityPlayer pl, ItemStack is)
+	{
+
 	}
 
 }

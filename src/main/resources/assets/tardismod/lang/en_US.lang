@@ -67,6 +67,8 @@ item.TardisMod.Component.ChunkLoader.name=TARDIS Cable Interface - Chunk Loader
 item.TardisMod.Component.Nanogene.name=Nanogene Canister
 item.TardisMod.Component.Aspects.name=TARDIS Cable Interface - Essentia
 
+item.TardisMod.ManualItem.name=Handheld Manual
+
 item.TardisMod.CraftingComponent.IngotDalek.name=Dalekanium Ingot
 item.TardisMod.CraftingComponent.IngotChronosteel.name=Chronosteel Ingot
 item.TardisMod.CraftingComponent.CrystalKontron.name=Kontron Crystal

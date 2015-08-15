@@ -7,6 +7,7 @@ import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
+import io.darkcraft.darkcore.mod.interfaces.IActivatablePrecise;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
 
@@ -19,7 +20,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -35,6 +35,7 @@ import tardis.api.TardisPermission;
 import tardis.common.core.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.ComponentItem;
+import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.components.ComponentAspect;
 import tardis.common.tileents.components.ITardisComponent;
 import tardis.common.tileents.components.TardisTEComponent;
@@ -53,8 +54,8 @@ import cpw.mods.fml.common.Optional;
 		@Optional.Interface(iface="appeng.api.networking.IGridHost",modid="appliedenergistics2"),
 		@Optional.Interface(iface="thaumcraft.api.aspects.IEssentiaTransport",modid="Thaumcraft")
 })
-public class ComponentTileEntity extends AbstractTileEntity implements IScrewable, IActivatable, IBlockUpdateDetector,
-		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport, ILinkable
+public class ComponentTileEntity extends AbstractTileEntity implements IActivatablePrecise, IBlockUpdateDetector,
+		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport
 {
 	private HashMap<Integer, ITardisComponent>	comps			= new HashMap<Integer, ITardisComponent>();
 	private boolean								valid			= false;
@@ -222,7 +223,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 		}
 	}
 
-	@Override
+
 	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
 	{
 		if(ServerHelper.isClient())
@@ -244,6 +245,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 
 		}
 
+		/*
 		boolean screwed = false;
 		if (comps.size() > 0)
 		{
@@ -253,11 +255,49 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 					screwed = ((IScrewable) te).screw(mode, player) || screwed;
 			}
 		}
-		return screwed;
+		return screwed;*/
+		return false;
+	}
+
+	private double getAngle(int side, float x, float y, float z)
+	{
+		float i = 0;
+		float j = 0;
+		switch(side)
+		{
+			case 0: case 1: i = 1 - x; j = 1 - z; break;
+			case 2: i = y; j = 1 - x; break;
+			case 3: i = y; j = x; break;
+			case 4: i = y; j = z; break;
+			case 5: i = y; j = 1 - z; break;
+		}
+		i -= 0.5f;
+		j -= 0.5f;
+		return Math.atan2(j,i);
+	}
+
+	private int getSlot(int n, double angle)
+	{
+		double range = (2*Math.PI)/n;
+		angle += (range / 2);
+		if(angle < 0)
+			angle += (Math.PI*2);
+		return MathHelper.floor(angle/range);
+	}
+
+	private ITardisComponent getComponent(int slot)
+	{
+		{
+			int i = 0;
+			for(ITardisComponent c : comps.values())
+				if(i++ == slot)
+					return c;
+		}
+		return null;
 	}
 
 	@Override
-	public boolean activate(EntityPlayer pl, int side)
+	public boolean activate(EntityPlayer pl, int s, float x, float y, float z)
 	{
 		if(ServerHelper.isClient()) return true;
 		ItemStack is = pl.getHeldItem();
@@ -286,26 +326,44 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 								return true;
 							}
 							else
-								pl.addChatMessage(new ChatComponentText("That component has already been fitted"));
+								ServerHelper.sendString(pl, "That component has already been fitted");
 						}
 						else
 							ServerHelper.sendString(pl, "That component is not valid " + (inside ? "inside" : "outside of") + " a TARDIS");
 					}
 				}
 				else
-					pl.addChatMessage(new ChatComponentText("You do not have permission to modify this"));
+					ServerHelper.sendString(pl, "You do not have permission to modify this");
 			}
 		}
-		boolean activated = false;
-		if (comps.size() > 0)
+		if(SonicScrewdriverItem.isScrewdriver(is))
 		{
-			for (ITardisComponent te : comps.values())
+			ScrewdriverMode mode = SonicScrewdriverItem.getMode(is);
+			if(mode == ScrewdriverMode.Dismantle)
 			{
-				if (te instanceof IActivatable)
-					activated = ((IActivatable) te).activate(pl, side) || activated;
+				dismantle(pl);
+				return true;
 			}
 		}
-		return activated;
+		int n = comps.size();
+		ITardisComponent o = getComponent(getSlot(n,getAngle(s, x,y,z)));
+		if(o != null)
+		{
+			if(is != null)
+			{
+				if(SonicScrewdriverItem.isScrewdriver(is) && (o instanceof IScrewable))
+				{
+					IScrewable screwable = (IScrewable)o;
+					ScrewdriverMode mode = SonicScrewdriverItem.getMode(is);
+					if(screwable.screw(mode, pl)) return true;
+				}
+			}
+			if(o instanceof IActivatable)
+			{
+				return ((IActivatable)o).activate(pl, s);
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -821,6 +879,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IScrewabl
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean doesContainerContain(AspectList ot)
 	{
 		if (valid && !compAdded)

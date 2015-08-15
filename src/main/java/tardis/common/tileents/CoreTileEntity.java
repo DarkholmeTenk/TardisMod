@@ -3,6 +3,7 @@ package tardis.common.tileents;
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
@@ -147,6 +148,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private static int					maxMoveForFast		= 3;
 	private static int					energyPerSpeed		= 200;
 	private IGridNode					node				= null;
+	private int							unstableTicks		= 0;
+	private int							flightTicks			= 0;
 
 	static
 	{
@@ -236,7 +239,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				if (con.shouldLand())
 					flightState = FlightState.FLIGHT;
 				else
+				{
+					calculateFlightDistances();
 					flightState = FlightState.DRIFT;
+				}
 			}
 		}
 		else if (flightState == FlightState.DRIFT)
@@ -258,7 +264,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				flightState = FlightState.LANDING;
 			}
 			else
+			{
 				flightState = FlightState.DRIFT;
+			}
 		}
 		else if (flightState == FlightState.LANDING) land();
 		flightTimer = 0;
@@ -296,6 +304,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if(ServerHelper.isServer())
 			handleSound();
 		flightTimer++;
+		if ((flightState == FlightState.DRIFT) || (flightState == FlightState.FLIGHT))
+		{
+			flightTicks++;
+			if(!con.isStable())
+				unstableTicks++;
+		}
 		if ((flightState == FlightState.TAKINGOFF) && (flightTimer >= takeOffTicks)) nextFlightState();
 		if ((flightState == FlightState.LANDING) && (flightTimer >= (fast ? landFastTicks : landSlowTicks))) nextFlightState();
 		if (((flightState == FlightState.DRIFT) && con.shouldLand()) || ((flightState == FlightState.FLIGHT) && !con.shouldLand())) nextFlightState();
@@ -342,7 +356,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void safetyTick()
 	{
-		List<Object> players = worldObj.playerEntities;
+		List players = worldObj.playerEntities;
 		for (Object o : players)
 		{
 			if (o instanceof EntityPlayer)
@@ -359,6 +373,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		getDestinationLocations();
 		super.sendUpdate();
 		gDS().markMaybeDirty();
+		gDS().sendUpdate();
 	}
 
 	@Override
@@ -519,6 +534,29 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 	}
 
+	private boolean teleportOutside(Entity ent)
+	{
+		EntityPlayer player = null;
+		if(ent instanceof EntityPlayer) player = (EntityPlayer) ent;
+		World ext = gDS().getExteriorWorld();
+		if (ext != null)
+		{
+			SimpleDoubleCoordStore exitPos = gDS().getExitPosition();
+			double rotation = gDS().getExitRotation();
+
+			if (softBlock(exitPos) && softBlock(exitPos))
+			{
+				TeleportHelper.teleportEntity(ent, exitPos, rotation);
+				return true;
+			}
+			else
+				ServerHelper.sendString(player, "TARDIS", "The door is obstructed");
+		}
+		else
+			ServerHelper.sendString(player, "TARDIS", "The door refuses to open");
+		return false;
+	}
+
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
 	{
 		if (ServerHelper.isClient()) return;
@@ -526,36 +564,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		{
 			if (ignoreLock || canOpenLock(player, true))
 			{
-				World ext = WorldHelper.getWorld(gDS().exteriorWorld);
+				World ext = gDS().getExteriorWorld();
 				if (ext != null)
 				{
-					int facing = ext.getBlockMetadata(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ);
-					int dx = 0;
-					int dz = 0;
-					double rot = 0;
-					switch (facing)
-					{
-						case 0:
-							dz = -1;
-							rot = 180;
-							break;
-						case 1:
-							dx = 1;
-							rot = -90;
-							break;
-						case 2:
-							dz = 1;
-							rot = 0;
-							break;
-						case 3:
-							dx = -1;
-							rot = 90;
-							break;
-					}
+					SimpleDoubleCoordStore exitPos = gDS().getExitPosition();
+					double rotation = gDS().getExitRotation();
 
-					if (softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz) && softBlock(ext, gDS().exteriorX + dx, gDS().exteriorY, gDS().exteriorZ + dz))
+					if (softBlock(exitPos) && softBlock(exitPos))
 					{
-						TeleportHelper.teleportEntity(player, gDS().exteriorWorld, gDS().exteriorX + 0.5 + (dx), gDS().exteriorY, gDS().exteriorZ + 0.5 + (dz), rot);
+						TeleportHelper.teleportEntity(player, exitPos, rotation);
 					}
 					else
 						ServerHelper.sendString(player, "TARDIS", "The door is obstructed");
@@ -671,9 +688,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private int[] getModifiedControls(ConsoleTileEntity con, int[] posArr)
 	{
 		if (con == null) return posArr;
-		World w = WorldHelper.getWorld(con.getDimFromControls());
+		World w = WorldHelper.getWorld(gDS().desiredDim);
 		if (w == null) return posArr;
-		int mh = TardisDimensionHandler.getMaxHeight(con.getDimFromControls());
+		int mh = TardisDimensionHandler.getMaxHeight(gDS().desiredDim);
 		if (posArr[1] >= mh) posArr[1] = mh - 1;
 		if (!(isValidPos(w, posArr[0], posArr[1], posArr[2], mh)))
 		{
@@ -689,7 +706,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		ConsoleTileEntity con = getConsole();
 		if (con == null) return false;
-		int dim = con.getDimFromControls();
+		int dim = gDS().desiredDim;
 		if (gDS().exteriorWorld == 10000)
 		{
 			if (oldExteriorWorld != dim) return true;
@@ -704,16 +721,28 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return false;
 	}
 
-	public boolean takeOffEnergy(EntityPlayer pl)
+	private int getEnergyCost(int dDim, EntityPlayer pl)
+	{
+		int extW = inFlight() ? oldExteriorWorld : gDS().exteriorWorld;
+		int enCost = (dDim != extW ? Math.max(TardisDimensionHandler.getEnergyCost(dDim), TardisDimensionHandler.getEnergyCost(extW)) : 0);
+		return enCost;
+	}
+
+	private Integer getConsoleDim()
 	{
 		ConsoleTileEntity con = getConsole();
 		if (con != null)
-		{
-			int dDim = con.getDimFromControls();
+			return con.getDimFromControls();
+		return null;
+	}
 
-			int extW = inFlight() ? oldExteriorWorld : gDS().exteriorWorld;
-			int enCost = (dDim != extW ? Math.max(TardisDimensionHandler.getEnergyCost(dDim), TardisDimensionHandler.getEnergyCost(extW)) : 0);
-			return takeArtronEnergy(enCost, false);
+	public boolean takeOffEnergy(EntityPlayer pl)
+	{
+		Integer dDim = getConsoleDim();
+		if((dDim != null) && takeArtronEnergy(getEnergyCost(dDim, pl), false))
+		{
+			gDS().desiredDim = dDim;
+			return true;
 		}
 		return false;
 	}
@@ -725,8 +754,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		{
 			ConsoleTileEntity con = getConsole();
 			if (con == null) return false;
-			if ((!con.shouldLand()) || takeOffEnergy(pl))
+			if (takeOffEnergy(pl))
 			{
+				unstableTicks = 0;
+				flightTicks = 0;
 				instability = 0;
 				flightState = FlightState.TAKINGOFF;
 				flightTimer = 0;
@@ -746,7 +777,17 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				return true;
 			}
 			else
-				ServerHelper.sendString(pl, "TARDIS", "Not enough energy to take off");
+			{
+				Integer dDim = getConsoleDim();
+				ServerHelper.sendString(pl, "TARDIS", "Not enough energy to change dimensions");
+				if(dDim != null)
+				{
+					int enCost = getEnergyCost(dDim, pl);
+					ServerHelper.sendString(pl, "TARDIS", "- At least " + enCost + " energy is required");
+					if(enCost > getMaxArtronEnergy())
+						ServerHelper.sendString(pl, "TARDIS", "- TARDIS Upgrades are required");
+				}
+			}
 		}
 		return false;
 	}
@@ -803,7 +844,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 		int facing = con.getFacingFromControls();
 		posArr = getModifiedControls(con, posArr);
-		World w = WorldHelper.getWorld(con.getDimFromControls());
+		World w = WorldHelper.getWorld(gDS().desiredDim);
 		w.setBlock(posArr[0], posArr[1], posArr[2], TardisMod.tardisBlock, facing, 3);
 		w.setBlock(posArr[0], posArr[1] + 1, posArr[2], TardisMod.tardisTopBlock, facing, 3);
 
@@ -836,7 +877,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			forcedFlight = false;
 			currentBlockSpeed = 1;
 			if(!forcedFlight)
-				gDS().addXP((con != null) && !fast && con.isStable() ? 15 : (45 - instability));
+				gDS().addXP((con != null) && !fast && (unstableTicks >= (flightTicks/2)) ? 15 : (45 - instability));
 			fast = false;
 			flightState = FlightState.LANDED;
 			if(ServerHelper.isServer())
@@ -1065,7 +1106,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (tt <= 2) return;
 		synchronized (roomSet)
 		{
-			System.out.println("Rechecking doors");
 			for (SimpleCoordStore room : roomSet)
 			{
 				TileEntity te = room.getTileEntity();
@@ -1248,7 +1288,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (!hasFunction(TardisFunction.TRANSMAT)) return false;
 		TardisDataStore ds = gDS();
-		if ((ds != null) && (ent instanceof EntityPlayer)) if (!ds.hasPermission((EntityPlayer) ent, TardisPermission.TRANSMAT)) return false;
+		if ((ds != null) && (ent instanceof EntityPlayer))
+			if (!ds.hasPermission((EntityPlayer) ent, TardisPermission.TRANSMAT)) return false;
 		int entWorld = WorldHelper.getWorldID(ent.worldObj);
 		boolean trans = false;
 		if (entWorld == WorldHelper.getWorldID(worldObj)) // if ent is in the tardis
@@ -1270,6 +1311,22 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		SimpleCoordStore to = getTransmatPoint();
 		if (canTransmatEntity(ent))
 		{
+			if(ent instanceof EntityLivingBase)
+			{
+				EntityLivingBase livingEnt = (EntityLivingBase) ent;
+				SimpleDoubleCoordStore entPos = new SimpleDoubleCoordStore(livingEnt);
+				double dist = entPos.distance(to);
+				if((dist < TardisMod.transmatExitDist) && (entPos.world == to.world))
+				{
+					if(teleportOutside(ent))
+					{
+						SimpleDoubleCoordStore exitPos = gDS().getExitPosition();
+						SoundHelper.playSound(ent, "tardismod:transmat", 0.6F, 1);
+						SoundHelper.playSound(exitPos, "tardismod:transmat", 0.6F);
+						return true;
+					}
+				}
+			}
 			SoundHelper.playSound(ent, "tardismod:transmat", 0.6F, 1);
 			TeleportHelper.teleportEntity(ent, WorldHelper.getWorldID(worldObj), to.x + 0.5, to.y + 1, to.z + 0.5, 90);
 			SoundHelper.playSound(worldObj, to.x, to.y + 1, to.z, "tardismod:transmat", 0.6F);
@@ -1285,7 +1342,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public SimpleCoordStore getTransmatPoint()
 	{
 		if (isTransmatPointValid()) return transmatPoint;
-		return new SimpleCoordStore(worldObj, xCoord + 13, yCoord - 2, zCoord);
+		return new SimpleCoordStore(worldObj, xCoord + 10, yCoord - 2, zCoord);
 	}
 
 	public void setTransmatPoint(SimpleCoordStore s)
@@ -1329,6 +1386,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			int dX = console.getXFromControls(gDS().exteriorX);
 			int dY = console.getYFromControls(gDS().exteriorY);
 			int dZ = console.getZFromControls(gDS().exteriorZ);
+			if(sourceLocation != null)
+			{
+				dX = console.getXFromControls(sourceLocation.x);
+				dY = console.getYFromControls(sourceLocation.y);
+				dZ = console.getZFromControls(sourceLocation.z);
+			}
 			if ((dD == desDim) && (dX == desX) && (dY == desY) && (dZ == desZ) && (desLocs != null))
 				return desLocs;
 			int instability = MathHelper.clamp(20 - (2 * gDS().getLevel()), 3, 20);
@@ -1578,7 +1641,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		if (ServerHelper.isServer() && (gDS() != null))
 		{
 			NBTTagCompound dsTC = new NBTTagCompound();
-			gDS().writeToNBT(dsTC);
 			nbt.setTag("ds", dsTC);
 			nbt.setInteger("numR", getNumRooms());
 			getDestinationLocations();
@@ -1647,11 +1709,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	@Override
 	public void readTransmittableOnly(NBTTagCompound nbt)
 	{
-		if (nbt.hasKey("ds") && ServerHelper.isClient())
-		{
-			TardisDataStore tds = gDS();
-			if (tds != null) tds.readFromNBT(nbt.getCompoundTag("ds"));
-		}
 		if (nbt.hasKey("dld"))
 		{
 			if(desLocs == null) desLocs = new Integer[4];

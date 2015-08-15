@@ -35,6 +35,17 @@ public class DimensionEventHandler
 	{
 		if(ServerHelper.isClient())
 			return;
+		if(event.isCancelable() && event.source.getDamageType().equals("player") && !event.source.equals(DamageSource.magic))
+		{
+			if(event.source.getSourceOfDamage() instanceof EntityPlayer)
+			{
+				if(SonicScrewdriverItem.isPlayerHoldingScrewdriver((EntityPlayer)event.source.getSourceOfDamage()))
+				{
+					event.setCanceled(true);
+					return;
+				}
+			}
+		}
 		EntityLivingBase ent = event.entityLiving;
 		World w = ent.worldObj;
 		DamageSource source = event.source;
@@ -44,7 +55,7 @@ public class DimensionEventHandler
 			EntityPlayer player = (EntityPlayer)ent;
 			//damAmount = (damAmount * (25 - player.getTotalArmorValue())) / 25.0f;
 			//TardisOutput.print("TDEH", "Handling hurt event");
-			if(player.getHealth() <= damAmount)
+			if(TardisMod.deathTransmat && (player.getHealth() <= damAmount))
 			{
 				handleDead(w,player,event,source);
 			}

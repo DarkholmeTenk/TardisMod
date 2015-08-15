@@ -10,10 +10,12 @@ import io.darkcraft.darkcore.mod.config.ConfigHandler;
 import io.darkcraft.darkcore.mod.config.ConfigHandlerFactory;
 import io.darkcraft.darkcore.mod.config.ConfigItem;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
 import java.io.IOException;
 
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
@@ -59,6 +61,7 @@ import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.KeyItem;
+import tardis.common.items.ManualItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.items.UpgradeItem;
@@ -84,7 +87,7 @@ import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
-@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.985", dependencies = "required-after:FML; required-after:darkcore@[0.25,]; after:CoFHCore; after:appliedenergistics2; after:Waila")
+@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.99", dependencies = "required-after:FML; required-after:darkcore@[0.3,]; after:CoFHCore; after:appliedenergistics2; after:Waila")
 public class TardisMod implements IConfigHandlerMod
 {
 	@Instance
@@ -151,12 +154,15 @@ public class TardisMod implements IConfigHandlerMod
 	public static CraftingComponentItem		craftingComponentItem;
 	public static KeyItem					keyItem;
 	public static SonicScrewdriverItem		screwItem;
+	public static ManualItem				manualItem;
 	public static UpgradeItem				upgradeItem;
 
 	public static boolean					tcInstalled			= false;
 
 	public static double					tardisVol			= 1;
+	public static boolean					deathTransmat		= true;
 	public static boolean					deathTransmatLive	= true;
+	public static double					transmatExitDist	= 2;
 	public static boolean					visibleSchema		= false;
 	public static boolean					visibleForceField	= false;
 	public static boolean					lightBlocks			= false;
@@ -171,6 +177,9 @@ public class TardisMod implements IConfigHandlerMod
 	public static int						shiftPressTime		= 60;
 	public static boolean					keyCraftable		= true;
 	public static boolean					keyReqKontron		= true;
+	public static boolean					kontronCraftable	= false;
+	public static int						kontronRarity		= 4;
+	public static boolean					keyOnFirstJoin		= true;
 	public static int						maxEachAspect		= 16;
 	public static int						maxEachAspectInc	= 16;
 	public static int						numAspects			= 16;
@@ -191,7 +200,6 @@ public class TardisMod implements IConfigHandlerMod
 		miscConfig = configHandler.registerConfigNeeder("Misc");
 		refreshConfigs();
 
-		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
 		initBlocks();
 		initItems();
@@ -214,7 +222,10 @@ public class TardisMod implements IConfigHandlerMod
 
 		keyCraftable = modConfig.getBoolean("keyCraftable", true, "True if the key is craftable.", "False if they can only be spawned");
 
+		keyOnFirstJoin = modConfig.getBoolean("keyOnJoin", false, "If true, all players get a new key when they first join");
 		keyReqKontron = modConfig.getBoolean("keyRequiresKontron", true, "True if the key requires a Kontron crystal to craft");
+		kontronCraftable = modConfig.getBoolean("kontronCraftable",false,"If true, a standard crafting recipe is added for the kontron crystal");
+		kontronRarity = modConfig.getInt("kontronRarity",20,"The higher this value, the more likely you are to find kontron crystals in chests");
 
 		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1, "How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
 
@@ -222,6 +233,9 @@ public class TardisMod implements IConfigHandlerMod
 		visibleForceField = modConfig.getBoolean("Visible forcefields", false, "Should the forcefields be visible or not");
 		lightBlocks = modConfig.getBoolean("Normal blocks give off light", false, "If true, normal blocks (including slabs and such) give off light");
 		deleteDisconnected = modConfig.getBoolean("Delete disconnected", true, "Delete rooms which aren't connected to the console room when the connecting room is deleted");
+		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
+		deathTransmat = modConfig.getBoolean("Do death transmat", true, "If true, when you die within range of your TARDIS you will be transmatted");
+		transmatExitDist = modConfig.getDouble("Transmat exit distance", 2, "The distance from the transmat point beneath which you will be transmatted out of the TARDIS");
 
 		xpBase = miscConfig.getInt("xp base amount", 80, "The amount of xp it initially costs to level up");
 		xpInc = miscConfig.getInt("xp increase", 20, "The amount that is added on to the xp cost every time the TARDIS levels up");
@@ -269,6 +283,8 @@ public class TardisMod implements IConfigHandlerMod
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		inited = true;
 		tcInstalled = ItemApi.getItem("itemResource", 0) != null;
+		if(keyOnFirstJoin)
+			PlayerHelper.registerJoinItem(new ItemStack(keyItem,1));
 	}
 
 	private void initBlocks()
@@ -309,6 +325,7 @@ public class TardisMod implements IConfigHandlerMod
 		keyItem = (KeyItem) new KeyItem().register();
 		componentItem = new ComponentItem().register();
 		craftingComponentItem = (CraftingComponentItem) new CraftingComponentItem().register();
+		manualItem = (ManualItem) new ManualItem().register();
 		upgradeItem = (UpgradeItem) new UpgradeItem().register();
 	}
 
@@ -316,6 +333,7 @@ public class TardisMod implements IConfigHandlerMod
 	{
 		keyItem.initRecipes();
 		componentItem.initRecipes();
+		manualItem.initRecipes();
 		labBlock.initRecipes();
 		landingPad.initRecipes();
 		forcefield.initRecipes();
@@ -334,6 +352,7 @@ public class TardisMod implements IConfigHandlerMod
 		plReg = null;
 		dimReg = null;
 		Helper.datastoreMap.clear();
+		Helper.ssnDatastoreMap.clear();
 		MinecraftForge.EVENT_BUS.register(otherDims);
 		DamageEventHandler.i.register();
 	}
