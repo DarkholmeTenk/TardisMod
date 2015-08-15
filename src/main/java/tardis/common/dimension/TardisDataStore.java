@@ -589,10 +589,10 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public boolean togglePermission(EntityPlayer giver, EntityPlayer givee, TardisPermission perm)
 	{
-		return togglePermission(ServerHelper.getUsername(giver), ServerHelper.getUsername(givee), perm);
+		return togglePermission(giver, ServerHelper.getUsername(givee), perm);
 	}
 
-	public boolean togglePermission(String giver, String givee, TardisPermission perm)
+	public boolean togglePermission(EntityPlayer giver, String givee, TardisPermission perm)
 	{
 		if (hasPermission(giver, TardisPermission.PERMISSIONS))
 		{
