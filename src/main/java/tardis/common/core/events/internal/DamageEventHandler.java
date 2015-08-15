@@ -33,25 +33,31 @@ public class DamageEventHandler
 		{
 			TileEntity te = (TileEntity)matrix;
 			TardisDataStore ds = Helper.getDataStore(te);
-			if(ds == null) return;
-			if(te instanceof EngineTileEntity) handleEnginePress(ds,(EngineTileEntity)te,event);
-			if(te instanceof ConsoleTileEntity) handleConsolePress(ds, (ConsoleTileEntity)te,event);
+			CoreTileEntity core = Helper.getTardisCore(te);
+			if((ds == null) || (core == null)) return;
+			if(te instanceof EngineTileEntity) handleEnginePress(ds,core,(EngineTileEntity)te,event);
+			if(te instanceof ConsoleTileEntity) handleConsolePress(ds,core,	 (ConsoleTileEntity)te,event);
 		}
 	}
 
-	public void handleEnginePress(TardisDataStore ds, EngineTileEntity eng, TardisControlEvent event)
+	public void handleEnginePress(TardisDataStore ds, CoreTileEntity core, EngineTileEntity eng, TardisControlEvent event)
 	{
 
 	}
 
-	public void handleConsolePress(TardisDataStore ds, ConsoleTileEntity con, TardisControlEvent event)
+	public void handleConsolePress(TardisDataStore ds, CoreTileEntity core, ConsoleTileEntity con, TardisControlEvent event)
 	{
+		EntityPlayer pl = event.player;
+		if((event.control != 901) && (core.getNumRooms() > core.getMaxNumRooms()))
+		{
+			event.setCanceled(true);
+			ServerHelper.sendString(pl, "You have too many rooms to operate the TARDIS");
+			ServerHelper.sendString(pl, "Upgrade the TARDIS or delete rooms");
+			return;
+		}
 		int hull = ds.damage.getHull();
 		if(hull > (TardisDamageSystem.maxHull / 2)) return;
-		EntityPlayer pl = event.player;
 		int cid = event.control;
-		CoreTileEntity core = Helper.getTardisCore(con);
-		if(core == null) return;
 		if(!core.inFlight())
 		{
 			if(con.isMovementControl(cid) || ((cid >= 40) && (cid <= 42)) || (cid == 902) || (cid == 903) || (cid >= 1000))
@@ -63,6 +69,6 @@ public class DamageEventHandler
 				event.setCanceled(true);
 		}
 		if((cid != -1) && event.isCanceled())
-			ServerHelper.sendString(pl, "The control refuses to move");
+			ServerHelper.sendString(pl, "The control refuses to move due to damage");
 	}
 }
