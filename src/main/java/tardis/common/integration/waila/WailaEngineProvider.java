@@ -41,7 +41,8 @@ public class WailaEngineProvider extends AbstractWailaProvider
 			addControl(new TwoIntStore(80+o), "Toggle permission: " + p.name);
 			addControl(new TwoIntStore(90+o), "Permission light: " + p.name);
 		}
-		controlNames.put(new TwoIntStore(101,108), "Upgrade Slot");
+		addControl(new TwoIntStore(100), "Engine Panel Release","Opens or closes the engine panel");
+		addControl(new TwoIntStore(101,108), "Upgrade Slot","Allows you to insert upgrades");
 	}
 
 	private boolean isEngine(IWailaDataAccessor accessor)

@@ -20,7 +20,7 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 		addControl(new TwoIntStore(5), "Screwdriver Button","Generates a new screwdriver or absorbs an old screwdriver");
 		addControl(new TwoIntStore(6,7), "Screwdriver Slot");
 		addControl(new TwoIntStore(8), "XP Gauge","Displays how much XP remaining until the next TARDIS level.");
-		controlNames.put(new TwoIntStore(9), "Shields");		
+		addControl(new TwoIntStore(9), "Shield Gauge","Displays how strong the shields are");
 		addControl(new TwoIntStore(10,16), "X Control");
 		addControl(new TwoIntStore(20,26), "Z Control");
 		addControl(new TwoIntStore(30,33), "Y Control");
@@ -28,7 +28,7 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 		addControl(new TwoIntStore(40), "Temporal Primer","The first part of the Takeoff sequence");
 		addControl(new TwoIntStore(41), "Helmic Regulator","The second part of the Takeoff sequence");
 		addControl(new TwoIntStore(42), "Quantum Handbrake","The third and final part of the Takeoff sequence");
-				controlNames.put(new TwoIntStore(43), "Zigzag Plotter");		
+		addControl(new TwoIntStore(43), "Zigzag Plotter","Randomizes the coordinate levers. Adventure button");
 		addControl(new TwoIntStore(50), "Prev Schema Button","Selects the previous schema in the current category");
 		addControl(new TwoIntStore(51), "Next Schema Button","Selects the next schema in the current category");
 		addControl(new TwoIntStore(52), "Interior Temporal Control","Controls the internal projected time");
