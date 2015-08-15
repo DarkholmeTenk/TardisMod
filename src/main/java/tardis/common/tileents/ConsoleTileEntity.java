@@ -36,6 +36,7 @@ import tardis.common.core.store.ControlStateStore;
 import tardis.common.dimension.SaveSlotNamesDataStore;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
+import tardis.common.items.NameTagItem;
 import tardis.common.items.SonicScrewdriverItem;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -1173,6 +1174,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			{
 				return new String[] { "XP:     " + ds.getXP() + "/" + ds.getXPNeeded(), "Level: " + ds.getLevel() };
 			}
+			else if (controlID == 9)
+				return new String[] { "Shields: " + ds.damage.getShields() + "/" + ds.damage.getMaxShields() };
 			if ((controlID >= 10) && (controlID < 17))
 				return new String[] { "Set to " + xControls[controlID - 10] };
 			if ((controlID >= 20) && (controlID < 27))
