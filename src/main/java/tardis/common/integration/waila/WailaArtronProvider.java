@@ -1,18 +1,19 @@
 package tardis.common.integration.waila;
 
-import net.minecraft.nbt.NBTTagCompound;
 import mcp.mobius.waila.api.IWailaDataAccessor;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class WailaArtronProvider extends AbstractWailaProvider {
 
 	@Override
 	public String[] extraInfo(IWailaDataAccessor accessor, int control) {
 		NBTTagCompound nbt = accessor.getNBTData();
+		if(nbt == null) return null;
 		String[] data = new String[2];
 		if(nbt.hasKey("ae"))
 			data[0] = "Charge: " + nbt.getInteger("ae");
 		else
-		data[0] = "Unknown charge";
+			data[0] = "Unknown charge";
 		int m = nbt.getInteger("m");
 		switch(m)
 		{

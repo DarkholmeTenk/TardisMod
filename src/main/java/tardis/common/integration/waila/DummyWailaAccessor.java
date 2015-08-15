@@ -51,7 +51,7 @@ public class DummyWailaAccessor implements IWailaDataAccessor
 	public TileEntity getTileEntity()
 	{
 		if(mop != null)
-			getWorld().getTileEntity(mop.blockX, mop.blockY, mop.blockZ);
+			return getWorld().getTileEntity(mop.blockX, mop.blockY, mop.blockZ);
 		return null;
 	}
 
@@ -70,7 +70,11 @@ public class DummyWailaAccessor implements IWailaDataAccessor
 	@Override
 	public NBTTagCompound getNBTData()
 	{
-		return null;
+		TileEntity te = getTileEntity();
+		NBTTagCompound nbt = new NBTTagCompound();
+		if(te != null)
+			te.writeToNBT(nbt);
+		return nbt;
 	}
 
 	@Override
