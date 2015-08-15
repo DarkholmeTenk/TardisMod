@@ -66,6 +66,17 @@ public class CraftingComponentItem extends AbstractItem
 				100);
 		LabTileEntity.addRecipe(currentRecipe);
 
+		GameRegistry.addRecipe(new ShapedOreRecipe(CraftingComponentType.UPGRADE.getIS(1), false, "gcg", "gig", "gcg",
+				'g', "nuggetGold",
+				'i', "ingotIron",
+				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
+
+		LabTileEntity.addRecipe(new LabRecipe(
+				new ItemStack[] { new ItemStack(TardisMod.upgradeItem,1,0), CraftingComponentType.CHRONOSTEEL.getIS(1) },
+				new ItemStack[] { CraftingComponentType.UPGRADE.getIS(1) },
+				EnumSet.noneOf(LabFlag.class),
+				100));
+
 		ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,TardisMod.kontronRarity));
 		ChestGenHooks.getInfo(ChestGenHooks.VILLAGE_BLACKSMITH).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,TardisMod.kontronRarity));
 		ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,TardisMod.kontronRarity));
