@@ -61,13 +61,13 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public TardisDataStore(String n)
 	{
-		super(n);
+		super(n, 0);
 		damage = new TardisDamageSystem(this);
 	}
 
 	public TardisDataStore(int dim)
 	{
-		super("tardisIDS");
+		super("tardisIDS", dim);
 		damage = new TardisDamageSystem(this);
 	}
 
@@ -558,6 +558,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public boolean hasPermission(Object ent, TardisPermission perm)
 	{
+		if (ent instanceof String) return hasPermission((String) ent, perm);
 		if (ent instanceof EntityPlayer) return hasPermission((EntityPlayer) ent, perm);
 		return false;
 	}
