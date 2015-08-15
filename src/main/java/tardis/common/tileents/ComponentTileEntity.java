@@ -330,17 +330,15 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 					ServerHelper.sendString(pl, "You do not have permission to modify this");
 			}
 		}
-		/*
-		boolean activated = false;
-		if (comps.size() > 0)
+		if(SonicScrewdriverItem.isScrewdriver(is))
 		{
-			for (ITardisComponent te : comps.values())
+			ScrewdriverMode mode = SonicScrewdriverItem.getMode(is);
+			if(mode == ScrewdriverMode.Dismantle)
 			{
-				if (te instanceof IActivatable)
-					activated = ((IActivatable) te).activate(pl, side) || activated;
+				dismantle(pl);
+				return true;
 			}
 		}
-		return activated;*/
 		int n = comps.size();
 		ITardisComponent o = getComponent(getSlot(n,getAngle(s, x,y,z)));
 		if(o != null)
