@@ -62,6 +62,7 @@ import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.KeyItem;
 import tardis.common.items.ManualItem;
+import tardis.common.items.NameTagItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.items.UpgradeItem;
@@ -156,6 +157,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static SonicScrewdriverItem		screwItem;
 	public static ManualItem				manualItem;
 	public static UpgradeItem				upgradeItem;
+	public static NameTagItem				nameTag;
 
 	public static boolean					tcInstalled			= false;
 
@@ -327,6 +329,7 @@ public class TardisMod implements IConfigHandlerMod
 		craftingComponentItem = (CraftingComponentItem) new CraftingComponentItem().register();
 		manualItem = (ManualItem) new ManualItem().register();
 		upgradeItem = (UpgradeItem) new UpgradeItem().register();
+		nameTag = (NameTagItem) new NameTagItem().register();
 	}
 
 	private void initRecipes()
@@ -342,6 +345,8 @@ public class TardisMod implements IConfigHandlerMod
 		interiorDirtBlock.initRecipes();
 		craftingComponentItem.initRecipes();
 		summonerBlock.initRecipes();
+		upgradeItem.initRecipes();
+		nameTag.initRecipes();
 	}
 
 	@EventHandler
