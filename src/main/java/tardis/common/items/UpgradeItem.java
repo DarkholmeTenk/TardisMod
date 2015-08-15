@@ -17,6 +17,7 @@ public class UpgradeItem extends AbstractItem
 		super(TardisMod.modName);
 		setUnlocalizedName("UpgradeItem");
 		setSubNames(upgradeTypes);
+		setCreativeTab(TardisMod.cTab);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
