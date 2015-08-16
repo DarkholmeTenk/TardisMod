@@ -61,7 +61,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public TardisDataStore(String n)
 	{
-		super(n, 0);
+		super(n, WorldHelper.getClientWorldID());
 		damage = new TardisDamageSystem(this);
 	}
 
