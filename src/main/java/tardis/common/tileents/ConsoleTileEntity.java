@@ -1443,7 +1443,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			int newUnstable = nbt.getInteger("unstableControl");
 			if(newUnstable != unstableControl)
 			{
-				if(newUnstable == unstableQueue.peek())
+				if((unstableQueue.size() > 0) && (newUnstable == unstableQueue.peek()))
 					unstableQueue.remove();
 				else
 					System.out.println("NewUnstable:"+ newUnstable + " vs OldUnstable:"+unstableControl + " mismatch");
