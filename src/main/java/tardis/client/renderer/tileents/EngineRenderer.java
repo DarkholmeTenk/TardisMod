@@ -11,6 +11,7 @@ import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
 import tardis.TardisMod;
+import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.client.renderer.ControlRenderer;
 import tardis.common.core.Helper;
@@ -47,7 +48,7 @@ public class EngineRenderer extends AbstractObjRenderer
 		return TardisMod.tardisEngineBlock;
 	}
 
-	private void renderRight(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
+	private void renderRight(Tessellator tess, EngineTileEntity eng, CoreTileEntity core, TardisDataStore ds)
 	{
 		if(core != null)
 		{
@@ -71,7 +72,7 @@ public class EngineRenderer extends AbstractObjRenderer
 		}
 	}
 
-	private void renderFront(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
+	private void renderFront(Tessellator tess, EngineTileEntity eng, CoreTileEntity core, TardisDataStore ds)
 	{
 		double base  = 0.10625;
 		double delta = 0.2;
@@ -88,7 +89,7 @@ public class EngineRenderer extends AbstractObjRenderer
 		comps.renderButton(tess,eng,10,	1.035,0.45,base+(3*delta),	0,0,90, 0.6,0.6,0.6);
 	}
 
-	private void renderLeft(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
+	private void renderLeft(Tessellator tess, EngineTileEntity eng, CoreTileEntity core, TardisDataStore ds)
 	{
 		comps.renderPushSwitch(tess, eng, 60, 0.3, 0.788, 1.045, -90, 0, 0, 0.5, 0.5, 0.5);
 		comps.renderScrewdriverHolder(tess, eng, 0.6, 0.5, 1.05, -90, 0, 0, 0.5, 0.5, 0.5);
@@ -99,9 +100,11 @@ public class EngineRenderer extends AbstractObjRenderer
 		comps.renderLight(tess, eng, 51, 0.4, 0.4, 1.02, -90, 0, 0, 0.3, 0.3, 0.3);
 		comps.renderLight(tess, eng, 54, 0.4, 0.5, 1.02, -90, 0, 0, 0.3, 0.3, 0.3);
 		comps.renderLight(tess, eng, 55, 0.4, 0.6, 1.02, -90, 0, 0, 0.3, 0.3, 0.3);
+		if(ds.hasFunction(TardisFunction.SPAWNPROT))
+			comps.renderLever(tess, eng, 130, 0.5, 0.8, 1, -90, 0, 180, 0.2, 0.3, 0.3);
 	}
 
-	private void renderBack(Tessellator tess, EngineTileEntity eng, CoreTileEntity core)
+	private void renderBack(Tessellator tess, EngineTileEntity eng, CoreTileEntity core, TardisDataStore ds)
 	{
 		if(eng.visibility > 0)
 		{
@@ -113,7 +116,6 @@ public class EngineRenderer extends AbstractObjRenderer
 			GL11.glColor4d(1, 1, 1, 1);
 			GL11.glPopMatrix();
 		}
-		TardisDataStore ds = Helper.getDataStore(eng);
 		if((eng.visibility < 1) && (ds != null))
 			renderUnderPanel(tess,eng,core,ds);
 		GL11.glPushMatrix();
@@ -191,10 +193,14 @@ public class EngineRenderer extends AbstractObjRenderer
 			GL11.glPopMatrix();
 			GL11.glPushMatrix();
 			GL11.glTranslated(-0.5, -0.5, -0.5);
-			renderRight(tess,eng,core);
-			renderFront(tess,eng,core);
-			renderLeft (tess,eng,core);
-			renderBack (tess,eng,core);
+			TardisDataStore ds = Helper.getDataStore(eng);
+			if(ds != null)
+			{
+				renderRight(tess,eng,core,ds);
+				renderFront(tess,eng,core,ds);
+				renderLeft (tess,eng,core,ds);
+				renderBack (tess,eng,core,ds);
+			}
 			GL11.glPopMatrix();
 		}
 	}

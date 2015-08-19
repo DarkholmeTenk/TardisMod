@@ -24,6 +24,7 @@ import net.minecraft.world.Explosion;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
@@ -53,6 +54,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	private int					screwMode				= 0;
 
 	private int					consoleSettingControl	= 0;
+	private int					protectedRadius			= 0;
+	private static final int	maxProtectedRadius		= 16 * 10;
 	private String				consoleSettingString	= "Main";	// The string displayed on the console room selection screen.
 	private static String[]		availableConsoleRooms	= null;
 
@@ -141,6 +144,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	public int getControlFromHit(HitPosition hit)
 	{
+		TardisDataStore ds = Helper.getDataStore(this);
 		if (hit.within(2, 2.318, 0.170, 2.432, 0.830))
 			return 0;
 		else if (hit.within(2, 0.558, 0.685, 0.660, 0.768))
@@ -205,6 +209,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		}
 		else if(hit.within(4, 0.450, 0.01, 0.525, 0.09))
 			return 100;
+		else if((ds != null) && ds.hasFunction(TardisFunction.SPAWNPROT) && hit.within(3, 0.675, 0.450, 0.925, 0.540))
+			return 130;
 		return -1;
 	}
 
@@ -477,6 +483,12 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				if(ds.hasPermission(pl, TardisPermission.POINTS))
 					isEngineOpen = !isEngineOpen;
 			}
+			else if((control == 130) && ds.hasFunction(TardisFunction.SPAWNPROT))
+			{
+				int dir = pl.isSneaking() ? -16 : 16;
+				protectedRadius += dir;
+				protectedRadius = MathHelper.clamp(protectedRadius, 0, maxProtectedRadius);
+			}
 			else if(isEngineOpen)
 			{
 				if((control >= 101) && (control <= 108))
@@ -614,6 +626,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			if(cID == 100)
 				return 1 - visibility;
+			if(cID == 130)
+				return protectedRadius / (double) maxProtectedRadius;
 		}
 		return (float) (((tt + cID) % 40) / 39.0);
 	}
@@ -744,6 +758,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		nbt.setBoolean("hS", hasScrew);
 		nbt.setInteger("lB", lastButton);
 		nbt.setBoolean("eO", isEngineOpen);
+		nbt.setInteger("sp", protectedRadius);
 	}
 
 	@Override
@@ -763,6 +778,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			preparingToUpgrade = TardisUpgradeMode.getUpgradeMode(nbt.getInteger("ptU"));
 		else if (nbt.hasKey("ptUN"))
 			preparingToUpgrade = null;
+		protectedRadius = nbt.getInteger("sp");
 	}
 
 	@Override
@@ -810,7 +826,17 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			TardisPermission p = TardisPermission.get(control - 90);
 			return new String[]{ currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name};
 		}
+		else if(control == 130)
+			return new String[]{ String.format("Protection radius: %d blocks", getProtectedSpawnRadius()) };
 		return null;
+	}
+
+	public int getProtectedSpawnRadius()
+	{
+		TardisDataStore ds = Helper.getDataStore(this);
+		if((ds != null) && ds.hasFunction(TardisFunction.SPAWNPROT))
+			return protectedRadius;
+		return 0;
 	}
 
 }

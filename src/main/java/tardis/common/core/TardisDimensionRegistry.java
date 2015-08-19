@@ -8,6 +8,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,7 +33,7 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 
 	public TardisDimensionRegistry(String par1Str)
 	{
-		super(par1Str);
+		super(par1Str, 0);
 	}
 
 	private static HashSet<Integer> dimensionIDs = new HashSet<Integer>();
@@ -46,6 +47,11 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 			TardisOutput.print("TDR", "Adding dimension:" + id,TardisOutput.Priority.DEBUG);
 			markDirty();
 		}
+	}
+
+	public static Set<Integer> getDims()
+	{
+		return dimensionIDs;
 	}
 
 	public static void loadAll()
@@ -85,12 +91,6 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 	public boolean hasDimension(int id)
 	{
 		return dimensionIDs.contains(id);
-	}
-
-	@Override
-	public int getDimension()
-	{
-		return 0;
 	}
 
 	@Override

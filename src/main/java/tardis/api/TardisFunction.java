@@ -8,7 +8,8 @@ public enum TardisFunction
 	STABILISE ("Blue stabilizers"),
 	RECALL ("Remote recall"),
 	TRANQUILITY ("Tranquility zone"),
-	CLARITY ("Perfect destination guesser");
+	CLARITY ("Perfect destination guesser"),
+	SPAWNPROT("Spawn Prevention Zone");
 
 	public final String name;
 
