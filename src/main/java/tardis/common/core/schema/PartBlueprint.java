@@ -1,6 +1,7 @@
 package tardis.common.core.schema;
 
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -509,7 +510,8 @@ public class PartBlueprint
 		{
 			SchemaStore st = storage.get(oldBlock);
 			int newMeta = SchemaRotationHandler.getNewMetadata(st.getBlock(), st.getBlockMeta(), primaryDoorFace, facing);
-			if((w.getBlock(nx,ny,nz) != st.getBlock()) || (w.getBlockMetadata(nx, ny, nz) != newMeta))
+			Block cb = w.getBlock(nx, ny, nz);
+			if((cb != st.getBlock()) || ((w.getBlockMetadata(nx, ny, nz) != newMeta) && !(cb instanceof IColorableBlock)))
 			{
 				System.out.println("Repaired:" + nx +","+ny+","+nz+":" + newMeta);
 				st.loadToWorld(w, newMeta, nx, ny, nz);
