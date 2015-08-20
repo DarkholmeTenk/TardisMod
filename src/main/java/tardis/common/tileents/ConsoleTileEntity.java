@@ -54,7 +54,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private int[]								xControls				= new int[7];
 	private int[]								zControls				= new int[7];
 	private int[]								yControls				= new int[4];
-	private boolean								landGroundControl		= false;
+	private boolean								landGroundControl		= true;
 	private boolean								dayNightControl			= false;
 	private boolean								relativeCoords			= false;
 	private boolean								uncoordinated			= false;
