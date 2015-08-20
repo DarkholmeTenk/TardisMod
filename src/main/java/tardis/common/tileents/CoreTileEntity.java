@@ -74,7 +74,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private float							lastProximity			= 0;
 	private double							lastSpin				= 0;
 
-	private double							speed					= 4;
+	private double							speed					= 2;
 	private static double					maxSpeed;
 
 	private int								energy;
