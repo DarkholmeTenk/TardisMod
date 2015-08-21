@@ -506,7 +506,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				if((control >= 110) && (control <= 119))
 				{
 					int component = control - 110;
-					ds.damage.repairComponent(component);
+					ds.damage.repairComponent(pl, component);
 				}
 			}
 		}

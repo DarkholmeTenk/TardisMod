@@ -7,6 +7,7 @@ import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 
 import java.util.Random;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.TardisUpgradeMode;
@@ -163,7 +164,7 @@ public class TardisDamageSystem
 			}
 	}
 
-	public boolean repairComponent(int component)
+	public boolean repairComponent(EntityPlayer pl, int component)
 	{
 		if((component < 0) || (component >= numBreakables)) return false;
 		if(!breakables[component]) return false;
