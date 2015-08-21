@@ -243,7 +243,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 		TardisDataStore ds = getDatastore();
 		if((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
 		{
-			currentTank = MathHelper.cycle(currentTank + (player.isSneaking() ? -1 : 1), -1, TardisMod.numTanks);
+			currentTank = MathHelper.cycle(currentTank + (player.isSneaking() ? -1 : 1), -1, TardisMod.numTanks-1);
 			if(currentTank == -1)
 				ServerHelper.sendString(player, "Fluid interface configured to all tanks");
 			else
