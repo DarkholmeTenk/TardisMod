@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 
 public class LandingPadTileEntity extends ComponentTileEntity

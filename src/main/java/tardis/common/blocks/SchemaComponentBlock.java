@@ -14,7 +14,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;

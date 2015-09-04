@@ -10,7 +10,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.FoodStats;
 import tardis.api.IArtronEnergyProvider;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.entities.particles.ParticleType;
 import tardis.common.tileents.ComponentTileEntity;
 

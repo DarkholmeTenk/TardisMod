@@ -9,7 +9,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.SchemaCoreTileEntity;

@@ -18,8 +18,8 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.CoreTileEntity;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 

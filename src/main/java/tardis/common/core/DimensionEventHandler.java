@@ -21,6 +21,7 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
 import tardis.TardisMod;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.CoreTileEntity;

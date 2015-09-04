@@ -12,7 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import tardis.TardisMod;
 import tardis.api.ITDismantleable;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 
 public class SummonerTileEntity extends AbstractTileEntity implements IActivatable, ITDismantleable
 {

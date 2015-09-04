@@ -1,4 +1,4 @@
-package tardis.common.core;
+package tardis.common.core.helpers;
 
 import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
@@ -22,6 +22,9 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
+import tardis.common.core.TardisDimensionRegistry;
+import tardis.common.core.TardisOutput;
+import tardis.common.core.TardisOutput.Priority;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.PartBlueprint;
 import tardis.common.dimension.SaveSlotNamesDataStore;

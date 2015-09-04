@@ -8,7 +8,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 
 public class TardisWorldProvider extends WorldProvider

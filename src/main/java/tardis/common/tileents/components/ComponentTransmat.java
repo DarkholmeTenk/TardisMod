@@ -6,7 +6,7 @@ import net.minecraft.util.ChatComponentText;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;

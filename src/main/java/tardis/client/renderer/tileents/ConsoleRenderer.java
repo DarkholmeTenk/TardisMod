@@ -12,7 +12,7 @@ import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.client.renderer.ControlRenderer;
 import tardis.client.renderer.model.ConsoleModel;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 

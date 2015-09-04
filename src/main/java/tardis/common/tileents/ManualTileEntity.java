@@ -14,7 +14,7 @@ import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.ScrewdriverMode;
 import tardis.client.renderer.tileents.ManualRenderer;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.extensions.ManualPage;
 import tardis.common.tileents.extensions.ManualPageTree;
 import cpw.mods.fml.relauncher.Side;
