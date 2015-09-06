@@ -11,6 +11,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ScrewTypeRegister
 {
+	private static boolean done = false;
 	private static ArrayList<AbstractScrewdriverType> types = new ArrayList();
 
 	public static AbstractScrewdriverType get(NBTTagCompound nbt)
@@ -30,6 +31,7 @@ public class ScrewTypeRegister
 
 	public static void register(AbstractScrewdriverType type)
 	{
+		if(done) return;
 		types.add(type);
 		Collections.sort(types);
 	}
@@ -54,6 +56,7 @@ public class ScrewTypeRegister
 	@SideOnly(Side.CLIENT)
 	public static void registerClientResources()
 	{
+		done = true;
 		for(AbstractScrewdriverType type : types)
 			type.registerClientResources();
 	}
