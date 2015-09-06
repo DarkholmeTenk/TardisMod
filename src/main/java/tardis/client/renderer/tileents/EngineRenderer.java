@@ -102,6 +102,7 @@ public class EngineRenderer extends AbstractObjRenderer
 		comps.renderLight(tess, eng, 55, 0.4, 0.6, 1.02, -90, 0, 0, 0.3, 0.3, 0.3);
 		if(ds.hasFunction(TardisFunction.SPAWNPROT))
 			comps.renderLever(tess, eng, 130, 0.5, 0.8, 1, -90, 0, 180, 0.2, 0.3, 0.3);
+		comps.renderButton(tess, eng, 131, 0.75, 0.488, 1.02, -90, 0, 0, 0.3, 0.3, 0.3);
 	}
 
 	private void renderBack(Tessellator tess, EngineTileEntity eng, CoreTileEntity core, TardisDataStore ds)

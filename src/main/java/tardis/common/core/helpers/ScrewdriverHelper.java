@@ -7,6 +7,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.ScrewdriverMode;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.items.extensions.ScrewTypeRegister;
+import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
 import tardis.common.tileents.CoreTileEntity;
 
 public class ScrewdriverHelper
@@ -18,6 +20,7 @@ public class ScrewdriverHelper
 	private SimpleCoordStore linkSCS;
 	private String schemaCat;
 	private String schema;
+	private AbstractScrewdriverType type = TardisMod.defaultType;
 
 	public String owner;
 
@@ -81,6 +84,7 @@ public class ScrewdriverHelper
 		schemaCat = nbt.getString("schemaCat");
 		schema = nbt.getString("schemaName");
 		if(nbt.hasKey("linkscs")) linkSCS = SimpleCoordStore.readFromNBT(nbt, "linkscs");
+		type = ScrewTypeRegister.get(nbt);
 	}
 
 	public void writeToNBT(NBTTagCompound nbt)
@@ -93,6 +97,7 @@ public class ScrewdriverHelper
 			linkSCS.writeToNBT(nbt, "linkscs");
 		else if(nbt.hasKey("linkscs"))
 			nbt.removeTag("linkscs");
+		type.writeToNBT(nbt);
 	}
 
 	public void writeToNBT(NBTTagCompound nbt, String name)
@@ -252,6 +257,31 @@ public class ScrewdriverHelper
 		int newMode = (startMode + 1) % modeLength;
 		while(!isModeValid(pl, modes[newMode]) && (newMode != startMode)) newMode = (newMode + 1) % modeLength;
 		mode = modes[newMode];
+		markDirty();
+	}
+
+	public void render()
+	{
+		type.render(this);
+	}
+
+	public AbstractScrewdriverType getType()
+	{
+		return type;
+	}
+
+	public void setScrewdriverType(AbstractScrewdriverType newType)
+	{
+		type = newType;
+		markDirty();
+	}
+
+	public void cycleScrewdriverType()
+	{
+		int length = ScrewTypeRegister.size();
+		int index = ScrewTypeRegister.getIndex(type);
+		index = (index + 1) % length;
+		type = ScrewTypeRegister.get(index);
 		markDirty();
 	}
 }

@@ -45,6 +45,7 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		addControl(new TwoIntStore(101,108), "Upgrade Slot","Allows you to insert upgrades");
 		addControl(new TwoIntStore(110,119), "Repair bobble [WIP]");
 		addControl(130, "Spawn Protection Lever", "Allows you to vary the radius of spawn prevention");
+		addControl(131, "Screwdriver Style Button", "Allows you to change your Screwdriver's style");
 	}
 
 	private boolean isEngine(IWailaDataAccessor accessor)

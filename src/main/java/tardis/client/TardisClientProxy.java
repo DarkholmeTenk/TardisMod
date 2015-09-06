@@ -31,6 +31,7 @@ import tardis.client.renderer.tileents.ManualRenderer;
 import tardis.client.renderer.tileents.TardisRenderer;
 import tardis.common.TardisProxy;
 import tardis.common.core.TardisOutput;
+import tardis.common.items.extensions.ScrewTypeRegister;
 import tardis.common.tileents.BatteryTileEntity;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.ConsoleTileEntity;
@@ -94,6 +95,7 @@ public class TardisClientProxy extends TardisProxy
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.tardisBlock), tardisRenderer);
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.summonerBlock), summonerRenderer);
 		MinecraftForgeClient.registerItemRenderer(TardisMod.manualItem, new ManualItemRenderer());
+		ScrewTypeRegister.registerClientResources();
 	}
 
 	@Override

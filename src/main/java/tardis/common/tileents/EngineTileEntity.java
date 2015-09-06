@@ -208,6 +208,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			return 100;
 		else if((ds != null) && ds.hasFunction(TardisFunction.SPAWNPROT) && hit.within(3, 0.675, 0.450, 0.925, 0.540))
 			return 130;
+		else if(hit.within(3, 0.450, 0.72, 0.55, 0.82))
+			return 131;
 		return -1;
 	}
 
@@ -498,6 +500,10 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					ds.damage.repairComponent(pl, component);
 				}
 			}
+			else if((control == 131) && (screwHelper != null))
+			{
+				screwHelper.cycleScrewdriverType();
+			}
 		}
 	}
 
@@ -565,7 +571,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if ((core != null) && (ds != null))
 		{
-			if ((cID == 4) || (cID == 5) || ((cID >= 10) && (cID < 20)) || ((cID >= 71) && (cID <= 73)))
+			if ((cID == 4) || (cID == 5) || ((cID >= 10) && (cID < 20)) || ((cID >= 71) && (cID <= 73)) || (cID == 131))
 				return (lastButton == cID) ? 1.0 : 0;
 			if ((cID >= 20) && (cID < 30))
 			{

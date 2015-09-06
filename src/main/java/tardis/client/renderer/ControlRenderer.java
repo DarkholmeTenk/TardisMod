@@ -8,7 +8,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import tardis.api.IControlMatrix;
-import tardis.client.TardisClientProxy;
 import tardis.client.renderer.model.SonicScrewdriverLightModel;
 import tardis.client.renderer.model.SonicScrewdriverModel;
 import tardis.client.renderer.model.console.ButtonModel;
@@ -131,7 +130,7 @@ public class ControlRenderer
 			GL11.glPushMatrix();
 			handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
 			resetHighlight();
-			TardisClientProxy.screwRenderer.render(helper);
+			helper.render();
 			resetHighlight();
 			GL11.glPopMatrix();
 		}
