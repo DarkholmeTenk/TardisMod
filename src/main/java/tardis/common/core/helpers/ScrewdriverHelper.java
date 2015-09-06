@@ -36,6 +36,7 @@ public class ScrewdriverHelper
 	protected ScrewdriverHelper(NBTTagCompound nbt, int _id)
 	{
 		id = _id;
+		readFromNBT(nbt);
 	}
 
 	protected ScrewdriverHelper(ItemStack is, int _id)
