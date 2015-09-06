@@ -9,6 +9,7 @@ import io.darkcraft.darkcore.mod.network.DataPacket;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -24,7 +25,6 @@ import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
-import tardis.common.core.TardisOutput.Priority;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.PartBlueprint;
 import tardis.common.dimension.SaveSlotNamesDataStore;
@@ -40,6 +40,7 @@ import tardis.common.tileents.TardisTileEntity;
 
 public class Helper
 {
+	public static final Random								rand			= new Random();
 	public static final int									tardisCoreX		= 0;
 	public static final int									tardisCoreY		= 70;
 	public static final int									tardisCoreZ		= 0;

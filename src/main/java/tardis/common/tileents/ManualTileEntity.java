@@ -12,9 +12,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
-import tardis.api.ScrewdriverMode;
 import tardis.client.renderer.tileents.ManualRenderer;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.tileents.extensions.ManualPage;
 import tardis.common.tileents.extensions.ManualPageTree;
 import cpw.mods.fml.relauncher.Side;
@@ -165,10 +165,7 @@ public class ManualTileEntity extends AbstractTileEntity implements IControlMatr
 	public double getControlHighlight(int controlID){return 0;}
 
 	@Override
-	public boolean hasScrewdriver(int slot){return false;}
-
-	@Override
-	public ScrewdriverMode getScrewMode(int slot){return null;}
+	public ScrewdriverHelper getScrewHelper(int slot){return null;}
 
 	@Override
 	public double[] getColorRatio(int controlID){return null;}

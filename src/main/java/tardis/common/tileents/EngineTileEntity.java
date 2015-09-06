@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -30,9 +28,10 @@ import tardis.api.TardisUpgradeMode;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
-import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
 
@@ -49,9 +48,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	private boolean				internalOnly			= false;
 
-	private boolean				hasScrew				= false;
-	private NBTTagCompound		screwNBT				= null;
-	private int					screwMode				= 0;
+	private ScrewdriverHelper	screwHelper;
 
 	private int					consoleSettingControl	= 0;
 	private int					protectedRadius			= 0;
@@ -310,6 +307,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	@Override
 	public void activateControl(EntityPlayer pl, int control)
 	{
+		if(ServerHelper.isClient()) return;
 		int prevLastButton = lastButton;
 		lastButton = control;
 		lastButtonTT = tt;
@@ -371,40 +369,32 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 						+ ds.maxUnspentLevelPoints()));
 			else if (control == 39)
 			{
-				if (hasScrewdriver(0) && (pl instanceof EntityPlayerMP))
+				if (screwHelper != null)
 				{
-					ItemStack toGive = new ItemStack(TardisMod.screwItem, 1, 0);
-					validateScrewNBT();
-					toGive.stackTagCompound = screwNBT;
-					hasScrew = false;
-					screwNBT = null;
-					TardisMod.screwItem.notifyMode(toGive, pl, false);
+					ItemStack toGive = screwHelper.getItemStack();
+					TardisMod.screwItem.notifyMode(screwHelper, pl, false);
+					screwHelper = null;
 					WorldHelper.giveItemStack(pl, toGive);
 				}
 				else
 				{
-					ItemStack held = pl.getHeldItem();
-					if (held != null)
+					ScrewdriverHelper helper = ScrewdriverHelperFactory.get(pl.getHeldItem());
+					if (helper != null)
 					{
-						Item item = held.getItem();
-						if (item instanceof SonicScrewdriverItem)
-						{
-							InventoryPlayer inv = pl.inventory;
-							screwNBT = held.stackTagCompound;
-							hasScrew = true;
-							validateScrewNBT();
-							inv.mainInventory[inv.currentItem] = null;
-						}
+						screwHelper = helper;
+						helper.setOwner(core.getOwner());
+						helper.clear();
+						InventoryPlayer inv = pl.inventory;
+						inv.mainInventory[inv.currentItem] = null;
 					}
 				}
 			}
 			else if ((control >= 40) && (control < 50))
 			{
-				validateScrewNBT();
-				if (hasScrew)
+				if (screwHelper != null)
 				{
 					if (ds.hasPermission(pl, TardisPermission.PERMISSIONS))
-						SonicScrewdriverItem.togglePermission(screwNBT, SonicScrewdriverItem.getMode(control - 40));
+						screwHelper.togglePermission(ScrewdriverMode.get(control - 40));
 					else
 						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
 				}
@@ -412,15 +402,14 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			else if ((control >= 50) && (control < 60))
 			{
-				validateScrewNBT();
-				if (hasScrew && (screwNBT != null))
+				if (screwHelper != null)
 				{
-					ScrewdriverMode m = SonicScrewdriverItem.getMode(control - 50);
+					ScrewdriverMode m = ScrewdriverMode.get(control - 50);
 					String modeString = m.name();
 					String s = "Sonic screwdriver ";
 					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
 					{
-						s += SonicScrewdriverItem.hasPermission(screwNBT, m) ? "has" : "does not have";
+						s += screwHelper.hasPermission(m) ? "has" : "does not have";
 						s += " " + modeString + " permission";
 					}
 					else
@@ -593,20 +582,17 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			if ((cID >= 40) && (cID < 60))
 			{
-				if (!hasScrew)
+				if (screwHelper == null)
 					return 0;
 				int mID = cID >= 50 ? cID - 50 : cID - 40;
-				if (hasScrew && (screwNBT == null))
-					validateScrewNBT();
-				ScrewdriverMode m = SonicScrewdriverItem.getMode(mID);
+				ScrewdriverMode m = ScrewdriverMode.get(mID);
 				if (cID < 50)
-					return SonicScrewdriverItem.hasPermission(screwNBT, m) ? 1 : 0;
+					return screwHelper.hasPermission(m) ? 1 : 0;
 				else
 				{
 					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
 					{
-						double v = SonicScrewdriverItem.hasPermission(screwNBT, m) ? 1 : 0.2;
-						// TardisOutput.print("TETE", "V:" + v);
+						double v = screwHelper.hasPermission(m) ? 1 : 0.2;
 						return v;
 					}
 					return 0.2;
@@ -673,8 +659,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			retVal = new double[] { 0.2, 0.3, 0.9 };
 		if ((controlID >= 50) && (controlID < 60))
 		{
-			ScrewdriverMode m = SonicScrewdriverItem.getMode(controlID - 50);
-			// TardisOutput.print("TETE","Colors: "+ m.c[0] + "," + m.c[1] + "," + m.c[2]);
+			ScrewdriverMode m = ScrewdriverMode.get(controlID - 50);
 			return m.c;
 		}
 		if((controlID >= 90) && (controlID < 100))
@@ -694,44 +679,11 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		return -1;
 	}
 
-	private void validateScrewNBT()
-	{
-		if (hasScrew)
-		{
-			if (screwNBT == null)
-			{
-				TardisOutput.print("TETE", "New NBT For Screw");
-				screwNBT = SonicScrewdriverItem.getNewNBT();
-				screwNBT.setInteger("linkedTardis", WorldHelper.getWorldID(this));
-			}
-			else
-			{
-				int dim = SonicScrewdriverItem.getLinkedDim(screwNBT);
-				if ((dim != 0) && (dim != WorldHelper.getWorldID(this)))
-					screwNBT.setInteger("perm", SonicScrewdriverItem.minPerms);
-			}
-			CoreTileEntity core = Helper.getTardisCore(worldObj);
-			if(core != null)
-				screwNBT.setString("owner", core.getOwner());
-			screwNBT.setInteger("linkedTardis", WorldHelper.getWorldID(this));
-		}
-		else
-		{
-			if (screwNBT != null)
-				screwNBT = null;
-		}
-	}
 
 	@Override
-	public boolean hasScrewdriver(int slot)
+	public ScrewdriverHelper getScrewHelper(int slot)
 	{
-		return hasScrew;
-	}
-
-	@Override
-	public ScrewdriverMode getScrewMode(int slot)
-	{
-		return SonicScrewdriverItem.getMode(screwMode);
+		return screwHelper;
 	}
 
 	@Override
@@ -746,8 +698,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
 		super.writeTransmittable(nbt);
-		if (screwNBT != null)
-			nbt.setTag("sNBT", screwNBT);
+		if (screwHelper != null) screwHelper.writeToNBT(nbt, "sNBT");
 		if (currentPerson != null)
 			nbt.setString("cP", currentPerson);
 		if (preparingToUpgrade != null)
@@ -755,7 +706,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		else
 			nbt.setBoolean("ptUN", false);
 		nbt.setBoolean("io", internalOnly);
-		nbt.setBoolean("hS", hasScrew);
 		nbt.setInteger("lB", lastButton);
 		nbt.setBoolean("eO", isEngineOpen);
 		nbt.setInteger("sp", protectedRadius);
@@ -765,9 +715,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public void readTransmittable(NBTTagCompound nbt)
 	{
 		super.readTransmittable(nbt);
-		if (nbt.hasKey("sNBT"))
-			screwNBT = nbt.getCompoundTag("sNBT");
-		hasScrew = nbt.getBoolean("hS");
+		screwHelper = ScrewdriverHelperFactory.get(nbt,"sNBT");
 		currentPerson = nbt.getString("cP");
 		lastButton = nbt.getInteger("lB");
 		lastButtonTT = tt;
@@ -788,15 +736,12 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			consoleSettingString = nbt.getString("css");
 		else
 			consoleSettingString = "Main";
-		screwMode = nbt.getInteger("scMo");
 	}
 
 	@Override
 	public void writeTransmittableOnly(NBTTagCompound nbt)
 	{
 		nbt.setString("css", sanitiseConsole(consoleSettingString));
-		if (screwNBT != null)
-			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 	}
 
 	public String[] getExtraInfo(int control)

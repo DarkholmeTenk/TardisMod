@@ -22,6 +22,8 @@ import tardis.TardisMod;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.CoreTileEntity;
@@ -121,10 +123,11 @@ public class DimensionEventHandler
 						Item i = is.getItem();
 						if(i instanceof SonicScrewdriverItem)
 						{
-							if(SonicScrewdriverItem.hasPermission(is, ScrewdriverMode.Transmat))
+							ScrewdriverHelper helper = ScrewdriverHelperFactory.get(is);
+							if(helper.hasPermission(ScrewdriverMode.Transmat))
 							{
-								int linkedDim = SonicScrewdriverItem.getLinkedDim(is);
-								if(linkedDim != 0)
+								Integer linkedDim = helper.getLinkedDimID();
+								if(linkedDim != null)
 								{
 									if(savePlayer(player,linkedDim, source))
 									{

@@ -12,9 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,18 +24,18 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
-import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.core.store.ControlStateStore;
 import tardis.common.dimension.SaveSlotNamesDataStore;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.items.NameTagItem;
-import tardis.common.items.SonicScrewdriverItem;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -46,10 +44,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public static final float					cycleLength				= 80;
 	private int									tickTimer;
 
-	private int									hasScrewdriver			= 1;
-
 	private int									facing					= 0;
-	private Integer								dc						= null;
+	private Integer								dc;
 	private int									dimControl				= 0;
 	private int[]								xControls				= new int[7];
 	private int[]								zControls				= new int[7];
@@ -64,8 +60,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	private boolean								saveCoords				= false;
 	private HashMap<Integer, ControlStateStore>	states					= new HashMap<Integer, ControlStateStore>();
-	private ControlStateStore					currentLanding			= null;
-	private ControlStateStore					lastLanding				= null;
+	private ControlStateStore					currentLanding;
+	private ControlStateStore					lastLanding	;
 
 	private int									rdpCounter				= 0;
 	private boolean								roomDeletePrepare		= false;
@@ -75,13 +71,14 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private int									lastButton				= -1;
 	private int									lastButtonTT			= -1;
 
-	private String[]							schemaList				= null;
-	private static String[]						categoryList			= null;
+	private String[]							schemaList;
+	private static String[]						categoryList;
 
 	private int									schemaNum				= 0;
 	private int									lastCategoryNum			= -1;
 	private int									categoryNum				= 0;
-	private NBTTagCompound						screwNBT				= null;
+	private ScrewdriverHelper					frontScrewHelper;
+	private ScrewdriverHelper					backScrewHelper;
 
 	public int									unstableControl			= -1;
 	private boolean								unstablePressed			= false;
@@ -89,7 +86,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public String								schemaChooserString		= "";
 	public String								schemaCategoryString	= "";
 	private float								dimControlState			= 0;
-	private int									screwMode				= 0;
 	private LinkedList<Integer>					unstableQueue			= new LinkedList<Integer>();
 
 	private SaveSlotNamesDataStore	ssnds;
@@ -608,15 +604,16 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		{
 			if (ds.hasPermission(pl, TardisPermission.PERMISSIONS))
 			{
-				if (!hasScrewdriver(0) && core.takeArtronEnergy(500, false))
+				if ((frontScrewHelper == null) && core.takeArtronEnergy(500, false))
 				{
 					core.sendUpdate();
-					setScrewdriver(0, true);
+					frontScrewHelper = ScrewdriverHelperFactory.getNew();
 				}
-				else if (hasScrewdriver(0) && core.addArtronEnergy(400, false))
+				else if ((frontScrewHelper != null) && core.addArtronEnergy(400, false))
 				{
 					core.sendUpdate();
-					setScrewdriver(0, false);
+					ScrewdriverHelperFactory.destroy(frontScrewHelper);
+					frontScrewHelper = null;
 				}
 			}
 			else
@@ -625,45 +622,27 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		else if ((controlID == 6) || (controlID == 7)) // Screwdriver slot 0/1
 		{
 			int slot = controlID == 6 ? 0 : 1;
-			if (hasScrewdriver(slot) && (pl instanceof EntityPlayerMP))
+			ScrewdriverHelper helper = getScrewHelper(slot);
+			if (helper != null)
 			{
-				setScrewdriver(slot, false);
-				ItemStack toGive = new ItemStack(TardisMod.screwItem, 1, 0);
-				if (screwNBT != null)
-					toGive.stackTagCompound = (NBTTagCompound) screwNBT.copy();
-				else
-				{
-					toGive.stackTagCompound = new NBTTagCompound();
-					toGive.stackTagCompound.setInteger("scMo", 0);
-				}
-				toGive.stackTagCompound.setString("owner", core.getOwner());
-				toGive.stackTagCompound.setString("schemaCat", schemaCategoryString);
-				toGive.stackTagCompound.setString("schemaName", schemaChooserString);
-				toGive.stackTagCompound.setInteger("linkedTardis", WorldHelper.getWorldID(worldObj));
-				screwNBT = null;
-				TardisMod.screwItem.notifyMode(toGive, pl, false);
+				if(slot == 0) frontScrewHelper = null;
+				if(slot == 1) backScrewHelper = null;
+				helper.setOwner(core.getOwner());
+				helper.setSchema(schemaCategoryString, schemaChooserString);
+				ItemStack toGive = helper.getItemStack();
+				TardisMod.screwItem.notifyMode(helper, pl, false);
 				WorldHelper.giveItemStack(pl, toGive);
 			}
 			else
 			{
-				ItemStack held = pl.getHeldItem();
-				if (held != null)
+				ScrewdriverHelper newHelper = ScrewdriverHelperFactory.get(pl.getHeldItem());
+				if (newHelper != null)
 				{
-					Item item = held.getItem();
-					if (item instanceof SonicScrewdriverItem)
-					{
-						if (hasScrewdriver(1 - slot))
-							return;
-						InventoryPlayer inv = pl.inventory;
-						screwNBT = held.stackTagCompound;
-						if (screwNBT == null)
-							screwNBT = SonicScrewdriverItem.getNewNBT();
-						int linked = SonicScrewdriverItem.getLinkedDim(screwNBT);
-						if ((linked != 0) && (linked != WorldHelper.getWorldID(this)))
-							screwNBT.setInteger("perm", SonicScrewdriverItem.minPerms);
-						inv.mainInventory[inv.currentItem] = null;
-						setScrewdriver(slot, true);
-					}
+					if(slot == 0) frontScrewHelper = newHelper;
+					if(slot == 1) backScrewHelper = newHelper;
+					newHelper.clear();
+					InventoryPlayer inv = pl.inventory;
+					inv.mainInventory[inv.currentItem] = null;
 				}
 			}
 		}
@@ -1292,22 +1271,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return unstablePressed || (unstableControl == -1);
 	}
 
-	public void setScrewdriver(int slot, boolean bool)
-	{
-		int bit = (int) Math.pow(2, slot);
-		if (((hasScrewdriver & bit) == 0) && bool)
-			hasScrewdriver += bit;
-		else if (((hasScrewdriver & bit) == bit) && !bool)
-			hasScrewdriver -= bit;
-	}
-
-	@Override
-	public boolean hasScrewdriver(int slot)
-	{
-		int bit = (int) Math.pow(2, slot);
-		return (hasScrewdriver & bit) == bit;
-	}
-
 	public void land()
 	{
 		if(ServerHelper.isClient())return;
@@ -1351,12 +1314,14 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	}
 
 	@Override
-	public ScrewdriverMode getScrewMode(int slot)
+	public ScrewdriverHelper getScrewHelper(int slot)
 	{
-		ScrewdriverMode[] vals = ScrewdriverMode.values();
-		if ((screwMode >= 0) && (screwMode < vals.length))
-			return vals[screwMode];
-		return vals[0];
+		switch(slot)
+		{
+			case 0: return frontScrewHelper;
+			case 1: return backScrewHelper;
+			default: return null;
+		}
 	}
 
 	public boolean shouldLand()
@@ -1375,8 +1340,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		super.readFromNBT(nbt);
 		schemaNum = nbt.getInteger("schemaNum");
 		dc = nbt.getInteger("dC");
-		if (nbt.hasKey("scNBT"))
-			screwNBT = nbt.getCompoundTag("scNBT");
 		for (int i = 0; i < 20; i++)
 		{
 			if (nbt.hasKey("css" + i))
@@ -1396,8 +1359,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		nbt.setInteger("schemaNum", schemaNum);
 		int dimID = getDimFromControls();
 		nbt.setInteger("dC", dimID);
-		if (screwNBT != null)
-			nbt.setTag("scNBT", screwNBT);
+
 		for (int i = 0; i < 20; i++)
 		{
 			if (states.containsKey(i))
@@ -1430,7 +1392,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		dayNightControl = nbt.getBoolean("dayNightControl");
 		roomDeletePrepare = nbt.getBoolean("rdp");
 		tickTimer = nbt.getInteger("tickTimer");
-		hasScrewdriver = nbt.getInteger("hasScrewdriver");
+		frontScrewHelper = ScrewdriverHelperFactory.get(nbt, "scNBT");
+		backScrewHelper = ScrewdriverHelperFactory.get(nbt, "bscNBT");
 		facing = nbt.getInteger("facing");
 		xControls = nbt.getIntArray("xControls");
 		zControls = nbt.getIntArray("zControls");
@@ -1461,10 +1424,10 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		nbt.setBoolean("uncoordinated", uncoordinated);
 		nbt.setBoolean("relativeCoords", relativeCoords);
 		nbt.setBoolean("dayNightControl", dayNightControl);
-		nbt.setInteger("screwMode", screwMode);
+		if(frontScrewHelper != null) frontScrewHelper.writeToNBT(nbt, "scNBT");
+		if(backScrewHelper != null) backScrewHelper.writeToNBT(nbt, "bscNBT");
 		nbt.setBoolean("rdp", roomDeletePrepare);
 		nbt.setInteger("tickTimer", tickTimer);
-		nbt.setInteger("hasScrewdriver", hasScrewdriver);
 		nbt.setBoolean("primed", primed);
 		nbt.setBoolean("regulated", regulated);
 		nbt.setInteger("facing", facing);
@@ -1483,8 +1446,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		nbt.setString("schemaCategoryString", schemaCategoryString);
 		nbt.setString("schemaChooserString", schemaChooserString);
 		nbt.setFloat("dCS", (dimControl) / (getNumDims() - 1f));
-		if (screwNBT != null)
-			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 		nbt.setInteger("lastButton", lastButton);
 		nbt.setInteger("lastButtonTT", lastButtonTT);
 		nbt.setBoolean("attemptToLand", attemptToLand);
@@ -1503,7 +1464,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		schemaCategoryString = nbt.getString("schemaCategoryString");
 		schemaChooserString = nbt.getString("schemaChooserString");
 		dimControlState = nbt.getFloat("dCS");
-		screwMode = nbt.getInteger("scMo");
 		lastButton = nbt.getInteger("lastButton");
 		lastButtonTT = nbt.getInteger("lastButtonTT");
 		if(lastButton == unstableControl)

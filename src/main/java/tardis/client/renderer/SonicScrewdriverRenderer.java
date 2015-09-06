@@ -11,7 +11,8 @@ import org.lwjgl.opengl.GL11;
 
 import tardis.client.renderer.model.SonicScrewdriverLightModel;
 import tardis.client.renderer.model.SonicScrewdriverModel;
-import tardis.common.items.SonicScrewdriverItem;
+import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 
 public class SonicScrewdriverRenderer implements IItemRenderer
 {
@@ -23,7 +24,7 @@ public class SonicScrewdriverRenderer implements IItemRenderer
 	ResourceLocation bottomTex = new ResourceLocation("tardismod","textures/models/screwbottom.png");
 	ResourceLocation middleTex = new ResourceLocation("tardismod","textures/models/screwmain.png");;
 	ResourceLocation topTex = new ResourceLocation("tardismod","textures/models/screwtop.png");;
-	
+
 	{
 		model = new SonicScrewdriverModel();
 		light = new  SonicScrewdriverLightModel();
@@ -43,13 +44,10 @@ public class SonicScrewdriverRenderer implements IItemRenderer
 	{
 		return true;
 	}
-	
-	public void render(ItemStack item)
+
+	public void render(ScrewdriverHelper helper)
 	{
 		GL11.glPushMatrix();
-		//Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriver.png"));
-		//model.render(null, 0.0F, 0.0F, -0.0F, 0.0F, 0.0F, 0.0625F);
-		//GL11.glRotated(180, 1, 0, 0);
 		GL11.glScaled(0.45, 0.4, 0.45);
 		Minecraft.getMinecraft().renderEngine.bindTexture(bottomTex);
 		GL11.glTranslated(0, -0.8, 0);
@@ -65,10 +63,10 @@ public class SonicScrewdriverRenderer implements IItemRenderer
 		top.renderAll();
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
-		if(item != null)
+		if(helper != null)
 		{
-			double[] color = SonicScrewdriverItem.getColors(item);
-			if(color != null && color.length >= 3)
+			double[] color = helper.getColors();
+			if((color != null) && (color.length >= 3))
 			{
 				GL11.glTranslated(0, 0.88, 0);
 				GL11.glColor3d(color[0], color[1], color[2]);
@@ -103,7 +101,8 @@ public class SonicScrewdriverRenderer implements IItemRenderer
 			GL11.glScaled(1.75, 1.75, 1.75);
 			GL11.glTranslated(0,-0.1,0);
 		}
-		render(item);
+		ScrewdriverHelper helper = ScrewdriverHelperFactory.get(item);
+		render(helper);
 		GL11.glPopMatrix();
 	}
 

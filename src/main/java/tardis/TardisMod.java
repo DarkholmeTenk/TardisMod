@@ -55,6 +55,7 @@ import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisOwnershipRegistry;
 import tardis.common.core.events.internal.DamageEventHandler;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.dimension.damage.TardisDamageSystem;
@@ -287,6 +288,7 @@ public class TardisMod implements IConfigHandlerMod
 		tcInstalled = ItemApi.getItem("itemResource", 0) != null;
 		if(keyOnFirstJoin)
 			PlayerHelper.registerJoinItem(new ItemStack(keyItem,1));
+		FMLCommonHandler.instance().bus().register(ScrewdriverHelperFactory.i);
 	}
 
 	private void initBlocks()
@@ -360,6 +362,7 @@ public class TardisMod implements IConfigHandlerMod
 		Helper.ssnDatastoreMap.clear();
 		MinecraftForge.EVENT_BUS.register(otherDims);
 		DamageEventHandler.i.register();
+		ScrewdriverHelperFactory.i.clear();
 	}
 
 	@EventHandler
