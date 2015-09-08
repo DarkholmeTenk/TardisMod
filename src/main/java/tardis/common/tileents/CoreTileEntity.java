@@ -537,6 +537,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		EntityPlayer player = null;
 		if(ent instanceof EntityPlayer) player = (EntityPlayer) ent;
+		if(inFlight())
+		{
+			if(player != null)
+				ServerHelper.sendString(player, "TARDIS", "You cannot transmat outside during flight");
+			return false;
+		}
 		World ext = gDS().getExteriorWorld();
 		if (ext != null)
 		{
@@ -552,7 +558,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				ServerHelper.sendString(player, "TARDIS", "The door is obstructed");
 		}
 		else
-			ServerHelper.sendString(player, "TARDIS", "The door refuses to open");
+			ServerHelper.sendString(player, "TARDIS", "You cannot transmat outside for some reason");
 		return false;
 	}
 
