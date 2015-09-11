@@ -93,10 +93,29 @@ public class Helper
 		}
 	}
 
+	private static int getNextFreeDimID()
+	{
+		int startPoint = DimensionManager.getNextFreeDimId();
+		while(true)
+		{
+			try
+			{
+				World w = WorldHelper.getWorld(startPoint);
+				if(w == null)
+					return startPoint;
+				startPoint++;
+			}
+			catch(Exception e)
+			{
+				return startPoint;
+			}
+		}
+	}
+
 	public static int generateTardisInterior(String ownerName, TardisTileEntity exterior)
 	{
 		if (ServerHelper.isClient()) return 0;
-		int dimID = DimensionManager.getNextFreeDimId();
+		int dimID = getNextFreeDimID();
 		DimensionManager.registerDimension(dimID, TardisMod.providerID);
 		TardisMod.dimReg.addDimension(dimID);
 		TardisDimensionRegistry.saveAll();
