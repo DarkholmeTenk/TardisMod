@@ -321,6 +321,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		tardisLevel = nbt.getInteger("tL");
 		tardisXP = nbt.getDouble("txp");
 		int i = 0;
+		permissionList.clear();
 		while(nbt.hasKey("permO"+i))
 		{
 			int h = nbt.getInteger("permO"+i);
