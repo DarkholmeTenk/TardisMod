@@ -298,7 +298,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	@Override
 	public boolean shouldChunkload()
 	{
-		return true;
+		return linkedDimension != null;
 	}
 
 	@Override
