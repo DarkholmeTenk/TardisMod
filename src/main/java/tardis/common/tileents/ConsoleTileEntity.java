@@ -77,7 +77,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private int									schemaNum				= 0;
 	private int									lastCategoryNum			= -1;
 	private int									categoryNum				= 0;
-	private ScrewdriverHelper					frontScrewHelper;
+	private ScrewdriverHelper					frontScrewHelper		= ScrewdriverHelperFactory.getNew();
 	private ScrewdriverHelper					backScrewHelper;
 
 	public int									unstableControl			= -1;
