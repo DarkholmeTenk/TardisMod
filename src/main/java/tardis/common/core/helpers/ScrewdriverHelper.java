@@ -29,6 +29,8 @@ public class ScrewdriverHelper
 
 	public String owner;
 
+	private boolean dirty		= false;
+
 	private static boolean isVoid(String s)
 	{
 		return (s == null) || s.isEmpty();
@@ -59,6 +61,14 @@ public class ScrewdriverHelper
 				itemstack.stackTagCompound = new NBTTagCompound();
 			writeToNBT(itemstack.stackTagCompound);
 		}
+		dirty = true;
+	}
+
+	public boolean isDirty()
+	{
+		boolean d = dirty;
+		dirty = false;
+		return d;
 	}
 
 	public void clear()

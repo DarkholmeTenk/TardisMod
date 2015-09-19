@@ -115,6 +115,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 
 	public void notifyMode(ScrewdriverHelper helper, EntityPlayer player, boolean override)
 	{
+		if(ServerHelper.isClient()) return;
 		ScrewdriverMode mode = helper.getMode();
 		if (!(override || helper.isModeValid(player, mode)))
 			helper.switchMode(player);
@@ -313,7 +314,9 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		}
 		if(mode != helper.getMode())
 			notifyMode(helper, player, true);
-		return is;
+		if(helper.isDirty())
+			player.inventory.markDirty();
+		return helper.getItemStack();
 	}
 
 	@Override
