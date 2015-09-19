@@ -5,7 +5,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.TardisPermission;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.EngineTileEntity;
 
@@ -46,6 +46,7 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		addControl(new TwoIntStore(110), "Master Damage Repair Unit");
 		addControl(new TwoIntStore(111,119), "Damage Repair Unit");
 		addControl(130, "Spawn Protection Lever", "Allows you to vary the radius of spawn prevention");
+		addControl(131, "Screwdriver Style Button", "Allows you to change your Screwdriver's style");
 	}
 
 	private boolean isEngine(IWailaDataAccessor accessor)

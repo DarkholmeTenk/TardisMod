@@ -5,7 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.ConsoleTileEntity;
 

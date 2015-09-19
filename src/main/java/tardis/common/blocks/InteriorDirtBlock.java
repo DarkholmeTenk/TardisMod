@@ -28,7 +28,7 @@ import tardis.TardisMod;
 import tardis.api.IScrewablePrecise;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.LabTileEntity;

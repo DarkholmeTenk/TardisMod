@@ -49,12 +49,13 @@ import tardis.common.blocks.TopBlock;
 import tardis.common.command.CommandRegister;
 import tardis.common.core.CreativeTab;
 import tardis.common.core.DimensionEventHandler;
-import tardis.common.core.Helper;
 import tardis.common.core.SchemaHandler;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisOwnershipRegistry;
 import tardis.common.core.events.internal.DamageEventHandler;
+import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.dimension.damage.TardisDamageSystem;
@@ -66,6 +67,10 @@ import tardis.common.items.NameTagItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.items.UpgradeItem;
+import tardis.common.items.extensions.ScrewTypeRegister;
+import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
+import tardis.common.items.extensions.screwtypes.Tenth;
+import tardis.common.items.extensions.screwtypes.Twelth;
 import tardis.common.network.TardisPacketHandler;
 import tardis.common.tileents.BatteryTileEntity;
 import tardis.common.tileents.ComponentTileEntity;
@@ -188,6 +193,8 @@ public class TardisMod implements IConfigHandlerMod
 	public static int						numDirtRecipe		= 2;
 	public static boolean					deleteDisconnected	= true;
 
+	public static AbstractScrewdriverType	defaultType			= new Tenth();
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
 	{
@@ -205,10 +212,17 @@ public class TardisMod implements IConfigHandlerMod
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
 		initBlocks();
 		initItems();
+		initScrewTypes();
 
 		// MinecraftForge.EVENT_BUS.register(new SoundHandler());
 
 		proxy.postAssignment();
+	}
+
+	private void initScrewTypes()
+	{
+		ScrewTypeRegister.register(defaultType);
+		ScrewTypeRegister.register(new Twelth());
 	}
 
 	public static void refreshConfigs()
@@ -287,6 +301,7 @@ public class TardisMod implements IConfigHandlerMod
 		tcInstalled = ItemApi.getItem("itemResource", 0) != null;
 		if(keyOnFirstJoin)
 			PlayerHelper.registerJoinItem(new ItemStack(keyItem,1));
+		FMLCommonHandler.instance().bus().register(ScrewdriverHelperFactory.i);
 	}
 
 	private void initBlocks()
@@ -360,6 +375,7 @@ public class TardisMod implements IConfigHandlerMod
 		Helper.ssnDatastoreMap.clear();
 		MinecraftForge.EVENT_BUS.register(otherDims);
 		DamageEventHandler.i.register();
+		ScrewdriverHelperFactory.i.clear();
 	}
 
 	@EventHandler

@@ -8,7 +8,6 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.block.Block;
@@ -20,22 +19,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.api.ILinkable;
 import tardis.api.IScrewable;
 import tardis.api.IScrewablePrecise;
 import tardis.api.ITDismantleable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
+import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
-import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
@@ -57,6 +54,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 {
 	public static final int	maxPerms	= 0xFF;
 	public static final int	minPerms	= 0xCD;
+	public static final String screwName = "Sonic Screwdriver";
 
 	public SonicScrewdriverItem()
 	{
@@ -66,112 +64,15 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		setMaxStackSize(1);
 	}
 
-	public static ScrewdriverMode getMode(int i)
-	{
-		ScrewdriverMode[] modes = ScrewdriverMode.values();
-		if ((i < 0) || (i >= modes.length)) return modes[0];
-		return modes[i];
-	}
-
-	public static ScrewdriverMode getMode(ItemStack is)
-	{
-		if (is == null) return null;
-		if (!(is.getItem() instanceof SonicScrewdriverItem)) return null;
-		NBTTagCompound isTag = is.stackTagCompound;
-		if (isTag == null)
-		{
-			is.stackTagCompound = isTag = new NBTTagCompound();
-			isTag.setInteger("scMo", 0);
-		}
-		return getMode(isTag.getInteger("scMo"));
-	}
-
-	private String getSchemaCat(ItemStack is)
-	{
-		if (is == null) return "";
-
-		NBTTagCompound isTag = is.stackTagCompound;
-		if (isTag != null) return isTag.getString("schemaCat");
-		return "";
-	}
-
-	public static String getSchema(ItemStack is)
-	{
-		if (is == null) return "";
-
-		NBTTagCompound isTag = is.stackTagCompound;
-		if (isTag != null) return isTag.getString("schemaName");
-		return "";
-	}
-
-	public static int getLinkedDim(ItemStack is)
-	{
-		if (is.stackTagCompound != null)
-		{
-			int dim = is.stackTagCompound.getInteger("linkedTardis");
-			return dim;
-		}
-		return 0;
-	}
-
-	public static int getLinkedDim(NBTTagCompound nbt)
-	{
-		if (nbt != null)
-		{
-			int dim = nbt.getInteger("linkedTardis");
-			return dim;
-		}
-		return 0;
-	}
-
-	public static CoreTileEntity getLinkedCore(ItemStack is)
-	{
-		if ((is.stackTagCompound != null) && is.stackTagCompound.hasKey("linkedTardis"))
-		{
-			int dim = is.stackTagCompound.getInteger("linkedTardis");
-			return Helper.getTardisCore(dim);
-		}
-		return null;
-	}
-
-	public static double[] getColors(ScrewdriverMode m)
-	{
-		if (m != null) return m.c;
-		return defaultColor;
-	}
-
-	private static double[]	defaultColor	= new double[] { 0, 0, 1 };
-
-	public static double[] getColors(ItemStack is)
-	{
-		if (is == null) return defaultColor;
-		ScrewdriverMode mode = getMode(is);
-		return getColors(mode);
-	}
-
-	public static String getOwner(ItemStack is)
-	{
-		if ((is.stackTagCompound == null) || !is.stackTagCompound.hasKey("owner")) return "Unknown";
-		return is.stackTagCompound.getString("owner");
-	}
-
 	@SuppressWarnings("unchecked")
-	private void addModeInfo(ScrewdriverMode mode, ItemStack is, List infoList)
+	private void addModeInfo(ScrewdriverMode mode, ScrewdriverHelper helper, List infoList)
 	{
 		infoList.add("Mode: " + mode.toString());
-		if (mode.equals(ScrewdriverMode.Schematic))
-		{
-			String schemaName = getSchema(is);
-			String schemaCat = getSchemaCat(is);
-
-			if ((schemaName == null) || schemaName.equals("") || (schemaCat == null) || schemaCat.equals(""))
-				infoList.add("Schematic: --None--");
-			else
-				infoList.add("Schematic: " + schemaCat + " - " + schemaName);
-		}
+		if (mode == ScrewdriverMode.Schematic)
+			infoList.add("Schematic: " + helper.getSchemaDisplay());
 		if (mode == ScrewdriverMode.Link)
 		{
-			SimpleCoordStore link = getSCS(is);
+			SimpleCoordStore link = helper.getLinkSCS();
 			if(link == null)
 				infoList.add("Link: Target not set");
 			else
@@ -183,34 +84,17 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	@Override
 	public void addInfo(ItemStack is, EntityPlayer player, List infoList)
 	{
-		if (is != null)
+		ScrewdriverHelper helper = getHelper(is);
+		if (helper != null)
 		{
-			infoList.add("Owner: " + getOwner(is));
+			infoList.add("Owner: " + helper.getOwner());
 			for (ScrewdriverMode m : ScrewdriverMode.values())
 			{
-				if (!hasPermission(is, m)) infoList.add(m.name() + " - Disabled");
+				if (!helper.hasPermission(m)) infoList.add(m.name() + " - Disabled");
 			}
 			ScrewdriverMode mode = getMode(is);
-			addModeInfo(mode, is, infoList);
+			addModeInfo(mode, helper, infoList);
 		}
-	}
-
-	public boolean isValidMode(EntityPlayer pl, ItemStack is, ScrewdriverMode mode)
-	{
-		if (!hasPermission(is, mode)) return false;
-		if (mode.requiredFunction == null) return true;
-		TardisOutput.print("TSSI", "HasP");
-		CoreTileEntity core = getLinkedCore(is);
-		if (core == null) return false;
-		if (!core.hasFunction(mode.requiredFunction)) return false;
-		if (pl != null)
-		{
-			boolean isInTardis = false;
-			isInTardis = pl.worldObj.provider instanceof TardisWorldProvider;
-			if (isInTardis && (mode.equals(ScrewdriverMode.Locate) || mode.equals(ScrewdriverMode.Recall))) return false;
-			if (!isInTardis && mode.equals(ScrewdriverMode.Schematic)) return false;
-		}
-		return true;
 	}
 
 	public static boolean isPlayerHoldingScrewdriver(EntityPlayer pl)
@@ -229,26 +113,20 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		return false;
 	}
 
-	public void notifyMode(ItemStack is, EntityPlayer player, boolean override)
+	public void notifyMode(ScrewdriverHelper helper, EntityPlayer player, boolean override)
 	{
-		ScrewdriverMode mode = getMode(is);
-		if (override || isValidMode(player, is, mode))
+		ScrewdriverMode mode = helper.getMode();
+		if (!(override || helper.isModeValid(player, mode)))
+			helper.switchMode(player);
+		ArrayList<Object> list = new ArrayList<Object>();
+		addModeInfo(mode, helper, list);
+		for (Object o : list)
 		{
-			ArrayList<Object> list = new ArrayList<Object>();
-			addModeInfo(mode, is, list);
-			for (Object o : list)
+			if (o instanceof String)
 			{
-				if (o instanceof String)
-				{
-					ChatComponentText c = new ChatComponentText("");
-					c.getChatStyle().setColor(EnumChatFormatting.AQUA);
-					c.appendText("[Sonic Screwdriver]" + (String) o);
-					player.addChatMessage(c);
-				}
+				ServerHelper.sendString(player, screwName, (String) o, EnumChatFormatting.AQUA);
 			}
 		}
-		else
-			switchMode(is, player.worldObj, player, mode);
 	}
 
 	@Optional.Method(modid="CoFHCore")
@@ -293,7 +171,9 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	{
 		if (!isPlayerHoldingScrewdriver(pl)) return false;
 		ItemStack is = pl.getHeldItem();
-		ScrewdriverMode mode = getMode(is);
+		ScrewdriverHelper helper = getHelper(is);
+		if(helper == null) return false;
+		ScrewdriverMode mode = helper.getMode();
 		TileEntity te = pos.getTileEntity();
 		Block b = pos.getBlock();
 		int m = pos.getMetadata();
@@ -306,16 +186,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		}
 		else if(mode == ScrewdriverMode.Link)
 		{
-			if(te instanceof ILinkable)
-			{
-				if(link(pl, is, pos))
-				{
-					toolUsed(is,pl,pos.x,pos.y,pos.z);
-				}
-			}
-			else
-				setSCS(is,null);
-			return true;
+			return helper.linkUsed(pl, pos);
 		}
 		else if(mode == ScrewdriverMode.Reconfigure)
 		{
@@ -355,54 +226,12 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			if (hitPos == null) return false;
 			System.out.println("T");
 			SimpleCoordStore pos = new SimpleCoordStore(w,hitPos);
-			return handleBlock(pos, player);
+			boolean r = handleBlock(pos, player);
+			if(r)
+				toolUsed(is, player, pos.x, pos.y, pos.z);
+			return r;
 		}
 		return false;
-	}
-
-	public static boolean hasPermission(ItemStack is, ScrewdriverMode mode)
-	{
-		if (is == null) return false;
-		if (is.stackTagCompound == null) return false;
-		return hasPermission(is.stackTagCompound, mode);
-	}
-
-	public static boolean hasPermission(NBTTagCompound nbt, ScrewdriverMode mode)
-	{
-		int permissions = maxPerms;
-		if (nbt.hasKey("perm"))
-			permissions = nbt.getInteger("perm");
-		else
-			nbt.setInteger("perm", permissions);
-		int toCheck = (int) Math.pow(2, mode.ordinal());
-		// TardisOutput.print("TSSI", String.format("Checking perm %2X : %2X = %b",permissions,toCheck, (permissions & toCheck) == toCheck));
-		return (permissions & toCheck) == toCheck;
-	}
-
-	public static void setPermission(ItemStack is, ScrewdriverMode mode, boolean value)
-	{
-		if (is == null) return;
-		if (is.stackTagCompound == null) return;
-		setPermission(is.stackTagCompound, mode, value);
-	}
-
-	public static void setPermission(NBTTagCompound nbt, ScrewdriverMode mode, boolean value)
-	{
-		TardisOutput.print("TSSI", "Setting permission " + mode.name() + " to " + value);
-		int permissions = maxPerms;
-		if (nbt.hasKey("perm")) permissions = nbt.getInteger("perm");
-		int toCheck = (int) Math.pow(2, mode.ordinal());
-		if (!value)
-			permissions -= permissions & toCheck;
-		else
-			permissions += toCheck & (~permissions);
-		nbt.setInteger("perm", permissions);
-	}
-
-	public static void togglePermission(NBTTagCompound nbt, ScrewdriverMode mode)
-	{
-		TardisOutput.print("TSSI", "Toggling permission " + mode.name());
-		setPermission(nbt, mode, !hasPermission(nbt, mode));
 	}
 
 	public static NBTTagCompound getNewNBT()
@@ -413,57 +242,42 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		return temp;
 	}
 
-	private void switchMode(ItemStack is, World world, EntityPlayer player, ScrewdriverMode mode)
-	{
-		boolean valid = false;
-		boolean first = false;
-		int newValue = mode.ordinal();
-		while (((!valid) && (newValue != 0)) || (!first))
-		{
-			first = true;
-			newValue = (newValue + 1) % ScrewdriverMode.values().length;
-			ScrewdriverMode m = getMode(newValue);
-			valid = isValidMode(player, is, m);
-			TardisOutput.print("TSSI", "V:" + valid);
-		}
-		is.stackTagCompound.setInteger("scMo", newValue);
-		notifyMode(is, player, true);
-	}
-
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
 	{
 		System.out.println("T!");
-		ScrewdriverMode mode = getMode(is);
+		ScrewdriverHelper helper = getHelper(is);
+		if(helper == null) return is;
+		ScrewdriverMode mode = helper.getMode();
 		if (ServerHelper.isServer() && !player.isSneaking())
 		{
-			CoreTileEntity core = getLinkedCore(is);
+			CoreTileEntity core = helper.getLinkedCore();
 			if (mode.equals(ScrewdriverMode.Locate))
 			{
 				if (core != null)
 				{
-					if (WorldHelper.getWorldID(core.getWorldObj()) == WorldHelper.getWorldID(player.worldObj))
+					if (helper.getLinkedDimID() == WorldHelper.getWorldID(player.worldObj))
 					{
-						player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]You are in the TARDIS"));
+						ServerHelper.sendString(player, screwName, "You are in the TARDIS");
 					}
 					else
 					{
-						TardisDataStore ds = Helper.getDataStore(core);
+						TardisDataStore ds = helper.getLinkedDS();
 						if (ds != null)
 						{
 							TardisTileEntity ext = ds.getExterior();
 							if (ext != null)
 							{
 								if (WorldHelper.getWorldID(ext) != player.worldObj.provider.dimensionId)
-									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS does not appear to be in this dimension"));
+									ServerHelper.sendString(player, screwName, "The TARDIS does not appear to be in this dimension");
 								else
-									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS is at [" + ext.xCoord + "," + ext.yCoord + "," + ext.zCoord + "]"));
+									ServerHelper.sendString(player, screwName, "The TARDIS is at [" + ext.xCoord + "," + ext.yCoord + "," + ext.zCoord + "]");
 							}
 						}
 					}
 				}
 				else
-					player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS could not be located"));
+					ServerHelper.sendString(player, screwName, "The TARDIS could not be located");
 			}
 			else if (mode.equals(ScrewdriverMode.Transmat))
 			{
@@ -476,10 +290,10 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				{
 					if (con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX + 1), (int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))
 					{
-						if (core.takeOff(true, player)) player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS inbound"));
+						if (core.takeOff(true, player)) ServerHelper.sendString(player, screwName, "TARDIS inbound");
 					}
 					else
-						player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS recall failed"));
+						ServerHelper.sendString(player, screwName, "TARDIS recall failed");
 				}
 			}
 			else
@@ -492,73 +306,28 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			if (mode.equals(ScrewdriverMode.Dismantle) || mode.equals(ScrewdriverMode.Reconfigure))
 			{
 				if(!rightClickBlock(is, mode, player, world))
-					switchMode(is, world, player, mode);
+					helper.switchMode(player);
 			}
 			else
-				switchMode(is, world, player, mode);
+				helper.switchMode(player);
 		}
+		if(mode != helper.getMode())
+			notifyMode(helper, player, true);
 		return is;
-	}
-
-	private SimpleCoordStore getSCS(ItemStack is)
-	{
-		if(is == null) return null;
-		NBTTagCompound nbt = is.stackTagCompound;
-		if((nbt != null) && nbt.hasKey("linkscs"))
-		{
-			return SimpleCoordStore.readFromNBT(nbt, "linkscs");
-		}
-		return null;
-	}
-
-	private void setSCS(ItemStack is, SimpleCoordStore scs)
-	{
-		if(is == null) return;
-		if(is.stackTagCompound == null) is.stackTagCompound = getNewNBT();
-		if(scs != null)
-			scs.writeToNBT(is.stackTagCompound, "linkscs");
-		else if(is.stackTagCompound.hasKey("linkscs"))
-			is.stackTagCompound.removeTag("linkscs");
-	}
-
-	public boolean link(EntityPlayer pl, ItemStack is, SimpleCoordStore toSCS)
-	{
-		if(is == null) return false;
-		SimpleCoordStore fromSCS = getSCS(is);
-		if(fromSCS == null)
-		{
-			setSCS(is,toSCS);
-			return true;
-		}
-		TileEntity from = fromSCS.getTileEntity();
-		TileEntity to = toSCS.getTileEntity();
-		if(fromSCS.equals(toSCS) && (from instanceof ILinkable))
-		{
-			setSCS(is,null);
-			return ((ILinkable)from).unlink(pl);
-		}
-		if((from instanceof ILinkable) && (to instanceof ILinkable))
-		{
-			Set<SimpleCoordStore> linked = ((ILinkable)from).getLinked();
-			if(linked.contains(toSCS))
-				return ((ILinkable)from).unlink(pl,toSCS);
-			else
-				return ((ILinkable)from).link(pl, toSCS);
-		}
-		return false;
 	}
 
 	@Override
 	public boolean hitEntity(ItemStack is, EntityLivingBase hit, EntityLivingBase hitter)
 	{
 		if (ServerHelper.isClient()) return false;
-		ScrewdriverMode mode = getMode(is);
-		if (ScrewdriverMode.Transmat.equals(mode) && !(hit instanceof EntityPlayer))
+		ScrewdriverHelper helper = getHelper(is);
+		if(helper == null) return false;
+		if ((helper.getMode() == ScrewdriverMode.Transmat) && !(hit instanceof EntityPlayer))
 		{
-			TardisDataStore ds = Helper.getDataStore(getLinkedDim(is));
+			TardisDataStore ds = helper.getLinkedDS();
 			if((ds != null) && ds.hasPermission(hitter, TardisPermission.TRANSMAT))
 			{
-				CoreTileEntity core = getLinkedCore(is);
+				CoreTileEntity core = helper.getLinkedCore();
 				if (core != null) core.transmatEntity(hit);
 				return true;
 			}
@@ -582,10 +351,11 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	@Override
 	public boolean isUsable(ItemStack is, EntityLivingBase player, int x, int y, int z)
 	{
-		if (is != null)
+		ScrewdriverHelper helper = getHelper(is);
+		if (helper != null)
 		{
-			ScrewdriverMode mode = getMode(is);
-			if (mode.equals(ScrewdriverMode.Dismantle) || mode.equals(ScrewdriverMode.Reconfigure)) return true;
+			ScrewdriverMode mode = helper.getMode();
+			if ((mode == ScrewdriverMode.Dismantle) || (mode == ScrewdriverMode.Reconfigure)) return true;
 		}
 		return false;
 	}
@@ -608,9 +378,9 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	@Override
 	public boolean canWrench(EntityPlayer pl, int x, int y, int z)
 	{
-		ItemStack is = pl.getHeldItem();
-		if (is == null) return false;
-		return getMode(is) == ScrewdriverMode.Reconfigure;
+		ScrewdriverHelper helper = getHelper(pl.getHeldItem());
+		if (helper == null) return false;
+		return helper.getMode() == ScrewdriverMode.Reconfigure;
 	}
 
 	@Override
@@ -634,15 +404,25 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	@Override
 	public boolean canUse(EntityPlayer pl, ItemStack is)
 	{
-		if(getMode(is) == ScrewdriverMode.Reconfigure)
+		if(getHelper(is).getMode() == ScrewdriverMode.Reconfigure)
 			return true;
 		return false;
 	}
 
-	@Override
-	public void damageScrewdriver(EntityPlayer pl, ItemStack is)
+	private static ScrewdriverHelper getHelper(ItemStack is)
 	{
+		return ScrewdriverHelperFactory.get(is);
+	}
 
+	@Override
+	public void damageScrewdriver(EntityPlayer pl, ItemStack is){}
+
+	public static ScrewdriverMode getMode(ItemStack is)
+	{
+		ScrewdriverHelper helper = getHelper(is);
+		if(helper != null)
+			return helper.getMode();
+		return null;
 	}
 
 }

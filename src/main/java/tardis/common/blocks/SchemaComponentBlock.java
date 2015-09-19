@@ -14,7 +14,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
@@ -151,7 +151,10 @@ public class SchemaComponentBlock extends AbstractBlock
     			if(w.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
     			{
     				if(TardisMod.screwItem.handleBlock(new SimpleCoordStore(w,x,y-i,z), pl))
+    				{
+    					TardisMod.screwItem.toolUsed(null, pl, x, y, z);
     					return true;
+    				}
     				else
     				{
     					TileEntity te = w.getTileEntity(x, y-i, z);

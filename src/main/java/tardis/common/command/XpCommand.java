@@ -7,7 +7,7 @@ import java.util.List;
 
 import net.minecraft.command.ICommandSender;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 
 public class XpCommand extends AbstractCommand

@@ -21,4 +21,12 @@ public enum ScrewdriverMode
 		c[1] = g;
 		c[2] = b;
 	}
+
+	public static ScrewdriverMode get(int ordinal)
+	{
+		ScrewdriverMode[] values = values();
+		if((ordinal >= 0) && (ordinal < values.length))
+			return values[ordinal];
+		return null;
+	}
 }

@@ -5,8 +5,6 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
@@ -20,14 +18,12 @@ import tardis.common.tileents.components.TardisTEComponent;
 public class ComponentRenderer extends AbstractBlockRenderer
 {
 	TardisBlockModel block = new TardisBlockModel();
-	private static IModelCustom bubble;
 	private static ResourceLocation tex;
 	private static ResourceLocation flatTex;
 	StickModel stick = new StickModel();
 
 	static
 	{
-		bubble = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/bubbledepressed.obj"));
 		tex = new ResourceLocation("tardismod","textures/models/bubbledepressed.png");
 		flatTex = new ResourceLocation("tardismod","textures/models/bubbleOverlay.png");
 	}

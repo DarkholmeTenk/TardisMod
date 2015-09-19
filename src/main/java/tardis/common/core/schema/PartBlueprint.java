@@ -19,11 +19,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.common.blocks.InternalDoorBlock;
-import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.SchemaCoreTileEntity;
 
 public class PartBlueprint
