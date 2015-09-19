@@ -32,6 +32,7 @@ import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
+import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
@@ -825,6 +826,10 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		{
 			TardisPermission p = TardisPermission.get(control - 90);
 			return new String[]{ currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name};
+		}
+		else if((control >= 110) && (control < 120) && (ds != null))
+		{
+			return new String[]{ String.format("Repairing will take %s", TardisDamageSystem.repairCompNames[control-110]) };
 		}
 		else if(control == 130)
 			return new String[]{ String.format("Protection radius: %d blocks", getProtectedSpawnRadius()) };
