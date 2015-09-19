@@ -170,18 +170,22 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 	@Override
 	public boolean canFill(ForgeDirection from, Fluid fluid)
 	{
+		boolean foundEmpty = false;
 		FluidStack[] tanks = getTanks(true);
 		if(tanks != null)
 		{
 			for(int i = 0;i<tanks.length;i++)
 			{
 				if(tanks[i] == null)
-					return true;
+				{
+					foundEmpty = true;
+					continue;
+				}
 				if(tanks[i].getFluid().equals(fluid))
 					return tanks[i].amount < TardisMod.maxFlu;
 			}
 		}
-		return false;
+		return foundEmpty;
 	}
 
 	@Override
