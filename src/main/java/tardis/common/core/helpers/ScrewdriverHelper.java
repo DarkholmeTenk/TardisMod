@@ -84,6 +84,7 @@ public class ScrewdriverHelper
 
 	public void readFromNBT(NBTTagCompound nbt)
 	{
+		if(nbt == null) return;
 		owner = nbt.getString("owner");
 		mode = ScrewdriverMode.get(nbt.getInteger("scMo"));
 		perms = nbt.getInteger("perm");
