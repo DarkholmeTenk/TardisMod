@@ -36,6 +36,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
@@ -44,6 +45,7 @@ import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.events.TardisTakeoffEvent;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
@@ -753,54 +755,76 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return false;
 	}
 
-	public boolean takeOff(boolean forced, EntityPlayer pl)
+	public boolean takeOff(boolean forced, boolean ignoreEvent, EntityPlayer pl)
 	{
 		forcedFlight = forced;
 		if (!inFlight())
 		{
-			ConsoleTileEntity con = getConsole();
-			if (con == null) return false;
-			if (takeOffEnergy(pl))
+			if(!ignoreEvent)
 			{
-				unstableTicks = 0;
-				flightTicks = 0;
-				instability = 0;
-				flightState = FlightState.TAKINGOFF;
-				flightTimer = 0;
-				flightSoundTimer = 0;
-				flightButtonTimer = 0;
-				currentBlockSpeed = 1;
-				updateMaxBlockSpeed();
-				TardisTileEntity te = gDS().getExterior();
-				fast = (te == null) || (con.shouldLand() && isFastLanding());
-				oldExteriorWorld = gDS().exteriorWorld;
-				if (te != null)
+				TardisTakeoffEvent event = new TardisTakeoffEvent(this);
+				MinecraftForge.EVENT_BUS.post(event);
+				if(event.isCanceled())
 				{
-					te.takeoff();
-					calculateFlightDistances();
+					String message = event.getMessage();
+					if(message != null)
+						ServerHelper.sendString(pl, "TARDIS", message);
+					else
+						ServerHelper.sendString(pl, "TARDIS", "The TARDIS refuses to take off");
+					return false;
 				}
-				sendUpdate();
-				return true;
 			}
-			else
+
 			{
-				Integer dDim = getConsoleDim();
-				ServerHelper.sendString(pl, "TARDIS", "Not enough energy to change dimensions");
-				if(dDim != null)
+				ConsoleTileEntity con = getConsole();
+				if (con == null) return false;
+				if (takeOffEnergy(pl))
 				{
-					int enCost = getEnergyCost(dDim, pl);
-					ServerHelper.sendString(pl, "TARDIS", "- At least " + enCost + " energy is required");
-					if(enCost > getMaxArtronEnergy())
-						ServerHelper.sendString(pl, "TARDIS", "- TARDIS Upgrades are required");
+					unstableTicks = 0;
+					flightTicks = 0;
+					instability = 0;
+					flightState = FlightState.TAKINGOFF;
+					flightTimer = 0;
+					flightSoundTimer = 0;
+					flightButtonTimer = 0;
+					currentBlockSpeed = 1;
+					updateMaxBlockSpeed();
+					TardisTileEntity te = gDS().getExterior();
+					fast = (te == null) || (con.shouldLand() && isFastLanding());
+					oldExteriorWorld = gDS().exteriorWorld;
+					if (te != null)
+					{
+						te.takeoff();
+						calculateFlightDistances();
+					}
+					sendUpdate();
+					return true;
+				}
+				else
+				{
+					Integer dDim = getConsoleDim();
+					ServerHelper.sendString(pl, "TARDIS", "Not enough energy to change dimensions");
+					if(dDim != null)
+					{
+						int enCost = getEnergyCost(dDim, pl);
+						ServerHelper.sendString(pl, "TARDIS", "- At least " + enCost + " energy is required");
+						if(enCost > getMaxArtronEnergy())
+							ServerHelper.sendString(pl, "TARDIS", "- TARDIS Upgrades are required");
+					}
 				}
 			}
 		}
 		return false;
 	}
 
+	public boolean takeOff(boolean forced, EntityPlayer pl)
+	{
+		return takeOff(forced, false, pl);
+	}
+
 	public boolean takeOff(EntityPlayer pl)
 	{
-		return takeOff(false, pl);
+		return takeOff(false, false, pl);
 	}
 
 	private boolean isValidPos(World w, int x, int y, int z, int mh)
