@@ -250,17 +250,15 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		ScrewdriverHelper helper = getHelper(is);
 		if(helper == null) return is;
 		ScrewdriverMode mode = helper.getMode();
-		if (ServerHelper.isServer() && !player.isSneaking())
+		if (!ServerHelper.isIntegratedClient() && !player.isSneaking())
 		{
 			CoreTileEntity core = helper.getLinkedCore();
-			if (mode.equals(ScrewdriverMode.Locate))
+			if (mode.equals(ScrewdriverMode.Locate) && ServerHelper.isServer())
 			{
 				if (core != null)
 				{
 					if (helper.getLinkedDimID() == WorldHelper.getWorldID(player.worldObj))
-					{
 						ServerHelper.sendString(player, screwName, "You are in the TARDIS");
-					}
 					else
 					{
 						TardisDataStore ds = helper.getLinkedDS();
@@ -284,7 +282,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			{
 				if (core.hasFunction(TardisFunction.TRANSMAT)) core.transmatEntity(player);
 			}
-			else if (mode.equals(ScrewdriverMode.Recall))
+			else if (mode.equals(ScrewdriverMode.Recall) && ServerHelper.isServer())
 			{
 				ConsoleTileEntity con = core.getConsole();
 				if ((con != null) && !core.inFlight())
@@ -302,7 +300,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				rightClickBlock(is, mode, player, world);
 			}
 		}
-		else if(ServerHelper.isServer() && player.isSneaking())
+		else if(!ServerHelper.isIntegratedClient() && player.isSneaking())
 		{
 			if (mode.equals(ScrewdriverMode.Dismantle) || mode.equals(ScrewdriverMode.Reconfigure))
 			{
@@ -312,7 +310,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			else
 				helper.switchMode(player);
 		}
-		if(mode != helper.getMode())
+		if((mode != helper.getMode()) && ServerHelper.isServer())
 			notifyMode(helper, player, true);
 		if(helper.isDirty())
 			player.inventory.markDirty();
