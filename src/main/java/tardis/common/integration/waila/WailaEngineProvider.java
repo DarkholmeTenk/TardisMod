@@ -43,7 +43,8 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		}
 		addControl(new TwoIntStore(100), "Engine Panel Release","Opens or closes the engine panel");
 		addControl(new TwoIntStore(101,108), "Upgrade Slot","Allows you to insert upgrades");
-		addControl(new TwoIntStore(110,119), "Repair bobble [WIP]");
+		addControl(new TwoIntStore(110), "Master Damage Repair Unit");
+		addControl(new TwoIntStore(111,119), "Damage Repair Unit");
 		addControl(130, "Spawn Protection Lever", "Allows you to vary the radius of spawn prevention");
 	}
 
