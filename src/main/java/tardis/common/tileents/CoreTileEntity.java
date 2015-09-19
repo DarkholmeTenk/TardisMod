@@ -1832,6 +1832,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private static final String[] empty = new String[]{"TARDIS"," Data","  Interface"};
 	private static final String[] takeoff = new String[]{"Taking off"};
 	private static final String[] landing = new String[]{"Landing"};
+	private static final String[] drift = new String[]{"Drifting","in the","!TIME!","!VORTEX!"};
 	public String[] getScreenText()
 	{
 		TardisDataStore ds = gDS();
@@ -1854,6 +1855,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					String.format("Travel: %04.1f%%", (100*distanceTravelled)/distanceToTravel),
 					String.format("ETA: %ds", MathHelper.ceil((distanceToTravel-distanceTravelled)/(currentBlockSpeed*20)))};
 		}
+		if(flightState == FlightState.DRIFT)
+			return drift;
 		if(flightState == FlightState.LANDING)
 			return landing;
 		return empty;
