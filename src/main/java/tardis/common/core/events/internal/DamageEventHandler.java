@@ -7,6 +7,7 @@ import net.minecraftforge.common.MinecraftForge;
 import tardis.api.IControlMatrix;
 import tardis.common.core.Helper;
 import tardis.common.core.events.TardisControlEvent;
+import tardis.common.core.events.TardisTakeoffEvent;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.tileents.ConsoleTileEntity;
@@ -21,6 +22,16 @@ public class DamageEventHandler
 	public void register()
 	{
 		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	@SubscribeEvent
+	public void handleTakeoffEvent(TardisTakeoffEvent event)
+	{
+		CoreTileEntity core = event.getCore();
+		TardisDataStore ds = Helper.getDataStore(core);
+		if(ds == null) return;
+		if(ds.damage.getHull() < TardisDamageSystem.hullToFly)
+			event.cancel(true, "TARDIS has sustained too much damage to take off");
 	}
 
 	@SubscribeEvent
@@ -56,7 +67,7 @@ public class DamageEventHandler
 			return;
 		}
 		int hull = ds.damage.getHull();
-		if(hull > (TardisDamageSystem.maxHull / 2)) return;
+		if(hull > TardisDamageSystem.hullToControl) return;
 		int cid = event.control;
 		if(!core.inFlight())
 		{
