@@ -154,11 +154,6 @@ public class TardisDamageSystem
 	private void damageHull(int amount)
 	{
 		hull = MathHelper.clamp(hull - Math.abs(amount), 0, getMaxHull());
-		if (hull < 30)
-		{
-			CoreTileEntity core = ds.getCore();
-			if ((core != null) && core.inAbortableFlight()) core.attemptToLand();
-		}
 	}
 
 	public void damage(TardisDamageType damageType, double damageAmount)
@@ -341,6 +336,15 @@ public class TardisDamageSystem
 			ds.sendUpdate();
 		}
 		if (ServerHelper.isIntegratedClient()) return;
+		if (hull < hullToFly)
+		{
+			CoreTileEntity core = ds.getCore();
+			if ((core != null) && core.inAbortableFlight())
+			{
+				core.attemptToLand();
+				core.sendUpdate();
+			}
+		}
 		tt = (tt + 1) % 1000000;
 		regenShields();
 	}
