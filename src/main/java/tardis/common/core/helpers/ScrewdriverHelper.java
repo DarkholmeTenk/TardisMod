@@ -1,7 +1,9 @@
 package tardis.common.core.helpers;
 
+import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.network.DataPacket;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -14,6 +16,7 @@ import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.items.extensions.ScrewTypeRegister;
 import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
+import tardis.common.network.TardisPacketHandler;
 import tardis.common.tileents.CoreTileEntity;
 
 public class ScrewdriverHelper
@@ -50,7 +53,6 @@ public class ScrewdriverHelper
 	{
 		this(is.stackTagCompound, _id);
 		itemstack = is;
-		markDirty();
 	}
 
 	private void markDirty()
@@ -60,6 +62,11 @@ public class ScrewdriverHelper
 			if(itemstack.stackTagCompound == null)
 				itemstack.stackTagCompound = new NBTTagCompound();
 			writeToNBT(itemstack.stackTagCompound);
+			if(ServerHelper.isServer())
+			{
+				DataPacket packet = new DataPacket(itemstack.stackTagCompound,TardisPacketHandler.screwFlag);
+				DarkcoreMod.networkChannel.sendToAll(packet);
+			}
 		}
 		dirty = true;
 	}
