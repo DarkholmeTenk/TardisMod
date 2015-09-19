@@ -32,10 +32,11 @@ public class SonicScrewdriverRenderer implements IItemRenderer
 			GL11.glRotated(-65, 1, 0, 0);
 			GL11.glTranslated(0, -0.8, 0.75);
 			GL11.glScaled(1.65, 1.65, 1.65);
+			GL11.glRotated(90, 0, 1, 0);
 		}
 		else if(type.equals(ItemRenderType.EQUIPPED_FIRST_PERSON))
 		{
-			GL11.glRotated(220, 0, 1, 0);
+			GL11.glRotated(40, 0, 1, 0);
 			GL11.glTranslated(0, 0.6, 0);
 			GL11.glScaled(1.65, 1.65, 1.65);
 		}
