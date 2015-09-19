@@ -33,7 +33,6 @@ import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.dimension.damage.TardisDamageSystem;
-import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
 
@@ -482,6 +481,10 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				protectedRadius += dir;
 				protectedRadius = MathHelper.clamp(protectedRadius, 0, maxProtectedRadius);
 			}
+			else if((control == 131) && (screwHelper != null))
+			{
+				screwHelper.cycleScrewdriverType();
+			}
 			else if(isEngineOpen)
 			{
 				if((control >= 101) && (control <= 108))
@@ -501,10 +504,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					int component = control - 110;
 					ds.damage.repairComponent(pl, component);
 				}
-			}
-			else if((control == 131) && (screwHelper != null))
-			{
-				screwHelper.cycleScrewdriverType();
 			}
 		}
 	}
