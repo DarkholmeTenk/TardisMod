@@ -250,7 +250,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		ScrewdriverHelper helper = getHelper(is);
 		if(helper == null) return is;
 		ScrewdriverMode mode = helper.getMode();
-		if (!ServerHelper.isIntegratedClient() && !player.isSneaking())
+		if (ServerHelper.isServer() && !player.isSneaking())
 		{
 			CoreTileEntity core = helper.getLinkedCore();
 			if (mode.equals(ScrewdriverMode.Locate) && ServerHelper.isServer())
@@ -300,7 +300,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				rightClickBlock(is, mode, player, world);
 			}
 		}
-		else if(!ServerHelper.isIntegratedClient() && player.isSneaking())
+		else if(ServerHelper.isServer() && player.isSneaking())
 		{
 			if (mode.equals(ScrewdriverMode.Dismantle) || mode.equals(ScrewdriverMode.Reconfigure))
 			{
