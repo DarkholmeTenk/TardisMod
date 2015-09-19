@@ -69,6 +69,7 @@ import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.items.UpgradeItem;
 import tardis.common.items.extensions.ScrewTypeRegister;
 import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
+import tardis.common.items.extensions.screwtypes.Eighth;
 import tardis.common.items.extensions.screwtypes.Tenth;
 import tardis.common.items.extensions.screwtypes.Twelth;
 import tardis.common.network.TardisPacketHandler;
@@ -223,6 +224,7 @@ public class TardisMod implements IConfigHandlerMod
 	{
 		ScrewTypeRegister.register(defaultType);
 		ScrewTypeRegister.register(new Twelth());
+		ScrewTypeRegister.register(new Eighth());
 	}
 
 	public static void refreshConfigs()
