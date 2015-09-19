@@ -29,7 +29,11 @@ public abstract class AbstractScrewableBlock extends AbstractBlockContainer
 	{
 		boolean cont = false;
 		TileEntity te = w.getTileEntity(x, y, z);
-		if(TardisMod.screwItem.handleBlock(new SimpleCoordStore(w,x,y,z), pl)) return true;
+		if(TardisMod.screwItem.handleBlock(new SimpleCoordStore(w,x,y,z), pl))
+		{
+			TardisMod.screwItem.toolUsed(null, pl, x, y, z);
+			return true;
+		}
 		if(!cont)
 			return super.onBlockActivated(w,x,y,z,pl,s,i,j,k);
 		return true;

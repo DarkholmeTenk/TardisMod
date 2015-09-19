@@ -1,12 +1,17 @@
 package tardis.common.core.helpers;
 
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import tardis.TardisMod;
+import tardis.api.ILinkable;
 import tardis.api.ScrewdriverMode;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.items.extensions.ScrewTypeRegister;
 import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
 import tardis.common.tileents.CoreTileEntity;
@@ -84,7 +89,7 @@ public class ScrewdriverHelper
 		perms = nbt.getInteger("perm");
 		schemaCat = nbt.getString("schemaCat");
 		schema = nbt.getString("schemaName");
-		if(nbt.hasKey("linkscs")) linkSCS = SimpleCoordStore.readFromNBT(nbt, "linkscs");
+		linkSCS = nbt.hasKey("linkscs") ? SimpleCoordStore.readFromNBT(nbt, "linkscs") : null;
 		type = ScrewTypeRegister.get(nbt);
 	}
 
@@ -182,6 +187,29 @@ public class ScrewdriverHelper
 		if(dim != null)
 			return Helper.getDataStore(dim);
 		return null;
+	}
+
+	private ILinkable getILinkable(SimpleCoordStore scs)
+	{
+		if(scs != null)
+		{
+			TileEntity te = scs.getTileEntity();
+			Block b = scs.getBlock();
+			if(te instanceof ILinkable)
+				return (ILinkable) te;
+			if(b instanceof ILinkable)
+				return (ILinkable) b;
+		}
+		return null;
+	}
+
+	/**
+	 * @return the ILinkable associated with the getLinkSCS coords
+	 */
+	public ILinkable getLinkILinkable()
+	{
+		SimpleCoordStore scs = getLinkSCS();
+		return getILinkable(scs);
 	}
 
 	public SimpleCoordStore getLinkSCS()
@@ -284,5 +312,49 @@ public class ScrewdriverHelper
 		index = (index + 1) % length;
 		type = ScrewTypeRegister.get(index);
 		markDirty();
+	}
+
+	private boolean clearLinkSCS(EntityPlayer pl, boolean mess)
+	{
+		if(mess)
+			ServerHelper.sendString(pl, "[Screwdriver]Link destination has been cleared (no linkable object)");
+		setLinkSCS(null);
+		return true;
+	}
+
+	public boolean linkUsed(EntityPlayer pl, SimpleCoordStore usedPos)
+	{
+		ILinkable usedOn = getILinkable(usedPos);
+		SimpleCoordStore linkSCS = getLinkSCS();
+		ILinkable linkLinkable = getLinkILinkable();
+		if((linkSCS != null) && (linkLinkable == null)) //Linkable pos no longer an instance of ILinkable
+			return clearLinkSCS(pl,true);
+		if((linkSCS != null) && linkSCS.equals(usedPos)) //Trying to link the same place as before
+			return clearLinkSCS(pl,true);
+
+		if((usedOn == null) || !usedOn.isLinkable()) //Used on something that isn't ILinkable, so clear the link
+		{
+			if(linkSCS != null)
+				return clearLinkSCS(pl,true);
+			return false;
+		}
+
+		if(linkLinkable == null) //Used on something good but we have no link currently
+		{
+			setLinkSCS(usedPos);
+			ServerHelper.sendString(pl, SonicScrewdriverItem.screwName, "Link destination set to " + usedPos);
+			return true;
+		}
+
+		if((usedOn != null) && (linkLinkable != null))
+		{
+			usedOn.link(pl, usedPos, linkSCS);
+			linkLinkable.link(pl, linkSCS, usedPos);
+			clearLinkSCS(pl, false);
+			ServerHelper.sendString(pl, SonicScrewdriverItem.screwName, "Linked " + linkSCS + " to " + usedPos);
+			return true;
+		}
+
+		return false;
 	}
 }

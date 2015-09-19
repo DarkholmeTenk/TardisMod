@@ -151,7 +151,10 @@ public class SchemaComponentBlock extends AbstractBlock
     			if(w.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
     			{
     				if(TardisMod.screwItem.handleBlock(new SimpleCoordStore(w,x,y-i,z), pl))
+    				{
+    					TardisMod.screwItem.toolUsed(null, pl, x, y, z);
     					return true;
+    				}
     				else
     				{
     					TileEntity te = w.getTileEntity(x, y-i, z);

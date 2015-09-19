@@ -8,7 +8,6 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.block.Block;
@@ -20,12 +19,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.api.ILinkable;
 import tardis.api.IScrewable;
 import tardis.api.IScrewablePrecise;
 import tardis.api.ITDismantleable;
@@ -57,6 +54,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 {
 	public static final int	maxPerms	= 0xFF;
 	public static final int	minPerms	= 0xCD;
+	public static final String screwName = "Sonic Screwdriver";
 
 	public SonicScrewdriverItem()
 	{
@@ -126,10 +124,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		{
 			if (o instanceof String)
 			{
-				ChatComponentText c = new ChatComponentText("");
-				c.getChatStyle().setColor(EnumChatFormatting.AQUA);
-				c.appendText("[Sonic Screwdriver]" + (String) o);
-				player.addChatMessage(c);
+				ServerHelper.sendString(player, screwName, (String) o, EnumChatFormatting.AQUA);
 			}
 		}
 	}
@@ -191,16 +186,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		}
 		else if(mode == ScrewdriverMode.Link)
 		{
-			if(te instanceof ILinkable)
-			{
-				if(link(pl, helper, pos))
-				{
-					toolUsed(is,pl,pos.x,pos.y,pos.z);
-				}
-			}
-			else
-				helper.setLinkSCS(null);
-			return true;
+			return helper.linkUsed(pl, pos);
 		}
 		else if(mode == ScrewdriverMode.Reconfigure)
 		{
@@ -240,7 +226,10 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			if (hitPos == null) return false;
 			System.out.println("T");
 			SimpleCoordStore pos = new SimpleCoordStore(w,hitPos);
-			return handleBlock(pos, player);
+			boolean r = handleBlock(pos, player);
+			if(r)
+				toolUsed(is, player, pos.x, pos.y, pos.z);
+			return r;
 		}
 		return false;
 	}
@@ -269,7 +258,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				{
 					if (helper.getLinkedDimID() == WorldHelper.getWorldID(player.worldObj))
 					{
-						player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]You are in the TARDIS"));
+						ServerHelper.sendString(player, screwName, "You are in the TARDIS");
 					}
 					else
 					{
@@ -280,15 +269,15 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 							if (ext != null)
 							{
 								if (WorldHelper.getWorldID(ext) != player.worldObj.provider.dimensionId)
-									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS does not appear to be in this dimension"));
+									ServerHelper.sendString(player, screwName, "The TARDIS does not appear to be in this dimension");
 								else
-									player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS is at [" + ext.xCoord + "," + ext.yCoord + "," + ext.zCoord + "]"));
+									ServerHelper.sendString(player, screwName, "The TARDIS is at [" + ext.xCoord + "," + ext.yCoord + "," + ext.zCoord + "]");
 							}
 						}
 					}
 				}
 				else
-					player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]The TARDIS could not be located"));
+					ServerHelper.sendString(player, screwName, "The TARDIS could not be located");
 			}
 			else if (mode.equals(ScrewdriverMode.Transmat))
 			{
@@ -301,10 +290,10 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				{
 					if (con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX + 1), (int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))
 					{
-						if (core.takeOff(true, player)) player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS inbound"));
+						if (core.takeOff(true, player)) ServerHelper.sendString(player, screwName, "TARDIS inbound");
 					}
 					else
-						player.addChatMessage(new ChatComponentText("[Sonic Screwdriver]TARDIS recall failed"));
+						ServerHelper.sendString(player, screwName, "TARDIS recall failed");
 				}
 			}
 			else
@@ -325,33 +314,6 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		if(mode != helper.getMode())
 			notifyMode(helper, player, true);
 		return is;
-	}
-
-	public boolean link(EntityPlayer pl, ScrewdriverHelper helper, SimpleCoordStore toSCS)
-	{
-		if(helper == null) return false;
-		SimpleCoordStore fromSCS = helper.getLinkSCS();
-		if(fromSCS == null)
-		{
-			helper.setLinkSCS(toSCS);
-			return true;
-		}
-		TileEntity from = fromSCS.getTileEntity();
-		TileEntity to = toSCS.getTileEntity();
-		if(fromSCS.equals(toSCS) && (from instanceof ILinkable))
-		{
-			helper.setLinkSCS(null);
-			return ((ILinkable)from).unlink(pl);
-		}
-		if((from instanceof ILinkable) && (to instanceof ILinkable))
-		{
-			Set<SimpleCoordStore> linked = ((ILinkable)from).getLinked();
-			if(linked.contains(toSCS))
-				return ((ILinkable)from).unlink(pl,toSCS);
-			else
-				return ((ILinkable)from).link(pl, toSCS);
-		}
-		return false;
 	}
 
 	@Override
