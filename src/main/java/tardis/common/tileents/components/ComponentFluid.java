@@ -170,18 +170,22 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 	@Override
 	public boolean canFill(ForgeDirection from, Fluid fluid)
 	{
+		boolean foundEmpty = false;
 		FluidStack[] tanks = getTanks(true);
 		if(tanks != null)
 		{
 			for(int i = 0;i<tanks.length;i++)
 			{
 				if(tanks[i] == null)
-					return true;
+				{
+					foundEmpty = true;
+					continue;
+				}
 				if(tanks[i].getFluid().equals(fluid))
 					return tanks[i].amount < TardisMod.maxFlu;
 			}
 		}
-		return false;
+		return foundEmpty;
 	}
 
 	@Override
@@ -243,7 +247,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 		TardisDataStore ds = getDatastore();
 		if((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
 		{
-			currentTank = MathHelper.cycle(currentTank + (player.isSneaking() ? -1 : 1), -1, TardisMod.numTanks);
+			currentTank = MathHelper.cycle(currentTank + (player.isSneaking() ? -1 : 1), -1, TardisMod.numTanks-1);
 			if(currentTank == -1)
 				ServerHelper.sendString(player, "Fluid interface configured to all tanks");
 			else

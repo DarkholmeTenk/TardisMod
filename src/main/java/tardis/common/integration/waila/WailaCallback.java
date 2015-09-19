@@ -7,12 +7,15 @@ import tardis.TardisMod;
 import tardis.common.blocks.BatteryBlock;
 import tardis.common.blocks.EngineBlock;
 import tardis.common.blocks.SchemaComponentBlock;
+import tardis.common.blocks.TardisBlock;
+import tardis.common.blocks.TopBlock;
 import tardis.common.core.TardisOutput;
 
 public class WailaCallback {
 	private static WailaConsoleProvider consoleProv = new WailaConsoleProvider();
 	private static WailaEngineProvider engineProv = new WailaEngineProvider();
 	private static WailaArtronProvider artronProv = new WailaArtronProvider();
+	private static WailaTardisProvider tardisProv = new WailaTardisProvider();
 
 	private static void registerProvider(IWailaRegistrar registrar,
 			IWailaDataProvider prov, Class block) {
@@ -28,6 +31,8 @@ public class WailaCallback {
 		registerProvider(registrar,engineProv,SchemaComponentBlock.class);
 		registerProvider(registrar,engineProv,EngineBlock.class);
 		registerProvider(registrar,artronProv,BatteryBlock.class);
+		registerProvider(registrar,tardisProv,TardisBlock.class);
+		registerProvider(registrar,tardisProv,TopBlock.class);
 	}
 
 	public static AbstractWailaProvider getProvider(Block b, int meta)
@@ -45,6 +50,10 @@ public class WailaCallback {
 			return engineProv;
 		else if(b == TardisMod.battery)
 			return artronProv;
+		else if(b == TardisMod.tardisBlock)
+			return tardisProv;
+		else if(b == TardisMod.tardisTopBlock)
+			return tardisProv;
 		return null;
 	}
 }

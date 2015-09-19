@@ -340,9 +340,13 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public void readTransmittable(NBTTagCompound nbt)
 	{
-		if (TardisMod.tcInstalled) aspectList.readFromNBT(nbt, "aspectList");
+		if(TardisMod.tcInstalled)
+			aspectList.readFromNBT(nbt, "aspectList");
 		tardisLevel = nbt.getInteger("tL");
 		tardisXP = nbt.getDouble("txp");
+		int i = 0;
+		permissionList.clear();
+		while(nbt.hasKey("permO"+i))
 		{
 			int i = 0;
 			while (nbt.hasKey("permO" + i))
