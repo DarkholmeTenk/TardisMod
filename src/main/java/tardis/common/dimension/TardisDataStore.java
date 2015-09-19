@@ -472,7 +472,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		}
 	}
 
-	private ConsoleTileEntity getConsole()
+	public ConsoleTileEntity getConsole()
 	{
 		return Helper.getTardisConsole(dimID);
 	}
@@ -482,7 +482,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		return Helper.getTardisEngine(dimID);
 	}
 
-	private CoreTileEntity getCore()
+	public CoreTileEntity getCore()
 	{
 		return Helper.getTardisCore(dimID);
 	}
