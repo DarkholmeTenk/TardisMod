@@ -8,8 +8,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import tardis.api.IControlMatrix;
-import tardis.client.renderer.model.SonicScrewdriverLightModel;
-import tardis.client.renderer.model.SonicScrewdriverModel;
 import tardis.client.renderer.model.console.ButtonModel;
 import tardis.client.renderer.model.console.GaugeDisplayModel;
 import tardis.client.renderer.model.console.GaugeNeedleModel;
@@ -27,8 +25,6 @@ import tardis.common.core.helpers.ScrewdriverHelper;
 
 public class ControlRenderer
 {
-	private static SonicScrewdriverModel screw = new SonicScrewdriverModel();
-	private static SonicScrewdriverLightModel screwLight = new SonicScrewdriverLightModel();
 	private static SonicScrewdriverHolderModel holder = new SonicScrewdriverHolderModel();
 	private static GaugeDisplayModel gaugeDisplay = new GaugeDisplayModel();
 	private static GaugeNeedleModel gaugeNeedle = new GaugeNeedleModel();
