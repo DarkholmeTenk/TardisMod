@@ -1,6 +1,7 @@
 package tardis.common.dimension.damage;
 
 import io.darkcraft.darkcore.mod.config.ConfigFile;
+import io.darkcraft.darkcore.mod.datastore.Pair;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
@@ -8,10 +9,14 @@ import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.extensions.CraftingComponentType;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 
 /**
@@ -30,6 +35,8 @@ public class TardisDamageSystem
 	public static double		explosionDamageMult	= 50;
 	public static double		missedDamageMult	= 10;
 	public static double		combatDamageMult	= 30;
+	public static int			hullToFly			= 30;
+	public static int			hullToControl		= 50;
 	private static Random		rand				= new Random();
 
 	public static void refreshConfigs()
@@ -40,30 +47,69 @@ public class TardisDamageSystem
 		maxShieldsInc = config.getInt("Max shields increase", 500, "How much a level of max shields increases the amount of shielding");
 
 		explosionDamageMult = config.getDouble("explosionDamageMult", 50, "Explosion damage is multiplied by this number before being applied to a TARDIS");
-		// missedDamageMult = config.getDouble("missedDamageMult", 10, "Damage from missing a blue control is multiplied by this number before being applied to a TARDIS");
+		missedDamageMult = config.getDouble("missedDamageMult", 10, "Damage from missing a blue control is multiplied by this number before being applied to a TARDIS");
+
+		hullToFly = config.getInt("Hull To Fly", 300, "Minimum hull needed for the TARDIS to be in flight");
+		hullToControl = config.getInt("Hull to Control", 500, "Hull needed for console controls to respond");
 	}
 
 	// *******************
 	// ACTUAL OBJECT STUFF
 	// *******************
-	private final TardisDataStore	ds;
-	private final int				dimID;
+	private final TardisDataStore			ds;
+	private final int						dimID;
 
-	private int						tt	= 0;
-	private int						shields;
-	private int						hull;
-	private int						prevHull;
-	public static final int 		numBreakables = 10;
-	private boolean[]				breakables = new boolean[numBreakables];
+	private int								tt				= 0;
+	private int								shields;
+	private int								hull;
+	private int								prevHull;
+	public static final int					numBreakables	= 10;
+	private boolean[]						breakables		= new boolean[numBreakables];
+	private static Pair<Item, Integer>[]	repairComps;
+	public static String[]					repairCompNames;
+
+	private void fillInRepair()
+	{
+		repairComps = new Pair[numBreakables];
+		repairCompNames = new String[numBreakables];
+
+		Pair<Item, Integer> kontronPair = new Pair(TardisMod.craftingComponentItem, CraftingComponentType.KONTRON.ordinal());
+		Pair<Item, Integer> dalek = new Pair(TardisMod.craftingComponentItem, CraftingComponentType.DALEKANIUM.ordinal());
+		Pair<Item, Integer> chrono = new Pair(TardisMod.craftingComponentItem, CraftingComponentType.CHRONOSTEEL.ordinal());
+		repairComps[0] = kontronPair;
+		repairComps[1] = dalek;
+		repairComps[2] = dalek;
+		repairComps[4] = dalek;
+		repairComps[5] = dalek;
+		for(int i = 1; i< (numBreakables - 2); i++)
+			if(repairComps[i] == null)
+				repairComps[i] = chrono;
+		for(int i = numBreakables-2; i < numBreakables; i++)
+		{
+			repairComps[i] = null;
+			repairCompNames[i] = "nothing";
+		}
+		String kontronStr = "Kontron";
+		String dalekStr = "Dalekanium";
+		String chronoStr = "Chronosteel";
+		for(int i = 0; i < numBreakables; i++)
+		{
+			if(repairComps[i] == kontronPair) repairCompNames[i] = kontronStr;
+			else if(repairComps[i] == dalek) repairCompNames[i] = dalekStr;
+			else if(repairComps[i] == chrono) repairCompNames[i] = chronoStr;
+		}
+	}
 
 	public TardisDamageSystem(TardisDataStore parent)
 	{
+		//if(repairComps == null)
+			fillInRepair();
 		ds = parent;
 		dimID = ds.getDimension();
 		shields = getMaxShields();
 		hull = getMaxHull();
 		prevHull = hull;
-		for(int i = 0; i < breakables.length; i++)
+		for (int i = 0; i < breakables.length; i++)
 			breakables[i] = false;
 	}
 
@@ -107,7 +153,12 @@ public class TardisDamageSystem
 
 	private void damageHull(int amount)
 	{
-		hull = MathHelper.clamp(hull-Math.abs(amount), 0, getMaxHull());
+		hull = MathHelper.clamp(hull - Math.abs(amount), 0, getMaxHull());
+		if (hull < 30)
+		{
+			CoreTileEntity core = ds.getCore();
+			if ((core != null) && core.inAbortableFlight()) core.attemptToLand();
+		}
 	}
 
 	public void damage(TardisDamageType damageType, double damageAmount)
@@ -130,9 +181,9 @@ public class TardisDamageSystem
 		if (amount == 0) return;
 		ds.markDirty();
 		int damage = handleDamageReductions(damageType, amount);
-		//System.out.println("[TDS] Damage amount: " + amount + ">" + damage);
+		// System.out.println("[TDS] Damage amount: " + amount + ">" + damage);
 		int hullDamage = damageShields(damage);
-		//if (ServerHelper.isServer()) System.out.println("Newshields:" + shields);
+		// if (ServerHelper.isServer()) System.out.println("Newshields:" + shields);
 		if (hullDamage == 0) return;
 		damageHull(hullDamage);
 	}
@@ -145,29 +196,61 @@ public class TardisDamageSystem
 	private void breakComponent()
 	{
 		int count = 0;
-		while(count++ < 5)
+		while (count++ < 5)
 		{
-			int slot = rand.nextInt(numBreakables);
-			if(!breakables[slot])
+			int slot = rand.nextInt(numBreakables - 1) + 1;
+			if (!breakables[slot])
 			{
 				breakables[slot] = true;
 				playBreakSound();
 				return;
 			}
 		}
-		for(int i = 0; i < numBreakables; i++)
-			if(!breakables[i])
+		for (int i = 1; i <= numBreakables; i++)
+			if (!breakables[i%numBreakables])
 			{
-				breakables[i] = true;
+				breakables[i%numBreakables] = true;
 				playBreakSound();
 				return;
 			}
 	}
 
+	private boolean match(ItemStack is, int slot)
+	{
+		Pair<Item, Integer> pair = repairComps[slot];
+		if(pair == null) return true;
+		if(is == null) return false;
+		if((is.getItem() == pair.a) && (is.getItemDamage() == pair.b)) return true;
+		return false;
+	}
+
+	private boolean isHoldingRepairComponent(EntityPlayer pl, int component)
+	{
+		if ((component < 0) || (component >= numBreakables)) return false;
+		if ((component != 0) && isComponentBroken(0))
+		{
+			ServerHelper.sendString(pl, "Engine", "The central damage unit must be repaired first");
+			return false;
+		}
+		ItemStack is = pl.getHeldItem();
+		if(match(is, component))
+		{
+			if((repairComps[component] != null) && !pl.capabilities.isCreativeMode) is.stackSize--;
+			return true;
+		}
+		else
+		{
+			String m = repairCompNames[component];
+			ServerHelper.sendString(pl, "Engine", "Repairing this damage unit will take " + m);
+		}
+		return false;
+	}
+
 	public boolean repairComponent(EntityPlayer pl, int component)
 	{
-		if((component < 0) || (component >= numBreakables)) return false;
-		if(!breakables[component]) return false;
+		if ((component < 0) || (component >= numBreakables)) return false;
+		if (!breakables[component]) return false;
+		if (!isHoldingRepairComponent(pl, component)) return false;
 		breakables[component] = false;
 		hull = hull + (getMaxHull() / numBreakables);
 		hull = MathHelper.clamp(hull, 0, getMaxHull());
@@ -177,7 +260,7 @@ public class TardisDamageSystem
 
 	public boolean isComponentBroken(int component)
 	{
-		if((component < 0) || (component >= numBreakables)) return false;
+		if ((component < 0) || (component >= numBreakables)) return false;
 		return breakables[component];
 	}
 
@@ -208,8 +291,8 @@ public class TardisDamageSystem
 		nbt.setInteger("hull", hull);
 		nbt.setInteger("prevHull", prevHull);
 		nbt.setInteger("shields", shields);
-		for(int i = 0; i < numBreakables; i++)
-			nbt.setBoolean("b"+i, breakables[i]);
+		for (int i = 0; i < numBreakables; i++)
+			nbt.setBoolean("b" + i, breakables[i]);
 	}
 
 	public void readFromNBT(NBTTagCompound nbt)
@@ -219,9 +302,8 @@ public class TardisDamageSystem
 			hull = nbt.getInteger("hull");
 			prevHull = nbt.getInteger("prevHull");
 			shields = nbt.getInteger("shields");
-			for(int i = 0; i<numBreakables; i++)
-				if(nbt.hasKey("b"+i))
-					breakables[i] = nbt.getBoolean("b"+i);
+			for (int i = 0; i < numBreakables; i++)
+				if (nbt.hasKey("b" + i)) breakables[i] = nbt.getBoolean("b" + i);
 		}
 	}
 
@@ -249,11 +331,11 @@ public class TardisDamageSystem
 
 	public synchronized void tick()
 	{
-		if(prevHull != hull)
+		if (prevHull != hull)
 		{
 			int prevHullClass = getHullClass(prevHull);
 			int currentClass = getHullClass(hull);
-			while(currentClass < prevHullClass--)
+			while (currentClass < prevHullClass--)
 				breakComponent();
 			prevHull = hull;
 			ds.sendUpdate();
