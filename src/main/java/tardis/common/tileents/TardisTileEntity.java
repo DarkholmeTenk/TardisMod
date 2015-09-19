@@ -143,6 +143,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	private void playLandSound()
 	{
 		if(ServerHelper.isClient())return;
+
 		if(!landFast)
 			SoundHelper.playSound(this, "tardismod:landing", 1);
 		else
@@ -248,18 +249,6 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		if((linkedDimension != null) && (linkedDimension != 0))
 			return Helper.getTardisCore(linkedDimension);
 		return null;
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound tag)
-	{
-		super.readFromNBT(tag);
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound tag)
-	{
-		super.writeToNBT(tag);
 	}
 
 	@Override
