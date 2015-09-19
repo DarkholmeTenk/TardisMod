@@ -69,6 +69,8 @@ public class ScrewdriverHelper
 	protected void setItemStack(ItemStack is)
 	{
 		itemstack = is;
+		if((is != null) && (is.stackTagCompound != null))
+			readFromNBT(is.stackTagCompound);
 		markDirty();
 	}
 

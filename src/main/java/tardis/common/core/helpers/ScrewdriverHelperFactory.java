@@ -62,6 +62,7 @@ public class ScrewdriverHelperFactory
 		if(helperMap.containsKey(id))
 		{
 			HalfMutablePair<Integer, ScrewdriverHelper> dataBundle = helperMap.get(id);
+			dataBundle.b.readFromNBT(nbt);
 			return dataBundle.b;
 		}
 		else
