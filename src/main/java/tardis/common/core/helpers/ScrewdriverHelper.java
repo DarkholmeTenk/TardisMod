@@ -124,6 +124,11 @@ public class ScrewdriverHelper
 		else if(nbt.hasKey("linkscs"))
 			nbt.removeTag("linkscs");
 		type.writeToNBT(nbt);
+		if(schema != null)
+		{
+			nbt.setString("schemaName", schema);
+			nbt.setString("schemaCat", schemaCat);
+		}
 	}
 
 	public void writeToNBT(NBTTagCompound nbt, String name)
