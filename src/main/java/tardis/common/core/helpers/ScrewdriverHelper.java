@@ -107,8 +107,8 @@ public class ScrewdriverHelper
 		owner = nbt.getString("owner");
 		mode = ScrewdriverMode.get(nbt.getInteger("scMo"));
 		perms = nbt.getInteger("perm");
-		schemaCat = nbt.getString("schemaCat");
-		schema = nbt.getString("schemaName");
+		schemaCat = nbt.hasKey("schemaCat") ? nbt.getString("schemaCat") : null;
+		schema = nbt.hasKey("schemaName") ? nbt.getString("schemaName") : null;
 		linkSCS = nbt.hasKey("linkscs") ? SimpleCoordStore.readFromNBT(nbt, "linkscs") : null;
 		type = ScrewTypeRegister.get(nbt);
 	}
@@ -127,7 +127,8 @@ public class ScrewdriverHelper
 		if(schema != null)
 		{
 			nbt.setString("schemaName", schema);
-			nbt.setString("schemaCat", schemaCat);
+			if(schemaCat != null)
+				nbt.setString("schemaCat", schemaCat);
 		}
 	}
 
