@@ -372,6 +372,7 @@ public class TardisMod implements IConfigHandlerMod
 		summonerBlock.initRecipes();
 		upgradeItem.initRecipes();
 		nameTag.initRecipes();
+		CraftableSimBlock.initStaticRecipes();
 	}
 
 	@EventHandler
