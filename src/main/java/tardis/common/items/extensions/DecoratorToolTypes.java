@@ -6,6 +6,7 @@ import io.darkcraft.darkcore.mod.interfaces.IBlockIteratorCondition;
 import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
 import tardis.TardisMod;
 
 public enum DecoratorToolTypes
@@ -37,7 +38,7 @@ public enum DecoratorToolTypes
 
 	public String getName()
 	{
-		return name;
+		return StatCollector.translateToLocal(is.getUnlocalizedName()+".name");
 	}
 
 	public ItemStack getIS()
