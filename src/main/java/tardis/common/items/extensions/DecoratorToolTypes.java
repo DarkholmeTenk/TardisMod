@@ -13,6 +13,8 @@ public enum DecoratorToolTypes
 {
 	WALL("Wall",TardisMod.colorableWallBlock),
 	FLOOR("Floor",TardisMod.colorableFloorBlock),
+	BRICK("Brick",TardisMod.colorableBrickBlock),
+	PLANK("Plank",TardisMod.colorablePlankBlock),
 	GLASS("Glass",TardisMod.decoTransBlock,0),
 	ROUNDEL("Roundel",TardisMod.colorableRoundelBlock),
 	WALKWAY("Walkway",TardisMod.decoBlock,0),
