@@ -24,7 +24,7 @@ public class ColorableBlock extends AbstractBlock implements IColorableBlock
 	@Override
 	public void initData()
 	{
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(TardisMod.lightBlocks || getUnlocalizedNameForIcon().contains("Roundel") ? 1 : 0);
 	}
 	@Override
 	public void initRecipes()
