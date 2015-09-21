@@ -61,7 +61,7 @@ public class DecoratingTool extends AbstractItem
 	private void playSound(EntityPlayer player)
 	{
 		if(ServerHelper.isServer())
-			SoundHelper.playSound(player, "decorate", 1, 1);
+			SoundHelper.playSound(player, "tardismod:decorate", 1, 1);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class DecoratingTool extends AbstractItem
 		if(pos != null)
 		{
 			DecoratorToolTypes c = DecoratorToolTypes.getMatching(pos);
-			if(c != null)
+			if((c != null) && (t != c))
 			{
 				playSound(player);
 				t.set(pos);
@@ -140,7 +140,7 @@ public class DecoratingTool extends AbstractItem
 		if(pos != null)
 		{
 			DecoratorToolTypes c = DecoratorToolTypes.getMatching(pos);
-			if(c != null)
+			if((c != null) && (c != t))
 			{
 				playSound(pl);
 				BlockIterator iter = new BlockIterator(pos, c.getCondition(), false, TardisMod.decoratorRange);
