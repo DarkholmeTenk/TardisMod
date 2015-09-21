@@ -15,11 +15,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.TardisMod;
 import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.extensions.DecoratorToolTypes;
+import tardis.common.tileents.extensions.CraftingComponentType;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class DecoratingTool extends AbstractItem
 {
@@ -34,8 +37,9 @@ public class DecoratingTool extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
-		// TODO Auto-generated method stub
-
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,1), false, "iic", "i  ","ic ",
+				'i', "ingotIron",
+				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 	}
 
 	@Override
