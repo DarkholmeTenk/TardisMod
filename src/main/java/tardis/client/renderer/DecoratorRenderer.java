@@ -62,6 +62,7 @@ public class DecoratorRenderer implements IItemRenderer
 		int rotTime = 6000;
 		int rot = (int) (time % rotTime) / (rotTime / 360);
 		RenderManager.instance.renderEntityWithPosYaw(ent, 0, 0, 0, 0, rot);
+		GL11.glColor3d(1, 1, 1);
 		GL11.glPopMatrix();
 	}
 
@@ -96,7 +97,8 @@ public class DecoratorRenderer implements IItemRenderer
 				GL11.glDisable(GL11.GL_BLEND);
 			GL11.glPopMatrix();
 		GL11.glPopMatrix();
-		renderBlock(item);
+		if(type != ItemRenderType.INVENTORY)
+			renderBlock(item);
 		GL11.glPopMatrix();
 	}
 }
