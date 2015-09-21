@@ -128,7 +128,7 @@ public class DecoratingTool extends AbstractItem
 			DecoratorToolTypes c = DecoratorToolTypes.getMatching(pos);
 			if(c != null)
 			{
-				BlockIterator iter = new BlockIterator(pos, c.getCondition(), false, 5);
+				BlockIterator iter = new BlockIterator(pos, c.getCondition(), false, TardisMod.decoratorRange);
 				while(iter.hasNext())
 				{
 					SimpleCoordStore next = iter.next();

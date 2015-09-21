@@ -101,6 +101,7 @@ public class TardisMod implements IConfigHandlerMod
 	@Instance
 	public static TardisMod					i;
 	public static final String				modName				= "TardisMod";
+	public static int						decoratorRange		= 6;
 	public static boolean					inited				= false;
 
 	@SidedProxy(clientSide = "tardis.client.TardisClientProxy", serverSide = "tardis.common.TardisProxy")
@@ -280,6 +281,7 @@ public class TardisMod implements IConfigHandlerMod
 		maxEachAspect = miscConfig.getInt("max aspect", 32, "The maximum amount of each thaumcraft aspect that can be stored");
 		maxEachAspectInc = miscConfig.getInt("max aspect inc", 16, "The amount of aspect storage gained per level");
 
+		decoratorRange = modConfig.getInt("decorator range", 6, "The maximum range the decorator can work to");
 		numDirtRecipe = MathHelper.clamp(miscConfig.getInt("Number of temporal dirt to produce per recipe", 2, "Min 1, max 64"),1,64);
 
 		AbstractComponent.refreshConfigs();
