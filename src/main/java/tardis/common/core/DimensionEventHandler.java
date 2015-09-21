@@ -18,6 +18,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import tardis.TardisMod;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
@@ -217,5 +218,16 @@ public class DimensionEventHandler
 			}
 			catch(NullPointerException e){}
 		}
+	}
+
+	@SubscribeEvent
+	public void handleBlockBreak(BreakEvent event)
+	{
+		EntityPlayer pl = event.getPlayer();
+		if(pl == null) return;
+		ItemStack is = pl.getHeldItem();
+		if(is == null) return;
+		Item i = is.getItem();
+		if(i == TardisMod.decoTool) event.setCanceled(true);
 	}
 }

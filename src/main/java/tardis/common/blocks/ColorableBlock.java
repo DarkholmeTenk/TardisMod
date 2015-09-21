@@ -1,7 +1,6 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,27 +12,20 @@ import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 
-public class ColorableWallBlock extends AbstractBlock implements IColorableBlock
+public class ColorableBlock extends AbstractBlock implements IColorableBlock
 {
 
-	public ColorableWallBlock()
+	public ColorableBlock(String name)
 	{
 		super(TardisMod.modName);
-	}
-
-	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return ColorableWallItemBlock.class;
+		setBlockName(name);
 	}
 
 	@Override
 	public void initData()
 	{
-		setBlockName("ColorableWall");
 		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
 	}
-
 	@Override
 	public void initRecipes()
 	{

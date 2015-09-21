@@ -20,13 +20,12 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
 import tardis.common.blocks.BatteryBlock;
-import tardis.common.blocks.ColorableFloorBlock;
+import tardis.common.blocks.ColorableBlock;
 import tardis.common.blocks.ColorableOpenRoundelBlock;
-import tardis.common.blocks.ColorableRoundelBlock;
-import tardis.common.blocks.ColorableWallBlock;
 import tardis.common.blocks.ComponentBlock;
 import tardis.common.blocks.ConsoleBlock;
 import tardis.common.blocks.CoreBlock;
+import tardis.common.blocks.CraftableCSimBlock;
 import tardis.common.blocks.CraftableSimBlock;
 import tardis.common.blocks.DecoBlock;
 import tardis.common.blocks.DecoTransBlock;
@@ -62,6 +61,7 @@ import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
+import tardis.common.items.DecoratingTool;
 import tardis.common.items.KeyItem;
 import tardis.common.items.ManualItem;
 import tardis.common.items.NameTagItem;
@@ -152,13 +152,18 @@ public class TardisMod implements IConfigHandlerMod
 
 	public static AbstractBlock				colorableWallBlock;
 	public static AbstractBlock				colorableFloorBlock;
+	public static AbstractBlock				colorableBrickBlock;
+	public static AbstractBlock				colorablePlankBlock;
 	public static AbstractBlock				colorableRoundelBlock;
 	public static AbstractBlock				colorableOpenRoundelBlock;
 
 	public static AbstractBlock				wallSimulacrumBlock;
 	public static AbstractBlock				floorSimulacrumBlock;
 	public static AbstractBlock				glassSimulacrumBlock;
+	public static AbstractBlock				brickSimulacrumBlock;
+	public static AbstractBlock				plankSimulacrumBlock;
 
+	public static AbstractBlock				decoSimulacrumBlock;
 	public static LabBlock					labBlock;
 
 	public static AbstractItem				schemaItem;
@@ -169,6 +174,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static ManualItem				manualItem;
 	public static UpgradeItem				upgradeItem;
 	public static NameTagItem				nameTag;
+	public static AbstractItem				decoTool;
 
 	public static boolean					tcInstalled			= false;
 
@@ -200,7 +206,6 @@ public class TardisMod implements IConfigHandlerMod
 	public static boolean					deleteDisconnected	= true;
 
 	public static AbstractScrewdriverType	defaultType			= new Tenth();
-
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
 	{
@@ -332,17 +337,22 @@ public class TardisMod implements IConfigHandlerMod
 		gravityLift = new GravityLiftBlock().register();
 		forcefield = new ForceFieldBlock(visibleForceField).register();
 		battery = new BatteryBlock().register();
-		colorableWallBlock = new ColorableWallBlock().register();
-		colorableFloorBlock = new ColorableFloorBlock().register();
-		colorableRoundelBlock = new ColorableRoundelBlock().register();
+		colorableWallBlock = new ColorableBlock("ColorableWall").register();
+		colorableFloorBlock = new ColorableBlock("ColorableFloor").register();
+		colorableBrickBlock = new ColorableBlock("ColorableBrick").register();
+		colorablePlankBlock = new ColorableBlock("ColorablePlank").register();
+		colorableRoundelBlock = new ColorableBlock("ColorableRoundel").register();
 		colorableOpenRoundelBlock = new ColorableOpenRoundelBlock().register();
 		manualBlock = new ManualBlock().register();
 		manualHelperBlock = new ManualHelperBlock().register();
 		stairBlock = new StairBlock().register();
 		summonerBlock = new SummonerBlock().register();
-		wallSimulacrumBlock = new CraftableSimBlock(colorableWallBlock).register();
-		floorSimulacrumBlock = new CraftableSimBlock(colorableFloorBlock).register();
-		//glassSimulacrumBlock = new CraftableSimBlock(colorableWallBlock).register();
+		wallSimulacrumBlock = new CraftableCSimBlock(colorableWallBlock).register();
+		floorSimulacrumBlock = new CraftableCSimBlock(colorableFloorBlock).register();
+		brickSimulacrumBlock = new CraftableCSimBlock(colorableBrickBlock).register();
+		plankSimulacrumBlock = new CraftableCSimBlock(colorablePlankBlock).register();
+		glassSimulacrumBlock = new CraftableSimBlock(decoTransBlock).register();
+		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
 	}
 
 	private void initItems()
@@ -355,6 +365,7 @@ public class TardisMod implements IConfigHandlerMod
 		manualItem = (ManualItem) new ManualItem().register();
 		upgradeItem = (UpgradeItem) new UpgradeItem().register();
 		nameTag = (NameTagItem) new NameTagItem().register();
+		decoTool = new DecoratingTool().register();
 	}
 
 	private void initRecipes()
@@ -372,6 +383,7 @@ public class TardisMod implements IConfigHandlerMod
 		summonerBlock.initRecipes();
 		upgradeItem.initRecipes();
 		nameTag.initRecipes();
+		decoTool.initRecipes();
 		CraftableSimBlock.initStaticRecipes();
 	}
 

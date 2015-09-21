@@ -12,6 +12,7 @@ import java.util.List;
 import mrtjp.projectred.api.IScrewdriver;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -318,12 +319,12 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	}
 
 	@Override
-	public boolean hitEntity(ItemStack is, EntityLivingBase hit, EntityLivingBase hitter)
+	public boolean onLeftClickEntity(ItemStack is, EntityPlayer hitter, Entity hit)
 	{
 		if (ServerHelper.isClient()) return false;
 		ScrewdriverHelper helper = getHelper(is);
 		if(helper == null) return false;
-		if ((helper.getMode() == ScrewdriverMode.Transmat) && !(hit instanceof EntityPlayer))
+		if ((helper.getMode() == ScrewdriverMode.Transmat) && !(hit instanceof EntityPlayer) && (hit instanceof EntityLivingBase))
 		{
 			TardisDataStore ds = helper.getLinkedDS();
 			if((ds != null) && ds.hasPermission(hitter, TardisPermission.TRANSMAT))
