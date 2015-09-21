@@ -27,6 +27,7 @@ import tardis.common.blocks.ColorableWallBlock;
 import tardis.common.blocks.ComponentBlock;
 import tardis.common.blocks.ConsoleBlock;
 import tardis.common.blocks.CoreBlock;
+import tardis.common.blocks.CraftableSimBlock;
 import tardis.common.blocks.DecoBlock;
 import tardis.common.blocks.DecoTransBlock;
 import tardis.common.blocks.EngineBlock;
@@ -153,6 +154,10 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock				colorableFloorBlock;
 	public static AbstractBlock				colorableRoundelBlock;
 	public static AbstractBlock				colorableOpenRoundelBlock;
+
+	public static AbstractBlock				wallSimulacrumBlock;
+	public static AbstractBlock				floorSimulacrumBlock;
+	public static AbstractBlock				glassSimulacrumBlock;
 
 	public static LabBlock					labBlock;
 
@@ -335,6 +340,9 @@ public class TardisMod implements IConfigHandlerMod
 		manualHelperBlock = new ManualHelperBlock().register();
 		stairBlock = new StairBlock().register();
 		summonerBlock = new SummonerBlock().register();
+		wallSimulacrumBlock = new CraftableSimBlock(colorableWallBlock).register();
+		floorSimulacrumBlock = new CraftableSimBlock(colorableFloorBlock).register();
+		//glassSimulacrumBlock = new CraftableSimBlock(colorableWallBlock).register();
 	}
 
 	private void initItems()

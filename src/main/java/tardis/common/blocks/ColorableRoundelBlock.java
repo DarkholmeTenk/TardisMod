@@ -54,18 +54,4 @@ public class ColorableRoundelBlock extends AbstractBlock implements IColorableBl
 		}
 		return super.colorBlock(w, x, y, z, pl, is, color, depth);
 	}
-
-	/*
-	@Override
-	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_)
-	{
-		return new DummyRoundelTE();
-	}
-
-	@Override
-	public Class<? extends TileEntity> getTEClass()
-	{
-		return DummyRoundelTE.class;
-	}
-	*/
 }
