@@ -4,6 +4,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.BlockIterator;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.HashMap;
@@ -57,6 +58,12 @@ public class DecoratingTool extends AbstractItem
 		return null;
 	}
 
+	private void playSound(EntityPlayer player)
+	{
+		if(ServerHelper.isServer())
+			SoundHelper.playSound(player, "decorate", 1, 1);
+	}
+
 	@Override
     public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack is)
     {
@@ -66,7 +73,14 @@ public class DecoratingTool extends AbstractItem
 		DecoratorToolTypes t = getType(is);
 		SimpleCoordStore pos = getPlayerLookingAt(player);
 		if(pos != null)
-			t.set(pos);
+		{
+			DecoratorToolTypes c = DecoratorToolTypes.getMatching(pos);
+			if(c != null)
+			{
+				playSound(player);
+				t.set(pos);
+			}
+		}
         return true;
     }
 
@@ -128,6 +142,7 @@ public class DecoratingTool extends AbstractItem
 			DecoratorToolTypes c = DecoratorToolTypes.getMatching(pos);
 			if(c != null)
 			{
+				playSound(pl);
 				BlockIterator iter = new BlockIterator(pos, c.getCondition(), false, TardisMod.decoratorRange);
 				while(iter.hasNext())
 				{
