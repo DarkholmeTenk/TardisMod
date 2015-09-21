@@ -1,7 +1,6 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 
@@ -25,12 +24,6 @@ public class SchemaComponentBlock extends AbstractBlock
 	public SchemaComponentBlock()
 	{
 		super(TardisMod.modName);
-	}
-
-	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return SchemaComponentItemBlock.class;
 	}
 
 	@Override

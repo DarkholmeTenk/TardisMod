@@ -1,7 +1,6 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,12 +18,6 @@ public class ColorableRoundelBlock extends AbstractBlock implements IColorableBl
 	public ColorableRoundelBlock()
 	{
 		super(TardisMod.modName);
-	}
-
-	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return ColorableRoundelItemBlock.class;
 	}
 
 	@Override

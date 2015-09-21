@@ -1,11 +1,9 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+import io.darkcraft.darkcore.mod.impl.DefaultItemBlock;
 import net.minecraft.block.Block;
-import tardis.TardisMod;
 
-public class InternalDoorItemBlock extends AbstractItemBlock
+public class InternalDoorItemBlock extends DefaultItemBlock
 {
 
 	public InternalDoorItemBlock(Block par1)
@@ -13,12 +11,6 @@ public class InternalDoorItemBlock extends AbstractItemBlock
 		super(par1);
 	}
 
-	@Override
-	protected AbstractBlock getBlock()
-	{
-		return TardisMod.internalDoorBlock;
-	}
-	
 	@Override
 	public int getMetadata(int damage)
 	{

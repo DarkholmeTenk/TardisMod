@@ -1,7 +1,6 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 
 import java.util.List;
 
@@ -22,12 +21,6 @@ public class ForceFieldBlock extends AbstractBlock
 	{
 		super(visible,TardisMod.modName);
 		setCreativeTab(TardisMod.cTab);
-	}
-
-	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return ForceFieldItemBlock.class;
 	}
 
 	@Override
