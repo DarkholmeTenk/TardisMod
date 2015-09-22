@@ -29,6 +29,7 @@ public class ScrewdriverHelper
 	private String schemaCat;
 	private String schema;
 	private AbstractScrewdriverType type = TardisMod.defaultType;
+	private String displayName;
 
 	public String owner;
 
@@ -53,6 +54,8 @@ public class ScrewdriverHelper
 	{
 		this(is.stackTagCompound, _id);
 		itemstack = is;
+		if(is.hasDisplayName())
+			displayName = is.getDisplayName();
 	}
 
 	private void markDirty()
@@ -98,6 +101,8 @@ public class ScrewdriverHelper
 		itemstack = new ItemStack(TardisMod.screwItem, 1);
 		itemstack.stackTagCompound = new NBTTagCompound();
 		writeToNBT(itemstack.stackTagCompound);
+		if(displayName != null)
+			itemstack.setStackDisplayName(displayName);
 		return itemstack;
 	}
 
@@ -110,6 +115,7 @@ public class ScrewdriverHelper
 		schemaCat = nbt.hasKey("schemaCat") ? nbt.getString("schemaCat") : null;
 		schema = nbt.hasKey("schemaName") ? nbt.getString("schemaName") : null;
 		linkSCS = nbt.hasKey("linkscs") ? SimpleCoordStore.readFromNBT(nbt, "linkscs") : null;
+		displayName = nbt.hasKey("dispName") ? nbt.getString("dispName") : null;
 		type = ScrewTypeRegister.get(nbt);
 	}
 
@@ -130,6 +136,8 @@ public class ScrewdriverHelper
 			if(schemaCat != null)
 				nbt.setString("schemaCat", schemaCat);
 		}
+		if(displayName != null)
+			nbt.setString("dispName", displayName);
 	}
 
 	public void writeToNBT(NBTTagCompound nbt, String name)
