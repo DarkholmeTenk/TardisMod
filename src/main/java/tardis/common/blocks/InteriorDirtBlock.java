@@ -28,7 +28,7 @@ import tardis.TardisMod;
 import tardis.api.IScrewablePrecise;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.LabTileEntity;
@@ -133,9 +133,12 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 					ItemStack is = new ItemStack(Items.dye,1,15);
 					if(rand.nextDouble() <= boneChance)
 						ItemDye.applyBonemeal(is, w, x, y+1, z, pl);
-					int i;
-					for(i=1;w.getBlock(x, y+i, z)==b;i++);
-					b.updateTick(w, x, (y+i)-1, z, rand);
+					int i=1;
+					if(w.getBlock(x, y+1, z) == b)
+					{
+						for(i=1;w.getBlock(x, y+i, z)==b;i++);
+						b.updateTick(w, x, (y+i)-1, z, rand);
+					}
 				}
 			}
 		}

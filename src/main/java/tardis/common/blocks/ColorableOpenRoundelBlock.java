@@ -1,6 +1,5 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,7 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.TardisPermission;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
@@ -20,12 +19,6 @@ public class ColorableOpenRoundelBlock extends AbstractScrewableBlock implements
 	public ColorableOpenRoundelBlock()
 	{
 		super(TardisMod.modName);
-	}
-
-	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return ColorableOpenRoundelItemBlock.class;
 	}
 
 	@Override

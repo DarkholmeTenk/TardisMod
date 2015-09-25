@@ -1,12 +1,14 @@
 package tardis.common.dimension;
 
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+
 import java.util.List;
 
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 
 public class TardisWorldProvider extends WorldProvider
@@ -22,31 +24,31 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		return "Tardis Interior";
 	}
-	
+
 	@Override
 	public String getSaveFolder()
 	{
 		return (dimensionId == 0 ? null : "tardis/DIM" + dimensionId);
 	}
-	
+
 	@Override
 	public boolean canRespawnHere()
 	{
 		return true;
 	}
-	
+
 	@Override
 	protected void registerWorldChunkManager()
 	{
 		worldChunkMgr = new TardisChunkManager(worldObj);
 	}
-	
+
 	@Override
 	public IChunkProvider createChunkGenerator()
 	{
 		return new TardisChunkProvider(worldObj);
 	}
-	
+
 	@Override
 	public void updateWeather()
 	{
@@ -58,37 +60,37 @@ public class TardisWorldProvider extends WorldProvider
 		if(worldObj.isRaining())
 			worldObj.setRainStrength(0);
 	}
-	
+
 	@Override
 	public ChunkCoordinates getSpawnPoint()
     {
 		return spawnPoint;
     }
-	
+
 	@Override
 	public ChunkCoordinates getRandomizedSpawnPoint()
     {
 		return getSpawnPoint();
     }
-	
+
 	@Override
 	public BiomeGenBase getBiomeGenForCoords(int x, int z)
     {
 		return BiomeGenBase.plains;
     }
-	
+
 	@Override
 	public float getSunBrightnessFactor(float par1)
 	{
 		return super.getSunBrightnessFactor(par1);
 	}
-	
+
 	@Override
 	public float calculateCelestialAngle(long par1, float par3)
     {
 		return isDaytime() ? 0 : 0.5F;
     }
-	
+
 	@Override
 	public boolean isDaytime()
 	{
@@ -101,7 +103,7 @@ public class TardisWorldProvider extends WorldProvider
 		}
 		return true;
 	}
-	
+
 	public ConsoleTileEntity getConsole()
 	{
 		if(worldObj == null)
@@ -116,10 +118,15 @@ public class TardisWorldProvider extends WorldProvider
 		}
 		return null;
 	}
-	
+
+	public int getWorldVariance()
+	{
+		return MathHelper.round((Math.random() * 10) - 5);
+	}
+
 	@Override
 	public long getWorldTime()
     {
-		return isDaytime() ? 6000 : 18000;
+		return getWorldVariance() + (isDaytime() ? 6000 : 18000);
     }
 }

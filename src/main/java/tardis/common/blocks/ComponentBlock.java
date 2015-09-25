@@ -1,7 +1,6 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -15,12 +14,6 @@ public class ComponentBlock extends AbstractBlockContainer
 	public ComponentBlock()
 	{
 		super(TardisMod.modName);
-	}
-	
-	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return ComponentItemBlock.class;
 	}
 
 	@Override
@@ -42,7 +35,7 @@ public class ComponentBlock extends AbstractBlockContainer
 	{
 
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess iblockaccess, int i, int j, int k, int l)

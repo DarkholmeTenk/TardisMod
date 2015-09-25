@@ -10,21 +10,23 @@ import io.darkcraft.darkcore.mod.config.ConfigHandler;
 import io.darkcraft.darkcore.mod.config.ConfigHandlerFactory;
 import io.darkcraft.darkcore.mod.config.ConfigItem;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
 import java.io.IOException;
 
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
 import tardis.common.blocks.BatteryBlock;
-import tardis.common.blocks.ColorableFloorBlock;
+import tardis.common.blocks.ColorableBlock;
 import tardis.common.blocks.ColorableOpenRoundelBlock;
-import tardis.common.blocks.ColorableRoundelBlock;
-import tardis.common.blocks.ColorableWallBlock;
 import tardis.common.blocks.ComponentBlock;
 import tardis.common.blocks.ConsoleBlock;
 import tardis.common.blocks.CoreBlock;
+import tardis.common.blocks.CraftableCSimBlock;
+import tardis.common.blocks.CraftableSimBlock;
 import tardis.common.blocks.DecoBlock;
 import tardis.common.blocks.DecoTransBlock;
 import tardis.common.blocks.EngineBlock;
@@ -47,18 +49,30 @@ import tardis.common.blocks.TopBlock;
 import tardis.common.command.CommandRegister;
 import tardis.common.core.CreativeTab;
 import tardis.common.core.DimensionEventHandler;
-import tardis.common.core.Helper;
 import tardis.common.core.SchemaHandler;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisOwnershipRegistry;
+import tardis.common.core.events.internal.DamageEventHandler;
+import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
+import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
+import tardis.common.items.DecoratingTool;
 import tardis.common.items.KeyItem;
+import tardis.common.items.ManualItem;
+import tardis.common.items.NameTagItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
+import tardis.common.items.UpgradeItem;
+import tardis.common.items.extensions.ScrewTypeRegister;
+import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
+import tardis.common.items.extensions.screwtypes.Eighth;
+import tardis.common.items.extensions.screwtypes.Tenth;
+import tardis.common.items.extensions.screwtypes.Twelth;
 import tardis.common.network.TardisPacketHandler;
 import tardis.common.tileents.BatteryTileEntity;
 import tardis.common.tileents.ComponentTileEntity;
@@ -81,12 +95,13 @@ import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
-@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.985", dependencies = "required-after:FML; required-after:darkcore@[0.25,]; after:CoFHCore; after:appliedenergistics2; after:Waila")
+@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.99", dependencies = "required-after:FML; required-after:darkcore@[0.3,]; after:CoFHCore; after:appliedenergistics2; after:Waila")
 public class TardisMod implements IConfigHandlerMod
 {
 	@Instance
 	public static TardisMod					i;
 	public static final String				modName				= "TardisMod";
+	public static int						decoratorRange		= 6;
 	public static boolean					inited				= false;
 
 	@SidedProxy(clientSide = "tardis.client.TardisClientProxy", serverSide = "tardis.common.TardisProxy")
@@ -138,9 +153,18 @@ public class TardisMod implements IConfigHandlerMod
 
 	public static AbstractBlock				colorableWallBlock;
 	public static AbstractBlock				colorableFloorBlock;
+	public static AbstractBlock				colorableBrickBlock;
+	public static AbstractBlock				colorablePlankBlock;
 	public static AbstractBlock				colorableRoundelBlock;
 	public static AbstractBlock				colorableOpenRoundelBlock;
 
+	public static AbstractBlock				wallSimulacrumBlock;
+	public static AbstractBlock				floorSimulacrumBlock;
+	public static AbstractBlock				glassSimulacrumBlock;
+	public static AbstractBlock				brickSimulacrumBlock;
+	public static AbstractBlock				plankSimulacrumBlock;
+
+	public static AbstractBlock				decoSimulacrumBlock;
 	public static LabBlock					labBlock;
 
 	public static AbstractItem				schemaItem;
@@ -148,12 +172,17 @@ public class TardisMod implements IConfigHandlerMod
 	public static CraftingComponentItem		craftingComponentItem;
 	public static KeyItem					keyItem;
 	public static SonicScrewdriverItem		screwItem;
+	public static ManualItem				manualItem;
+	public static UpgradeItem				upgradeItem;
+	public static NameTagItem				nameTag;
+	public static AbstractItem				decoTool;
 
 	public static boolean					tcInstalled			= false;
 
 	public static double					tardisVol			= 1;
 	public static boolean					deathTransmat		= true;
 	public static boolean					deathTransmatLive	= true;
+	public static double					transmatExitDist	= 2;
 	public static boolean					visibleSchema		= false;
 	public static boolean					visibleForceField	= false;
 	public static boolean					lightBlocks			= false;
@@ -168,12 +197,16 @@ public class TardisMod implements IConfigHandlerMod
 	public static int						shiftPressTime		= 60;
 	public static boolean					keyCraftable		= true;
 	public static boolean					keyReqKontron		= true;
+	public static boolean					kontronCraftable	= false;
+	public static int						kontronRarity		= 4;
+	public static boolean					keyOnFirstJoin		= true;
 	public static int						maxEachAspect		= 16;
 	public static int						maxEachAspectInc	= 16;
 	public static int						numAspects			= 16;
 	public static int						numDirtRecipe		= 2;
 	public static boolean					deleteDisconnected	= true;
 
+	public static AbstractScrewdriverType	defaultType			= new Tenth();
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
 	{
@@ -191,10 +224,18 @@ public class TardisMod implements IConfigHandlerMod
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
 		initBlocks();
 		initItems();
+		initScrewTypes();
 
 		// MinecraftForge.EVENT_BUS.register(new SoundHandler());
 
 		proxy.postAssignment();
+	}
+
+	private void initScrewTypes()
+	{
+		ScrewTypeRegister.register(defaultType);
+		ScrewTypeRegister.register(new Twelth());
+		ScrewTypeRegister.register(new Eighth());
 	}
 
 	public static void refreshConfigs()
@@ -210,7 +251,10 @@ public class TardisMod implements IConfigHandlerMod
 
 		keyCraftable = modConfig.getBoolean("keyCraftable", true, "True if the key is craftable.", "False if they can only be spawned");
 
+		keyOnFirstJoin = modConfig.getBoolean("keyOnJoin", false, "If true, all players get a new key when they first join");
 		keyReqKontron = modConfig.getBoolean("keyRequiresKontron", true, "True if the key requires a Kontron crystal to craft");
+		kontronCraftable = modConfig.getBoolean("kontronCraftable",false,"If true, a standard crafting recipe is added for the kontron crystal");
+		kontronRarity = modConfig.getInt("kontronRarity",20,"The higher this value, the more likely you are to find kontron crystals in chests");
 
 		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1, "How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
 
@@ -220,6 +264,7 @@ public class TardisMod implements IConfigHandlerMod
 		deleteDisconnected = modConfig.getBoolean("Delete disconnected", true, "Delete rooms which aren't connected to the console room when the connecting room is deleted");
 		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
 		deathTransmat = modConfig.getBoolean("Do death transmat", true, "If true, when you die within range of your TARDIS you will be transmatted");
+		transmatExitDist = modConfig.getDouble("Transmat exit distance", 2, "The distance from the transmat point beneath which you will be transmatted out of the TARDIS");
 
 		xpBase = miscConfig.getInt("xp base amount", 80, "The amount of xp it initially costs to level up");
 		xpInc = miscConfig.getInt("xp increase", 20, "The amount that is added on to the xp cost every time the TARDIS levels up");
@@ -236,6 +281,7 @@ public class TardisMod implements IConfigHandlerMod
 		maxEachAspect = miscConfig.getInt("max aspect", 32, "The maximum amount of each thaumcraft aspect that can be stored");
 		maxEachAspectInc = miscConfig.getInt("max aspect inc", 16, "The amount of aspect storage gained per level");
 
+		decoratorRange = modConfig.getInt("decorator range", 6, "The maximum range the decorator can work to");
 		numDirtRecipe = MathHelper.clamp(miscConfig.getInt("Number of temporal dirt to produce per recipe", 2, "Min 1, max 64"),1,64);
 
 		AbstractComponent.refreshConfigs();
@@ -247,6 +293,7 @@ public class TardisMod implements IConfigHandlerMod
 		InteriorDirtBlock.refreshConfigs();
 
 		TardisDimensionHandler.refreshConfigs();
+		TardisDamageSystem.refreshConfigs();
 	}
 
 	@EventHandler
@@ -266,6 +313,9 @@ public class TardisMod implements IConfigHandlerMod
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		inited = true;
 		tcInstalled = ItemApi.getItem("itemResource", 0) != null;
+		if(keyOnFirstJoin)
+			PlayerHelper.registerJoinItem(new ItemStack(keyItem,1));
+		FMLCommonHandler.instance().bus().register(ScrewdriverHelperFactory.i);
 	}
 
 	private void initBlocks()
@@ -289,14 +339,22 @@ public class TardisMod implements IConfigHandlerMod
 		gravityLift = new GravityLiftBlock().register();
 		forcefield = new ForceFieldBlock(visibleForceField).register();
 		battery = new BatteryBlock().register();
-		colorableWallBlock = new ColorableWallBlock().register();
-		colorableFloorBlock = new ColorableFloorBlock().register();
-		colorableRoundelBlock = new ColorableRoundelBlock().register();
+		colorableWallBlock = new ColorableBlock("ColorableWall").register();
+		colorableFloorBlock = new ColorableBlock("ColorableFloor").register();
+		colorableBrickBlock = new ColorableBlock("ColorableBrick").register();
+		colorablePlankBlock = new ColorableBlock("ColorablePlank").register();
+		colorableRoundelBlock = new ColorableBlock("ColorableRoundel").register();
 		colorableOpenRoundelBlock = new ColorableOpenRoundelBlock().register();
 		manualBlock = new ManualBlock().register();
 		manualHelperBlock = new ManualHelperBlock().register();
 		stairBlock = new StairBlock().register();
 		summonerBlock = new SummonerBlock().register();
+		wallSimulacrumBlock = new CraftableCSimBlock(colorableWallBlock).register();
+		floorSimulacrumBlock = new CraftableCSimBlock(colorableFloorBlock).register();
+		brickSimulacrumBlock = new CraftableCSimBlock(colorableBrickBlock).register();
+		plankSimulacrumBlock = new CraftableCSimBlock(colorablePlankBlock).register();
+		glassSimulacrumBlock = new CraftableSimBlock(decoTransBlock).register();
+		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
 	}
 
 	private void initItems()
@@ -306,12 +364,17 @@ public class TardisMod implements IConfigHandlerMod
 		keyItem = (KeyItem) new KeyItem().register();
 		componentItem = new ComponentItem().register();
 		craftingComponentItem = (CraftingComponentItem) new CraftingComponentItem().register();
+		manualItem = (ManualItem) new ManualItem().register();
+		upgradeItem = (UpgradeItem) new UpgradeItem().register();
+		nameTag = (NameTagItem) new NameTagItem().register();
+		decoTool = new DecoratingTool().register();
 	}
 
 	private void initRecipes()
 	{
 		keyItem.initRecipes();
 		componentItem.initRecipes();
+		manualItem.initRecipes();
 		labBlock.initRecipes();
 		landingPad.initRecipes();
 		forcefield.initRecipes();
@@ -320,6 +383,10 @@ public class TardisMod implements IConfigHandlerMod
 		interiorDirtBlock.initRecipes();
 		craftingComponentItem.initRecipes();
 		summonerBlock.initRecipes();
+		upgradeItem.initRecipes();
+		nameTag.initRecipes();
+		decoTool.initRecipes();
+		CraftableSimBlock.initStaticRecipes();
 	}
 
 	@EventHandler
@@ -330,7 +397,10 @@ public class TardisMod implements IConfigHandlerMod
 		plReg = null;
 		dimReg = null;
 		Helper.datastoreMap.clear();
+		Helper.ssnDatastoreMap.clear();
 		MinecraftForge.EVENT_BUS.register(otherDims);
+		DamageEventHandler.i.register();
+		ScrewdriverHelperFactory.i.clear();
 	}
 
 	@EventHandler

@@ -1,35 +1,42 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.Explosion;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
-import tardis.common.core.Helper;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
-import tardis.common.items.SonicScrewdriverItem;
+import tardis.common.dimension.damage.ExplosionDamageHelper;
+import tardis.common.dimension.damage.TardisDamageSystem;
+import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
+import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
 
-public class EngineTileEntity extends AbstractTileEntity implements IControlMatrix
+public class EngineTileEntity extends AbstractTileEntity implements IControlMatrix, IExplodable
 {
 	private String[]			currentUsers;
 	private int					currentUserID;
@@ -42,13 +49,16 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	private boolean				internalOnly			= false;
 
-	private boolean				hasScrew				= false;
-	private NBTTagCompound		screwNBT				= null;
-	private int					screwMode				= 0;
+	private ScrewdriverHelper	screwHelper;
 
 	private int					consoleSettingControl	= 0;
+	private int					protectedRadius			= 0;
+	private static final int	maxProtectedRadius		= 16 * 10;
 	private String				consoleSettingString	= "Main";	// The string displayed on the console room selection screen.
 	private static String[]		availableConsoleRooms	= null;
+
+	public boolean				isEngineOpen			= false;
+	public double				visibility				= 1;
 
 	public static void updateConsoleRooms()
 	{
@@ -72,6 +82,13 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public void updateEntity()
 	{
 		super.updateEntity();
+		if(ServerHelper.isClient())
+		{
+			if(!isEngineOpen && (visibility < 1))
+				visibility += 0.1;
+			else if(isEngineOpen && (visibility > 0))
+				visibility -= 0.1;
+		}
 		if (((tt % 40) == 1) && ServerHelper.isServer())
 		{
 			if (availableConsoleRooms == null)
@@ -125,16 +142,13 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	public int getControlFromHit(HitPosition hit)
 	{
+		TardisDataStore ds = Helper.getDataStore(this);
 		if (hit.within(2, 2.318, 0.170, 2.432, 0.830))
 			return 0;
 		else if (hit.within(2, 0.558, 0.685, 0.660, 0.768))
 			return 4;
 		else if (hit.within(2, 0.488, 0.685, 0.564, 0.768))
 			return 5;
-		else if (hit.within(2, 0.558, 0.780, 0.660, 0.859))
-			return 6;
-		else if (hit.within(2, 0.488, 0.780, 0.565, 0.859))
-			return 7;
 		else if (hit.within(5, 0.393, 0.725, 0.545, 0.876))
 			return 10;
 		else if (hit.within(5, 0.393, 0.523, 0.545, 0.679))
@@ -191,15 +205,75 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					return 90 + o;
 			}
 		}
+		else if(hit.within(4, 0.450, 0.01, 0.525, 0.09))
+			return 100;
+		else if((ds != null) && ds.hasFunction(TardisFunction.SPAWNPROT) && hit.within(3, 0.675, 0.450, 0.925, 0.540))
+			return 130;
+		else if(hit.within(3, 0.450, 0.72, 0.55, 0.82))
+			return 131;
 		return -1;
+	}
+
+	private int getControlFromEngineHit(HitPosition hit)
+	{
+		if(hit.side == 4)
+		{
+			//System.out.println("EHIT!");
+			double d = 0.094;
+			for(int i = 0; i < 8; i++)
+			{
+				double x = 0.135 + (d * i);
+				double X = x + 0.07;
+				if(hit.within(4, 0.950, x, 1.083, X))
+					return 100 + i + 1;
+			}
+			if(hit.within(4, 0.495, 0.400, 0.700, 0.600))
+				return 110;
+			else if(hit.within(4, 0.75, 0.65, 0.85, 0.75))
+				return 111;
+			else if(hit.within(4, 0.55, 0.70, 0.65, 0.80))
+				return 112;
+			else if(hit.within(4, 0.35, 0.64, 0.45, 0.75))
+				return 113;
+			else if(hit.within(4, 0.75, 0.25, 0.85, 0.35))
+				return 114;
+			else if(hit.within(4, 0.55, 0.20, 0.66, 0.30))
+				return 115;
+			else if(hit.within(4, 0.35, 0.25, 0.45, 0.35))
+				return 116;
+			else if(hit.within(4, 0.15, 0.15, 0.30, 0.30))
+				return 117;
+			else if(hit.within(4, 0.15, 0.40, 0.32, 0.58))
+				return 119;
+			else if(hit.within(4, 0.21, 0.61, 0.29, 0.69))
+				return 118;
+		}
+		return -1;
+	}
+
+	private double posY(EntityPlayer player)
+	{
+		if(ServerHelper.isClient()) return player.posY;
+		return player.posY;
 	}
 
 	public int getControlFromHit(int blockX, int blockY, int blockZ, Vec3 hitPos, EntityPlayer pl)
 	{
 		int side = hitPos.xCoord == 0 ? 4 : (hitPos.xCoord == 1 ? 5 : (hitPos.zCoord == 0 ? 2 : 3));
-		float relativeY = (float) (hitPos.yCoord - blockY);
+		float relativeY = (float) (hitPos.yCoord - yCoord);
 		float relativeX = (float) ((side >= 4) ? hitPos.zCoord : hitPos.xCoord);
 		HitPosition hit = new HitPosition(relativeX, relativeY, side);
+		if(hit.within(4,0.1, 0.1, 1.12, 0.9) && isEngineOpen)
+		{
+			double extraX = 0.05;
+			double xD = -pl.posX;
+			double mult = ((xD+extraX)/xD) - 1;
+			double yD = (hitPos.yCoord) - posY(pl);
+			double yO = relativeY + (yD * mult);
+			double zO = relativeX + ((hitPos.zCoord - pl.posZ) * mult);
+			hit = new HitPosition((float) zO,(float) yO,side);
+			return getControlFromEngineHit(hit);
+		}
 		return getControlFromHit(hit);
 	}
 
@@ -210,7 +284,20 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		float relativeY = (blockY - yCoord) + y;
 		float relativeX = (side >= 4) ? z : x;
 		HitPosition hit = new HitPosition(relativeX, relativeY, side);
-		int control = getControlFromHit(hit);
+		int control = -1;
+		if(hit.within(4,0.1, 0.1, 1.12, 0.9) && isEngineOpen)
+		{
+			double extraX = 0.05;
+			double xD = -pl.posX;
+			double mult = ((xD+extraX)/xD) - 1;
+			double yD = (blockY+y) - posY(pl);
+			double yO = relativeY + (yD * mult);
+			double zO = relativeX + ((z - pl.posZ) * mult);
+			hit = new HitPosition((float) zO,(float) yO,side);
+			control = getControlFromEngineHit(hit);
+		}
+		else
+			control = getControlFromHit(hit);
 		if (control != -1)
 			Helper.activateControl(this, pl, control);
 		else
@@ -223,6 +310,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	@Override
 	public void activateControl(EntityPlayer pl, int control)
 	{
+		if(ServerHelper.isClient()) return;
 		int prevLastButton = lastButton;
 		lastButton = control;
 		lastButtonTT = tt;
@@ -274,7 +362,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				if (mode != null)
 				{
 					int level = ds.getLevel(mode);
-					pl.addChatMessage(new ChatComponentText("[ENGINE] " + mode.name + " lvl: " + level + "/"
+					int tlevel = ds.getLevel(mode, true);
+					pl.addChatMessage(new ChatComponentText("[ENGINE] " + mode.name + " lvl: " + level + "(" + tlevel + ")/"
 							+ ds.maxUnspentLevelPoints()));
 				}
 			}
@@ -283,40 +372,32 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 						+ ds.maxUnspentLevelPoints()));
 			else if (control == 39)
 			{
-				if (hasScrewdriver(0) && (pl instanceof EntityPlayerMP))
+				if (screwHelper != null)
 				{
-					ItemStack toGive = new ItemStack(TardisMod.screwItem, 1, 0);
-					validateScrewNBT();
-					toGive.stackTagCompound = screwNBT;
-					hasScrew = false;
-					screwNBT = null;
-					TardisMod.screwItem.notifyMode(toGive, pl, false);
+					ItemStack toGive = screwHelper.getItemStack();
+					TardisMod.screwItem.notifyMode(screwHelper, pl, false);
+					screwHelper = null;
 					WorldHelper.giveItemStack(pl, toGive);
 				}
 				else
 				{
-					ItemStack held = pl.getHeldItem();
-					if (held != null)
+					ScrewdriverHelper helper = ScrewdriverHelperFactory.get(pl.getHeldItem());
+					if (helper != null)
 					{
-						Item item = held.getItem();
-						if (item instanceof SonicScrewdriverItem)
-						{
-							InventoryPlayer inv = pl.inventory;
-							screwNBT = held.stackTagCompound;
-							hasScrew = true;
-							validateScrewNBT();
-							inv.mainInventory[inv.currentItem] = null;
-						}
+						screwHelper = helper;
+						helper.setOwner(core.getOwner());
+						helper.clear();
+						InventoryPlayer inv = pl.inventory;
+						inv.mainInventory[inv.currentItem] = null;
 					}
 				}
 			}
 			else if ((control >= 40) && (control < 50))
 			{
-				validateScrewNBT();
-				if (hasScrew)
+				if (screwHelper != null)
 				{
 					if (ds.hasPermission(pl, TardisPermission.PERMISSIONS))
-						SonicScrewdriverItem.togglePermission(screwNBT, SonicScrewdriverItem.getMode(control - 40));
+						screwHelper.togglePermission(ScrewdriverMode.get(control - 40));
 					else
 						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
 				}
@@ -324,15 +405,14 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			else if ((control >= 50) && (control < 60))
 			{
-				validateScrewNBT();
-				if (hasScrew && (screwNBT != null))
+				if (screwHelper != null)
 				{
-					ScrewdriverMode m = SonicScrewdriverItem.getMode(control - 50);
+					ScrewdriverMode m = ScrewdriverMode.get(control - 50);
 					String modeString = m.name();
 					String s = "Sonic screwdriver ";
 					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
 					{
-						s += SonicScrewdriverItem.hasPermission(screwNBT, m) ? "has" : "does not have";
+						s += screwHelper.hasPermission(m) ? "has" : "does not have";
 						s += " " + modeString + " permission";
 					}
 					else
@@ -364,7 +444,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 					{
 						ServerHelper
 								.sendString(pl, "ENGINE",
-										"Warning: Performing this function may cause loss of items. Please right click, then sneak-right click this button to proceed");
+										"Warning: Changing console rooms may replace blocks. Please right click, then sneak-right click this button to proceed");
 					}
 					else
 					{
@@ -380,7 +460,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			else if((control >= 80) && (control < 90))
 			{
 				TardisPermission p = TardisPermission.get(control - 80);
-				if(ds.togglePermission(ServerHelper.getUsername(pl), currentPerson, p))
+				if(ds.togglePermission(pl, currentPerson, p))
 					core.sendUpdate();
 				else
 					ServerHelper.sendString(pl, CoreTileEntity.cannotModifyPermissions);
@@ -390,6 +470,81 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				TardisPermission p = TardisPermission.get(control - 90);
 				ServerHelper.sendString(pl, currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name);
 			}
+			else if(control == 100)
+			{
+				if(ds.hasPermission(pl, TardisPermission.POINTS))
+					isEngineOpen = !isEngineOpen;
+			}
+			else if((control == 130) && ds.hasFunction(TardisFunction.SPAWNPROT))
+			{
+				int dir = pl.isSneaking() ? -16 : 16;
+				protectedRadius += dir;
+				protectedRadius = MathHelper.clamp(protectedRadius, 0, maxProtectedRadius);
+			}
+			else if((control == 131) && (screwHelper != null))
+			{
+				screwHelper.cycleScrewdriverType();
+			}
+			else if(isEngineOpen)
+			{
+				if((control >= 101) && (control <= 108))
+				{
+					if(ds.hasPermission(pl, TardisPermission.POINTS))
+					{
+						int slot = control - 101;
+						if(!addUpgrade(slot, pl, ds))
+							removeUpgrade(slot, pl, ds);
+						core.sendUpdate();
+					}
+					else
+						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
+				}
+				if((control >= 110) && (control <= 119))
+				{
+					int component = control - 110;
+					ds.damage.repairComponent(pl, component);
+				}
+			}
+		}
+	}
+
+	private boolean addUpgrade(int slot, EntityPlayer pl, TardisDataStore ds)
+	{
+		ItemStack is = pl.getHeldItem();
+		if(is != null)
+		{
+			AbstractUpgrade up = UpgradeFactory.createUpgrade(is);
+			if(up != null)
+			{
+				if(ds.upgrades[slot] == null)
+				{
+					if(up.isValid(ds.upgrades))
+					{
+						ds.upgrades[slot] = up;
+						up.setEnginePos(coords);
+						if (!pl.capabilities.isCreativeMode)
+						{
+							pl.inventory.decrStackSize(pl.inventory.currentItem, 1);
+							pl.inventory.markDirty();
+						}
+						System.out.println("Added upgrade:" + up);
+						ds.markDirty();
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private void removeUpgrade(int slot, EntityPlayer pl, TardisDataStore ds)
+	{
+		AbstractUpgrade up = ds.upgrades[slot];
+		if(up != null)
+		{
+			ds.upgrades[slot] = null;
+			WorldHelper.giveItemStack(pl, up.getIS());
+			ds.markDirty();
 		}
 	}
 
@@ -417,13 +572,13 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		TardisDataStore ds = Helper.getDataStore(worldObj);
 		if ((core != null) && (ds != null))
 		{
-			if ((cID == 4) || (cID == 5) || ((cID >= 10) && (cID < 20)) || ((cID >= 71) && (cID <= 73)))
+			if ((cID == 4) || (cID == 5) || ((cID >= 10) && (cID < 20)) || ((cID >= 71) && (cID <= 73)) || (cID == 131))
 				return (lastButton == cID) ? 1.0 : 0;
 			if ((cID >= 20) && (cID < 30))
 			{
 				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(cID - 20);
 				if ((mode != null) && (ds.maxUnspentLevelPoints() > 0))
-					return ((double) ds.getLevel(mode)) / ((double) ds.maxUnspentLevelPoints());
+					return ((double) ds.getLevel(mode,true)) / ((double) ds.maxUnspentLevelPoints());
 				return 0;
 			}
 			if (cID == 30)
@@ -434,20 +589,17 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			if ((cID >= 40) && (cID < 60))
 			{
-				if (!hasScrew)
+				if (screwHelper == null)
 					return 0;
 				int mID = cID >= 50 ? cID - 50 : cID - 40;
-				if (hasScrew && (screwNBT == null))
-					validateScrewNBT();
-				ScrewdriverMode m = SonicScrewdriverItem.getMode(mID);
+				ScrewdriverMode m = ScrewdriverMode.get(mID);
 				if (cID < 50)
-					return SonicScrewdriverItem.hasPermission(screwNBT, m) ? 1 : 0;
+					return screwHelper.hasPermission(m) ? 1 : 0;
 				else
 				{
 					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
 					{
-						double v = SonicScrewdriverItem.hasPermission(screwNBT, m) ? 1 : 0.2;
-						// TardisOutput.print("TETE", "V:" + v);
+						double v = screwHelper.hasPermission(m) ? 1 : 0.2;
 						return v;
 					}
 					return 0.2;
@@ -462,9 +614,13 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			if((cID >= 90) && (cID < 100))
 			{
-				TardisPermission p = TardisPermission.get(90-cID);
+				TardisPermission p = TardisPermission.get(cID-90);
 				return ds.hasPermission(currentPerson, p) ? 1 : 0;
 			}
+			if(cID == 100)
+				return 1 - visibility;
+			if(cID == 130)
+				return protectedRadius / (double) maxProtectedRadius;
 		}
 		return (float) (((tt + cID) % 40) / 39.0);
 	}
@@ -510,8 +666,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			retVal = new double[] { 0.2, 0.3, 0.9 };
 		if ((controlID >= 50) && (controlID < 60))
 		{
-			ScrewdriverMode m = SonicScrewdriverItem.getMode(controlID - 50);
-			// TardisOutput.print("TETE","Colors: "+ m.c[0] + "," + m.c[1] + "," + m.c[2]);
+			ScrewdriverMode m = ScrewdriverMode.get(controlID - 50);
 			return m.c;
 		}
 		if((controlID >= 90) && (controlID < 100))
@@ -531,52 +686,26 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		return -1;
 	}
 
-	private void validateScrewNBT()
+
+	@Override
+	public ScrewdriverHelper getScrewHelper(int slot)
 	{
-		if (hasScrew)
-		{
-			if (screwNBT == null)
-			{
-				TardisOutput.print("TETE", "New NBT For Screw");
-				screwNBT = SonicScrewdriverItem.getNewNBT();
-				screwNBT.setInteger("linkedTardis", WorldHelper.getWorldID(this));
-			}
-			else
-			{
-				int dim = SonicScrewdriverItem.getLinkedDim(screwNBT);
-				if ((dim != 0) && (dim != WorldHelper.getWorldID(this)))
-					screwNBT.setInteger("perm", SonicScrewdriverItem.minPerms);
-			}
-			CoreTileEntity core = Helper.getTardisCore(worldObj);
-			if(core != null)
-				screwNBT.setString("owner", core.getOwner());
-			screwNBT.setInteger("linkedTardis", WorldHelper.getWorldID(this));
-		}
-		else
-		{
-			if (screwNBT != null)
-				screwNBT = null;
-		}
+		return screwHelper;
 	}
 
 	@Override
-	public boolean hasScrewdriver(int slot)
+	public void explode(SimpleCoordStore pos, Explosion explosion)
 	{
-		return hasScrew;
-	}
-
-	@Override
-	public ScrewdriverMode getScrewMode(int slot)
-	{
-		return SonicScrewdriverItem.getMode(screwMode);
+		TardisDataStore ds = Helper.getDataStore(this);
+		if(ds != null)
+			ExplosionDamageHelper.damage(ds.damage, pos, explosion, 0.9);
 	}
 
 	@Override
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
 		super.writeTransmittable(nbt);
-		if (screwNBT != null)
-			nbt.setTag("sNBT", screwNBT);
+		if (screwHelper != null) screwHelper.writeToNBT(nbt, "sNBT");
 		if (currentPerson != null)
 			nbt.setString("cP", currentPerson);
 		if (preparingToUpgrade != null)
@@ -584,26 +713,27 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		else
 			nbt.setBoolean("ptUN", false);
 		nbt.setBoolean("io", internalOnly);
-		nbt.setBoolean("hS", hasScrew);
 		nbt.setInteger("lB", lastButton);
+		nbt.setBoolean("eO", isEngineOpen);
+		nbt.setInteger("sp", protectedRadius);
 	}
 
 	@Override
 	public void readTransmittable(NBTTagCompound nbt)
 	{
 		super.readTransmittable(nbt);
-		if (nbt.hasKey("sNBT"))
-			screwNBT = nbt.getCompoundTag("sNBT");
-		hasScrew = nbt.getBoolean("hS");
+		screwHelper = ScrewdriverHelperFactory.get(nbt,"sNBT");
 		currentPerson = nbt.getString("cP");
 		lastButton = nbt.getInteger("lB");
 		lastButtonTT = tt;
 		preparingToUpgradeTT = tt;
 		internalOnly = nbt.getBoolean("io");
+		isEngineOpen = nbt.getBoolean("eO");
 		if (nbt.hasKey("ptU"))
 			preparingToUpgrade = TardisUpgradeMode.getUpgradeMode(nbt.getInteger("ptU"));
 		else if (nbt.hasKey("ptUN"))
 			preparingToUpgrade = null;
+		protectedRadius = nbt.getInteger("sp");
 	}
 
 	@Override
@@ -613,24 +743,56 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			consoleSettingString = nbt.getString("css");
 		else
 			consoleSettingString = "Main";
-		screwMode = nbt.getInteger("scMo");
 	}
 
 	@Override
 	public void writeTransmittableOnly(NBTTagCompound nbt)
 	{
 		nbt.setString("css", sanitiseConsole(consoleSettingString));
-		if (screwNBT != null)
-			nbt.setInteger("scMo", screwNBT.getInteger("scMo"));
 	}
 
 	public String[] getExtraInfo(int control)
 	{
+		TardisDataStore ds = Helper.getDataStore(this);
 		switch(control)
 		{
 			case 60: return new String[] { "Current mode: " + (internalOnly ? "Only interfaces inside the TARDIS can interact" : "All interfaces can interact") };
 		}
+		if((control >= 101) && (control <= 108))
+		{
+			if(ds != null)
+			{
+				int slot = control - 101;
+				AbstractUpgrade up = ds.upgrades[slot];
+				if(up != null)
+					return up.getExtraInfo();
+			}
+		}
+		if ((control >= 20) && (control < 30) && (ds != null))
+		{
+			TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 20);
+			return new String[] {"Level: " + ds.getLevel(mode) + "("+ds.getLevel(mode, true)+")"};
+		}
+		else if((control >= 90) && (control < 100) && (ds != null))
+		{
+			TardisPermission p = TardisPermission.get(control - 90);
+			return new String[]{ currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name};
+		}
+		else if((control >= 110) && (control < 120) && (ds != null))
+		{
+			return new String[]{ String.format("Repairing will take %s", TardisDamageSystem.repairCompNames[control-110]) };
+		}
+		else if(control == 130)
+			return new String[]{ String.format("Protection radius: %d blocks", getProtectedSpawnRadius()) };
 		return null;
+	}
+
+	public int getProtectedSpawnRadius()
+	{
+		TardisDataStore ds = Helper.getDataStore(this);
+		if((ds != null) && ds.hasFunction(TardisFunction.SPAWNPROT))
+			return protectedRadius;
+		return 0;
 	}
 
 }

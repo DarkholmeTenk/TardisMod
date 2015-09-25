@@ -10,7 +10,7 @@ import tardis.TardisMod;
 
 public class DecoBlock extends AbstractBlock
 {
-	private static final String[]		subs		= { "Floor", "Wall" };
+	private static final String[]		subs		= { "Floor", "Wall", "Walkway"};
 	private static String[]				suffixes	= { "topbottom", "side" };
 	public HashMap<Integer, Boolean>	litUpDim	= new HashMap<Integer, Boolean>();
 

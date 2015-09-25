@@ -6,6 +6,7 @@ import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +19,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.dimension.damage.ExplosionDamageHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector
+public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector, IExplodable
 {
 	private int fadeTimer = 0;
 
@@ -140,6 +143,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	private void playLandSound()
 	{
 		if(ServerHelper.isClient())return;
+
 		if(!landFast)
 			SoundHelper.playSound(this, "tardismod:landing", 1);
 		else
@@ -233,23 +237,18 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		}
 	}
 
+	public TardisDataStore getDataStore()
+	{
+		if((linkedDimension != null) && (linkedDimension != 0))
+			return Helper.getDataStore(linkedDimension);
+		return null;
+	}
+
 	public CoreTileEntity getCore()
 	{
 		if((linkedDimension != null) && (linkedDimension != 0))
 			return Helper.getTardisCore(linkedDimension);
 		return null;
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound tag)
-	{
-		super.readFromNBT(tag);
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound tag)
-	{
-		super.writeToNBT(tag);
 	}
 
 	@Override
@@ -298,7 +297,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	@Override
 	public boolean shouldChunkload()
 	{
-		return true;
+		return linkedDimension != null;
 	}
 
 	@Override
@@ -330,4 +329,12 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
     {
 		return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord+1, yCoord+2, zCoord+1);
     }
+
+	@Override
+	public void explode(SimpleCoordStore pos, Explosion explosion)
+	{
+		TardisDataStore ds = getDataStore();
+		if(ds != null)
+			ExplosionDamageHelper.damage(ds.damage, pos, explosion, 1);
+	}
 }

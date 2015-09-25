@@ -1,12 +1,15 @@
 package tardis.common.core;
 
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
@@ -14,12 +17,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import tardis.TardisMod;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
+import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.TardisTileEntity;
+import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
@@ -114,10 +124,11 @@ public class DimensionEventHandler
 						Item i = is.getItem();
 						if(i instanceof SonicScrewdriverItem)
 						{
-							if(SonicScrewdriverItem.hasPermission(is, ScrewdriverMode.Transmat))
+							ScrewdriverHelper helper = ScrewdriverHelperFactory.get(is);
+							if(helper.hasPermission(ScrewdriverMode.Transmat))
 							{
-								int linkedDim = SonicScrewdriverItem.getLinkedDim(is);
-								if(linkedDim != 0)
+								Integer linkedDim = helper.getLinkedDimID();
+								if(linkedDim != null)
 								{
 									if(savePlayer(player,linkedDim, source))
 									{
@@ -179,5 +190,44 @@ public class DimensionEventHandler
 				}
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void handleMobSpawn(CheckSpawn event)
+	{
+		EntityLivingBase base = event.entityLiving;
+		if((base instanceof EntityPlayer) && !(base instanceof IMob)) return;
+		SimpleDoubleCoordStore spawnPos = new SimpleDoubleCoordStore(event.world, event.x, event.y, event.z);
+		Set<Integer> dimIDs = TardisDimensionRegistry.getDims();
+		for(Integer dim : dimIDs)
+		{
+			try
+			{
+				TardisDataStore ds = Helper.getDataStore(dim);
+				TardisTileEntity tardis = ds.getExterior();
+				if(!ds.hasFunction(TardisFunction.SPAWNPROT)) continue;
+				SimpleDoubleCoordStore tPos = tardis.coords().getCenter();
+				double distance = tPos.distance(spawnPos);
+				if(distance == -1) continue;
+				double protectedRadius = ds.getEngine().getProtectedSpawnRadius();
+				if((distance <= protectedRadius) && (protectedRadius != 0))
+				{
+					event.setResult(Result.DENY);
+					return;
+				}
+			}
+			catch(NullPointerException e){}
+		}
+	}
+
+	@SubscribeEvent
+	public void handleBlockBreak(BreakEvent event)
+	{
+		EntityPlayer pl = event.getPlayer();
+		if(pl == null) return;
+		ItemStack is = pl.getHeldItem();
+		if(is == null) return;
+		Item i = is.getItem();
+		if(i == TardisMod.decoTool) event.setCanceled(true);
 	}
 }

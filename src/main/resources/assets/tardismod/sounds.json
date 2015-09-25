@@ -9,5 +9,7 @@
 	"sonic": {"category": "master","sounds": [{ "name": "sonic","stream": "false" }]},
 	"takeoff": {"category": "master","sounds": [{ "name": "takeoff","stream": "false" }]},
 	"transmat": {"category": "master","sounds": [{ "name": "transmat","stream": "false" }]},
-	"transmatFail": {"category": "master","sounds": [{ "name": "transmatFail","stream": "false" }]}
+	"transmatFail": {"category": "master","sounds": [{ "name": "transmatFail","stream": "false" }]},
+	"crack": {"category": "master","sounds": [{ "name": "crack","stream": "false" }]},
+	"decorate": {"category": "master","sounds": [{ "name": "decorate","stream": "false" }]}
 }

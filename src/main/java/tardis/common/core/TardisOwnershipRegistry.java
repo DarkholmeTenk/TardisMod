@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import tardis.TardisMod;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 

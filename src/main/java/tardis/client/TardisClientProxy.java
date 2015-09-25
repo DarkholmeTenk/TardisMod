@@ -16,6 +16,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import tardis.TardisMod;
+import tardis.client.renderer.DecoratorRenderer;
+import tardis.client.renderer.ManualItemRenderer;
 import tardis.client.renderer.SonicScrewdriverRenderer;
 import tardis.client.renderer.SummonerRenderer;
 import tardis.client.renderer.tileents.BatteryRenderer;
@@ -30,6 +32,7 @@ import tardis.client.renderer.tileents.ManualRenderer;
 import tardis.client.renderer.tileents.TardisRenderer;
 import tardis.common.TardisProxy;
 import tardis.common.core.TardisOutput;
+import tardis.common.items.extensions.ScrewTypeRegister;
 import tardis.common.tileents.BatteryTileEntity;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.ConsoleTileEntity;
@@ -92,6 +95,9 @@ public class TardisClientProxy extends TardisProxy
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.battery), new BatteryRenderer());
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.tardisBlock), tardisRenderer);
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.summonerBlock), summonerRenderer);
+		MinecraftForgeClient.registerItemRenderer(TardisMod.manualItem, new ManualItemRenderer());
+		MinecraftForgeClient.registerItemRenderer(TardisMod.decoTool, new DecoratorRenderer());
+		ScrewTypeRegister.registerClientResources();
 	}
 
 	@Override

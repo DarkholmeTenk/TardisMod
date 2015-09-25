@@ -11,8 +11,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.tileents.CoreTileEntity;
@@ -96,6 +96,8 @@ public class RepairCoreCommand extends AbstractCommand
 			//TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);
 			if((tce != null) && (ds != null))
 			{
+				tce.sendUpdate();
+				ds.sendUpdate();
 				if(total)
 				{
 					tce.removeAllRooms(true);

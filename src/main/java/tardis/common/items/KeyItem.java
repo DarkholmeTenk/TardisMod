@@ -13,7 +13,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;

@@ -16,7 +16,8 @@
 /gradlew
 /gradlew.bat
 /screenshots/
+/assets/
 options.txt
 usernamecache.json
-*.blend1
 *.jar
+**/*.blend1

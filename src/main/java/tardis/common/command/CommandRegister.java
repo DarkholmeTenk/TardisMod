@@ -16,7 +16,7 @@ public class CommandRegister
 	private static AbstractCommand xpCommand;
 	private static AbstractCommand regCommand;
 	private static AbstractCommand conCommand;
-	
+
 	public static void registerCommands(FMLServerStartingEvent event)
 	{
 		teleportCommand = new TeleportCommand();
@@ -41,5 +41,6 @@ public class CommandRegister
 		event.registerServerCommand(xpCommand);
 		event.registerServerCommand(regCommand);
 		event.registerServerCommand(conCommand);
+		event.registerServerCommand(new SetValueCommand());
 	}
 }

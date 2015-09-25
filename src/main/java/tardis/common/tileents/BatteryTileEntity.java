@@ -12,7 +12,7 @@ import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.extensions.LabFlag;
 
 public class BatteryTileEntity extends AbstractTileEntity implements IArtronEnergyProvider, IScrewable, IActivatable

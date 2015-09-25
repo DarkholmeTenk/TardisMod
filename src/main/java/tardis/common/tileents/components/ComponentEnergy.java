@@ -1,8 +1,12 @@
 package tardis.common.tileents.components;
 
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
+
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -14,7 +18,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
 @Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid="CoFHCore")
-public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
+public class ComponentEnergy extends AbstractComponent implements IEnergyHandler, IActivatable
 {
 	private HashMap<ForgeDirection,AtomicInteger> hasFilled = new HashMap<ForgeDirection,AtomicInteger>(ForgeDirection.VALID_DIRECTIONS.length);
 	protected ComponentEnergy() {}
@@ -29,6 +33,13 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	public ITardisComponent create(ComponentTileEntity parent)
 	{
 		return new ComponentEnergy(parent);
+	}
+
+	@Override
+	public boolean activate(EntityPlayer ent, int side)
+	{
+		ServerHelper.sendString(ent, "Energy: " + getEnergyStored(null) + "/" + getMaxEnergyStored(null)+"RF");
+		return true;
 	}
 
 	private void blankHashmap()
