@@ -45,10 +45,7 @@ public class TardisRenderer extends AbstractObjRenderer implements IItemRenderer
 		if((dir < 4) && (tte != null))
 		{
 			GL11.glPushMatrix();
-			//This line actually rotates the renderer.
-			//GL11.glTranslatef(0.5F, 0, 0.5F);
 			GL11.glRotatef((dir * (-90F)) + 90, 0F, 1F, 0F);
-			//GL11.glRotatef(180F, 0F, 0, 1F);
 			GL11.glTranslatef(0F, 1F, 0F);
 			if(TardisMod.proxy instanceof TardisClientProxy)
 				bindTexture(((TardisClientProxy)TardisMod.proxy).getSkin(field_147501_a.field_147553_e,tte));
