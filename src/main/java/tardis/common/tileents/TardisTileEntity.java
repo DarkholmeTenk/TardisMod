@@ -22,10 +22,10 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
+import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -43,6 +43,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 
 	public String owner;
 	public static String baseURL = null;
+	public AbstractTardisChameleon chameleon;
 
 	Integer linkedDimension = null;
 
@@ -158,7 +159,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			playLandSound();
 		landing = true;
 		landFast = fast;
-		TardisOutput.print("TTE", "LANDING!!!! " + (fast ? "FAST " : "SLOW ") + (ServerHelper.isClient()?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
+		//TardisOutput.print("TTE", "LANDING!!!! " + (fast ? "FAST " : "SLOW ") + (ServerHelper.isClient()?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
 		sendUpdate();
 	}
 
@@ -173,8 +174,17 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		TardisDataStore ds = Helper.getDataStore(dimID);
 		if(ds != null)
 		{
-			ds.linkToExterior(this);
+ 			ds.linkToExterior(this);
+			chameleon = ds.getChameleon();
+			sendUpdate();
 		}
+	}
+
+	public AbstractTardisChameleon getChameleon()
+	{
+		if(chameleon == null)
+			return TardisMod.tardisChameleonReg.getDefault();
+		return chameleon;
 	}
 
 	public float getTransparency()
@@ -252,31 +262,35 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	}
 
 	@Override
-	public void writeTransmittable(NBTTagCompound tag)
+	public void writeTransmittable(NBTTagCompound nbt)
 	{
-		tag.setBoolean("takingOff",takingOff);
-		tag.setBoolean("landing",landing);
-		tag.setBoolean("landFast", landFast);
-		tag.setBoolean("landed", landed);
-		tag.setInteger("fadeTimer", fadeTimer);
+		nbt.setBoolean("takingOff",takingOff);
+		nbt.setBoolean("landing",landing);
+		nbt.setBoolean("landFast", landFast);
+		nbt.setBoolean("landed", landed);
+		nbt.setInteger("fadeTimer", fadeTimer);
 		if(linkedDimension != null)
-			tag.setInteger("linkedDimension", linkedDimension);
+			nbt.setInteger("linkedDimension", linkedDimension);
 		if(owner != null)
-			tag.setString("owner", owner);
+			nbt.setString("owner", owner);
+		if((chameleon != TardisMod.tardisChameleonReg.getDefault()) && (chameleon != null))
+			if(ServerHelper.isServer())
+				chameleon.writeToNBT(nbt);
 	}
 
 	@Override
-	public void readTransmittable(NBTTagCompound tag)
+	public void readTransmittable(NBTTagCompound nbt)
 	{
-		takingOff = tag.getBoolean("takingOff");
-		landing = tag.getBoolean("landing");
-		landFast = tag.getBoolean("landFast");
-		landed = tag.getBoolean("landed");
-		fadeTimer = tag.getInteger("fadeTimer");
-		if(tag.hasKey("linkedDimension"))
-			linkedDimension = tag.getInteger("linkedDimension");
-		if(tag.hasKey("owner"))
-			owner = tag.getString("owner");
+		takingOff = nbt.getBoolean("takingOff");
+		landing = nbt.getBoolean("landing");
+		landFast = nbt.getBoolean("landFast");
+		landed = nbt.getBoolean("landed");
+		fadeTimer = nbt.getInteger("fadeTimer");
+		if(nbt.hasKey("linkedDimension"))
+			linkedDimension = nbt.getInteger("linkedDimension");
+		if(nbt.hasKey("owner"))
+			owner = nbt.getString("owner");
+		chameleon = TardisMod.tardisChameleonReg.get(nbt, AbstractTardisChameleon.nbtKey);
 	}
 
 	public List<Entity> getEntitiesInside()

@@ -883,7 +883,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		TardisTileEntity tardis = gDS().getExterior();
 		if (tardis != null)
 		{
-			tardis.linkedDimension = WorldHelper.getWorldID(this);
+			tardis.linkToDimension(WorldHelper.getWorldID(this));
 			tardis.land(fast);
 		}
 	}

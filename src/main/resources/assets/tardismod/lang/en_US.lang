@@ -97,6 +97,11 @@ item.TardisMod.UpgradeItem.shield.name=Upgrade - Shield Level
 item.TardisMod.UpgradeItem.room.name=Upgrade - Max Rooms Level
 item.TardisMod.UpgradeItem.energy.name=Upgrade - Energy Level
 item.TardisMod.UpgradeItem.energyRegen.name=Upgrade - Energy Regen Level
+item.TardisMod.ChameleonUpgrade.name=Upgrade - Chameleon Circuit
+
+TardisCham.Default.name=Old Police Box
+TardisCham.New.name=New Police Box
+TardisCham.Post.name=Post Box
 
 itemGroup.TardisModTab=Tardis Mod
 itemGroup.TardisModCraftableTab=Tardis Mod - Craftable

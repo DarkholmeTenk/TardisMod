@@ -2,23 +2,19 @@ package tardis.client.renderer.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
 import org.lwjgl.opengl.GL11;
 
 import tardis.TardisMod;
-import tardis.client.TardisClientProxy;
 import tardis.client.renderer.model.TardisModel;
-import tardis.common.TardisProxy;
 import tardis.common.tileents.TardisTileEntity;
+import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 
 public class TardisRenderer extends AbstractObjRenderer implements IItemRenderer
 {
@@ -34,24 +30,20 @@ public class TardisRenderer extends AbstractObjRenderer implements IItemRenderer
 	@Override
 	public void renderBlock(Tessellator tesselator, TileEntity te, int x, int y, int z)
 	{
-		if(tardis == null)
-			tardis = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/tardis.obj"));
 		World world = te.getWorldObj();
-		TardisTileEntity tte = null;
-		if((te != null) && (te instanceof TardisTileEntity))
-			tte = (TardisTileEntity) te;
+		if((te == null) || !(te instanceof TardisTileEntity)) return;
+		TardisTileEntity tte = (TardisTileEntity) te;
+		AbstractTardisChameleon cham = tte.getChameleon();
 		int dir = world.getBlockMetadata(x,y,z);
 		GL11.glScaled(1.1, 0.95, 1.1);
 		if((dir < 4) && (tte != null))
 		{
 			GL11.glPushMatrix();
 			GL11.glRotatef((dir * (-90F)) + 90, 0F, 1F, 0F);
-			GL11.glTranslatef(0F, 1F, 0F);
-			if(TardisMod.proxy instanceof TardisClientProxy)
-				bindTexture(((TardisClientProxy)TardisMod.proxy).getSkin(field_147501_a.field_147553_e,tte));
+			GL11.glTranslatef(0F, 0.95F, 0F);
 			GL11.glColor4f(1F, 1F, 1F, tte.getTransparency());
-			//model.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-			tardis.renderAll();
+			cham.render(tte);
+			//tardis.renderAll();
 			GL11.glPopMatrix();
 		}
 	}
@@ -105,12 +97,8 @@ public class TardisRenderer extends AbstractObjRenderer implements IItemRenderer
 
 	public void render(ItemStack item)
 	{
-		if(tardis == null)
-			tardis = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/tardis.obj"));
 		GL11.glPushMatrix();
-		Minecraft.getMinecraft().renderEngine.bindTexture(TardisProxy.defaultSkin);
-		//model.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		tardis.renderAll();
+		TardisMod.tardisChameleonReg.getDefault().render(null);
 		GL11.glPopMatrix();
 	}
 }

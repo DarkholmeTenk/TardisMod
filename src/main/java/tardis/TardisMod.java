@@ -67,6 +67,7 @@ import tardis.common.items.ManualItem;
 import tardis.common.items.NameTagItem;
 import tardis.common.items.SchemaItem;
 import tardis.common.items.SonicScrewdriverItem;
+import tardis.common.items.UpgradeChameleonItem;
 import tardis.common.items.UpgradeItem;
 import tardis.common.items.extensions.ScrewTypeRegister;
 import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
@@ -80,6 +81,11 @@ import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.GravityLiftTileEntity;
 import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.components.AbstractComponent;
+import tardis.common.tileents.extensions.chameleon.ChameleonRegistry;
+import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
+import tardis.common.tileents.extensions.chameleon.tardis.DefaultTardisCham;
+import tardis.common.tileents.extensions.chameleon.tardis.NewTardisCham;
+import tardis.common.tileents.extensions.chameleon.tardis.PostboxTardisCham;
 import thaumcraft.api.ItemApi;
 import appeng.api.AEApi;
 import appeng.api.IAppEngApi;
@@ -99,114 +105,118 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 public class TardisMod implements IConfigHandlerMod
 {
 	@Instance
-	public static TardisMod					i;
-	public static final String				modName				= "TardisMod";
-	public static int						decoratorRange		= 6;
-	public static boolean					inited				= false;
+	public static TardisMod										i;
+	public static final String									modName				= "TardisMod";
+	public static int											decoratorRange		= 6;
+	public static boolean										inited				= false;
 
 	@SidedProxy(clientSide = "tardis.client.TardisClientProxy", serverSide = "tardis.common.TardisProxy")
-	public static TardisProxy				proxy;
-	public static DimensionEventHandler		dimEventHandler		= new DimensionEventHandler();
+	public static TardisProxy									proxy;
+	public static DimensionEventHandler							dimEventHandler		= new DimensionEventHandler();
 
-	public static IAppEngApi				aeAPI				= null;
+	public static IAppEngApi									aeAPI				= null;
 
-	public static ConfigHandler				configHandler;
-	public static SchemaHandler				schemaHandler;
-	public static ConfigFile				modConfig;
-	public static ConfigFile				miscConfig;
+	public static ConfigHandler									configHandler;
+	public static SchemaHandler									schemaHandler;
+	public static ConfigFile									modConfig;
+	public static ConfigFile									miscConfig;
 
-	public static DarkcoreTeleporter		teleporter			= null;
-	public static TardisDimensionHandler	otherDims;
-	public static TardisDimensionRegistry	dimReg;
-	public static TardisOwnershipRegistry	plReg;
-	public static CreativeTab				tab					= null;
-	public static CreativeTab				cTab				= null;
+	public static DarkcoreTeleporter							teleporter			= null;
+	public static TardisDimensionHandler						otherDims;
+	public static TardisDimensionRegistry						dimReg;
+	public static TardisOwnershipRegistry						plReg;
+	public static CreativeTab									tab					= null;
+	public static CreativeTab									cTab				= null;
 
-	public static TardisOutput.Priority		priorityLevel		= TardisOutput.Priority.INFO;
-	public static int						providerID			= 54;
-	public static boolean					tardisLoaded		= true;
-	public static boolean					keyInHand			= true;
+	public static TardisOutput.Priority							priorityLevel		= TardisOutput.Priority.INFO;
+	public static int											providerID			= 54;
+	public static boolean										tardisLoaded		= true;
+	public static boolean										keyInHand			= true;
 
-	public static AbstractBlock				tardisBlock;
-	public static AbstractBlock				tardisTopBlock;
-	public static AbstractBlock				tardisCoreBlock;
-	public static AbstractBlock				tardisConsoleBlock;
-	public static AbstractBlock				tardisEngineBlock;
-	public static AbstractBlock				componentBlock;
-	public static AbstractBlock				internalDoorBlock;
-	public static AbstractBlock				decoBlock;
-	public static AbstractBlock				decoTransBlock;
-	public static AbstractBlock				schemaBlock;
-	public static AbstractBlock				schemaCoreBlock;
-	public static AbstractBlock				schemaComponentBlock;
-	public static AbstractBlock				debugBlock;
-	public static AbstractBlock				landingPad;
-	public static AbstractBlock				gravityLift;
-	public static AbstractBlock				forcefield;
-	public static AbstractBlock				battery;
-	public static StairBlock				stairBlock;
-	public static AbstractBlock				slabBlock;
-	public static AbstractBlock				interiorDirtBlock;
-	public static AbstractBlock				manualBlock;
-	public static AbstractBlock				manualHelperBlock;
-	public static AbstractBlock				summonerBlock;
+	public static AbstractBlock									tardisBlock;
+	public static AbstractBlock									tardisTopBlock;
+	public static AbstractBlock									tardisCoreBlock;
+	public static AbstractBlock									tardisConsoleBlock;
+	public static AbstractBlock									tardisEngineBlock;
+	public static AbstractBlock									componentBlock;
+	public static AbstractBlock									internalDoorBlock;
+	public static AbstractBlock									decoBlock;
+	public static AbstractBlock									decoTransBlock;
+	public static AbstractBlock									schemaBlock;
+	public static AbstractBlock									schemaCoreBlock;
+	public static AbstractBlock									schemaComponentBlock;
+	public static AbstractBlock									debugBlock;
+	public static AbstractBlock									landingPad;
+	public static AbstractBlock									gravityLift;
+	public static AbstractBlock									forcefield;
+	public static AbstractBlock									battery;
+	public static StairBlock									stairBlock;
+	public static AbstractBlock									slabBlock;
+	public static AbstractBlock									interiorDirtBlock;
+	public static AbstractBlock									manualBlock;
+	public static AbstractBlock									manualHelperBlock;
+	public static AbstractBlock									summonerBlock;
 
-	public static AbstractBlock				colorableWallBlock;
-	public static AbstractBlock				colorableFloorBlock;
-	public static AbstractBlock				colorableBrickBlock;
-	public static AbstractBlock				colorablePlankBlock;
-	public static AbstractBlock				colorableRoundelBlock;
-	public static AbstractBlock				colorableOpenRoundelBlock;
+	public static AbstractBlock									colorableWallBlock;
+	public static AbstractBlock									colorableFloorBlock;
+	public static AbstractBlock									colorableBrickBlock;
+	public static AbstractBlock									colorablePlankBlock;
+	public static AbstractBlock									colorableRoundelBlock;
+	public static AbstractBlock									colorableOpenRoundelBlock;
 
-	public static AbstractBlock				wallSimulacrumBlock;
-	public static AbstractBlock				floorSimulacrumBlock;
-	public static AbstractBlock				glassSimulacrumBlock;
-	public static AbstractBlock				brickSimulacrumBlock;
-	public static AbstractBlock				plankSimulacrumBlock;
+	public static AbstractBlock									wallSimulacrumBlock;
+	public static AbstractBlock									floorSimulacrumBlock;
+	public static AbstractBlock									glassSimulacrumBlock;
+	public static AbstractBlock									brickSimulacrumBlock;
+	public static AbstractBlock									plankSimulacrumBlock;
 
-	public static AbstractBlock				decoSimulacrumBlock;
-	public static LabBlock					labBlock;
+	public static AbstractBlock									decoSimulacrumBlock;
+	public static LabBlock										labBlock;
 
-	public static AbstractItem				schemaItem;
-	public static AbstractItem				componentItem;
-	public static CraftingComponentItem		craftingComponentItem;
-	public static KeyItem					keyItem;
-	public static SonicScrewdriverItem		screwItem;
-	public static ManualItem				manualItem;
-	public static UpgradeItem				upgradeItem;
-	public static NameTagItem				nameTag;
-	public static AbstractItem				decoTool;
+	public static AbstractItem									schemaItem;
+	public static AbstractItem									componentItem;
+	public static CraftingComponentItem							craftingComponentItem;
+	public static KeyItem										keyItem;
+	public static SonicScrewdriverItem							screwItem;
+	public static ManualItem									manualItem;
+	public static UpgradeItem									upgradeItem;
+	public static NameTagItem									nameTag;
+	public static AbstractItem									decoTool;
+	public static UpgradeChameleonItem							chameleonUpgradeItem;
 
-	public static boolean					tcInstalled			= false;
+	public static boolean										tcInstalled			= false;
 
-	public static double					tardisVol			= 1;
-	public static boolean					deathTransmat		= true;
-	public static boolean					deathTransmatLive	= true;
-	public static double					transmatExitDist	= 2;
-	public static boolean					visibleSchema		= false;
-	public static boolean					visibleForceField	= false;
-	public static boolean					lightBlocks			= false;
-	public static int						xpBase				= 80;
-	public static int						xpInc				= 20;
-	public static int						rfBase				= 50000;
-	public static int						rfInc				= 50000;
-	public static int						rfPerT				= 4098;
-	public static int						maxFlu				= 32000;
-	public static int						numTanks			= 5;
-	public static int						numInvs				= 30;
-	public static int						shiftPressTime		= 60;
-	public static boolean					keyCraftable		= true;
-	public static boolean					keyReqKontron		= true;
-	public static boolean					kontronCraftable	= false;
-	public static int						kontronRarity		= 4;
-	public static boolean					keyOnFirstJoin		= true;
-	public static int						maxEachAspect		= 16;
-	public static int						maxEachAspectInc	= 16;
-	public static int						numAspects			= 16;
-	public static int						numDirtRecipe		= 2;
-	public static boolean					deleteDisconnected	= true;
+	public static double										tardisVol			= 1;
+	public static boolean										deathTransmat		= true;
+	public static boolean										deathTransmatLive	= true;
+	public static double										transmatExitDist	= 2;
+	public static boolean										visibleSchema		= false;
+	public static boolean										visibleForceField	= false;
+	public static boolean										lightBlocks			= false;
+	public static int											xpBase				= 80;
+	public static int											xpInc				= 20;
+	public static int											rfBase				= 50000;
+	public static int											rfInc				= 50000;
+	public static int											rfPerT				= 4098;
+	public static int											maxFlu				= 32000;
+	public static int											numTanks			= 5;
+	public static int											numInvs				= 30;
+	public static int											shiftPressTime		= 60;
+	public static boolean										keyCraftable		= true;
+	public static boolean										keyReqKontron		= true;
+	public static boolean										kontronCraftable	= false;
+	public static int											kontronRarity		= 4;
+	public static boolean										keyOnFirstJoin		= true;
+	public static int											maxEachAspect		= 16;
+	public static int											maxEachAspectInc	= 16;
+	public static int											numAspects			= 16;
+	public static int											numDirtRecipe		= 2;
+	public static boolean										deleteDisconnected	= true;
 
-	public static AbstractScrewdriverType	defaultType			= new Tenth();
+	public static AbstractScrewdriverType						defaultType			= new Tenth();
+
+	public static ChameleonRegistry<AbstractTardisChameleon>	tardisChameleonReg	= new ChameleonRegistry(new DefaultTardisCham());
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException
 	{
@@ -222,17 +232,20 @@ public class TardisMod implements IConfigHandlerMod
 		refreshConfigs();
 
 		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
+		initChameleonTypes();
 		initBlocks();
 		initItems();
-		initScrewTypes();
 
 		// MinecraftForge.EVENT_BUS.register(new SoundHandler());
 
 		proxy.postAssignment();
 	}
 
-	private void initScrewTypes()
+	private void initChameleonTypes()
 	{
+		tardisChameleonReg.register(new NewTardisCham());
+		tardisChameleonReg.register(new PostboxTardisCham());
+
 		ScrewTypeRegister.register(defaultType);
 		ScrewTypeRegister.register(new Twelth());
 		ScrewTypeRegister.register(new Eighth());
@@ -253,8 +266,8 @@ public class TardisMod implements IConfigHandlerMod
 
 		keyOnFirstJoin = modConfig.getBoolean("keyOnJoin", false, "If true, all players get a new key when they first join");
 		keyReqKontron = modConfig.getBoolean("keyRequiresKontron", true, "True if the key requires a Kontron crystal to craft");
-		kontronCraftable = modConfig.getBoolean("kontronCraftable",false,"If true, a standard crafting recipe is added for the kontron crystal");
-		kontronRarity = modConfig.getInt("kontronRarity",20,"The higher this value, the more likely you are to find kontron crystals in chests");
+		kontronCraftable = modConfig.getBoolean("kontronCraftable", false, "If true, a standard crafting recipe is added for the kontron crystal");
+		kontronRarity = modConfig.getInt("kontronRarity", 20, "The higher this value, the more likely you are to find kontron crystals in chests");
 
 		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1, "How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
 
@@ -282,7 +295,7 @@ public class TardisMod implements IConfigHandlerMod
 		maxEachAspectInc = miscConfig.getInt("max aspect inc", 16, "The amount of aspect storage gained per level");
 
 		decoratorRange = modConfig.getInt("decorator range", 6, "The maximum range the decorator can work to");
-		numDirtRecipe = MathHelper.clamp(miscConfig.getInt("Number of temporal dirt to produce per recipe", 2, "Min 1, max 64"),1,64);
+		numDirtRecipe = MathHelper.clamp(miscConfig.getInt("Number of temporal dirt to produce per recipe", 2, "Min 1, max 64"), 1, 64);
 
 		AbstractComponent.refreshConfigs();
 		BatteryTileEntity.refreshConfigs();
@@ -306,15 +319,14 @@ public class TardisMod implements IConfigHandlerMod
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event)
 	{
-		System.out.println("POSTINIT");
+		tardisChameleonReg.postInit();
 		aeAPI = AEApi.instance();
 		initRecipes();
 		FMLCommonHandler.instance().bus().register(dimEventHandler);
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		inited = true;
 		tcInstalled = ItemApi.getItem("itemResource", 0) != null;
-		if(keyOnFirstJoin)
-			PlayerHelper.registerJoinItem(new ItemStack(keyItem,1));
+		if (keyOnFirstJoin) PlayerHelper.registerJoinItem(new ItemStack(keyItem, 1));
 		FMLCommonHandler.instance().bus().register(ScrewdriverHelperFactory.i);
 	}
 
@@ -368,6 +380,7 @@ public class TardisMod implements IConfigHandlerMod
 		upgradeItem = (UpgradeItem) new UpgradeItem().register();
 		nameTag = (NameTagItem) new NameTagItem().register();
 		decoTool = new DecoratingTool().register();
+		chameleonUpgradeItem = (UpgradeChameleonItem) new UpgradeChameleonItem().register();
 	}
 
 	private void initRecipes()
@@ -386,6 +399,7 @@ public class TardisMod implements IConfigHandlerMod
 		upgradeItem.initRecipes();
 		nameTag.initRecipes();
 		decoTool.initRecipes();
+		chameleonUpgradeItem.initRecipes();
 		CraftableSimBlock.initStaticRecipes();
 	}
 

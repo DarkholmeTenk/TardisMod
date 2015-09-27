@@ -1,12 +1,10 @@
 package tardis.common;
 
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 public class TardisProxy
 {
-	public static final ResourceLocation defaultSkin = new ResourceLocation("tardismod","textures/models/Tardis.png");
 
 	public TardisProxy()
 	{

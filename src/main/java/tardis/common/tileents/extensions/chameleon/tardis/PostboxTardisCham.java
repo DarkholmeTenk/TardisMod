@@ -5,7 +5,7 @@ import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import tardis.common.tileents.TardisTileEntity;
 
-public class DefaultTardisCham extends AbstractTardisChameleon
+public class PostboxTardisCham extends AbstractTardisChameleon
 {
 	private IModelCustom tardis;
 	private ResourceLocation tex;
@@ -13,7 +13,7 @@ public class DefaultTardisCham extends AbstractTardisChameleon
 	@Override
 	public String getName()
 	{
-		return "TardisCham.Default.name";
+		return "TardisCham.Post.name";
 	}
 
 	@Override
@@ -26,8 +26,8 @@ public class DefaultTardisCham extends AbstractTardisChameleon
 	@Override
 	public void registerClientResources()
 	{
-		tardis = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/tardis/oldTardis.obj"));
-		tex = new ResourceLocation("tardismod","textures/models/tardis/TardisOld.png");
+		tardis = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/tardis/postbox.obj"));
+		tex = new ResourceLocation("tardismod","textures/models/tardis/PostBox.png");
 	}
 
 	@Override

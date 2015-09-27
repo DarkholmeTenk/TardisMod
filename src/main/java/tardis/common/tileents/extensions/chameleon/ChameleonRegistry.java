@@ -17,6 +17,7 @@ public class ChameleonRegistry<C extends IChameleon>
 	public ChameleonRegistry(C defaultChameleon)
 	{
 		defaultC = defaultChameleon;
+		register(defaultC);
 	}
 
 	public void clear()
@@ -69,6 +70,11 @@ public class ChameleonRegistry<C extends IChameleon>
 	{
 		if(nbt.hasKey(n))
 			return get(nbt.getString(n));
+		return defaultC;
+	}
+
+	public C getDefault()
+	{
 		return defaultC;
 	}
 }

@@ -25,7 +25,9 @@ import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
+import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
+import tardis.common.tileents.extensions.upgrades.ChameleonUpgrade;
 import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -623,6 +625,14 @@ public class TardisDataStore extends AbstractWorldDataStore
 			if((up != null) && !ServerHelper.isIntegratedClient())
 				up.tick(tt);
 		}
+	}
+
+	public AbstractTardisChameleon getChameleon()
+	{
+		for(AbstractUpgrade up : upgrades)
+			if(up instanceof ChameleonUpgrade)
+				return ((ChameleonUpgrade)up).chameleon;
+		return TardisMod.tardisChameleonReg.getDefault();
 	}
 
 }
