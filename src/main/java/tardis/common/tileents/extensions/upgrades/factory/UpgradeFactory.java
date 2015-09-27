@@ -7,7 +7,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.TardisUpgradeMode;
+import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
+import tardis.common.tileents.extensions.upgrades.ChameleonUpgrade;
 import tardis.common.tileents.extensions.upgrades.DamReduceCombat;
 import tardis.common.tileents.extensions.upgrades.DamReduceExplosion;
 import tardis.common.tileents.extensions.upgrades.DamReduceMissedControl;
@@ -64,6 +66,8 @@ public class UpgradeFactory implements IUpgradeFactory
 				return new DamReduceMissedControl(nbt);
 			if(id.equals("levelUp"))
 				return new LevelUpgrade(TardisUpgradeMode.getUpgradeMode(nbt.getInteger("tum")));
+			if(id.equals("cham"))
+				return new ChameleonUpgrade(TardisMod.tardisChameleonReg.get(nbt, AbstractTardisChameleon.nbtKey));
 		}
 		return null;
 	}
@@ -95,6 +99,12 @@ public class UpgradeFactory implements IUpgradeFactory
 					case 8: return new LevelUpgrade(TardisUpgradeMode.REGEN);
 				}
 			}
+		}
+		if(i == TardisMod.chameleonUpgradeItem)
+		{
+			int meta = is.getItemDamage();
+			if((meta < 0) || (meta >= TardisMod.chameleonUpgradeItem.types.length)) return null;
+			return new ChameleonUpgrade(TardisMod.chameleonUpgradeItem.types[meta]);
 		}
 		return null;
 	}

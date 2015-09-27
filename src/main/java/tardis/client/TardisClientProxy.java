@@ -44,6 +44,7 @@ import tardis.common.tileents.ManualTileEntity;
 import tardis.common.tileents.SummonerTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import tardis.common.tileents.extensions.DummyRoundelTE;
+import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.relauncher.Side;
@@ -114,28 +115,35 @@ public class TardisClientProxy extends TardisProxy
 	}
 
 	@SideOnly(Side.CLIENT)
-	private ITextureObject loadSkin(TextureManager texMan, TardisTileEntity tte)
+	private ITextureObject loadSkin(TextureManager texMan, TardisTileEntity tte, AbstractTardisChameleon cham)
 	{
 		if(tte.owner == null)
 			return null;
+		String key = cham.getTextureDir() + "." + tte.owner;
+		String dir = cham.getTextureDir();
 		texMan = Minecraft.getMinecraft().getTextureManager();
-		ResourceLocation skin = new ResourceLocation("tardismod","textures/tardis/" + StringUtils.stripControlCodes(tte.owner) +".png");
+		ResourceLocation skin = new ResourceLocation("tardismod","textures/tardis/" + dir + "/" + StringUtils.stripControlCodes(tte.owner) +".png");
 		ITextureObject object = texMan.getTexture(skin);
 		if(object == null)
 		{
 			TardisOutput.print("TTE", "Downloading " + tte.owner + " skin");
-			object = new ThreadDownloadTardisData(null, TardisTileEntity.baseURL+tte.owner+".png", defaultSkin, new ImageBufferDownload());
+			object = new ThreadDownloadTardisData(null, TardisTileEntity.baseURL + dir + "/" +tte.owner+".png", cham.defaultTex(), new ImageBufferDownload());
 		}
 		texMan.loadTexture(skin, object);
-		skins.put(tte.owner, skin);
+		skins.put(key, skin);
 		return object;
 	}
 
 	@SideOnly(Side.CLIENT)
-	public ResourceLocation getSkin(TextureManager texMan,TardisTileEntity tte)
+	public ResourceLocation getSkin(TextureManager texMan,TardisTileEntity tte, AbstractTardisChameleon cham)
 	{
-		if(!skins.containsKey(tte.owner))
-			loadSkin(texMan,tte);
-		return skins.containsKey(tte.owner) ? skins.get(tte.owner) : defaultSkin;
+		if(tte == null)
+			return cham.defaultTex();
+
+		String key = cham.getTextureDir() + "." + tte.owner;
+		if(!skins.containsKey(key))
+			loadSkin(texMan,tte, cham);
+
+		return skins.containsKey(key) ? skins.get(key) : cham.defaultTex();
 	}
 }
