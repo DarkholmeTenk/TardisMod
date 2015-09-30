@@ -14,8 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 public interface ILinkable
 {
 	public boolean link(EntityPlayer pl, SimpleCoordStore link, SimpleCoordStore other);
-	public boolean unlink(EntityPlayer pl, SimpleCoordStore link, SimpleCoordStore other);
 	public boolean unlink(EntityPlayer pl, SimpleCoordStore link);
 	public Set<SimpleCoordStore> getLinked(SimpleCoordStore link);
-	public boolean isLinkable();
+	public boolean isLinkable(SimpleCoordStore link);
 }

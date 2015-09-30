@@ -7,7 +7,7 @@ import tardis.TardisMod;
 import tardis.common.tileents.SummonerTileEntity;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class SummonerBlock extends AbstractScrewableBlock
+public class SummonerBlock extends AbstractScrewableBlockContainer
 {
 	public SummonerBlock()
 	{

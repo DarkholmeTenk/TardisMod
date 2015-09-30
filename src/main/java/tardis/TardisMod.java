@@ -34,6 +34,7 @@ import tardis.common.blocks.ForceFieldBlock;
 import tardis.common.blocks.GravityLiftBlock;
 import tardis.common.blocks.InteriorDirtBlock;
 import tardis.common.blocks.InternalDoorBlock;
+import tardis.common.blocks.InternalMagicDoorBlock;
 import tardis.common.blocks.LabBlock;
 import tardis.common.blocks.LandingPadBlock;
 import tardis.common.blocks.ManualBlock;
@@ -139,7 +140,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock									tardisConsoleBlock;
 	public static AbstractBlock									tardisEngineBlock;
 	public static AbstractBlock									componentBlock;
-	public static AbstractBlock									internalDoorBlock;
+	public static InternalDoorBlock								internalDoorBlock;
 	public static AbstractBlock									decoBlock;
 	public static AbstractBlock									decoTransBlock;
 	public static AbstractBlock									schemaBlock;
@@ -156,6 +157,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock									manualBlock;
 	public static AbstractBlock									manualHelperBlock;
 	public static AbstractBlock									summonerBlock;
+	public static AbstractBlock									magicDoorBlock;
 
 	public static AbstractBlock									colorableWallBlock;
 	public static AbstractBlock									colorableFloorBlock;
@@ -338,7 +340,7 @@ public class TardisMod implements IConfigHandlerMod
 		tardisConsoleBlock = new ConsoleBlock().register();
 		tardisEngineBlock = new EngineBlock().register();
 		componentBlock = new ComponentBlock().register();
-		internalDoorBlock = new InternalDoorBlock().register();
+		internalDoorBlock = (InternalDoorBlock) new InternalDoorBlock().register();
 		decoBlock = new DecoBlock().register();
 		decoTransBlock = new DecoTransBlock().register();
 		interiorDirtBlock = new InteriorDirtBlock().register();
@@ -361,6 +363,7 @@ public class TardisMod implements IConfigHandlerMod
 		manualHelperBlock = new ManualHelperBlock().register();
 		stairBlock = new StairBlock().register();
 		summonerBlock = new SummonerBlock().register();
+		magicDoorBlock = new InternalMagicDoorBlock().register();
 		wallSimulacrumBlock = new CraftableCSimBlock(colorableWallBlock).register();
 		floorSimulacrumBlock = new CraftableCSimBlock(colorableFloorBlock).register();
 		brickSimulacrumBlock = new CraftableCSimBlock(colorableBrickBlock).register();

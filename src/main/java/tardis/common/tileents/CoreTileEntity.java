@@ -1131,7 +1131,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 	}
 
-	private void refreshDoors(boolean isRoomBeingRemoved)
+	public void refreshDoors(boolean isRoomBeingRemoved)
 	{
 		if (tt <= 2) return;
 		synchronized (roomSet)

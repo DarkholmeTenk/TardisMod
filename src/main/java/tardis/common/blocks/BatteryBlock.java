@@ -17,7 +17,7 @@ import tardis.common.tileents.extensions.LabFlag;
 import tardis.common.tileents.extensions.LabRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BatteryBlock extends AbstractScrewableBlock
+public class BatteryBlock extends AbstractScrewableBlockContainer
 {
 	public BatteryBlock()
 	{

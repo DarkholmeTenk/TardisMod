@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -271,6 +272,16 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 		for(DoorDS dds : doors)
 		{
 			SimpleCoordStore scs = dds.scs;
+			Block b = scs.getBlock();
+			if(b == TardisMod.magicDoorBlock)
+			{
+				MagicDoorTileEntity te = (MagicDoorTileEntity) scs.getTileEntity();
+				if(te.isValidLink())
+				{
+					repairDoor(dds, false);
+					continue;
+				}
+			}
 			int facing = dds.facing;
 			boolean foundPair = false;
 			SimpleCoordStore other = null;
@@ -315,6 +326,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 				repCol = repCol || SchemaComponentBlock.isDoorConnector(worldObj, (door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable);
 				if(repCol)
 					worldObj.setBlockToAir((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable);
+				repCol = repCol || (worldObj.getBlock((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable) == TardisMod.magicDoorBlock);
 			}
 			repRow = repRow || repCol;
 		}

@@ -18,7 +18,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.common.blocks.InternalDoorBlock;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
@@ -133,8 +132,8 @@ public class PartBlueprint
 			}
 		}
 		w.setBlockMetadataWithNotify(x, y, z, face + (primary ? 4 : 0), 3);
-		InternalDoorBlock.manageConnected(w, x, y, z, face);
-		InternalDoorBlock.manageConnected(w, x + InternalDoorBlock.dx(face), y, z + InternalDoorBlock.dz(face), face);
+		//InternalDoorBlock.manageConnected(w, x, y, z, face);
+		//InternalDoorBlock.manageConnected(w, x + InternalDoorBlock.dx(face), y, z + InternalDoorBlock.dz(face), face);
 	}
 
 	private void getDoor(World world, int x, int y, int z, int facing)
