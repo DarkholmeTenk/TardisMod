@@ -126,6 +126,7 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 								String category = help.getSchemaCat();
 								String name = help.getSchemaName();
 								PartBlueprint pb = TardisMod.schemaHandler.getSchema(category, name);
+								if(pb == null) return true; //If the schema isn't available anymore
 								int facing = w.getBlockMetadata(x, y, z) % 4;
 								CoordStore door = pb.getPrimaryDoorPos(opposingFace(facing));
 								int nX = (x - door.x) + dx(facing);
