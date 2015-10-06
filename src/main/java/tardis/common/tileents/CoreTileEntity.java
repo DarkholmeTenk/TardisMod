@@ -968,9 +968,10 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public ConsoleTileEntity getConsole()
 	{
-		TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 2, zCoord);
+		/*TileEntity te = worldObj.getTileEntity(xCoord, yCoord - 2, zCoord);
 		if (te instanceof ConsoleTileEntity) return (ConsoleTileEntity) te;
-		return null;
+		return null;*/
+		return Helper.getTardisConsole(worldObj);
 	}
 
 	public EngineTileEntity getEngine()
