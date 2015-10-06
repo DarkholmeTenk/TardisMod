@@ -24,9 +24,12 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements ILinkable
 	public void init()
 	{
 		super.init();
-		otherDoor = TardisMod.internalDoorBlock.linkMap.remove(coords);
-		otherDoorSet = new HashSet<SimpleCoordStore>();
-		otherDoorSet.add(otherDoor);
+		if(otherDoor == null)
+		{
+			otherDoor = TardisMod.internalDoorBlock.linkMap.remove(coords);
+			otherDoorSet = new HashSet<SimpleCoordStore>();
+			otherDoorSet.add(otherDoor);
+		}
 	}
 
 	@Override
