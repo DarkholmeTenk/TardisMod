@@ -15,12 +15,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import tardis.TardisMod;
-import tardis.api.ILinkable;
-import tardis.api.TardisPermission;
+import tardis.api.IScrewable;
+import tardis.api.ScrewdriverMode;
 import tardis.common.core.helpers.Helper;
-import tardis.common.dimension.TardisDataStore;
+import tardis.common.core.helpers.ScrewdriverHelper;
 
-public class MagicDoorTileEntity extends AbstractTileEntity implements ILinkable, IActivatable
+public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewable, IActivatable
 {
 	private SimpleCoordStore otherDoor;
 	private Set<SimpleCoordStore> otherDoorSet;
@@ -135,26 +135,6 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements ILinkable
 			core.refreshDoors(false);
 	}
 
-	@Override
-	public boolean link(EntityPlayer pl, SimpleCoordStore link, SimpleCoordStore other)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean unlink(EntityPlayer pl, SimpleCoordStore link)
-	{
-		TardisDataStore ds = Helper.getDataStore(this);
-		if((ds == null) || ds.hasPermission(pl, TardisPermission.PERMISSIONS))
-		{
-			if(otherDoor.getBlock() == TardisMod.magicDoorBlock)
-				otherDoor.setBlock(TardisMod.internalDoorBlock, otherDoor.getMetadata(), 3);
-			coords.setBlock(TardisMod.internalDoorBlock, getBlockMetadata(), 3);
-			return true;
-		}
-		return false;
-	}
-
 	public boolean isValidLink()
 	{
 		if(otherDoor == null) return false;
@@ -169,23 +149,11 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements ILinkable
 	}
 
 	@Override
-	public Set<SimpleCoordStore> getLinked(SimpleCoordStore link)
-	{
-		return otherDoorSet;
-	}
-
-	@Override
-	public boolean isLinkable(SimpleCoordStore link)
-	{
-		return false;
-	}
-
-	@Override
 	public boolean activate(EntityPlayer ent, int side)
 	{
 		System.out.println(coords().getMetadata()+":"+otherDoor);
 		sendUpdate();
-		return true;
+		return false;
 	}
 
 	@Override
@@ -200,5 +168,11 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements ILinkable
 	{
 		if(otherDoor != null) return;
 		setOtherDoor(SimpleCoordStore.readFromNBT(nbt, "od"));
+	}
+
+	@Override
+	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player)
+	{
+		return false;
 	}
 }

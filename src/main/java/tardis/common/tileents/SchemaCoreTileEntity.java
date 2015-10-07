@@ -24,6 +24,7 @@ import tardis.api.TardisPermission;
 import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.core.schema.CoordStore;
 import tardis.common.core.schema.PartBlueprint;
 import tardis.common.dimension.TardisDataStore;
@@ -200,7 +201,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	}
 
 	@Override
-	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
+	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player)
 	{
 		if(ServerHelper.isClient())
 			return true;

@@ -29,6 +29,7 @@ import tardis.api.IScrewablePrecise;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.LabTileEntity;
@@ -146,7 +147,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 	}
 
 	@Override
-	public boolean screw(ScrewdriverMode mode, EntityPlayer player, SimpleCoordStore s)
+	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player, SimpleCoordStore s)
 	{
 		if(mode == ScrewdriverMode.Dismantle)
 		{

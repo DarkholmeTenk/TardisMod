@@ -10,6 +10,7 @@ import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
+import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
@@ -223,7 +224,7 @@ public class ComponentAspect extends AbstractComponent implements IAspectSource,
 	}
 
 	@Override
-	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
+	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player)
 	{
 		if(ServerHelper.isClient())
 			return true;
