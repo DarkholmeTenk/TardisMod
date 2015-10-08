@@ -49,7 +49,7 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if(((tt % 20) == 0) && (otherDoor == null))
+		if(((tt % 20) == 0) && ((otherDoor == null) || !isValidLink()))
 			recheckDoors(true);
 		if(isValidLink())
 			checkEntities();
@@ -66,10 +66,10 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 		int z = zCoord;
 		switch(facing)
 		{
-			case 0: return aabb = AxisAlignedBB.getBoundingBox(x, y - 1, z - 1, x +0.3, y + 2, z + 2);
-			case 2: return aabb = AxisAlignedBB.getBoundingBox(x + 0.7, y - 1, z - 1, x + 1, y + 2, z + 2);
-			case 1:return aabb = AxisAlignedBB.getBoundingBox(x - 1, y - 1, z, x + 2, y + 2, z + 0.3);
-			case 3:return aabb = AxisAlignedBB.getBoundingBox(x - 1, y - 1, z + 0.7, x + 2, y + 2, z + 1);
+			case 0: return aabb = AxisAlignedBB.getBoundingBox(x, y - 1, z - 1, x +0.35, y + 2, z + 2);
+			case 2: return aabb = AxisAlignedBB.getBoundingBox(x + 0.65, y - 1, z - 1, x + 1, y + 2, z + 2);
+			case 1:return aabb = AxisAlignedBB.getBoundingBox(x - 1, y - 1, z, x + 2, y + 2, z + 0.35);
+			case 3:return aabb = AxisAlignedBB.getBoundingBox(x - 1, y - 1, z + 0.65, x + 2, y + 2, z + 1);
 			default: return aabb = AxisAlignedBB.getBoundingBox(x - 1, y - 1, z +0.5, x + 2, y + 2, z + 1);
 		}
 	}
@@ -82,8 +82,8 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 		{
 			if(!(o instanceof Entity)) continue;
 			Entity ent = (Entity) o;
-			if((ent.posX < bb.minX) || (ent.posY < bb.minY) || (ent.posZ < bb.minZ)) continue;
-			if((ent.posX > bb.maxX) || (ent.posY > bb.maxY) || (ent.posZ > bb.maxZ)) continue;
+			if((ent.posX <= bb.minX) || (ent.posY < bb.minY) || (ent.posZ <= bb.minZ)) continue;
+			if((ent.posX >= bb.maxX) || (ent.posY > bb.maxY) || (ent.posZ >= bb.maxZ)) continue;
 			transportEntity(ent);
 		}
 	}

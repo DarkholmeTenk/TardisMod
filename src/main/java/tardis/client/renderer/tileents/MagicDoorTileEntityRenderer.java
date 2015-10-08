@@ -76,9 +76,9 @@ public class MagicDoorTileEntityRenderer extends AbstractObjRenderer
 		GL11.glScaled(6, 6, 6);
 		boolean xb = (te.getBlockMetadata() % 2) == 0;
 		GL11.glTranslated(-0.5, -0.5, 0);
-		renderMoving(tess, back, 9, xb, 0);
-		renderMoving(tess, mid, 15, xb, -0.001);
-		renderMoving(tess, front, 0, xb, -0.002);
+		renderMoving(tess, back, 9, xb, -0.001);
+		renderMoving(tess, mid, 15, xb, -0.002);
+		renderMoving(tess, front, 0, xb, -0.003);
 		GL11.glPopMatrix();
 	}
 

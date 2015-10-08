@@ -282,11 +282,11 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 					if(!isRoomBeingRemoved)
 					{
 						repairDoor(dds, false);
-						continue;
 					}
-					else
-						te.clear();
+					continue;
 				}
+				else if(isRoomBeingRemoved)
+					repairDoor(dds, true);
 			}
 			int facing = dds.facing;
 			boolean foundPair = false;
@@ -376,7 +376,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			setDoorArray();
 		for(DoorDS dds : doors)
 		{
-			if(dds.scs.equals(pos))
+			if(dds.scs.equals(pos) && (dds.scs.getBlock() != TardisMod.magicDoorBlock))
 				return true;
 		}
 		return false;
