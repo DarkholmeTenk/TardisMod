@@ -1,6 +1,7 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.Pair;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
@@ -17,8 +18,10 @@ import net.minecraft.util.AxisAlignedBB;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.dimension.TardisDataStore;
 
 public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewable, IActivatable
 {
@@ -31,13 +34,23 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 		super.init();
 		if((otherDoor == null) && ServerHelper.isServer())
 			setOtherDoor(TardisMod.internalDoorBlock.linkMap.remove(coords));
-		recheckDoors();
+		recheckDoors(false);
+	}
+
+	public void clear()
+	{
+		TileEntity te = otherDoor.getTileEntity();
+		if(te instanceof MagicDoorTileEntity)
+			((MagicDoorTileEntity)te).otherDoor = null;
+		otherDoor = null;
 	}
 
 	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
+		if(((tt % 20) == 0) && (otherDoor == null))
+			recheckDoors(true);
 		if(isValidLink())
 			checkEntities();
 	}
@@ -75,6 +88,29 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 		}
 	}
 
+	private Pair<Double,Double> transform(int of, int nf, double dx, double dz)
+	{
+		double nx = 0;
+		double nz = 0;
+		double sideDistance = 0;
+		double inDistance = 0;
+		switch(of)
+		{
+			case 0:		inDistance = -dx; sideDistance = -dz; break;
+			case 1:		inDistance = -dz; sideDistance = +dx; break;
+			case 2:		inDistance = +dx; sideDistance = +dz; break;
+			case 3:		inDistance = +dz; sideDistance = -dx; break;
+		}
+		switch(nf)
+		{
+			case 0:		nx += inDistance; nz += sideDistance; break;
+			case 1:		nz += inDistance; nx -= sideDistance; break;
+			case 2:		nx -= inDistance; nz -= sideDistance; break;
+			case 3:		nz -= inDistance; nx += sideDistance; break;
+		}
+		return new Pair<Double,Double>(nx,nz);
+	}
+
 	private void transportEntity(Entity ent)
 	{
 		if((ent == null)) return;
@@ -92,22 +128,10 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 		double nz = otherDoor.z + 0.5;
 		int nf = otherDoor.getMetadata();
 		int of = getBlockMetadata() % 4;
-		double sideDistance = 0;
-		double inDistance = 0;
-		switch(of)
-		{
-			case 0:		inDistance = -dx; sideDistance = -dz; break;
-			case 1:		inDistance = -dz; sideDistance = +dx; break;
-			case 2:		inDistance = +dx; sideDistance = +dz; break;
-			case 3:		inDistance = +dz; sideDistance = -dx; break;
-		}
-		switch(nf)
-		{
-			case 0:		nx += inDistance; nz += sideDistance; break;
-			case 1:		nz += inDistance; nx -= sideDistance; break;
-			case 2:		nx -= inDistance; nz -= sideDistance; break;
-			case 3:		nz -= inDistance; nx += sideDistance; break;
-		}
+		Pair<Double,Double> pos = transform(of,nf,dx,dz);
+		Pair<Double,Double> mot = transform(of,nf,ent.motionX,ent.motionZ);
+		nx += pos.a;
+		nz += pos.b;
 		int facingDiff = (6 + (otherDoor.getMetadata() - of))%4;
 		float nr = ent.rotationYaw + (90 * facingDiff);
 		ent.setPositionAndRotation(nx, ny, nz, nr, ent.rotationPitch);
@@ -116,7 +140,9 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 		ent.posY = ny;
 		ent.posZ = nz;
 		ent.rotationYaw = nr;
-		//ent.velocityChanged = true;
+		ent.motionX = mot.a;
+		ent.motionZ = mot.b;
+		ent.velocityChanged = true;
 	}
 
 	private void setOtherDoor(SimpleCoordStore other)
@@ -128,11 +154,11 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 		sendUpdate();
 	}
 
-	private void recheckDoors()
+	private void recheckDoors(boolean rem)
 	{
 		CoreTileEntity core = Helper.getTardisCore(this);
 		if(core != null)
-			core.refreshDoors(false);
+			core.refreshDoors(rem);
 	}
 
 	public boolean isValidLink()
@@ -173,6 +199,16 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 	@Override
 	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player)
 	{
+		if(mode == ScrewdriverMode.Dismantle)
+		{
+			TardisDataStore ds = Helper.getDataStore(this);
+			if((ds == null) || ds.hasPermission(player, TardisPermission.ROOMS))
+			{
+				otherDoor = null;
+				recheckDoors(true);
+				return true;
+			}
+		}
 		return false;
 	}
 }

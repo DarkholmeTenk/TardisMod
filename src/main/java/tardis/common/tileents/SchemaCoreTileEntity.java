@@ -279,8 +279,13 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 				MagicDoorTileEntity te = (MagicDoorTileEntity) scs.getTileEntity();
 				if(te.isValidLink())
 				{
-					repairDoor(dds, false);
-					continue;
+					if(!isRoomBeingRemoved)
+					{
+						repairDoor(dds, false);
+						continue;
+					}
+					else
+						te.clear();
 				}
 			}
 			int facing = dds.facing;
