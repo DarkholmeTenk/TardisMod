@@ -3,6 +3,7 @@ package tardis.common.dimension;
 import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
@@ -174,6 +175,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public double addXP(double a)
 	{
+		a = MathHelper.clamp(a, 0, 100000);
 		tardisXP += Math.abs(a);
 		if (tardisXP >= getXPNeeded())
 		{

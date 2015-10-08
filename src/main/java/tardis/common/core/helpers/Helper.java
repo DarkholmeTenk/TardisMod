@@ -406,8 +406,18 @@ public class Helper
 
 	public static ConsoleTileEntity getTardisConsole(IBlockAccess tardisWorld)
 	{
-		CoreTileEntity core = getTardisCore(tardisWorld);
-		if (core != null) return core.getConsole();
+		if(!Helper.isTardisWorld(tardisWorld)) return null;
+		TileEntity te = tardisWorld.getTileEntity(tardisCoreX, tardisCoreY - 2, tardisCoreZ);
+		if(te instanceof ConsoleTileEntity)
+			return (ConsoleTileEntity) te;
+		if(tardisWorld instanceof World)
+		{
+			World w = (World) tardisWorld;
+			w.setBlock(tardisCoreX, tardisCoreY - 2, tardisCoreZ, TardisMod.tardisConsoleBlock);
+		}
+		te = tardisWorld.getTileEntity(tardisCoreX, tardisCoreY - 2, tardisCoreZ);
+		if(te instanceof ConsoleTileEntity)
+			return (ConsoleTileEntity) te;
 		return null;
 	}
 
