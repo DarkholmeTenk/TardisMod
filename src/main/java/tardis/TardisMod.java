@@ -214,6 +214,9 @@ public class TardisMod implements IConfigHandlerMod
 	public static int											numAspects			= 16;
 	public static int											numDirtRecipe		= 2;
 	public static boolean										deleteDisconnected	= true;
+	public static int											exteriorGenChunksRad= 8;
+	public static int											exteriorGenChunksPT	= 1;
+	public static int											exteriorGenChunksTR	= 4;
 
 	public static AbstractScrewdriverType						defaultType			= new Tenth();
 
@@ -298,6 +301,10 @@ public class TardisMod implements IConfigHandlerMod
 
 		decoratorRange = modConfig.getInt("decorator range", 6, "The maximum range the decorator can work to");
 		numDirtRecipe = MathHelper.clamp(miscConfig.getInt("Number of temporal dirt to produce per recipe", 2, "Min 1, max 64"), 1, 64);
+
+		exteriorGenChunksRad = MathHelper.clamp(modConfig.getInt("exterior chunk gen radius", 8, "Radius in chunks for the exterior to generate while landing"), -1, 10);
+		exteriorGenChunksPT = MathHelper.clamp(modConfig.getInt("exterior chunk gen per pulse", 1, "Number of chunks for the exterior to generate per pulse"), 1, 20);
+		exteriorGenChunksTR = MathHelper.clamp(modConfig.getInt("exterior chunk gen ticks per pulse", 4, "Number of ticks between chunk generation pulses"), 1, 20);
 
 		AbstractComponent.refreshConfigs();
 		BatteryTileEntity.refreshConfigs();

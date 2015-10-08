@@ -21,6 +21,10 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.EmptyChunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkProviderServer;
 import tardis.TardisMod;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
@@ -47,12 +51,69 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 
 	Integer linkedDimension = null;
 
+	private boolean gened = false;
+	private int cgR = 1;
+	private int cgP = 0;
+	private int cgT = 0;
+	private int totalGen = 0;
+
+	private Runnable chunkGenerated = new Runnable(){@Override
+	public void run(){}};
+
+	private void genChunks()
+	{
+		cgT = 0;
+		IChunkProvider icp = worldObj.getChunkProvider();
+		if(cgR == 0)
+			cgR = 1;
+		if(icp instanceof ChunkProviderServer)
+		{
+			ChunkProviderServer cps = (ChunkProviderServer) icp;
+			boolean temp = cps.loadChunkOnProvideRequest;
+			cps.loadChunkOnProvideRequest = false;
+			while((cgT < TardisMod.exteriorGenChunksPT) && (cgR <= TardisMod.exteriorGenChunksRad))
+			{
+				int sidePos = cgP % (2 * cgR);
+				int side = cgP / (2 * cgR);
+				int x, z;
+				switch(side)
+				{
+					case 0: x = (sidePos - cgR) + 1; z = -cgR; break;
+					case 1: x = cgR; z = (sidePos - cgR) + 1; break;
+					case 2: x = -((sidePos - cgR) + 1); z = cgR; break;
+					case 3: x = -cgR; z = -((sidePos - cgR) + 1); break;
+					default: cgP = 0; cgR++; continue;
+				}
+				cgP++;
+				int chunkX = (xCoord >> 4) + x;
+				int chunkZ = (zCoord >> 4) + z;
+				Chunk c = cps.provideChunk(chunkX, chunkZ);
+				if(c instanceof EmptyChunk)
+				{
+					cps.loadChunk(chunkX, chunkZ, chunkGenerated);
+					cgT++;
+					totalGen++;
+				}
+			}
+			cps.loadChunkOnProvideRequest = temp;
+			if(cgR > TardisMod.exteriorGenChunksRad)
+			{
+				System.out.println("Generated " + totalGen + " chunks");
+				gened = true;
+			}
+		}
+	}
+
 	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
 		if(baseURL == null)
 			baseURL = TardisMod.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
+
+		if(ServerHelper.isServer() && (TardisMod.exteriorGenChunksRad > 0) && ((tt % TardisMod.exteriorGenChunksTR) == 0) && !gened)
+			genChunks();
+
 		if(ServerHelper.isServer())
 		{
 			CoreTileEntity linkedCore = getCore();
@@ -269,6 +330,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		nbt.setBoolean("landFast", landFast);
 		nbt.setBoolean("landed", landed);
 		nbt.setInteger("fadeTimer", fadeTimer);
+		nbt.setBoolean("gened", gened);
 		if(linkedDimension != null)
 			nbt.setInteger("linkedDimension", linkedDimension);
 		if(owner != null)
@@ -291,6 +353,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		if(nbt.hasKey("owner"))
 			owner = nbt.getString("owner");
 		chameleon = TardisMod.tardisChameleonReg.get(nbt, AbstractTardisChameleon.nbtKey);
+		gened = nbt.getBoolean("gened");
 	}
 
 	public List<Entity> getEntitiesInside()
