@@ -136,7 +136,7 @@ public class SchemaComponentBlock extends AbstractBlock
 				core.activate(pl, s);
 			return true;
 		}
-    	if((meta == 2) && ser)
+    	if(meta == 2)
     	{
     		boolean found = false;
     		for(int i = 1;(i<10) && (found == false);i++)

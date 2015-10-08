@@ -11,7 +11,7 @@ import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class LandingPadBlock extends AbstractScrewableBlock
+public class LandingPadBlock extends AbstractScrewableBlockContainer
 {
 	public LandingPadBlock()
 	{

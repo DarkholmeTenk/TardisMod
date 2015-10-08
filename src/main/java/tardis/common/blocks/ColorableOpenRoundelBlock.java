@@ -13,7 +13,7 @@ import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 
-public class ColorableOpenRoundelBlock extends AbstractScrewableBlock implements IColorableBlock
+public class ColorableOpenRoundelBlock extends AbstractScrewableBlockContainer implements IColorableBlock
 {
 
 	public ColorableOpenRoundelBlock()

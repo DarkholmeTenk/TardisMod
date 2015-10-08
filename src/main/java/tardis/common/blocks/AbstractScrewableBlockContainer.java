@@ -1,22 +1,27 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 
-public abstract class AbstractScrewableBlock extends AbstractBlock
+public abstract class AbstractScrewableBlockContainer extends AbstractBlockContainer
 {
-	public AbstractScrewableBlock(String sm)
+	public AbstractScrewableBlockContainer(String sm)
 	{
 		super(sm);
 	}
 
-	public AbstractScrewableBlock(boolean render, String sm)
+	public AbstractScrewableBlockContainer(boolean render, String sm)
 	{
 		super(render, sm);
+	}
+
+	public AbstractScrewableBlockContainer(boolean visible, boolean _dropWithData, String sm)
+	{
+		super(visible, _dropWithData, sm);
 	}
 
 	@Override

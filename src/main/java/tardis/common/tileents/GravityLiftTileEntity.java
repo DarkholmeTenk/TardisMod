@@ -17,6 +17,7 @@ import net.minecraft.util.AxisAlignedBB;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.common.core.helpers.ScrewdriverHelper;
 
 public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewable
 {
@@ -236,7 +237,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	}
 
 	@Override
-	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
+	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player)
 	{
 		if(mode.equals(ScrewdriverMode.Dismantle))
 		{

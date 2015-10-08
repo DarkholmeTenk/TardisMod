@@ -34,6 +34,7 @@ import tardis.common.blocks.ForceFieldBlock;
 import tardis.common.blocks.GravityLiftBlock;
 import tardis.common.blocks.InteriorDirtBlock;
 import tardis.common.blocks.InternalDoorBlock;
+import tardis.common.blocks.InternalMagicDoorBlock;
 import tardis.common.blocks.LabBlock;
 import tardis.common.blocks.LandingPadBlock;
 import tardis.common.blocks.ManualBlock;
@@ -139,7 +140,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock									tardisConsoleBlock;
 	public static AbstractBlock									tardisEngineBlock;
 	public static AbstractBlock									componentBlock;
-	public static AbstractBlock									internalDoorBlock;
+	public static InternalDoorBlock								internalDoorBlock;
 	public static AbstractBlock									decoBlock;
 	public static AbstractBlock									decoTransBlock;
 	public static AbstractBlock									schemaBlock;
@@ -156,6 +157,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock									manualBlock;
 	public static AbstractBlock									manualHelperBlock;
 	public static AbstractBlock									summonerBlock;
+	public static AbstractBlock									magicDoorBlock;
 
 	public static AbstractBlock									colorableWallBlock;
 	public static AbstractBlock									colorableFloorBlock;
@@ -212,6 +214,9 @@ public class TardisMod implements IConfigHandlerMod
 	public static int											numAspects			= 16;
 	public static int											numDirtRecipe		= 2;
 	public static boolean										deleteDisconnected	= true;
+	public static int											exteriorGenChunksRad= 8;
+	public static int											exteriorGenChunksPT	= 1;
+	public static int											exteriorGenChunksTR	= 4;
 
 	public static AbstractScrewdriverType						defaultType			= new Tenth();
 
@@ -297,6 +302,10 @@ public class TardisMod implements IConfigHandlerMod
 		decoratorRange = modConfig.getInt("decorator range", 6, "The maximum range the decorator can work to");
 		numDirtRecipe = MathHelper.clamp(miscConfig.getInt("Number of temporal dirt to produce per recipe", 2, "Min 1, max 64"), 1, 64);
 
+		exteriorGenChunksRad = MathHelper.clamp(modConfig.getInt("exterior chunk gen radius", 8, "Radius in chunks for the exterior to generate while landing"), -1, 10);
+		exteriorGenChunksPT = MathHelper.clamp(modConfig.getInt("exterior chunk gen per pulse", 1, "Number of chunks for the exterior to generate per pulse"), 1, 20);
+		exteriorGenChunksTR = MathHelper.clamp(modConfig.getInt("exterior chunk gen ticks per pulse", 4, "Number of ticks between chunk generation pulses"), 1, 20);
+
 		AbstractComponent.refreshConfigs();
 		BatteryTileEntity.refreshConfigs();
 		ComponentTileEntity.refreshConfigs();
@@ -338,7 +347,7 @@ public class TardisMod implements IConfigHandlerMod
 		tardisConsoleBlock = new ConsoleBlock().register();
 		tardisEngineBlock = new EngineBlock().register();
 		componentBlock = new ComponentBlock().register();
-		internalDoorBlock = new InternalDoorBlock().register();
+		internalDoorBlock = (InternalDoorBlock) new InternalDoorBlock().register();
 		decoBlock = new DecoBlock().register();
 		decoTransBlock = new DecoTransBlock().register();
 		interiorDirtBlock = new InteriorDirtBlock().register();
@@ -361,6 +370,7 @@ public class TardisMod implements IConfigHandlerMod
 		manualHelperBlock = new ManualHelperBlock().register();
 		stairBlock = new StairBlock().register();
 		summonerBlock = new SummonerBlock().register();
+		magicDoorBlock = new InternalMagicDoorBlock().register();
 		wallSimulacrumBlock = new CraftableCSimBlock(colorableWallBlock).register();
 		floorSimulacrumBlock = new CraftableCSimBlock(colorableFloorBlock).register();
 		brickSimulacrumBlock = new CraftableCSimBlock(colorableBrickBlock).register();

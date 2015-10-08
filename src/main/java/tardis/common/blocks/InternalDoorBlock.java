@@ -2,9 +2,12 @@ package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -12,26 +15,28 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import tardis.TardisMod;
+import tardis.api.ILinkable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.core.schema.CoordStore;
 import tardis.common.core.schema.PartBlueprint;
 import tardis.common.dimension.TardisDataStore;
-import tardis.common.items.SchemaItem;
-import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.CoreTileEntity;
 
-public class InternalDoorBlock extends AbstractBlock
+public class InternalDoorBlock extends AbstractBlock implements ILinkable
 {
+	public HashMap<SimpleCoordStore,SimpleCoordStore> linkMap = new HashMap<SimpleCoordStore,SimpleCoordStore>();
+
 	public InternalDoorBlock()
 	{
 		super(TardisMod.modName);
@@ -107,51 +112,48 @@ public class InternalDoorBlock extends AbstractBlock
 			if(held != null)
 			{
 				Item base = held.getItem();
-				NBTTagCompound tag = held.stackTagCompound;
-				if((base != null) && (tag != null) && ServerHelper.isServer())
+				if(base != TardisMod.screwItem) return false;
+				ScrewdriverHelper help = ScrewdriverHelperFactory.get(held);
+				if((help != null))
 				{
-					boolean schemaCarrier = (base instanceof SchemaItem);
-					if(base instanceof SonicScrewdriverItem)
-						schemaCarrier = SonicScrewdriverItem.getMode(held).equals(ScrewdriverMode.Schematic);
-
-					TardisDataStore ds = Helper.getDataStore(w);
-					if((ds == null) || (ds.hasPermission(player,TardisPermission.ROOMS)))
+					if((help.getMode() == ScrewdriverMode.Schematic) && ServerHelper.isServer())
 					{
-						if(schemaCarrier && tag.hasKey("schemaName") && tag.hasKey("schemaCat"))
+						TardisDataStore ds = Helper.getDataStore(w);
+						if((ds == null) || (ds.hasPermission(player,TardisPermission.ROOMS)))
 						{
-							String category = tag.getString("schemaCat");
-							String name = tag.getString("schemaName");
-							//File schemaFile = TardisMod.schemaHandler.getSchemaFile(category,name);
-							//PartBlueprint pb = new PartBlueprint(schemaFile);
-							PartBlueprint pb = TardisMod.schemaHandler.getSchema(category, name);
-							int facing = w.getBlockMetadata(x, y, z) % 4;
-							CoordStore door = pb.getPrimaryDoorPos(opposingFace(facing));
-							int nX = (x - door.x) + dx(facing);
-							int nY = y - door.y;
-							int nZ = (z - door.z) + dz(facing);
-							TardisOutput.print("TIDB","OBA"+door.x+","+door.y+","+door.z);
-							if(pb.roomFor(w, nX, nY, nZ, opposingFace(facing)))
+							if(help.getSchemaName() != null)
 							{
-								CoreTileEntity te = Helper.getTardisCore(w);
-								if((te == null) || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
-									pb.reconstitute(w, nX, nY, nZ, opposingFace(facing));
+								String category = help.getSchemaCat();
+								String name = help.getSchemaName();
+								PartBlueprint pb = TardisMod.schemaHandler.getSchema(category, name);
+								if(pb == null) return true; //If the schema isn't available anymore
+								int facing = w.getBlockMetadata(x, y, z) % 4;
+								CoordStore door = pb.getPrimaryDoorPos(opposingFace(facing));
+								int nX = (x - door.x) + dx(facing);
+								int nY = y - door.y;
+								int nZ = (z - door.z) + dz(facing);
+								TardisOutput.print("TIDB","OBA"+door.x+","+door.y+","+door.z);
+								if(pb.roomFor(w, nX, nY, nZ, opposingFace(facing)))
+								{
+									CoreTileEntity te = Helper.getTardisCore(w);
+									if((te == null) || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
+										pb.reconstitute(w, nX, nY, nZ, opposingFace(facing));
+									else
+										player.addChatMessage(new ChatComponentText("Too many rooms in this TARDIS"));
+								}
 								else
-									player.addChatMessage(new ChatComponentText("Too many rooms in this TARDIS"));
+								{
+									TardisOutput.print("TIDB", "NoRoom:"+nX+","+nY+","+nZ,TardisOutput.Priority.DEBUG);
+									player.addChatMessage(new ChatComponentText("Not enough room for schematic"));
+								}
 							}
 							else
-							{
-								TardisOutput.print("TIDB", "NoRoom:"+nX+","+nY+","+nZ,TardisOutput.Priority.DEBUG);
-								player.addChatMessage(new ChatComponentText("Not enough room for schematic"));
-							}
+								player.addChatMessage(new ChatComponentText("No schematic loaded"));
 						}
-						else if(schemaCarrier)
+						else if(ServerHelper.isServer())
 						{
-							player.addChatMessage(new ChatComponentText("No schematic loaded"));
+							player.addChatMessage(CoreTileEntity.cannotModifyMessage);
 						}
-					}
-					else if(ServerHelper.isServer())
-					{
-						player.addChatMessage(CoreTileEntity.cannotModifyMessage);
 					}
 				}
 				else if(ServerHelper.isClient())
@@ -223,15 +225,29 @@ public class InternalDoorBlock extends AbstractBlock
 	@Override
 	public void onNeighborBlockChange(World w, int x, int y, int z, Block bID)
 	{
-		super.onNeighborBlockChange(w, x, y, z, bID);
-		if(bID != TardisMod.schemaComponentBlock)
-			manageConnected(w,x,y,z,w.getBlockMetadata(x, y, z)%4);
+		//super.onNeighborBlockChange(w, x, y, z, bID);
+		//if(bID != TardisMod.schemaComponentBlock)
+		//	manageConnected(w,x,y,z,w.getBlockMetadata(x, y, z)%4);
 	}
 
-	public static void manageConnected(World w, int x, int y, int z, int facing)
+	/**
+	 * @param w
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param newState
+	 * @return true if nothing needs to change
+	 */
+	private static boolean isValid(World w, int x, int y, int z, boolean newState)
 	{
-		if(ServerHelper.isClient())
-			return;
+		Block b = w.getBlock(x, y, z);
+		boolean isDoorBit = ((b == TardisMod.internalDoorBlock) || SchemaComponentBlock.isDoorConnector(w,x,y,z));
+		return isDoorBit == newState;
+	}
+
+	public static void manageConnected(World w, int x, int y, int z, int facing, boolean state)
+	{
+
 	}
 
 	public static boolean hasConnector(World w, int x, int y, int z)
@@ -284,5 +300,48 @@ public class InternalDoorBlock extends AbstractBlock
 		if(isNormalCube(w,x,y,z))
 			super.addCollisionBoxesToList(w, x, y, z, par5AxisAlignedBB, par6List, par7Entity);
     }
+
+	@Override
+	public boolean link(EntityPlayer pl, SimpleCoordStore link, SimpleCoordStore other)
+	{
+		if((link == null) || (other == null)) return false;
+		if(link.world != other.world) return false;
+		TardisDataStore ds = Helper.getDataStore(link.world);
+		if((ds == null) || ds.hasPermission(pl, TardisPermission.ROOMS))
+		{
+			if(((other.getBlock() == this) || (linkMap.get(other) == link)) && (link.getBlock() == this))
+			{
+				linkMap.put(link, other);
+				link.setBlock(TardisMod.magicDoorBlock, link.getMetadata(), 3);
+			}
+			if(linkMap.get(other) == link)
+			{
+				CoreTileEntity c = Helper.getTardisCore(link.world);
+				if(c != null)
+					c.refreshDoors(false);
+			}
+			return true;
+		}
+		return false;
+	}
+
+
+	@Override
+	public boolean unlink(EntityPlayer pl, SimpleCoordStore link)
+	{
+		return false;
+	}
+
+	@Override
+	public Set<SimpleCoordStore> getLinked(SimpleCoordStore link)
+	{
+		return null;
+	}
+
+	@Override
+	public boolean isLinkable(SimpleCoordStore link)
+	{
+		return true;
+	}
 
 }

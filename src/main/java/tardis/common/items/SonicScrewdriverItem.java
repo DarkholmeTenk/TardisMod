@@ -162,10 +162,10 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		return false;
 	}
 
-	private boolean screwScrewable(Object screw, ScrewdriverMode mode, EntityPlayer player, SimpleCoordStore pos)
+	private boolean screwScrewable(Object screw, ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player, SimpleCoordStore pos)
 	{
-		if (screw instanceof IScrewable) return ((IScrewable) screw).screw(mode, player);
-		if (screw instanceof IScrewablePrecise) return ((IScrewablePrecise)screw).screw(mode,player,pos);
+		if (screw instanceof IScrewable) return ((IScrewable) screw).screw(helper, mode, player);
+		if (screw instanceof IScrewablePrecise) return ((IScrewablePrecise)screw).screw(helper, mode,player,pos);
 		return false;
 	}
 
@@ -216,7 +216,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				}
 			}
 		}
-		if(screwScrewable(te,mode,pl,pos) || screwScrewable(b, mode, pl, pos)) return true;
+		if(screwScrewable(te,helper,mode,pl,pos) || screwScrewable(b,helper, mode, pl, pos)) return true;
 		return false;
 	}
 

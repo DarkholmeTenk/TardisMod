@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,6 +24,7 @@ import tardis.api.TardisPermission;
 import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.core.schema.CoordStore;
 import tardis.common.core.schema.PartBlueprint;
 import tardis.common.dimension.TardisDataStore;
@@ -199,7 +201,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 	}
 
 	@Override
-	public boolean screw(ScrewdriverMode mode, EntityPlayer player)
+	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player)
 	{
 		if(ServerHelper.isClient())
 			return true;
@@ -271,6 +273,21 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 		for(DoorDS dds : doors)
 		{
 			SimpleCoordStore scs = dds.scs;
+			Block b = scs.getBlock();
+			if(b == TardisMod.magicDoorBlock)
+			{
+				MagicDoorTileEntity te = (MagicDoorTileEntity) scs.getTileEntity();
+				if(te.isValidLink())
+				{
+					if(!isRoomBeingRemoved)
+					{
+						repairDoor(dds, false);
+					}
+					continue;
+				}
+				else if(isRoomBeingRemoved)
+					repairDoor(dds, true);
+			}
 			int facing = dds.facing;
 			boolean foundPair = false;
 			SimpleCoordStore other = null;
@@ -315,6 +332,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 				repCol = repCol || SchemaComponentBlock.isDoorConnector(worldObj, (door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable);
 				if(repCol)
 					worldObj.setBlockToAir((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable);
+				repCol = repCol || (worldObj.getBlock((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable) == TardisMod.magicDoorBlock);
 			}
 			repRow = repRow || repCol;
 		}
@@ -358,7 +376,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			setDoorArray();
 		for(DoorDS dds : doors)
 		{
-			if(dds.scs.equals(pos))
+			if(dds.scs.equals(pos) && (dds.scs.getBlock() != TardisMod.magicDoorBlock))
 				return true;
 		}
 		return false;

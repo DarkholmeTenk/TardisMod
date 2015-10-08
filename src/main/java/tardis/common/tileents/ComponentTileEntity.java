@@ -31,6 +31,7 @@ import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.SonicScrewdriverItem;
@@ -353,7 +354,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 				{
 					IScrewable screwable = (IScrewable)o;
 					ScrewdriverMode mode = SonicScrewdriverItem.getMode(is);
-					if(screwable.screw(mode, pl)) return true;
+					if(screwable.screw(ScrewdriverHelperFactory.get(is), mode, pl)) return true;
 				}
 			}
 			if(o instanceof IActivatable)

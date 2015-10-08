@@ -71,7 +71,7 @@ public class SchemaHandler
 	{
 		return getSchemas(false);
 	}
-	
+
 	private String[] convert(Collection<String> toConvert)
 	{
 		String[] newArray = new String[toConvert.size()];
@@ -93,7 +93,7 @@ public class SchemaHandler
 	public String[] getSchemas(boolean consoleSchemas)
 	{
 		String[] fA = new String[0];
-		if ((!consoleSchemas && classPathSchemas == null) || (consoleSchemas && classPathConsoles == null))
+		if ((!consoleSchemas && (classPathSchemas == null)) || (consoleSchemas && (classPathConsoles == null)))
 		{
 			ArrayList<String> tempStore = new ArrayList();
 			try
@@ -142,7 +142,7 @@ public class SchemaHandler
 
 	public String[] getSchemaCategories()
 	{
-		if (schemaSets != null && schemaSets.size() > 0)
+		if ((schemaSets != null) && (schemaSets.size() > 0))
 			return convert(schemaSets.keySet());
 		String[] schemas = getSchemas();
 		HashMap<String, Set<String>> schemaMap = new HashMap();
@@ -168,7 +168,7 @@ public class SchemaHandler
 		schemaSets = schemaMap;
 		return convert(schemaMap.keySet());
 	}
-	
+
 	public String[] getSchemas(String category)
 	{
 		if(schemaSets == null)
@@ -199,11 +199,11 @@ public class SchemaHandler
 		schemaSets = null;
 		cachedPBs.clear();
 	}
-	
+
 	public PartBlueprint getSchema(String category, String name)
 	{
 		String compiledName;
-		if(!category.equals(uncategorizedCat))
+		if((category != null) && !category.equals(uncategorizedCat))
 			compiledName = category + "." + name;
 		else
 			compiledName = name;

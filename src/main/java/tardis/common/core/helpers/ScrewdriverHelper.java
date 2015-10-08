@@ -364,9 +364,14 @@ public class ScrewdriverHelper
 		if((linkSCS != null) && (linkLinkable == null)) //Linkable pos no longer an instance of ILinkable
 			return clearLinkSCS(pl,true);
 		if((linkSCS != null) && linkSCS.equals(usedPos)) //Trying to link the same place as before
+		{
+			if(usedOn != null)
+				if(usedOn.unlink(pl, usedPos))
+					System.out.println("Removed links");
 			return clearLinkSCS(pl,true);
+		}
 
-		if((usedOn == null) || !usedOn.isLinkable()) //Used on something that isn't ILinkable, so clear the link
+		if((usedOn == null) || !usedOn.isLinkable(usedPos)) //Used on something that isn't ILinkable, so clear the link
 		{
 			if(linkSCS != null)
 				return clearLinkSCS(pl,true);
@@ -382,11 +387,17 @@ public class ScrewdriverHelper
 
 		if((usedOn != null) && (linkLinkable != null))
 		{
-			usedOn.link(pl, usedPos, linkSCS);
-			linkLinkable.link(pl, linkSCS, usedPos);
-			clearLinkSCS(pl, false);
-			ServerHelper.sendString(pl, SonicScrewdriverItem.screwName, "Linked " + linkSCS + " to " + usedPos);
-			return true;
+			if(usedOn.link(pl, usedPos, linkSCS))
+			{
+				if(linkLinkable.link(pl, linkSCS, usedPos))
+				{
+					clearLinkSCS(pl, false);
+					ServerHelper.sendString(pl, SonicScrewdriverItem.screwName, "Linked " + linkSCS + " to " + usedPos);
+					return true;
+				}
+				else
+					usedOn.unlink(pl, usedPos);
+			}
 		}
 
 		return false;
