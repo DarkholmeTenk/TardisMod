@@ -320,6 +320,8 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 
 	private boolean repairRow(int y,int stable, DoorDS door, boolean replace)
 	{
+		if(pb == null)
+			pb = Helper.loadSchema(name);
 		boolean repRow = false;
 		boolean repCol = true;
 		for(int o=((door.facing%2)==0)?door.scs.z:door.scs.x;repCol;o--)
