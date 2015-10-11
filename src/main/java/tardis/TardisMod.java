@@ -276,7 +276,7 @@ public class TardisMod implements IConfigHandlerMod
 		{
 			aeAPI = AEApi.instance();
 		}
-		catch(Exception e){System.err.println("Error loading AE API");
+		catch(Exception e){System.err.println("Error loading AE API")};
 		initRecipes();
 		FMLCommonHandler.instance().bus().register(dimEventHandler);
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
