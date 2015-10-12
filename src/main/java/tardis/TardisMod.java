@@ -329,7 +329,11 @@ public class TardisMod implements IConfigHandlerMod
 	public void postInit(FMLPostInitializationEvent event)
 	{
 		tardisChameleonReg.postInit();
-		aeAPI = AEApi.instance();
+		try
+		{
+			aeAPI = AEApi.instance();
+		}
+		catch(Exception e){System.err.println("Error loading AE API");};
 		initRecipes();
 		FMLCommonHandler.instance().bus().register(dimEventHandler);
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);

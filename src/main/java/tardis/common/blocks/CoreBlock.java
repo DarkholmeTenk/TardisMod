@@ -77,6 +77,11 @@ public class CoreBlock extends AbstractBlockContainer
     {
 		if(!Helper.isTardisWorld(w))
 			return false;
-		return super.canPlaceBlockAt(w, x, y, z);
+		else
+		{
+			if((x != Helper.tardisCoreX) || (y != Helper.tardisCoreY) || (z != Helper.tardisCoreZ))
+				return false;
+			return true;
+		}
     }
 }
