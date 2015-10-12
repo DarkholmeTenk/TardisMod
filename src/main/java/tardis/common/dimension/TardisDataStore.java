@@ -337,6 +337,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 			for (int i = 0; i < fluids.length; i++)
 			{
 				if (invTag.hasKey("i" + i)) fluids[i] = FluidStack.loadFluidStackFromNBT(invTag.getCompoundTag("i" + i));
+				else fluids[i] = null;
 			}
 		}
 		readTransmittable(nbt);
