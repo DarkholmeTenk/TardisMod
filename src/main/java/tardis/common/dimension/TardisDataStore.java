@@ -393,18 +393,18 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	private void storeFlu(NBTTagCompound nbt)
 	{
-		int j = 0;
 		NBTTagCompound invTag = new NBTTagCompound();
+		boolean save = false;
 		for (int i = 0; i < fluids.length; i++)
 		{
 			if (fluids[i] != null)
 			{
+				save = true;
 				NBTTagCompound iTag = new NBTTagCompound();
-				invTag.setTag("i" + j, fluids[i].writeToNBT(iTag));
-				j++;
+				invTag.setTag("i" + i, fluids[i].writeToNBT(iTag));
 			}
 		}
-		if (j > 0) nbt.setTag("fS", invTag);
+		if (save) nbt.setTag("fS", invTag);
 	}
 
 	private void storeInv(NBTTagCompound nbt)
