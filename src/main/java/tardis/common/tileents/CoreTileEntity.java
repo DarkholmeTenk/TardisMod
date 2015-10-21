@@ -418,10 +418,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 		if (!worldObj.isRemote)
 		{
+			if((tt % 12000) == 11999)
+				refreshRoomCount();
+
 			if (((tt % 100) == 0) && (TardisMod.plReg != null))
-			{
 				if (!TardisMod.plReg.hasTardis(ownerName)) TardisMod.plReg.addPlayer(ownerName, worldObj.provider.dimensionId);
-			}
 
 			if (deletingRooms)
 			{
