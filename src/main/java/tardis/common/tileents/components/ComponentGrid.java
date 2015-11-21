@@ -182,7 +182,8 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		}
 		catch(Exception c)
 		{
-
+			System.out.println(c.getMessage());
+			c.printStackTrace();
 		}
 		return false;
 	}
@@ -283,6 +284,7 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 	{
 		return parentObj;
 	}
+
 	@Override
 	public void gridChanged()
 	{
