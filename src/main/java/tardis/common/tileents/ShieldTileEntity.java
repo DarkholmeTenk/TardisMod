@@ -45,7 +45,7 @@ public class ShieldTileEntity extends AbstractTileEntity implements IScrewable, 
 	public boolean activate(EntityPlayer ent, int side)
 	{
 		if(ServerHelper.isServer());
-			ServerHelper.sendString(ent, "TARDIS Prevention Matrix " + (active ? "active" : "inactive"));
+			ServerHelper.sendString(ent, "TARDIS Prevention Matrix " + (isActive() ? "active" : "inactive"));
 		return true;
 	}
 
