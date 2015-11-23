@@ -42,6 +42,7 @@ import tardis.common.blocks.ManualHelperBlock;
 import tardis.common.blocks.SchemaBlock;
 import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.blocks.SchemaCoreBlock;
+import tardis.common.blocks.ShieldBlock;
 import tardis.common.blocks.SlabBlock;
 import tardis.common.blocks.StairBlock;
 import tardis.common.blocks.SummonerBlock;
@@ -55,6 +56,7 @@ import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisOwnershipRegistry;
 import tardis.common.core.events.internal.DamageEventHandler;
+import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDimensionHandler;
@@ -158,6 +160,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock									manualHelperBlock;
 	public static AbstractBlock									summonerBlock;
 	public static AbstractBlock									magicDoorBlock;
+	public static AbstractBlock									shieldBlock;
 
 	public static AbstractBlock									colorableWallBlock;
 	public static AbstractBlock									colorableFloorBlock;
@@ -382,6 +385,7 @@ public class TardisMod implements IConfigHandlerMod
 		plankSimulacrumBlock = new CraftableCSimBlock(colorablePlankBlock).register();
 		glassSimulacrumBlock = new CraftableSimBlock(decoTransBlock).register();
 		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
+		shieldBlock = new ShieldBlock().register();
 	}
 
 	private void initItems()
@@ -415,6 +419,7 @@ public class TardisMod implements IConfigHandlerMod
 		nameTag.initRecipes();
 		decoTool.initRecipes();
 		chameleonUpgradeItem.initRecipes();
+		shieldBlock.initRecipes();
 		CraftableSimBlock.initStaticRecipes();
 	}
 

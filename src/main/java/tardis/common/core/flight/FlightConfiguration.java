@@ -12,6 +12,7 @@ public class FlightConfiguration
 		FlightModifierRegistry.registerFlightModifier(new LandGroundModifier());
 		FlightModifierRegistry.registerFlightModifier(new LandPadModifier());
 		FlightModifierRegistry.registerFlightModifier(new ValidPositionModifier());
+		FlightModifierRegistry.registerFlightModifier(new ShieldModifier());
 	}
 
 	private static void setDefault(String defaultConfig)

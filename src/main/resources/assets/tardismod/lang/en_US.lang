@@ -40,6 +40,7 @@ tile.TardisMod.TardisDirt.name=Temporal Dirt
 tile.TardisMod.Summoner.name=TARDIS Recaller
 tile.TardisMod.Manual.name=Manual
 tile.TardisMod.ManualHelper.name=Manual
+tile.TardisMod.ShieldBlock.name=TARDIS Prevention Matrix
 
 tile.TardisMod.GravityLift.Normal.name=Solid Gravity Lift
 tile.TardisMod.GravityLift.Craftable.name=Gravity Lift
