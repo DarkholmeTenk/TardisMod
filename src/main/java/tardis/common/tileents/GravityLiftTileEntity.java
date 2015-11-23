@@ -86,7 +86,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 		distances.clear();
 		for(int distance = 2; distance<(maxDistance+3);distance++)
 		{
-			if(!softBlock(worldObj,xCoord,yCoord+distance,zCoord))
+			if(!WorldHelper.softBlock(worldObj,xCoord,yCoord+distance,zCoord))
 			{
 				if((yCoord + distance) > maxDist)
 					maxDist = distance;

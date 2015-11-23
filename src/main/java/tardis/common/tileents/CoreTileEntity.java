@@ -45,6 +45,8 @@ import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.events.TardisTakeoffEvent;
+import tardis.common.core.flight.FlightConfiguration;
+import tardis.common.core.flight.IFlightModifier;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisDimensionHandler;
@@ -152,6 +154,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private IGridNode					node				= null;
 	private int							unstableTicks		= 0;
 	private int							flightTicks			= 0;
+	private List<IFlightModifier>		flightMods;
 
 	static
 	{
@@ -553,7 +556,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			SimpleDoubleCoordStore exitPos = gDS().getExitPosition();
 			double rotation = gDS().getExitRotation();
 
-			if (softBlock(exitPos) && softBlock(exitPos))
+			if (WorldHelper.softBlock(exitPos) && WorldHelper.softBlock(exitPos))
 			{
 				TeleportHelper.teleportEntity(ent, exitPos, rotation);
 				return true;
@@ -579,7 +582,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					SimpleDoubleCoordStore exitPos = gDS().getExitPosition();
 					double rotation = gDS().getExitRotation();
 
-					if (softBlock(exitPos) && softBlock(exitPos))
+					if (WorldHelper.softBlock(exitPos) && WorldHelper.softBlock(exitPos))
 					{
 						TeleportHelper.teleportEntity(player, exitPos, rotation);
 					}
@@ -635,7 +638,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		else if (lockState.equals(LockState.OwnerOnly)) pl.addChatMessage(new ChatComponentText("[TARDIS]The door will only open for its owner"));
 		return true;
 	}
-
+	/*
 	private int[] scanForValidPos(World w, int[] current, int mh)
 	{
 		int[] check = { 0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9 };
@@ -684,21 +687,22 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public int[] findGround(World w, int[] curr)
 	{
-		if (softBlock(w, curr[0], curr[1] - 1, curr[2]))
+		if (WorldHelper.softBlock(w, curr[0], curr[1] - 1, curr[2]))
 		{
 			int newY = curr[1] - 2;
-			while ((newY > 0) && softBlock(w, curr[0], newY, curr[2]))
+			while ((newY > 0) && WorldHelper.softBlock(w, curr[0], newY, curr[2]))
 				newY--;
 			return new int[] { curr[0], newY + 1, curr[2] };
 		}
 		return curr;
-	}
+	}*/
 
 	private int[] getModifiedControls(ConsoleTileEntity con, int[] posArr)
 	{
 		if (con == null) return posArr;
 		World w = WorldHelper.getWorld(gDS().desiredDim);
 		if (w == null) return posArr;
+		/*
 		int mh = TardisDimensionHandler.getMaxHeight(gDS().desiredDim);
 		if (posArr[1] >= mh) posArr[1] = mh - 1;
 		if (!(isValidPos(w, posArr[0], posArr[1], posArr[2], mh)))
@@ -707,7 +711,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		}
 		if (con.getLandOnGroundFromControls()) posArr = findGround(w, posArr);
 		if (con.getLandOnPadFromControls()) posArr = scanForLandingPad(w, posArr);
-		while ((posArr[1] <= 3) && (w.getBlock(posArr[0], posArr[1], posArr[2]) == Blocks.bedrock)) posArr[1]++;
+		while ((posArr[1] <= 3) && (w.getBlock(posArr[0], posArr[1], posArr[2]) == Blocks.bedrock)) posArr[1]++;*/
+		List<IFlightModifier> mods = flightMods != null ? flightMods : FlightConfiguration.getDefaultModifiers();
+		for(IFlightModifier m : mods)
+			if(m != null)
+				posArr = m.getModifiedControls(this, con, w, posArr);
 		return posArr;
 	}
 
@@ -830,7 +838,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private boolean isValidPos(World w, int x, int y, int z, int mh)
 	{
-		return (y > 0) && (y < (mh - 1)) && softBlock(w, x, y, z) && softBlock(w, x, y + 1, z);
+		return (y > 0) && (y < (mh - 1)) && WorldHelper.softBlock(w, x, y, z) && WorldHelper.softBlock(w, x, y + 1, z);
 	}
 
 	private int getUnstableOffset()
@@ -1496,7 +1504,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		boolean[] data = new boolean[6];
 		data[0] = data[1] = data[2] = data[3] = data[4] = data[5] = false;
 		TardisOutput.print("TCTE", "Checking for air @ " + x + "," + y + "," + z, TardisOutput.Priority.DEBUG);
-		if (softBlock(w, x, y, z) && softBlock(w, x, y + 1, z))
+		if (WorldHelper.softBlock(w, x, y, z) && WorldHelper.softBlock(w, x, y + 1, z))
 		{
 			data[0] = true;
 			Block bottom = w.getBlock(x, y, z);
@@ -1513,7 +1521,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 						data[2] = true;
 						break;
 					}
-					if (!softBlock(w, x, y - i, z)) break;
+					if (!WorldHelper.softBlock(w, x, y - i, z)) break;
 					if (i == 2) data[2] = true;
 				}
 				if (data[2])
@@ -1521,7 +1529,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					boolean g = true;
 					for (int i = y - 2; (i > 0) && g; i--)
 					{
-						if (!softBlock(w, x, i, z)) g = true;
+						if (!WorldHelper.softBlock(w, x, i, z)) g = true;
 						Block b = w.getBlock(x, i, z);
 						if ((b == Blocks.water) || (b == Blocks.flowing_water))
 							data[3] = true;

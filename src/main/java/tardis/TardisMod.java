@@ -316,6 +316,7 @@ public class TardisMod implements IConfigHandlerMod
 
 		TardisDimensionHandler.refreshConfigs();
 		TardisDamageSystem.refreshConfigs();
+		FlightConfiguration.refreshConfigs();
 	}
 
 	@EventHandler

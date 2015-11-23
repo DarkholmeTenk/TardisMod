@@ -300,4 +300,9 @@ public class TardisDimensionHandler
 		int dim = dims.get(index);
 		return dim;
 	}
+
+	public static int getMaxHeight(World w)
+	{
+		return getMaxHeight(WorldHelper.getWorldID(w));
+	}
 }
