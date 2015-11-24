@@ -37,6 +37,7 @@ public class ShieldModifier implements IFlightModifier
 	{
 		Set<ShieldTileEntity> stes = new HashSet();
 		Iterator<SimpleCoordStore> iter = shieldPositions.iterator(wid);
+		if(iter == null) return stes;
 		while(iter.hasNext())
 		{
 			SimpleCoordStore shieldPos = iter.next();
