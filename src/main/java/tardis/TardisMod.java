@@ -4,7 +4,6 @@ import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.DarkcoreTeleporter;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.config.ConfigHandler;
 import io.darkcraft.darkcore.mod.config.ConfigHandlerFactory;
 import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
@@ -110,8 +109,6 @@ public class TardisMod implements IConfigHandlerMod
 
 	public static ConfigHandler									configHandler;
 	public static SchemaHandler									schemaHandler;
-	public static ConfigFile									modConfig;
-	public static ConfigFile									miscConfig;
 
 	public static DarkcoreTeleporter							teleporter			= null;
 	public static TardisDimensionHandler						otherDims;

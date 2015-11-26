@@ -110,7 +110,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	{
 		super.updateEntity();
 		if(baseURL == null)
-			baseURL = TardisMod.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
+			baseURL = Configs.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
 
 		if(ServerHelper.isServer() && (Configs.exteriorGenChunksRad > 0) && ((tt % Configs.exteriorGenChunksTR) == 0) && !gened)
 			genChunks();
