@@ -1575,6 +1575,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		int dx = 0;
 		int dz = 0;
 		string.add("Current position: Dimension " + getDimensionName(gDS().exteriorWorld) + "[" + gDS().exteriorWorld + "] : " + gDS().exteriorX + "," + gDS().exteriorY + "," + gDS().exteriorZ);
+		string.add("Current time: " + WorldHelper.getWorldTimeString(gDS().exteriorWorld));
 		int facing = w.getBlockMetadata(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ);
 		for (int i = 0; i < 4; i++)
 		{
