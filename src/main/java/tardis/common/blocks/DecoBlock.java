@@ -38,7 +38,7 @@ public class DecoBlock extends AbstractBlock
 	@Override
 	public boolean isOpaqueCube()
 	{
-		return false;
+		return true;
 	}
 
 	@Override

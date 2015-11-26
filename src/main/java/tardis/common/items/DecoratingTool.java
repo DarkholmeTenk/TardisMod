@@ -127,9 +127,14 @@ public class DecoratingTool extends AbstractItem
 		if(pl.isSneaking())
 		{
 			int ord = is.getItemDamage();
-			ord = (ord + 1) % DecoratorToolTypes.values().length;
-			is.setItemDamage(ord);
 			DecoratorToolTypes t = DecoratorToolTypes.get(ord);
+			do
+			{
+				ord = (ord + 1) % DecoratorToolTypes.values().length;
+				t = DecoratorToolTypes.get(ord);
+			}
+			while(!t.valid);
+			is.setItemDamage(ord);
 			if(ServerHelper.isServer())
 				ServerHelper.sendString(pl, "Decorator", "New Block: " + t.getName());
 			return is;

@@ -7,7 +7,7 @@ import tardis.TardisMod;
 
 public class DecoTransBlock extends AbstractBlock
 {
-	private static final String[]	subs	= new String[] { "Glass" };
+	private static final String[]	subs	= new String[] { "Glass", "Walkway" };
 
 	public DecoTransBlock()
 	{

@@ -43,7 +43,7 @@ public class CraftableSimBlock extends SimulacrumBlock
 				'i', "ingotIron",
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.decoSimulacrumBlock,8,2), false, "gig","ici","gig",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.glassSimulacrumBlock,8,1), false, "gig","ici","gig",
 				'g', "glass",
 				'i', "ingotIron",
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));

@@ -3,7 +3,7 @@ tile.TardisMod.Tardis.name=TARDIS
 
 tile.TardisMod.DecoBlock.Wall.name=Wall
 tile.TardisMod.DecoBlock.Floor.name=Walkway
-tile.TardisMod.DecoBlock.Walkway.name=Open Walkway
+tile.TardisMod.DecoGlass.Walkway.name=Open Walkway
 tile.TardisMod.DecoGlass.Glass.name=Glass
 
 tile.TardisMod.Component.Roundel.name=Open Roundel
@@ -65,7 +65,7 @@ tile.TardisMod.ColorablePlank.Simulacrum.name=Solid Planks (c)
 tile.TardisMod.DecoGlass.Simulacrum.Glass.name=Glass (c)
 tile.TardisMod.DecoBlock.Simulacrum.Wall.name=Wall (c)
 tile.TardisMod.DecoBlock.Simulacrum.Floor.name=Walkway (c)
-tile.TardisMod.DecoBlock.Simulacrum.Walkway.name=Open Walkway (c)
+tile.TardisMod.DecoGlass.Simulacrum.Walkway.name=Open Walkway (c)
 
 item.TardisMod.SonicScrewdriver.name=Sonic Screwdriver
 item.TardisMod.TardisKey.name=TARDIS Key

@@ -18,12 +18,14 @@ public enum DecoratorToolTypes
 	GLASS("Glass",TardisMod.decoTransBlock,0),
 	ROUNDEL("Roundel",TardisMod.colorableRoundelBlock),
 	WALKWAY("Walkway",TardisMod.decoBlock,0),
-	WALKWAYTRANS("Walkway2",TardisMod.decoBlock,2);
+	WALKWAYTRANS("Walkway2",TardisMod.decoBlock,2,false),
+	WALKWAYTRANSA("Open Walkway",TardisMod.decoTransBlock,1);
 
 	private final String name;
 	private final Block b;
 	private final ItemStack is;
 	private final int meta;
+	public final boolean valid;
 
 	private DecoratorToolTypes(String n, Block b)
 	{
@@ -32,10 +34,16 @@ public enum DecoratorToolTypes
 
 	private DecoratorToolTypes(String n, Block _b, int _meta)
 	{
+		this(n, _b, _meta, true);
+	}
+
+	private DecoratorToolTypes(String n, Block _b, int _meta, boolean v)
+	{
 		name = n;
 		b = _b;
 		meta = _meta;
 		is = new ItemStack(b, 1, meta != -1 ? meta : (b instanceof IColorableBlock ? 15 : 0));
+		valid = v;
 	}
 
 	public String getName()
