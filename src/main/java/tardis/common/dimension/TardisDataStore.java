@@ -638,4 +638,9 @@ public class TardisDataStore extends AbstractWorldDataStore
 		return TardisMod.tardisChameleonReg.getDefault();
 	}
 
+	public SimpleCoordStore getExteriorSCS()
+	{
+		return new SimpleCoordStore(exteriorWorld, exteriorX, exteriorY, exteriorZ);
+	}
+
 }

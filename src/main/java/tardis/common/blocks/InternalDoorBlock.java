@@ -105,7 +105,8 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 	@Override
 	public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer player, int side, float i, float j, float k)
 	{
-		TardisOutput.print("TIDB","OBA"+x+","+y+","+z+":"+w.getBlockMetadata(x, y, z));
+		if(ServerHelper.isServer())
+			System.out.println("X");
 		if(player != null)
 		{
 			ItemStack held =player.getHeldItem();
@@ -116,48 +117,48 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 				ScrewdriverHelper help = ScrewdriverHelperFactory.get(held);
 				if((help != null))
 				{
-					if((help.getMode() == ScrewdriverMode.Schematic) && ServerHelper.isServer())
+					if(help.getMode() == ScrewdriverMode.Schematic)
 					{
-						TardisDataStore ds = Helper.getDataStore(w);
-						if((ds == null) || (ds.hasPermission(player,TardisPermission.ROOMS)))
+						if(ServerHelper.isServer())
 						{
-							if(help.getSchemaName() != null)
+							TardisDataStore ds = Helper.getDataStore(w);
+							if((ds == null) || (ds.hasPermission(player,TardisPermission.ROOMS)))
 							{
-								String category = help.getSchemaCat();
-								String name = help.getSchemaName();
-								PartBlueprint pb = TardisMod.schemaHandler.getSchema(category, name);
-								if(pb == null) return true; //If the schema isn't available anymore
-								int facing = w.getBlockMetadata(x, y, z) % 4;
-								CoordStore door = pb.getPrimaryDoorPos(opposingFace(facing));
-								int nX = (x - door.x) + dx(facing);
-								int nY = y - door.y;
-								int nZ = (z - door.z) + dz(facing);
-								TardisOutput.print("TIDB","OBA"+door.x+","+door.y+","+door.z);
-								if(pb.roomFor(w, nX, nY, nZ, opposingFace(facing)))
+								if(help.getSchemaName() != null)
 								{
-									CoreTileEntity te = Helper.getTardisCore(w);
-									if((te == null) || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
-										pb.reconstitute(w, nX, nY, nZ, opposingFace(facing));
+									String category = help.getSchemaCat();
+									String name = help.getSchemaName();
+									PartBlueprint pb = TardisMod.schemaHandler.getSchema(category, name);
+									if(pb == null) return true; //If the schema isn't available anymore
+									int facing = w.getBlockMetadata(x, y, z) % 4;
+									CoordStore door = pb.getPrimaryDoorPos(opposingFace(facing));
+									int nX = (x - door.x) + dx(facing);
+									int nY = y - door.y;
+									int nZ = (z - door.z) + dz(facing);
+									TardisOutput.print("TIDB","OBA"+door.x+","+door.y+","+door.z);
+									if(pb.roomFor(w, nX, nY, nZ, opposingFace(facing)))
+									{
+										CoreTileEntity te = Helper.getTardisCore(w);
+										if((te == null) || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
+											pb.reconstitute(w, nX, nY, nZ, opposingFace(facing));
+										else
+											player.addChatMessage(new ChatComponentText("Too many rooms in this TARDIS"));
+									}
 									else
-										player.addChatMessage(new ChatComponentText("Too many rooms in this TARDIS"));
+									{
+										TardisOutput.print("TIDB", "NoRoom:"+nX+","+nY+","+nZ,TardisOutput.Priority.DEBUG);
+										player.addChatMessage(new ChatComponentText("Not enough room for schematic"));
+									}
 								}
 								else
-								{
-									TardisOutput.print("TIDB", "NoRoom:"+nX+","+nY+","+nZ,TardisOutput.Priority.DEBUG);
-									player.addChatMessage(new ChatComponentText("Not enough room for schematic"));
-								}
+									player.addChatMessage(new ChatComponentText("No schematic loaded"));
 							}
 							else
-								player.addChatMessage(new ChatComponentText("No schematic loaded"));
+								player.addChatMessage(CoreTileEntity.cannotModifyMessage);
 						}
-						else if(ServerHelper.isServer())
-						{
-							player.addChatMessage(CoreTileEntity.cannotModifyMessage);
-						}
+						return true;
 					}
 				}
-				else if(ServerHelper.isClient())
-					return true;
 			}
 		}
 		return false;

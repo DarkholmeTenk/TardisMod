@@ -178,6 +178,8 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		ScrewdriverMode mode = helper.getMode();
 		TileEntity te = pos.getTileEntity();
 		Block b = pos.getBlock();
+		//if(b == null)
+		//	return false;
 		int m = pos.getMetadata();
 		if(mode == ScrewdriverMode.Dismantle)
 		{
@@ -245,9 +247,16 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	}
 
 	@Override
+	public boolean onItemUse(ItemStack is, EntityPlayer pl, World w, int x, int y, int z, int s, float i, float j, float k)
+    {
+		onItemRightClick(is, w, pl);
+		return true;
+		//return handleBlock(new SimpleCoordStore(w,x,y,z),pl);
+    }
+
+	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
 	{
-		System.out.println("T!");
 		ScrewdriverHelper helper = getHelper(is);
 		if(helper == null) return is;
 		ScrewdriverMode mode = helper.getMode();

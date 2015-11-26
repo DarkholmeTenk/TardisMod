@@ -155,6 +155,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private int							unstableTicks		= 0;
 	private int							flightTicks			= 0;
 	private List<IFlightModifier>		flightMods;
+	private boolean						stableFlight		= false;
 
 	static
 	{
@@ -209,8 +210,14 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		SimpleCoordStore newStart = null;
 		TardisTileEntity ext = gDS().getExterior();
 		if (ext != null)
-			newStart = new SimpleCoordStore(gDS().getExterior());
-		else if ((sourceLocation != null) && (destLocation != null)) newStart = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true).floor();
+		{
+			newStart = new SimpleCoordStore(ext);
+		}
+		else if ((sourceLocation != null) && (destLocation != null))
+		{
+			if(distanceToTravel > 0)
+				newStart = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true).floor();
+		}
 		if (newStart != null)
 		{
 			ConsoleTileEntity con = getConsole();
@@ -297,7 +304,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void flightTick()
 	{
-
 		if ((currentBlockSpeed == 0) || (maxBlockSpeed == 0))
 		{
 			currentBlockSpeed = 1;
@@ -314,6 +320,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			flightTicks++;
 			if(!con.isStable())
 				unstableTicks++;
+			else
+				flightButtonTimer = 0;
 		}
 		if ((flightState == FlightState.TAKINGOFF) && (flightTimer >= takeOffTicks)) nextFlightState();
 		if ((flightState == FlightState.LANDING) && (flightTimer >= (fast ? landFastTicks : landSlowTicks))) nextFlightState();
@@ -329,7 +337,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			}
 			distanceTravelled += MathHelper.clamp(currentBlockSpeed, 1, maxBlockSpeed);
 		}
-		if (inAbortableFlight() && con.unstableFlight() && !forcedFlight)
+		if (isUnstable(con))
 		{
 			int buttonTime = getButtonTime();
 			if ((flightButtonTimer++ % buttonTime) == 0)
@@ -803,6 +811,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					oldExteriorWorld = gDS().exteriorWorld;
 					if (te != null)
 					{
+						sourceLocation = new SimpleCoordStore(te);
 						te.takeoff();
 						calculateFlightDistances();
 					}
@@ -836,6 +845,20 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return takeOff(false, false, pl);
 	}
 
+	public boolean takeOffUncoordinated(EntityPlayer player)
+	{
+		ConsoleTileEntity con = getConsole();
+		if(con == null) return false;
+		con.setUncoordinated(true);
+		con.setDesiredDim(ds.exteriorWorld);
+		if(takeOff(player))
+		{
+			setStableFlight(true);
+			return true;
+		}
+		return false;
+	}
+
 	private boolean isValidPos(World w, int x, int y, int z, int mh)
 	{
 		return (y > 0) && (y < (mh - 1)) && WorldHelper.softBlock(w, x, y, z) && WorldHelper.softBlock(w, x, y + 1, z);
@@ -843,9 +866,20 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private int getUnstableOffset()
 	{
-		if (forcedFlight) return 0;
+		ConsoleTileEntity con = getConsole();
+		if (!isUnstable(con)) return 0;
 		if (instability == 0) return 0;
 		return rand.nextInt(Math.max(0, 2 * instability)) - instability;
+	}
+
+	public boolean isUnstable(ConsoleTileEntity con)
+	{
+		return inAbortableFlight() && ((con == null) || con.unstableFlight()) && !forcedFlight && !stableFlight;
+	}
+
+	public void setStableFlight(boolean b)
+	{
+		stableFlight = b;
 	}
 
 	public void removeOldBox()
@@ -914,6 +948,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		{
 			ConsoleTileEntity con = getConsole();
 			forcedFlight = false;
+			stableFlight = false;
 			currentBlockSpeed = 1;
 			if(!forcedFlight)
 				gDS().addXP((con != null) && !fast && (unstableTicks >= (flightTicks/2)) ? 15 : (45 - instability));
@@ -1001,6 +1036,16 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		double slowness = 3;
 		if (inFlight()) lastSpin = ((lastSpin + 1) % (360 * slowness));
 		return lastSpin / slowness;
+	}
+
+	public SimpleCoordStore getPosition()
+	{
+		if(inFlight())
+		{
+			calculateFlightDistances();
+			return sourceLocation;
+		}
+		return gDS().getExteriorSCS();
 	}
 
 	public ConsoleTileEntity getConsole()
@@ -1651,6 +1696,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				mods[i] = modders.get(i);
 			nbt.setIntArray("mods", mods);
 		}
+		if ((sourceLocation != null) && (destLocation != null) && !inFlight())
+		{
+			sourceLocation.writeToNBT(nbt, "srcLoc");
+			destLocation.writeToNBT(nbt, "dstLoc");
+		}
 	}
 
 	@Override
@@ -1667,12 +1717,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			nbt.setInteger("tFT", totalFlightTimer);
 			nbt.setDouble("sped", speed);
 			nbt.setInteger("fS", flightState.ordinal());
+			nbt.setBoolean("sta", stableFlight);
 
 			nbt.setInteger("scrAng", screenAngle);
-			if ((sourceLocation != null) && (destLocation != null))
+			if ((sourceLocation != null) && (destLocation != null) && !inFlight())
 			{
-				sourceLocation.writeToNBT(nbt, "srcLoc");
-				destLocation.writeToNBT(nbt, "dstLoc");
 				nbt.setDouble("dT", distanceTravelled);
 				nbt.setDouble("dtT", distanceToTravel);
 				nbt.setInteger("cbs", currentBlockSpeed);
@@ -1748,6 +1797,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			flightState = FlightState.get(nbt.getInteger("fS"));
 
 			screenAngle = nbt.getInteger("scrAng");
+			stableFlight = nbt.getBoolean("sta");
 		}
 	}
 
@@ -1876,5 +1926,4 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			return landing;
 		return empty;
 	}
-
 }

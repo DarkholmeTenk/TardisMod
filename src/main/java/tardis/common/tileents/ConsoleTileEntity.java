@@ -827,6 +827,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return setControls(dim, xC, yC, zC, allowNearest);
 	}
 
+	public void setDesiredDim(int exteriorWorld)
+	{
+		dimControl = getControlFromDim(exteriorWorld);
+	}
+
 	private static int[] getYControls(int height)
 	{
 		int[] temp = new int[4];
@@ -1227,6 +1232,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return !stable;
 	}
 
+	public boolean isStable()
+	{
+		return stable;
+	}
+
 	private static final int minUnstable = 1010;
 	private static final int maxUnstable = 1032;
 	private void refillUnstableQueue()
@@ -1329,9 +1339,9 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return !uncoordinated;
 	}
 
-	public boolean isStable()
+	public void setUncoordinated(boolean un)
 	{
-		return stable;
+		uncoordinated = un;
 	}
 
 	@Override

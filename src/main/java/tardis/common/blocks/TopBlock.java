@@ -43,7 +43,11 @@ public class TopBlock extends AbstractBlock
     	{
     		return TardisMod.tardisBlock.onBlockActivated(world, x, y - 1, z, player, i, j, k, l);
     	}
-    	return true;
+    	else
+    	{
+    		world.setBlockToAir(x, y, z);
+    		return true;
+    	}
     }
 
 	@SideOnly(Side.CLIENT)
@@ -88,9 +92,9 @@ public class TopBlock extends AbstractBlock
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta)
 	{
-		super.onBlockDestroyedByPlayer(world, x, y, z, meta);
 		if(world.getBlock(x, y-1,z) == TardisMod.tardisBlock)
 			world.setBlockToAir(x, y-1, z);
+		super.onBlockDestroyedByPlayer(world, x, y, z, meta);
 	}
 
 	@Override
