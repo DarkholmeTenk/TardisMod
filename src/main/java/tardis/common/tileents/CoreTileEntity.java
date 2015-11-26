@@ -1,7 +1,6 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
@@ -66,7 +65,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class CoreTileEntity extends AbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider, IExplodable
 {
-	private static ConfigFile				config					= null;
 	public static final ChatComponentText	cannotModifyFly			= new ChatComponentText("[TARDIS] You do not have permission to fly this TARDIS");
 	public static final ChatComponentText	cannotModifyRecall		= new ChatComponentText("[TARDIS] You do not have permission to recall this TARDIS");
 	public static final ChatComponentText	cannotModifyRecolour	= new ChatComponentText("[TARDIS] You do not have permission to recolour this block");
@@ -116,7 +114,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private LockState					lockState			= LockState.Open;
 	private int							lastLockSound		= Integer.MIN_VALUE;
-	private static int					lockSoundDelay		= 40;
 
 	private HashSet<SimpleCoordStore>	roomSet				= new HashSet<SimpleCoordStore>();
 	private String						ownerName;
@@ -147,7 +144,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	static
 	{
-		if (config == null) refreshConfigs();
 		loadable = new ChunkCoordIntPair[4];
 		loadable[0] = new ChunkCoordIntPair(0, 0);
 		loadable[1] = new ChunkCoordIntPair(-1, 0);
@@ -173,12 +169,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (ds == null) if (worldObj != null) ds = Helper.getDataStore(worldObj);
 		return ds;
-	}
-
-	public static void refreshConfigs()
-	{
-		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("TARDIS Core");
-		lockSoundDelay = config.getInt("Lock sound delay", 80, "Amount of ticks between lock sounds being allowed to play");
 	}
 
 	private void calculateFlightDistances()
@@ -499,7 +489,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void playLockSound()
 	{
-		if(tt < (lastLockSound + lockSoundDelay)) return;
+		if(tt < (lastLockSound + Configs.lockSoundDelay)) return;
 		lastLockSound = tt;
 		SoundHelper.playSound(worldObj, xCoord+13, yCoord-1, zCoord, "tardismod:locked", 0.5f);
 		TardisDataStore ds = gDS();
@@ -1382,7 +1372,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				EntityLivingBase livingEnt = (EntityLivingBase) ent;
 				SimpleDoubleCoordStore entPos = new SimpleDoubleCoordStore(livingEnt);
 				double dist = entPos.distance(to);
-				if((dist < TardisMod.transmatExitDist) && (entPos.world == to.world))
+				if((dist < Configs.transmatExitDist) && (entPos.world == to.world))
 				{
 					if(teleportOutside(ent))
 					{

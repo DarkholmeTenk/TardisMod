@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
@@ -228,7 +229,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 					lastScrewTT = tt;
 					Set<SimpleCoordStore> others = getDependentCores();
 					ServerHelper.sendString(player, "Right click then sneak right click with a dismantle screwdriver to remove this room");
-					if(TardisMod.deleteDisconnected)
+					if(Configs.deleteDisconnected)
 						if(others.size() > 0)
 							ServerHelper.sendString(player, others.size() + " rooms will be removed");
 					return true;
@@ -238,7 +239,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 					CoreTileEntity core = Helper.getTardisCore(worldObj);
 					if((core== null) || core.addRoom(true,this))
 					{
-						remove(TardisMod.deleteDisconnected);
+						remove(Configs.deleteDisconnected);
 						return true;
 					}
 				}

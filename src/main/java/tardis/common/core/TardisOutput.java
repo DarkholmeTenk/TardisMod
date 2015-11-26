@@ -4,6 +4,7 @@ import io.darkcraft.darkcore.mod.config.CType;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.config.ConfigItem;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import tardis.Configs;
 import tardis.TardisMod;
 
 public class TardisOutput
@@ -14,9 +15,9 @@ public class TardisOutput
 		public static Priority get(int a)
 		{
 			Priority[] vals = values();
-			if (a >= 0 && a < vals.length)
+			if ((a >= 0) && (a < vals.length))
 				return vals[a];
-			return TardisMod.priorityLevel;
+			return Configs.priorityLevel;
 		}
 	}
 
@@ -28,8 +29,8 @@ public class TardisOutput
 		if (!(descriptor.equals("CF") || descriptor.equals("TCH") || descriptor.equals("TM")))
 		{
 			if (configFile == null)
-				if (TardisMod.inited && TardisMod.configHandler != null)
-					configFile = TardisMod.configHandler.registerConfigNeeder("DebugOutput");
+				if (TardisMod.inited && (TardisMod.configHandler != null))
+					configFile = TardisMod.configHandler.registerConfigNeeder("debugOutput");
 			if (configFile != null)
 				return configFile.getConfigItem(new ConfigItem(descriptor, CType.BOOLEAN, true)).getBoolean();
 		}
@@ -38,7 +39,7 @@ public class TardisOutput
 
 	public static void print(String descriptor, String message, Priority prio)
 	{
-		if (prio.ordinal() <= TardisMod.priorityLevel.ordinal())
+		if (prio.ordinal() <= Configs.priorityLevel.ordinal())
 		{
 			if (!shouldDisplay(descriptor))
 				return;

@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.network.TardisPacketHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -82,7 +83,7 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 		if(!DimensionManager.isDimensionRegistered(id))
 		{
 			TardisOutput.print("TDR", "Registering dim " + id,TardisOutput.Priority.DEBUG);
-			DimensionManager.registerDimension(id, TardisMod.providerID);
+			DimensionManager.registerDimension(id, Configs.providerID);
 			if(ServerHelper.isServer())
 				DarkcoreMod.networkChannel.sendToAll(getPacket());
 		}

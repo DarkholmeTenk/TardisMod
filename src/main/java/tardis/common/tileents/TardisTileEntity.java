@@ -25,6 +25,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
@@ -71,7 +72,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			ChunkProviderServer cps = (ChunkProviderServer) icp;
 			boolean temp = cps.loadChunkOnProvideRequest;
 			cps.loadChunkOnProvideRequest = false;
-			while((cgT < TardisMod.exteriorGenChunksPT) && (cgR <= TardisMod.exteriorGenChunksRad))
+			while((cgT < Configs.exteriorGenChunksPT) && (cgR <= Configs.exteriorGenChunksRad))
 			{
 				int sidePos = cgP % (2 * cgR);
 				int side = cgP / (2 * cgR);
@@ -96,7 +97,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 				}
 			}
 			cps.loadChunkOnProvideRequest = temp;
-			if(cgR > TardisMod.exteriorGenChunksRad)
+			if(cgR > Configs.exteriorGenChunksRad)
 			{
 				System.out.println("Generated " + totalGen + " chunks");
 				gened = true;
@@ -111,7 +112,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		if(baseURL == null)
 			baseURL = TardisMod.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
 
-		if(ServerHelper.isServer() && (TardisMod.exteriorGenChunksRad > 0) && ((tt % TardisMod.exteriorGenChunksTR) == 0) && !gened)
+		if(ServerHelper.isServer() && (Configs.exteriorGenChunksRad > 0) && ((tt % Configs.exteriorGenChunksTR) == 0) && !gened)
 			genChunks();
 
 		if(ServerHelper.isServer())

@@ -4,12 +4,9 @@ import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.DarkcoreTeleporter;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
-import io.darkcraft.darkcore.mod.config.CType;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.config.ConfigHandler;
 import io.darkcraft.darkcore.mod.config.ConfigHandlerFactory;
-import io.darkcraft.darkcore.mod.config.ConfigItem;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
@@ -53,7 +50,6 @@ import tardis.common.core.CreativeTab;
 import tardis.common.core.DimensionEventHandler;
 import tardis.common.core.SchemaHandler;
 import tardis.common.core.TardisDimensionRegistry;
-import tardis.common.core.TardisOutput;
 import tardis.common.core.TardisOwnershipRegistry;
 import tardis.common.core.events.internal.DamageEventHandler;
 import tardis.common.core.flight.FlightConfiguration;
@@ -78,7 +74,6 @@ import tardis.common.items.extensions.screwtypes.Eighth;
 import tardis.common.items.extensions.screwtypes.Tenth;
 import tardis.common.items.extensions.screwtypes.Twelth;
 import tardis.common.network.TardisPacketHandler;
-import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.extensions.chameleon.ChameleonRegistry;
 import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 import tardis.common.tileents.extensions.chameleon.tardis.DefaultTardisCham;
@@ -124,11 +119,6 @@ public class TardisMod implements IConfigHandlerMod
 	public static TardisOwnershipRegistry						plReg;
 	public static CreativeTab									tab					= null;
 	public static CreativeTab									cTab				= null;
-
-	public static TardisOutput.Priority							priorityLevel		= TardisOutput.Priority.INFO;
-	public static int											providerID			= 54;
-	public static boolean										tardisLoaded		= true;
-	public static boolean										keyInHand			= true;
 
 	public static AbstractBlock									tardisBlock;
 	public static AbstractBlock									tardisTopBlock;
@@ -185,20 +175,6 @@ public class TardisMod implements IConfigHandlerMod
 
 	public static boolean										tcInstalled			= false;
 
-	public static double										tardisVol			= 1;
-	public static boolean										deathTransmat		= true;
-	public static boolean										deathTransmatLive	= true;
-	public static double										transmatExitDist	= 2;
-
-
-	public static int											kontronRarity		= 4;
-	public static boolean										keyOnFirstJoin		= true;
-
-	public static boolean										deleteDisconnected	= true;
-	public static int											exteriorGenChunksRad= 8;
-	public static int											exteriorGenChunksPT	= 1;
-	public static int											exteriorGenChunksTR	= 4;
-
 	public static AbstractScrewdriverType						defaultType			= new Tenth();
 	public static ChameleonRegistry<AbstractTardisChameleon>	tardisChameleonReg	= new ChameleonRegistry(new DefaultTardisCham());
 
@@ -212,11 +188,9 @@ public class TardisMod implements IConfigHandlerMod
 		cTab = new CreativeTab("TardisModCraftableTab");
 		DarkcoreMod.registerCreativeTab(modName, tab);
 
-		modConfig = configHandler.getModConfig();
-		miscConfig = configHandler.registerConfigNeeder("Misc");
 		refreshConfigs();
 
-		DimensionManager.registerProviderType(providerID, TardisWorldProvider.class, tardisLoaded);
+		DimensionManager.registerProviderType(Configs.providerID, TardisWorldProvider.class, Configs.tardisLoaded);
 		initChameleonTypes();
 		initBlocks();
 		initItems();
@@ -238,31 +212,6 @@ public class TardisMod implements IConfigHandlerMod
 
 	public static void refreshConfigs()
 	{
-		int outputPriority = modConfig.getConfigItem(new ConfigItem("Debug level", CType.INT, TardisOutput.Priority.INFO.ordinal(), "Sets the level of debug output")).getInt();
-		priorityLevel = TardisOutput.getPriority(outputPriority);
-
-		providerID = modConfig.getConfigItem(new ConfigItem("Dimension provider ID", CType.INT, 54, "The id of the dimension provider")).getInt();
-
-		tardisLoaded = modConfig.getConfigItem(new ConfigItem("Dimension always loaded", CType.BOOLEAN, true, "Should the TARDIS dimensions always be loaded")).getBoolean();
-
-		keyInHand = modConfig.getConfigItem(new ConfigItem("Key in hand", CType.BOOLEAN, true, "Does a player need to have the key in hand to get through a locked TARDIS door")).getBoolean();
-		keyOnFirstJoin = modConfig.getBoolean("keyOnJoin", false, "If true, all players get a new key when they first join");
-		kontronRarity = modConfig.getInt("kontronRarity", 20, "The higher this value, the more likely you are to find kontron crystals in chests");
-
-		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1, "How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
-
-		deleteDisconnected = modConfig.getBoolean("Delete disconnected", true, "Delete rooms which aren't connected to the console room when the connecting room is deleted");
-		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
-		deathTransmat = modConfig.getBoolean("Do death transmat", true, "If true, when you die within range of your TARDIS you will be transmatted");
-		transmatExitDist = modConfig.getDouble("Transmat exit distance", 2, "The distance from the transmat point beneath which you will be transmatted out of the TARDIS");
-
-
-		exteriorGenChunksRad = MathHelper.clamp(modConfig.getInt("exterior chunk gen radius", 8, "Radius in chunks for the exterior to generate while landing"), -1, 10);
-		exteriorGenChunksPT = MathHelper.clamp(modConfig.getInt("exterior chunk gen per pulse", 1, "Number of chunks for the exterior to generate per pulse"), 1, 20);
-		exteriorGenChunksTR = MathHelper.clamp(modConfig.getInt("exterior chunk gen ticks per pulse", 4, "Number of ticks between chunk generation pulses"), 1, 20);
-
-		CoreTileEntity.refreshConfigs();
-
 		TardisDimensionHandler.refreshConfigs();
 		TardisDamageSystem.refreshConfigs();
 		FlightConfiguration.refreshConfigs();
@@ -290,7 +239,7 @@ public class TardisMod implements IConfigHandlerMod
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		inited = true;
 		tcInstalled = ItemApi.getItem("itemResource", 0) != null;
-		if (keyOnFirstJoin) PlayerHelper.registerJoinItem(new ItemStack(keyItem, 1));
+		if (Configs.keyOnFirstJoin) PlayerHelper.registerJoinItem(new ItemStack(keyItem, 1));
 		FMLCommonHandler.instance().bus().register(ScrewdriverHelperFactory.i);
 	}
 

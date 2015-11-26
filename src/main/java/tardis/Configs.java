@@ -4,6 +4,7 @@ import io.darkcraft.darkcore.mod.config.CType;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.config.ConfigItem;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import tardis.common.core.TardisOutput;
 
 public class Configs
 {
@@ -30,7 +31,7 @@ public class Configs
 	public static int			levelClarity		= 13;
 	public static int			levelSpawnProt		= 15;
 
-	private static void refreshLevelConfigs()
+	private static void refreshLevelConfig()
 	{
 		if (levelConfig == null) levelConfig = TardisMod.configHandler.registerConfigNeeder("levels");
 
@@ -75,7 +76,7 @@ public class Configs
 	public static boolean		nanogeneFeed		= true;
 	public static int			maxComponents		= 6;
 
-	private static void refreshRoundelConfigs()
+	private static void refreshRoundelConfig()
 	{
 		if (roundelConfig == null) roundelConfig = TardisMod.configHandler.registerConfigNeeder("roundels");
 		maxComponents = rfBase = roundelConfig.getInt("RF storage base", 50000, "The amount of RF that can be stored when a TARDIS is level 0");
@@ -108,7 +109,7 @@ public class Configs
 	public static boolean		keyReqKontron		= true;
 	public static int			numDirtRecipe		= 2;
 
-	private static void refreshCraftingConfigs()
+	private static void refreshCraftingConfig()
 	{
 		if (craftConfig == null) craftConfig = TardisMod.configHandler.registerConfigNeeder("crafting");
 		maxLabSpeed = craftConfig.getInt("Max lab speed", 5, "The maximum speed which the lab can operate at (artron/tick)");
@@ -133,8 +134,8 @@ public class Configs
 	public static int			gravScanPlayerInterval	= 2;
 	public static double		gravMovePerTick			= 0.25;
 
-	public static double		tickMult				= 1;
-	public static double		boneChance				= 0.3;
+	public static double		dirtTickMult			= 1;
+	public static double		dirtBoneChance			= 0.3;
 
 	public static int			decoratorRange			= 6;
 	public static boolean		visibleSchema			= false;
@@ -154,9 +155,9 @@ public class Configs
 		gravScanPlayerInterval = toolConfig.getInt("Grav Lift - interval for player scan", 2);
 		gravMovePerTick = toolConfig.getDouble("Grav Lift - move per tick", 0.25);
 
-		tickMult = toolConfig.getDouble("Dirt block - Tick mult", 0.5, "The number the tick rate of the plant is multipied by to work out how often the dirt block applies a dirt tick",
+		dirtTickMult = toolConfig.getDouble("Dirt block - Tick mult", 0.5, "The number the tick rate of the plant is multipied by to work out how often the dirt block applies a dirt tick",
 				"e.g. A mult of 0.5 means a plant which would normally get a tick every 10 ticks will get an extra growth tick every 5 ticks");
-		boneChance = toolConfig.getDouble("Dirt block - Bonemeal chance", 0.25, "The chance for a TARDIS dirt block to apply a bonemeal affect to the plant (as well as a growth tick)");
+		dirtBoneChance = toolConfig.getDouble("Dirt block - Bonemeal chance", 0.25, "The chance for a TARDIS dirt block to apply a bonemeal affect to the plant (as well as a growth tick)");
 
 		decoratorRange = toolConfig.getInt("Decorator - Range", 6, "The maximum range the decorator can work to");
 
@@ -165,11 +166,70 @@ public class Configs
 		lightBlocks = toolConfig.getBoolean("Visibility - lit up blocks", false, "Should most blocks give off light");
 	}
 
+	/*
+	 * MECAHNICS CONFIG
+	 */
+	public static ConfigFile	mechConfig;
+
+	public static boolean		deathTransmat		= true;
+	public static boolean		deathTransmatLive	= true;
+	public static double		transmatExitDist	= 2;
+	public static int			kontronRarity		= 4;
+	public static boolean		keyOnFirstJoin		= true;
+	public static boolean		deleteDisconnected	= true;
+	public static boolean		tardisLoaded		= true;
+	public static boolean		keyInHand			= true;
+	public static int			lockSoundDelay		= 40;
+
+	private static void refreshMechanicsConfig()
+	{
+		if (mechConfig == null) mechConfig = TardisMod.configHandler.registerConfigNeeder("mechanics");
+		keyOnFirstJoin = mechConfig.getBoolean("Key - On first join", false, "If true, all players get a new key when they first join");
+		kontronRarity = mechConfig.getInt("Dungeon Loot - Kontron Rarity", 20, "The higher this value, the more likely you are to find kontron crystals in chests");
+		deleteDisconnected = mechConfig.getBoolean("Rooms - Delete disconnected", true, "Delete rooms which aren't connected to the console room when the connecting room is deleted");
+		deathTransmatLive = mechConfig.getBoolean("Transmat - Death - Live after", true, "Whether you should live after being saved from death");
+		deathTransmat = mechConfig.getBoolean("Transmat - Death", true, "If true, when you die within range of your TARDIS you will be transmatted");
+		transmatExitDist = mechConfig.getDouble("Transmat - Exit distance", 2, "The distance from the transmat point within which you will be transmatted out of the TARDIS");
+		keyInHand = mechConfig.getConfigItem(new ConfigItem("Key - In hand", CType.BOOLEAN, true, "Does a player need to have the key in hand to get through a locked TARDIS door")).getBoolean();
+		lockSoundDelay = mechConfig.getInt("Lock sound delay", 40, "Amount of ticks between lock sounds being allowed to play", "20 ticks = 1 second");
+	}
+
+	/*
+	 * MOD CONFIG
+	 */
+
+	public static ConfigFile			modConfig;
+	public static double				tardisVol				= 1;
+	public static int					exteriorGenChunksRad	= 8;
+	public static int					exteriorGenChunksPT		= 1;
+	public static int					exteriorGenChunksTR		= 4;
+	public static TardisOutput.Priority	priorityLevel			= TardisOutput.Priority.INFO;
+	public static int					providerID				= 54;
+
+	private static void refreshModConfig()
+	{
+		if (modConfig == null) modConfig = TardisMod.configHandler.registerConfigNeeder("TardisMod");
+		priorityLevel = TardisOutput.getPriority(modConfig.getInt("Debug level", TardisOutput.Priority.INFO.ordinal(), "Sets the level of debug output"));
+		providerID = modConfig.getInt("Dimension provider ID", 54, "The id of the dimension provider");
+		tardisLoaded = modConfig.getBoolean("Dimension always loaded", true, "Should the TARDIS dimensions always be loaded");
+		tardisVol = modConfig.getDouble("Volume", 1, "How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)");
+		exteriorGenChunksRad = MathHelper.clamp(modConfig.getInt("exterior chunk gen radius", 8, "Radius in chunks for the exterior to generate while landing"), -1, 10);
+		exteriorGenChunksPT = MathHelper.clamp(modConfig.getInt("exterior chunk gen per pulse", 1, "Number of chunks for the exterior to generate per pulse"), 1, 20);
+		exteriorGenChunksTR = MathHelper.clamp(modConfig.getInt("exterior chunk gen ticks per pulse", 4, "Number of ticks between chunk generation pulses"), 1, 20);
+
+	}
+
+	/*
+	 * INITIALIZER
+	 */
+
 	public static void refreshConfigs()
 	{
-		refreshLevelConfigs();
-		refreshRoundelConfigs();
-		refreshCraftingConfigs();
+		refreshLevelConfig();
+		refreshRoundelConfig();
+		refreshCraftingConfig();
 		refreshToolsConfig();
+		refreshMechanicsConfig();
+		refreshModConfig();
 	}
 }

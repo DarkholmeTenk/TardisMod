@@ -90,7 +90,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 
 	public int getNewTickRate(int old)
 	{
-		return MathHelper.ceil(old * Configs.tickMult);
+		return MathHelper.ceil(old * Configs.dirtTickMult);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 				{
 					FakePlayer pl = FakePlayerFactory.getMinecraft((WorldServer)w);
 					ItemStack is = new ItemStack(Items.dye,1,15);
-					if(rand.nextDouble() <= Configs.boneChance)
+					if(rand.nextDouble() <= Configs.dirtBoneChance)
 						ItemDye.applyBonemeal(is, w, x, y+1, z, pl);
 					int i=1;
 					if(w.getBlock(x, y+1, z) == b)

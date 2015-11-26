@@ -78,9 +78,9 @@ public class CraftingComponentItem extends AbstractItem
 				EnumSet.noneOf(LabFlag.class),
 				100));
 
-		ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,TardisMod.kontronRarity));
-		ChestGenHooks.getInfo(ChestGenHooks.VILLAGE_BLACKSMITH).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,TardisMod.kontronRarity));
-		ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,TardisMod.kontronRarity));
+		ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,Configs.kontronRarity));
+		ChestGenHooks.getInfo(ChestGenHooks.VILLAGE_BLACKSMITH).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,Configs.kontronRarity));
+		ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,Configs.kontronRarity));
 	}
 
 }

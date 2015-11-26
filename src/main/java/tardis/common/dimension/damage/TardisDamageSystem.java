@@ -41,7 +41,7 @@ public class TardisDamageSystem
 
 	public static void refreshConfigs()
 	{
-		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("DamageSystem");
+		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("damageSystem");
 		maxHull = config.getInt("Max hull", 1000, "The maximum hull strength");
 		maxShields = config.getInt("Max shields", 1000, "The base maximum amount of shielding");
 		maxShieldsInc = config.getInt("Max shields increase", 500, "How much a level of max shields increases the amount of shielding");

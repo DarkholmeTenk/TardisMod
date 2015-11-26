@@ -80,7 +80,7 @@ public class TardisDimensionHandler
 
 	public static void refreshConfigs()
 	{
-		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("Dimensions");
+		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("dimensions");
 		String ids = config.getString("Blacklisted Dimension IDs", "", "A comma separated blacklist of dimension ids which no tardis should be able to reach");
 		String[] splitIDs = ids.split(",");
 		blacklistedIDs = new ArrayList(splitIDs.length);
