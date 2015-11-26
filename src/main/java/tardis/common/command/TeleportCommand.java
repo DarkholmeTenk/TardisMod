@@ -3,6 +3,7 @@ package tardis.common.command;
 import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,18 +62,12 @@ public class TeleportCommand extends AbstractCommand
 
 					try
 					{
-						Integer w = 0;
-						if(astring[0+offset].startsWith("#"))
+						Integer w = Helper.getTardisDim(astring[offset]);
+						if(w == null)
 						{
-							w = TardisMod.plReg.getDimension(astring[0+offset].replaceFirst("#", ""));
-							if(w == null)
-							{
-								sendString(comSen,"Unable to identify dimension " + astring[offset]);
-								return;
-							}
+							sendString(comSen,"Unable to identify dimension " + astring[offset]);
+							return;
 						}
-						else
-							w = Integer.parseInt(astring[0+offset]);
 						int x = Integer.parseInt(astring[1+offset]);
 						int y = Integer.parseInt(astring[2+offset]);
 						int z = Integer.parseInt(astring[3+offset]);
@@ -84,7 +79,7 @@ public class TeleportCommand extends AbstractCommand
 						Integer w = null;
 						if(astring[0+offset].startsWith("#"))
 						{
-							w = TardisMod.plReg.getDimension(astring[0+offset].replaceFirst("#", ""));
+							w = TardisMod.plReg.getDimension(astring[offset].replaceFirst("#", ""));
 							if(w == null)
 							{
 								sendString(comSen,"Unable to identify dimension " + astring[offset]);
@@ -97,7 +92,7 @@ public class TeleportCommand extends AbstractCommand
 						{
 							try
 							{
-								w = Integer.parseInt(astring[0+offset]);
+								w = Integer.parseInt(astring[offset]);
 								for(EntityPlayerMP plx : pls)
 									TeleportHelper.teleportEntity(plx,w);
 							}
@@ -117,7 +112,7 @@ public class TeleportCommand extends AbstractCommand
 					for(EntityPlayerMP plx : pls)
 					{
 						if(plx != dest)
-							TeleportHelper.teleportEntity(plx, dest.worldObj.provider.dimensionId,dest.posX,dest.posY,dest.posZ);
+							TeleportHelper.teleportEntity(plx, WorldHelper.getWorldID(dest),dest.posX,dest.posY,dest.posZ);
 					}
 				}
 				else

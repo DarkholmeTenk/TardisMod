@@ -516,4 +516,13 @@ public class Helper
 		}
 		return null;
 	}
+
+	public static Integer getTardisDim(String dimDescriptor)
+	{
+		Integer w = 0;
+		if(dimDescriptor.startsWith("#"))
+			return TardisMod.plReg.getDimension(dimDescriptor.replaceFirst("#", ""));
+		else
+			return Integer.parseInt(dimDescriptor);
+	}
 }
