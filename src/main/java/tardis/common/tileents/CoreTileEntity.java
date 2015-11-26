@@ -1130,7 +1130,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return getMaxNumRooms(gDS().getLevel(TardisUpgradeMode.ROOMS));
 	}
 
-	private void refreshRoomCount()
+	public void refreshRoomCount()
 	{
 		Iterator<SimpleCoordStore> iter = roomSet.iterator();
 		while (iter.hasNext())
@@ -1183,6 +1183,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (ServerHelper.isServer() && (te != null)) return addRoom(false, te);
 		return false;
+	}
+
+	public void removeRoom(SimpleCoordStore scs)
+	{
+		roomSet.remove(scs);
 	}
 
 	public Set<SimpleCoordStore> getRooms()

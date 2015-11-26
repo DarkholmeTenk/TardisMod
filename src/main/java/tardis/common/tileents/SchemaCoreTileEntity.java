@@ -124,6 +124,11 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 
 	public void remove(boolean deleteUnconnected)
 	{
+		remove(deleteUnconnected, true);
+	}
+
+	private void remove(boolean deleteUnconnected, boolean refreshRooms)
+	{
 		if(name != null)
 		{
 			List<Entity> ents = entitiesWithinRoom();
@@ -144,8 +149,15 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 				{
 					TileEntity te = scs.getTileEntity();
 					if(te instanceof SchemaCoreTileEntity)
-						((SchemaCoreTileEntity)te).remove(false);
+						((SchemaCoreTileEntity)te).remove(false,false);
 				}
+			}
+			CoreTileEntity core = Helper.getTardisCore(this);
+			if(core != null)
+			{
+				core.removeRoom(coords());
+				if(refreshRooms)
+					core.refreshDoors(true);
 			}
 			worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 		}
