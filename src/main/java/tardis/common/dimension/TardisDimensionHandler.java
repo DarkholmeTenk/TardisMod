@@ -19,8 +19,8 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
-import tardis.common.tileents.CoreTileEntity;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class TardisDimensionHandler
@@ -116,7 +116,7 @@ public class TardisDimensionHandler
 	{
 		if(energyCosts.containsKey(dimID))
 			return energyCosts.get(dimID);
-		return CoreTileEntity.energyCostDimChange;
+		return FlightConfiguration.energyCostDimChange;
 	}
 
 	private boolean isBlacklisted(int id)

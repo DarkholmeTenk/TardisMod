@@ -1,7 +1,6 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
@@ -24,6 +23,7 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.ForgeDirection;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IScrewablePrecise;
 import tardis.api.ScrewdriverMode;
@@ -39,22 +39,6 @@ import tardis.common.tileents.extensions.LabRecipe;
 
 public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecise
 {
-	private static double tickMult = 1;
-	private static double boneChance = 0.3;
-	private static ConfigFile config = null;
-
-	public static void refreshConfigs()
-	{
-		if(config == null)
-			config = TardisMod.configHandler.registerConfigNeeder("Misc");
-
-		tickMult = config.getDouble("Dirt block tick mult", 0.5,
-				"The number the tick rate of the plant is multipied by to work out how often the dirt block applies a dirt tick",
-				"e.g. A mult of 0.5 means a plant which would normally get a tick every 10 ticks will get an extra growth tick every 5 ticks");
-		boneChance = config.getDouble("Dirt block bonemeal chance", 0.25,
-				"The chance for a TARDIS dirt block to apply a bonemeal affect to the plant (as well as a growth tick)");
-	}
-
 	public InteriorDirtBlock()
 	{
 		super(TardisMod.modName);
@@ -65,9 +49,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 	{
 		setBlockName("TardisDirt");
 		setTickRandomly(true);
-		if(config == null)
-			refreshConfigs();
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override
@@ -78,7 +60,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 						CraftingComponentType.KONTRON.getIS(1),
 						CraftingComponentType.CHRONOSTEEL.getIS(1),
 						new ItemStack(Items.dye,32,15)},
-				new ItemStack[] { getIS(TardisMod.numDirtRecipe, 0) },
+				new ItemStack[] { getIS(Configs.numDirtRecipe, 0) },
 				EnumSet.of(LabFlag.INFLIGHT),
 				100
 				));
@@ -108,7 +90,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 
 	public int getNewTickRate(int old)
 	{
-		return MathHelper.ceil(old * tickMult);
+		return MathHelper.ceil(old * Configs.tickMult);
 	}
 
 	@Override
@@ -132,7 +114,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 				{
 					FakePlayer pl = FakePlayerFactory.getMinecraft((WorldServer)w);
 					ItemStack is = new ItemStack(Items.dye,1,15);
-					if(rand.nextDouble() <= boneChance)
+					if(rand.nextDouble() <= Configs.boneChance)
 						ItemDye.applyBonemeal(is, w, x, y+1, z, pl);
 					int i=1;
 					if(w.getBlock(x, y+1, z) == b)

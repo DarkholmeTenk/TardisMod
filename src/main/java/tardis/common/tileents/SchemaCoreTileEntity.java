@@ -23,6 +23,7 @@ import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
 import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.core.schema.CoordStore;
@@ -117,7 +118,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 		if(ServerHelper.isServer())
 		{
 			traversed = 0;
-			if((lastScrewTT + TardisMod.shiftPressTime) < tt)
+			if((lastScrewTT + FlightConfiguration.shiftPressTime) < tt)
 				lastScrewTT = -1;
 		}
 	}

@@ -10,7 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import tardis.TardisMod;
+import tardis.Configs;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import cofh.api.energy.IEnergyHandler;
@@ -59,7 +59,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 		for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
 		{
 			int b = hasFilled.get(dir).getAndSet(0);
-			int max = TardisMod.rfPerT - rfc;
+			int max = Configs.rfPerT - rfc;
 			if(b > 0)
 				//max = Math.min(max, b/2);
 				max = 0;

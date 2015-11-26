@@ -20,6 +20,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.ILinkable;
 import tardis.api.ScrewdriverMode;
@@ -53,7 +54,7 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 	{
 		setBlockName("InternalDoor");
 		setSubNames("InternalDoor","InternalDoorPrimary");
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override

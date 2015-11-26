@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.tileents.GravityLiftTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
@@ -31,7 +32,7 @@ public class GravityLiftBlock extends AbstractBlockContainer
 	{
 		setBlockName("GravityLift");
 		setSubNames("Normal","Craftable");
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override

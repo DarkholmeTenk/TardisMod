@@ -1,6 +1,9 @@
 package tardis;
 
+import io.darkcraft.darkcore.mod.config.CType;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
+import io.darkcraft.darkcore.mod.config.ConfigItem;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
 
 public class Configs
 {
@@ -8,27 +11,39 @@ public class Configs
 	 * LEVEL CONFIG
 	 */
 	public static ConfigFile	levelConfig;
-	public static int			xpBase			= 80;
-	public static int			xpInc			= 20;
-	public static int			rfBase			= 50000;
-	public static int			rfInc			= 50000;
-	public static int			rfPerT			= 4098;
-	public static int			maxFlu			= 32000;
-	public static int			numTanks		= 5;
-	public static int			numInvs			= 30;
+	public static int			xpBase				= 80;
+	public static int			xpInc				= 20;
 
-	public static int			levelLocate		= 3;
-	public static int			levelSensors	= 5;
-	public static int			levelStable		= 7;
-	public static int			levelTransmat	= 9;
-	public static int			levelRecall		= 11;
-	public static int			levelTranq		= 15;
-	public static int			levelClarity	= 13;
-	public static int			levelSpawnProt	= 15;
+	public static int			maxNumRooms			= 30;
+	public static int			maxNumRoomsInc		= 10;
+	public static int			maxEnergy			= 1000;
+	public static int			maxEnergyInc		= 1000;
+	public static int			energyPerSecond		= 1;
+	public static int			energyPerSecondInc	= 1;
+
+	public static int			levelLocate			= 3;
+	public static int			levelSensors		= 5;
+	public static int			levelStable			= 7;
+	public static int			levelTransmat		= 9;
+	public static int			levelRecall			= 11;
+	public static int			levelTranq			= 15;
+	public static int			levelClarity		= 13;
+	public static int			levelSpawnProt		= 15;
 
 	private static void refreshLevelConfigs()
 	{
 		if (levelConfig == null) levelConfig = TardisMod.configHandler.registerConfigNeeder("levels");
+
+		xpBase = levelConfig.getInt("xp base amount", 80, "The amount of xp it initially costs to level up");
+		xpInc = levelConfig.getInt("xp increase", 20, "The amount that is added on to the xp cost every time the TARDIS levels up");
+
+		maxEnergy = levelConfig.getInt("Max energy", 1000, "The base maximum energy");
+		maxEnergyInc = levelConfig.getInt("Max energy increase", 1000, "How much a level of energy increases the max amount of energy");
+		maxNumRooms = levelConfig.getInt("Max rooms", 30, "The base maximum number of rooms");
+		maxNumRoomsInc = levelConfig.getInt("Max rooms increase", 10, "How much a level of max rooms increases the maximum number of rooms");
+		energyPerSecond = levelConfig.getInt("Energy rate", 1, "The base amount of energy the TARDIS generates per second");
+		energyPerSecondInc = levelConfig.getInt("Energy rate increase", 1, "How much a level of energy rate increases the amount of energy per second");
+
 		levelLocate = levelConfig.getInt("Function - Locate", 3, "When the locate functionality is unlocked, -1 disables");
 		levelSensors = levelConfig.getInt("Function - Sensors", 5, "When the sensors functionality is unlocked, -1 disables");
 		levelStable = levelConfig.getInt("Function - Stabilizers", 7, "When the stabilizers functionality is unlocked, -1 disables");
@@ -40,28 +55,121 @@ public class Configs
 	}
 
 	/*
+	 * ROUNDEL CONFIG
+	 */
+	public static ConfigFile	roundelConfig;
+	public static int			rfBase				= 50000;
+	public static int			rfInc				= 50000;
+	public static int			rfPerT				= 4098;
+	public static int			maxFlu				= 32000;
+	public static int			numTanks			= 5;
+	public static int			numInvs				= 30;
+	public static int			maxEachAspect		= 16;
+	public static int			maxEachAspectInc	= 16;
+	public static int			numAspects			= 16;
+
+	public static double		nanogeneRange		= 36;
+	public static double		nanogeneTimer		= 10;
+	public static int			nanogeneCost		= 1;
+	public static int			nanogeneHealAmount	= 2;
+	public static boolean		nanogeneFeed		= true;
+	public static int			maxComponents		= 6;
+
+	private static void refreshRoundelConfigs()
+	{
+		if (roundelConfig == null) roundelConfig = TardisMod.configHandler.registerConfigNeeder("roundels");
+		maxComponents = rfBase = roundelConfig.getInt("RF storage base", 50000, "The amount of RF that can be stored when a TARDIS is level 0");
+		rfInc = roundelConfig.getInt("RF storage increase per level", 50000, "The extra amount of storage which is added every time the TARDIS levels up");
+		rfPerT = roundelConfig.getInt("RF output per tick", 4098, "The amount of RF which the TARDIS can output per tick");
+		maxFlu = roundelConfig.getInt("Internal tanks - Max mb", 16000, "The amount of millibuckets of fluid that can be stored for each internal tank");
+		numTanks = roundelConfig.getInt("Internal tanks - Number", 6, "The number of internal tanks that the TARDIS has");
+		numInvs = roundelConfig.getInt("Internal inventory - Slots", 30, "The number of item inventory slots that the TARDIS has");
+		numAspects = roundelConfig.getInt("Internal TC - Num aspects", 32, "The number of thaumcraft aspects which can be stored in the TARDIS's cabling");
+		maxEachAspect = roundelConfig.getInt("Internal TC - Max aspect", 32, "The maximum amount of each thaumcraft aspect that can be stored");
+		maxEachAspectInc = roundelConfig.getInt("Internal TC - Max aspect inc", 16, "The amount of aspect storage gained per level");
+
+		nanogeneRange = Math.pow(roundelConfig.getDouble("Nanogene - Range", 6, "The range at which nanogenes can heal"), 2);
+		nanogeneTimer = roundelConfig.getInt("Nanogene - Timer", 10, "The number of ticks between each nanogene healing pulse");
+		nanogeneCost = roundelConfig.getInt("Nanogene - Cost", 1, "The amount of Artron energy used up each time a nanogene heals");
+		nanogeneHealAmount = roundelConfig.getInt("Nanogene - Heal amount", 2, "The amount of health a nanogene can restore per pulse");
+		nanogeneFeed = roundelConfig.getBoolean("Nanogene - Feeds", true, "Whether nanogenes should also feed players as well as heal");
+
+		maxComponents = roundelConfig.getInt("Maximum components", 6, "The number of cable interfaces/components per roundel/landing pad");
+	}
+
+	/*
 	 * CRAFTING CONFIG
 	 */
 
 	public static ConfigFile	craftConfig;
 	public static int			maxLabSpeed			= 5;
 	public static boolean		kontronCraftable	= false;
-	public static boolean										keyCraftable		= true;
-	public static boolean										keyReqKontron		= true;
+	public static boolean		keyCraftable		= true;
+	public static boolean		keyReqKontron		= true;
+	public static int			numDirtRecipe		= 2;
 
 	private static void refreshCraftingConfigs()
 	{
 		if (craftConfig == null) craftConfig = TardisMod.configHandler.registerConfigNeeder("crafting");
-		maxLabSpeed			= craftConfig.getInt("Max speed", 5, "The maximum speed which the lab can operate at");
-		kontronCraftable	= craftConfig.getBoolean("kontronCraftable", false, "If true, a standard crafting recipe is added for the kontron crystal");
-		keyCraftable		= craftConfig.getBoolean("keyCraftable", true, "True if the key is craftable.", "False if they can only be spawned");
-		keyReqKontron		= craftConfig.getBoolean("keyRequiresKontron", true, "True if the key requires a Kontron crystal to craft");
+		maxLabSpeed = craftConfig.getInt("Max lab speed", 5, "The maximum speed which the lab can operate at (artron/tick)");
+		kontronCraftable = craftConfig.getBoolean("Craftable - Kontron", false, "If true, a standard crafting recipe is added for the kontron crystal");
+		keyCraftable = craftConfig.getBoolean("Craftable - Key", true, "True if the key is craftable.", "False if they can only be spawned");
+		keyReqKontron = craftConfig.getBoolean("Key requires kontron", true, "True if the key requires a Kontron crystal to craft");
+		numDirtRecipe = MathHelper.clamp(craftConfig.getInt("Temporal dirt production", 2, "Number of temporal dirt per recipe instance", "Min 1, max 64"), 1, 64);
+	}
 
+	/*
+	 * TOOLS CONFIG
+	 */
+
+	public static ConfigFile	toolConfig;
+	public static int			batMaxEnergyPerLevel	= 100;
+	public static int			batEnergyPerLevel		= 1;
+	public static int			batTicksPerEnergy		= 20;
+	public static boolean		batNeedsJumpStart		= true;
+
+	public static int			gravMaxDistance			= 64;
+	public static int			gravScanCeilingInterval	= 20;
+	public static int			gravScanPlayerInterval	= 2;
+	public static double		gravMovePerTick			= 0.25;
+
+	public static double		tickMult				= 1;
+	public static double		boneChance				= 0.3;
+
+	public static int			decoratorRange			= 6;
+	public static boolean		visibleSchema			= false;
+	public static boolean		visibleForceField		= false;
+	public static boolean		lightBlocks				= false;
+
+	private static void refreshToolsConfig()
+	{
+		if (toolConfig == null) toolConfig = TardisMod.configHandler.registerConfigNeeder("toolsAndBlocks");
+		batMaxEnergyPerLevel = toolConfig.getInt("Battery - Max energy per level", 100, "The amount of max energy that is gained per level");
+		batEnergyPerLevel = toolConfig.getInt("Battery - Energy per level", 1, "The amount of energy per pulse that is gained per level");
+		batTicksPerEnergy = toolConfig.getInt("Battery - Ticks per energy", 20, "The number of ticks between each energy pulse");
+		batNeedsJumpStart = toolConfig.getBoolean("Battery - Needs jump start", true, "True if the battery needs to be jumpstarted from inside a TARDIS");
+
+		gravMaxDistance = toolConfig.getInt("Grav Lift - max distance", 64);
+		gravScanCeilingInterval = toolConfig.getInt("Grav Lift - interval for ceiling scan", 20);
+		gravScanPlayerInterval = toolConfig.getInt("Grav Lift - interval for player scan", 2);
+		gravMovePerTick = toolConfig.getDouble("Grav Lift - move per tick", 0.25);
+
+		tickMult = toolConfig.getDouble("Dirt block - Tick mult", 0.5, "The number the tick rate of the plant is multipied by to work out how often the dirt block applies a dirt tick",
+				"e.g. A mult of 0.5 means a plant which would normally get a tick every 10 ticks will get an extra growth tick every 5 ticks");
+		boneChance = toolConfig.getDouble("Dirt block - Bonemeal chance", 0.25, "The chance for a TARDIS dirt block to apply a bonemeal affect to the plant (as well as a growth tick)");
+
+		decoratorRange = toolConfig.getInt("Decorator - Range", 6, "The maximum range the decorator can work to");
+
+		visibleSchema = toolConfig.getConfigItem(new ConfigItem("Visibility - Schema", CType.BOOLEAN, false, "Should schema boundaries be visible (clientside config)")).getBoolean();
+		visibleForceField = toolConfig.getBoolean("Visibility - forcefields", false, "Should the forcefields be visible or not");
+		lightBlocks = toolConfig.getBoolean("Visibility - lit up blocks", false, "Should most blocks give off light");
 	}
 
 	public static void refreshConfigs()
 	{
 		refreshLevelConfigs();
+		refreshRoundelConfigs();
 		refreshCraftingConfigs();
+		refreshToolsConfig();
 	}
 }

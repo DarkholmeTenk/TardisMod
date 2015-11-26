@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
@@ -123,9 +124,9 @@ public class KeyItem extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
-		if (TardisMod.keyCraftable)
+		if (Configs.keyCraftable)
 		{
-			if (TardisMod.keyReqKontron)
+			if (Configs.keyReqKontron)
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " ik", " ii", 'i', Items.iron_ingot, 'k', CraftingComponentType.KONTRON.getIS(1)));
 			else
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " i ", " ii", 'i', Items.iron_ingot));

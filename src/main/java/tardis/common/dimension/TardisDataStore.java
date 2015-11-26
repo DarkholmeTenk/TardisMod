@@ -52,8 +52,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 	private volatile int									tardisLevel		= 0;
 	private volatile HashMap<TardisUpgradeMode, Integer>	upgradeLevels	= new HashMap<TardisUpgradeMode, Integer>();
 	private int												rfStored;
-	private ItemStack[]										items			= new ItemStack[TardisMod.numInvs];
-	private FluidStack[]									fluids			= new FluidStack[TardisMod.numTanks];
+	private ItemStack[]										items			= new ItemStack[Configs.numInvs];
+	private FluidStack[]									fluids			= new FluidStack[Configs.numTanks];
 	private AspectList										aspectList		= new AspectList();
 	public int												maxSuck			= 16;
 	public Aspect											maxSuckT		= null;
@@ -196,7 +196,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public double getXPNeeded()
 	{
 		if (tardisLevel <= 0) return 1;
-		return TardisMod.xpBase + (tardisLevel * TardisMod.xpInc);
+		return Configs.xpBase + (tardisLevel * Configs.xpInc);
 	}
 
 	public int getLevel()
@@ -255,7 +255,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public int getMaxRF()
 	{
-		return TardisMod.rfBase + Math.max((tardisLevel - 1) * TardisMod.rfInc, 0);
+		return Configs.rfBase + Math.max((tardisLevel - 1) * Configs.rfInc, 0);
 	}
 
 	public int getRF()
@@ -508,13 +508,13 @@ public class TardisDataStore extends AbstractWorldDataStore
 	{
 		int cAm = aspectList.getAmount(a);
 		if (cAm >= getMaxAspectStorage()) return false;
-		return (aspectList.size() < TardisMod.numAspects) || ((cAm != 0) && ((cAm + am) <= getMaxAspectStorage()));
+		return (aspectList.size() < Configs.numAspects) || ((cAm != 0) && ((cAm + am) <= getMaxAspectStorage()));
 	}
 
 	public int addAspect(Aspect a, int am)
 	{
 		int cAm = aspectList.getAmount(a);
-		if ((cAm == 0) && (aspectList.size() >= TardisMod.numAspects)) return am;
+		if ((cAm == 0) && (aspectList.size() >= Configs.numAspects)) return am;
 		int toAdd = am;
 		int toRet = 0;
 		if ((am + cAm) > getMaxAspectStorage())
@@ -538,7 +538,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public int getMaxAspectStorage()
 	{
-		return ((getLevel() - 1) * TardisMod.maxEachAspectInc) + TardisMod.maxEachAspect;
+		return ((getLevel() - 1) * Configs.maxEachAspectInc) + Configs.maxEachAspect;
 	}
 
 	private int getRequiredLevel(TardisFunction fun)

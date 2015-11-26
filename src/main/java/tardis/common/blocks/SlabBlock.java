@@ -13,6 +13,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.Configs;
 import tardis.TardisMod;
 
 public class SlabBlock extends AbstractBlock
@@ -31,7 +32,7 @@ public class SlabBlock extends AbstractBlock
 		setBlockName("Slab");
 		setSubNames(names);
 		setIconArray(names.length,suffixes.length);
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import net.minecraft.block.BlockStairs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.IBlockAccess;
+import tardis.Configs;
 import tardis.TardisMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -18,7 +19,7 @@ public class StairBlock extends BlockStairs
 		setHardness(-1.0f);
 		setCreativeTab(TardisMod.tab);
 		setBlockName("StairBlock");
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	public StairBlock register()

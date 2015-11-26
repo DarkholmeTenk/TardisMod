@@ -1,13 +1,13 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
@@ -18,12 +18,6 @@ import tardis.common.tileents.extensions.LabFlag;
 
 public class BatteryTileEntity extends AbstractTileEntity implements IArtronEnergyProvider, IScrewable, IActivatable
 {
-	private static ConfigFile	config				= null;
-	private static int			maxEnergyPerLevel	= 100;
-	private static int			energyPerLevel		= 1;
-	private static int			ticksPerEnergy		= 20;
-	private static boolean		needsJumpStart		= true;
-
 	private int					level				= -1;
 	private int					artronEnergy		= 0;
 	private int					mode				= 0;		// 0 landed, 1 uncoordinated, 2 coordinated
@@ -31,20 +25,6 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 	private static double		rotSpeed			= 4;
 	private double				angle				= 0;		// max = 359.99
 	private boolean				changed				= false;
-
-	static
-	{
-		if (config == null) refreshConfigs();
-	}
-
-	public static void refreshConfigs()
-	{
-		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("ArtronBattery");
-		maxEnergyPerLevel = config.getInt("max energy per level", 100, "The amount of max energy that is gained per level");
-		energyPerLevel = config.getInt("energy per level", 1, "The amount of energy per pulse that is gained per level");
-		ticksPerEnergy = config.getInt("ticks per energy", 20, "The number of ticks between each energy pulse");
-		needsJumpStart = config.getBoolean("needs jump start", true, "True if the battery needs to be jumpstarted from inside a TARDIS");
-	}
 
 	public BatteryTileEntity(int _level)
 	{
@@ -65,7 +45,8 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if (((tt % ticksPerEnergy) == 0) && ((artronEnergy > 0) || Helper.isTardisWorld(worldObj) || !needsJumpStart)) addArtronEnergy(level * energyPerLevel, false);
+		if (((tt % Configs.batTicksPerEnergy) == 0) && ((artronEnergy > 0) || Helper.isTardisWorld(worldObj) || !Configs.batNeedsJumpStart))
+			addArtronEnergy(level * Configs.batEnergyPerLevel, false);
 		if ((tt % 1200) == 0) sendUpdate();
 		if (((tt % 85) == 0) && changed)
 		{
@@ -84,7 +65,7 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 	@Override
 	public int getMaxArtronEnergy()
 	{
-		return level * maxEnergyPerLevel;
+		return level * Configs.batMaxEnergyPerLevel;
 	}
 
 	@Override

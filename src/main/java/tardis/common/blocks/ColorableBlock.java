@@ -6,6 +6,7 @@ import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
@@ -19,7 +20,7 @@ public class ColorableBlock extends AbstractBlock implements IColorableBlock
 	{
 		super(TardisMod.modName);
 		setBlockName(name);
-		setLightLevel(TardisMod.lightBlocks || getUnlocalizedNameForIcon().contains("Roundel") ? 1 : 0);
+		setLightLevel(Configs.lightBlocks || getUnlocalizedNameForIcon().contains("Roundel") ? 1 : 0);
 	}
 
 	@Override

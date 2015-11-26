@@ -28,6 +28,7 @@ import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
@@ -138,7 +139,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			dc = null;
 		}
 
-		if ((lastButtonTT != -1) && (tt > (lastButtonTT + (importantButton(lastButton) ? TardisMod.shiftPressTime : 20))))
+		if ((lastButtonTT != -1) && (tt > (lastButtonTT + (importantButton(lastButton) ? FlightConfiguration.shiftPressTime : 20))))
 		{
 			lastButton = -1;
 			lastButtonTT = -1;
