@@ -6,17 +6,11 @@ import cpw.mods.fml.common.eventhandler.Cancelable;
 @Cancelable
 public class TardisTakeoffEvent extends TardisEvent
 {
-	private final CoreTileEntity core;
 	private String cancelledMessage = null;
 
-	public TardisTakeoffEvent(CoreTileEntity _core)
+	public TardisTakeoffEvent(CoreTileEntity core)
 	{
-		core = _core;
-	}
-
-	public CoreTileEntity getCore()
-	{
-		return core;
+		super(core);
 	}
 
 	public String getMessage()

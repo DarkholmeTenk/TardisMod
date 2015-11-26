@@ -44,6 +44,7 @@ import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.events.TardisLandingEvent;
 import tardis.common.core.events.TardisTakeoffEvent;
 import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.flight.IFlightModifier;
@@ -884,6 +885,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		int facing = con.getFacingFromControls();
 		posArr = getModifiedControls(con, posArr);
 		World w = WorldHelper.getWorld(gDS().desiredDim);
+		MinecraftForge.EVENT_BUS.post(new TardisLandingEvent(this,new SimpleCoordStore(w,posArr[0],posArr[1],posArr[2])));
 		w.setBlock(posArr[0], posArr[1], posArr[2], TardisMod.tardisBlock, facing, 3);
 		w.setBlock(posArr[0], posArr[1] + 1, posArr[2], TardisMod.tardisTopBlock, facing, 3);
 

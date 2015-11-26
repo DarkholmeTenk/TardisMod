@@ -236,6 +236,7 @@ public class TardisMod implements IConfigHandlerMod
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);
 		inited = true;
 		tcInstalled = ItemApi.getItem("itemResource", 0) != null;
+		CommandRegister.registerListeners();
 		if (Configs.keyOnFirstJoin) PlayerHelper.registerJoinItem(new ItemStack(keyItem, 1));
 		FMLCommonHandler.instance().bus().register(ScrewdriverHelperFactory.i);
 	}

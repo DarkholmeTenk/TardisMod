@@ -20,12 +20,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.events.TardisLandingEvent;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
 import tardis.common.core.schema.PartBlueprint;
 import tardis.common.dimension.SaveSlotNamesDataStore;
@@ -170,6 +172,8 @@ public class Helper
 			te.land(true);
 			te.linkToDimension(dim);
 			ConsoleTileEntity con = getTardisConsole(dim);
+			MinecraftForge.EVENT_BUS.post(new TardisLandingEvent(oldCore, new SimpleCoordStore(te)));
+			oldCore.attemptToLand();
 			if (con != null) con.setControls(te, true);
 			return true;
 		}

@@ -5,13 +5,13 @@ import tardis.api.IControlMatrix;
 import cpw.mods.fml.common.eventhandler.Cancelable;
 
 @Cancelable
-public class TardisControlEvent extends TardisEvent
+public class TardisControlEvent extends TardisModEvent
 {
 	public final IControlMatrix matrix;
 	public final int control;
 	public final EntityPlayer player;
 
-	public TardisControlEvent(){super();matrix=null;control=-1;player=null;}
+	public TardisControlEvent(){this(null,-1,null);}
 	public TardisControlEvent(IControlMatrix _matrix, int _control, EntityPlayer _player)
 	{
 		super();

@@ -1,6 +1,7 @@
 package tardis.common.command;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 public class CommandRegister
@@ -17,8 +18,9 @@ public class CommandRegister
 	private static AbstractCommand regCommand;
 	private static AbstractCommand conCommand;
 	private static AbstractCommand sumCommand;
+	private static AbstractCommand leCommand;
 
-	public static void registerCommands(FMLServerStartingEvent event)
+	static
 	{
 		teleportCommand = new TeleportCommand();
 		saveCommand = new SchemaSaveCommand();
@@ -31,6 +33,18 @@ public class CommandRegister
 		xpCommand	= new XpCommand();
 		regCommand	= new RegCommand();
 		conCommand	= new SwitchConsoleCommand();
+		sumCommand = new SummonTardisCommand();
+		leCommand = new LandingEventCommand();
+	}
+
+	public static void registerListeners()
+	{
+		MinecraftForge.EVENT_BUS.register(leCommand);
+	}
+
+	public static void registerCommands(FMLServerStartingEvent event)
+	{
+		LandingEventCommand.clear();
 		event.registerServerCommand(teleportCommand);
 		event.registerServerCommand(saveCommand);
 		event.registerServerCommand(loadCommand);
@@ -43,6 +57,7 @@ public class CommandRegister
 		event.registerServerCommand(regCommand);
 		event.registerServerCommand(conCommand);
 		event.registerServerCommand(new SetValueCommand());
-		event.registerServerCommand(sumCommand = new SummonTardisCommand());
+		event.registerServerCommand(sumCommand);
+		event.registerServerCommand(leCommand);
 	}
 }
