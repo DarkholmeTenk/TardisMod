@@ -78,11 +78,7 @@ import tardis.common.items.extensions.screwtypes.Eighth;
 import tardis.common.items.extensions.screwtypes.Tenth;
 import tardis.common.items.extensions.screwtypes.Twelth;
 import tardis.common.network.TardisPacketHandler;
-import tardis.common.tileents.BatteryTileEntity;
-import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
-import tardis.common.tileents.GravityLiftTileEntity;
-import tardis.common.tileents.components.AbstractComponent;
 import tardis.common.tileents.extensions.chameleon.ChameleonRegistry;
 import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 import tardis.common.tileents.extensions.chameleon.tardis.DefaultTardisCham;
@@ -109,7 +105,6 @@ public class TardisMod implements IConfigHandlerMod
 	@Instance
 	public static TardisMod										i;
 	public static final String									modName				= "TardisMod";
-	public static int											decoratorRange		= 6;
 	public static boolean										inited				= false;
 
 	@SidedProxy(clientSide = "tardis.client.TardisClientProxy", serverSide = "tardis.common.TardisProxy")
@@ -194,34 +189,17 @@ public class TardisMod implements IConfigHandlerMod
 	public static boolean										deathTransmat		= true;
 	public static boolean										deathTransmatLive	= true;
 	public static double										transmatExitDist	= 2;
-	public static boolean										visibleSchema		= false;
-	public static boolean										visibleForceField	= false;
-	public static boolean										lightBlocks			= false;
-	public static int											xpBase				= 80;
-	public static int											xpInc				= 20;
-	public static int											rfBase				= 50000;
-	public static int											rfInc				= 50000;
-	public static int											rfPerT				= 4098;
-	public static int											maxFlu				= 32000;
-	public static int											numTanks			= 5;
-	public static int											numInvs				= 30;
-	public static int											shiftPressTime		= 60;
-	public static boolean										keyCraftable		= true;
-	public static boolean										keyReqKontron		= true;
-	public static boolean										kontronCraftable	= false;
+
+
 	public static int											kontronRarity		= 4;
 	public static boolean										keyOnFirstJoin		= true;
-	public static int											maxEachAspect		= 16;
-	public static int											maxEachAspectInc	= 16;
-	public static int											numAspects			= 16;
-	public static int											numDirtRecipe		= 2;
+
 	public static boolean										deleteDisconnected	= true;
 	public static int											exteriorGenChunksRad= 8;
 	public static int											exteriorGenChunksPT	= 1;
 	public static int											exteriorGenChunksTR	= 4;
 
 	public static AbstractScrewdriverType						defaultType			= new Tenth();
-
 	public static ChameleonRegistry<AbstractTardisChameleon>	tardisChameleonReg	= new ChameleonRegistry(new DefaultTardisCham());
 
 	@EventHandler
@@ -268,52 +246,22 @@ public class TardisMod implements IConfigHandlerMod
 		tardisLoaded = modConfig.getConfigItem(new ConfigItem("Dimension always loaded", CType.BOOLEAN, true, "Should the TARDIS dimensions always be loaded")).getBoolean();
 
 		keyInHand = modConfig.getConfigItem(new ConfigItem("Key in hand", CType.BOOLEAN, true, "Does a player need to have the key in hand to get through a locked TARDIS door")).getBoolean();
-
-		keyCraftable = modConfig.getBoolean("keyCraftable", true, "True if the key is craftable.", "False if they can only be spawned");
-
 		keyOnFirstJoin = modConfig.getBoolean("keyOnJoin", false, "If true, all players get a new key when they first join");
-		keyReqKontron = modConfig.getBoolean("keyRequiresKontron", true, "True if the key requires a Kontron crystal to craft");
-		kontronCraftable = modConfig.getBoolean("kontronCraftable", false, "If true, a standard crafting recipe is added for the kontron crystal");
 		kontronRarity = modConfig.getInt("kontronRarity", 20, "The higher this value, the more likely you are to find kontron crystals in chests");
 
 		tardisVol = modConfig.getConfigItem(new ConfigItem("Volume", CType.DOUBLE, 1, "How loud should Tardis Mod sounds be (1.0 = full volume, 0.0 = no volume)")).getDouble();
 
-		visibleSchema = modConfig.getConfigItem(new ConfigItem("Visible Schema", CType.BOOLEAN, false, "Should schema boundaries be visible (clientside config)")).getBoolean();
-		visibleForceField = modConfig.getBoolean("Visible forcefields", false, "Should the forcefields be visible or not");
-		lightBlocks = modConfig.getBoolean("Normal blocks give off light", false, "If true, normal blocks (including slabs and such) give off light");
 		deleteDisconnected = modConfig.getBoolean("Delete disconnected", true, "Delete rooms which aren't connected to the console room when the connecting room is deleted");
 		deathTransmatLive = modConfig.getBoolean("Live after death transmat", true);
 		deathTransmat = modConfig.getBoolean("Do death transmat", true, "If true, when you die within range of your TARDIS you will be transmatted");
 		transmatExitDist = modConfig.getDouble("Transmat exit distance", 2, "The distance from the transmat point beneath which you will be transmatted out of the TARDIS");
 
-		xpBase = miscConfig.getInt("xp base amount", 80, "The amount of xp it initially costs to level up");
-		xpInc = miscConfig.getInt("xp increase", 20, "The amount that is added on to the xp cost every time the TARDIS levels up");
-		rfBase = miscConfig.getInt("base RF storage", 50000, "The amount of RF that can be stored when a TARDIS is level 0");
-		rfInc = miscConfig.getInt("RF storage increase per level", 50000, "The extra amount of storage which is added every time the TARDIS levels up");
-		rfPerT = miscConfig.getInt("RF output per tick", 4098, "The amount of RF which the TARDIS can output per tick");
-		maxFlu = miscConfig.getInt("Max mb per internal tank", 16000, "The amount of millibuckets of fluid that can be stored for each internal tank");
-		numTanks = miscConfig.getInt("Number of internal tanks", 6, "The number of internal tanks that the TARDIS has");
-		numInvs = miscConfig.getInt("Number of internal inventory slots", 30, "The number of item inventory slots that the TARDIS has");
-
-		shiftPressTime = miscConfig.getInt("shift press time", 60, "The amount of time in ticks to shift press a button after pressing normally", "20 ticks = 1 second");
-
-		numAspects = miscConfig.getInt("num aspects", 32, "The number of thaumcraft aspects which can be stored in the TARDIS's cabling");
-		maxEachAspect = miscConfig.getInt("max aspect", 32, "The maximum amount of each thaumcraft aspect that can be stored");
-		maxEachAspectInc = miscConfig.getInt("max aspect inc", 16, "The amount of aspect storage gained per level");
-
-		decoratorRange = modConfig.getInt("decorator range", 6, "The maximum range the decorator can work to");
-		numDirtRecipe = MathHelper.clamp(miscConfig.getInt("Number of temporal dirt to produce per recipe", 2, "Min 1, max 64"), 1, 64);
 
 		exteriorGenChunksRad = MathHelper.clamp(modConfig.getInt("exterior chunk gen radius", 8, "Radius in chunks for the exterior to generate while landing"), -1, 10);
 		exteriorGenChunksPT = MathHelper.clamp(modConfig.getInt("exterior chunk gen per pulse", 1, "Number of chunks for the exterior to generate per pulse"), 1, 20);
 		exteriorGenChunksTR = MathHelper.clamp(modConfig.getInt("exterior chunk gen ticks per pulse", 4, "Number of ticks between chunk generation pulses"), 1, 20);
 
-		AbstractComponent.refreshConfigs();
-		BatteryTileEntity.refreshConfigs();
-		ComponentTileEntity.refreshConfigs();
 		CoreTileEntity.refreshConfigs();
-		GravityLiftTileEntity.refreshConfigs();
-		InteriorDirtBlock.refreshConfigs();
 
 		TardisDimensionHandler.refreshConfigs();
 		TardisDamageSystem.refreshConfigs();
@@ -358,14 +306,14 @@ public class TardisMod implements IConfigHandlerMod
 		decoBlock = new DecoBlock().register();
 		decoTransBlock = new DecoTransBlock().register();
 		interiorDirtBlock = new InteriorDirtBlock().register();
-		schemaBlock = new SchemaBlock(visibleSchema).register();
-		schemaCoreBlock = new SchemaCoreBlock(visibleSchema).register();
+		schemaBlock = new SchemaBlock(Configs.visibleSchema).register();
+		schemaCoreBlock = new SchemaCoreBlock(Configs.visibleSchema).register();
 		schemaComponentBlock = new SchemaComponentBlock().register();
 		slabBlock = new SlabBlock().register();
 		landingPad = new LandingPadBlock().register();
 		labBlock = (LabBlock) new LabBlock().register();
 		gravityLift = new GravityLiftBlock().register();
-		forcefield = new ForceFieldBlock(visibleForceField).register();
+		forcefield = new ForceFieldBlock(Configs.visibleForceField).register();
 		battery = new BatteryBlock().register();
 		colorableWallBlock = new ColorableBlock("ColorableWall").register();
 		colorableFloorBlock = new ColorableBlock("ColorableFloor").register();
