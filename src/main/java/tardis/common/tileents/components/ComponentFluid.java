@@ -12,7 +12,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import tardis.TardisMod;
+import tardis.Configs;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
@@ -58,12 +58,12 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 		if(tanks[i] == null)
 		{
 			if(doFill)
-				tanks[i] = new FluidStack(resource,Math.min(TardisMod.maxFlu, resource.amount));
-			return Math.min(TardisMod.maxFlu, resource.amount);
+				tanks[i] = new FluidStack(resource,Math.min(Configs.maxFlu, resource.amount));
+			return Math.min(Configs.maxFlu, resource.amount);
 		}
 		else if(tanks[i].equals(resource))
 		{
-			int maxFill = Math.min(TardisMod.maxFlu - tanks[i].amount,resource.amount);
+			int maxFill = Math.min(Configs.maxFlu - tanks[i].amount,resource.amount);
 			if(doFill)
 				tanks[i].amount += maxFill;
 			return maxFill;
@@ -183,7 +183,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 					continue;
 				}
 				if(tanks[i].getFluid().equals(fluid))
-					return tanks[i].amount < TardisMod.maxFlu;
+					return tanks[i].amount < Configs.maxFlu;
 			}
 		}
 		return foundEmpty;
@@ -215,7 +215,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 			FluidTankInfo[] retVal = new FluidTankInfo[tanks.length];
 			for(int i = 0;i<tanks.length;i++)
 			{
-				FluidTankInfo info = new FluidTankInfo(tanks[i],TardisMod.maxFlu);
+				FluidTankInfo info = new FluidTankInfo(tanks[i],Configs.maxFlu);
 				retVal[i] = info;
 			}
 			return retVal;
@@ -237,7 +237,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 			}
 			Fluid f = ft.getFluid();
 			String name = f.getLocalizedName(ft);
-			ServerHelper.sendString(ent, "Tank " + (i+1) + ": " + name + " " + ft.amount +"/"+TardisMod.maxFlu+"mb");
+			ServerHelper.sendString(ent, "Tank " + (i+1) + ": " + name + " " + ft.amount +"/"+Configs.maxFlu+"mb");
 		}
 		return true;
 	}
@@ -248,7 +248,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 		TardisDataStore ds = getDatastore();
 		if((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
 		{
-			currentTank = MathHelper.cycle(currentTank + (player.isSneaking() ? -1 : 1), -1, TardisMod.numTanks-1);
+			currentTank = MathHelper.cycle(currentTank + (player.isSneaking() ? -1 : 1), -1, Configs.numTanks-1);
 			if(currentTank == -1)
 				ServerHelper.sendString(player, "Fluid interface configured to all tanks");
 			else

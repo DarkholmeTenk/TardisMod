@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
@@ -51,8 +52,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 	private volatile int									tardisLevel		= 0;
 	private volatile HashMap<TardisUpgradeMode, Integer>	upgradeLevels	= new HashMap<TardisUpgradeMode, Integer>();
 	private int												rfStored;
-	private ItemStack[]										items			= new ItemStack[TardisMod.numInvs];
-	private FluidStack[]									fluids			= new FluidStack[TardisMod.numTanks];
+	private ItemStack[]										items			= new ItemStack[Configs.numInvs];
+	private FluidStack[]									fluids			= new FluidStack[Configs.numTanks];
 	private AspectList										aspectList		= new AspectList();
 	public int												maxSuck			= 16;
 	public Aspect											maxSuckT		= null;
@@ -195,7 +196,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public double getXPNeeded()
 	{
 		if (tardisLevel <= 0) return 1;
-		return TardisMod.xpBase + (tardisLevel * TardisMod.xpInc);
+		return Configs.xpBase + (tardisLevel * Configs.xpInc);
 	}
 
 	public int getLevel()
@@ -254,7 +255,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public int getMaxRF()
 	{
-		return TardisMod.rfBase + Math.max((tardisLevel - 1) * TardisMod.rfInc, 0);
+		return Configs.rfBase + Math.max((tardisLevel - 1) * Configs.rfInc, 0);
 	}
 
 	public int getRF()
@@ -507,13 +508,13 @@ public class TardisDataStore extends AbstractWorldDataStore
 	{
 		int cAm = aspectList.getAmount(a);
 		if (cAm >= getMaxAspectStorage()) return false;
-		return (aspectList.size() < TardisMod.numAspects) || ((cAm != 0) && ((cAm + am) <= getMaxAspectStorage()));
+		return (aspectList.size() < Configs.numAspects) || ((cAm != 0) && ((cAm + am) <= getMaxAspectStorage()));
 	}
 
 	public int addAspect(Aspect a, int am)
 	{
 		int cAm = aspectList.getAmount(a);
-		if ((cAm == 0) && (aspectList.size() >= TardisMod.numAspects)) return am;
+		if ((cAm == 0) && (aspectList.size() >= Configs.numAspects)) return am;
 		int toAdd = am;
 		int toRet = 0;
 		if ((am + cAm) > getMaxAspectStorage())
@@ -537,32 +538,38 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public int getMaxAspectStorage()
 	{
-		return ((getLevel() - 1) * TardisMod.maxEachAspectInc) + TardisMod.maxEachAspect;
+		return ((getLevel() - 1) * Configs.maxEachAspectInc) + Configs.maxEachAspect;
 	}
 
-	public boolean hasFunction(TardisFunction fun)
+	private int getRequiredLevel(TardisFunction fun)
 	{
 		switch (fun)
 		{
 			case LOCATE:
-				return getLevel() >= 3;
+				return Configs.levelLocate;
 			case SENSORS:
-				return getLevel() >= 5;
+				return Configs.levelSensors;
 			case STABILISE:
-				return getLevel() >= 7;
+				return Configs.levelStable;
 			case TRANSMAT:
-				return getLevel() >= 9;
+				return Configs.levelTransmat;
 			case RECALL:
-				return getLevel() >= 11;
+				return Configs.levelRecall;
 			case TRANQUILITY:
-				return getLevel() >= 15;
+				return Configs.levelTranq;
 			case CLARITY:
-				return getLevel() >= 13;
+				return Configs.levelClarity;
 			case SPAWNPROT:
-				return getLevel() >= 15;
+				return Configs.levelSpawnProt;
 			default:
-				return false;
+				return -1;
 		}
+	}
+
+	public boolean hasFunction(TardisFunction fun)
+	{
+		int level = getRequiredLevel(fun);
+		return (level >= 0) && (getLevel() >= level);
 	}
 
 	public boolean hasPermission(Object ent, TardisPermission perm)

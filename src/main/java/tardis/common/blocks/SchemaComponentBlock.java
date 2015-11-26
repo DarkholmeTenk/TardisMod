@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
@@ -32,7 +33,7 @@ public class SchemaComponentBlock extends AbstractBlock
 		opaque = false;
 		setBlockName("SchemaComponent");
 		setSubNames("DoorConnector","DoorConnectorHidden","ControlPanel","ConsoleBlock", "TardisDoorBottom","TardisDoorTop","ConsoleTop","Engine","TimeRotor");
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override

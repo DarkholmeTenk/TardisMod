@@ -1,7 +1,6 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
@@ -25,6 +24,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
@@ -61,22 +61,6 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	private boolean								compAdded		= false;
 	private Boolean								inside			= null;
 
-	private static ConfigFile					config			= null;
-	private static int							maxComponents	= 6;
-
-	static
-	{
-		if(config == null)
-			refreshConfigs();
-	}
-
-	public static void refreshConfigs()
-	{
-		if(config == null)
-			config = TardisMod.configHandler.registerConfigNeeder("Components");
-		maxComponents = config.getInt("Max components", 6,
-				"The maximum number of TARDIS components (cable interfaces, etc), which can be applied to one open roundel");
-	}
 
 	public boolean isComponentValid(TardisTEComponent comp)
 	{
@@ -87,7 +71,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 
 	public boolean addComponent(TardisTEComponent comp)
 	{
-		if (!hasComponent(comp) && (getNumComponents() < maxComponents))
+		if (!hasComponent(comp) && (getNumComponents() < Configs.maxComponents))
 		{
 			if (isComponentValid(comp) || !valid)
 			{

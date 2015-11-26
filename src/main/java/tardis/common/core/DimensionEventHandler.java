@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
@@ -65,7 +66,7 @@ public class DimensionEventHandler
 			EntityPlayer player = (EntityPlayer)ent;
 			//damAmount = (damAmount * (25 - player.getTotalArmorValue())) / 25.0f;
 			//TardisOutput.print("TDEH", "Handling hurt event");
-			if(TardisMod.deathTransmat && (player.getHealth() <= damAmount))
+			if(Configs.deathTransmat && (player.getHealth() <= damAmount))
 			{
 				handleDead(w,player,event,source);
 			}
@@ -183,7 +184,7 @@ public class DimensionEventHandler
 						CoreTileEntity core = Helper.getTardisCore(dim);
 						if(core != null)
 							core.transmatEntity(pl);
-						if((source == DamageSource.starve) || (source == DamageSource.onFire) || (source == DamageSource.wither) || !TardisMod.deathTransmatLive)
+						if((source == DamageSource.starve) || (source == DamageSource.onFire) || (source == DamageSource.wither) || !Configs.deathTransmatLive)
 							pl.attackEntityFrom(source, 200);
 					}
 					plNameIter.remove();

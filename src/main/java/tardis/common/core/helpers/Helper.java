@@ -21,6 +21,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.TardisDimensionRegistry;
@@ -126,7 +127,7 @@ public class Helper
 	{
 		if (ServerHelper.isClient()) return 0;
 		int dimID = getNextFreeDimID();
-		DimensionManager.registerDimension(dimID, TardisMod.providerID);
+		DimensionManager.registerDimension(dimID, Configs.providerID);
 		TardisMod.dimReg.addDimension(dimID);
 		TardisDimensionRegistry.saveAll();
 		TardisMod.dimReg.sendPacket();

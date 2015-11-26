@@ -2,6 +2,7 @@ package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import net.minecraft.world.IBlockAccess;
+import tardis.Configs;
 import tardis.TardisMod;
 
 public class DecoTransBlock extends AbstractBlock
@@ -18,7 +19,7 @@ public class DecoTransBlock extends AbstractBlock
 	{
 		setBlockName("DecoGlass");
 		setSubNames(subs);
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
@@ -17,7 +16,7 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import tardis.TardisMod;
+import tardis.Configs;
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
@@ -35,9 +34,6 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		}
 	}
 
-	private static ConfigFile config = null;
-	private static int maxSpeed = 5;
-
 	private boolean wasWorking = false;
 	private Boolean powered = null;
 	private boolean active = true;
@@ -54,18 +50,8 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	@Override
 	public void init()
 	{
-		if(config == null)
-			refreshConfigs();
 		if(ServerHelper.isServer())
 			isPowered();
-	}
-
-	public static void refreshConfigs()
-	{
-		if(config == null)
-			config = TardisMod.configHandler.registerConfigNeeder("Lab");
-		maxSpeed = config.getInt("Max speed", 5,
-				"The maximum speed which the lab can operate at");
 	}
 
 	private int numPartiallyMatchingRecipes(ItemStack newItemStack)
@@ -502,7 +488,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	public void readTransmittable(NBTTagCompound nbt)
 	{
 		active = nbt.getBoolean("active");
-		speed = MathHelper.clamp(nbt.getInteger("speed"), 1, maxSpeed);
+		speed = MathHelper.clamp(nbt.getInteger("speed"), 1, Configs.maxLabSpeed);
 	}
 
 	private void moveSticks()

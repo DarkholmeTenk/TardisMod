@@ -19,8 +19,8 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
+import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
-import tardis.common.tileents.CoreTileEntity;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class TardisDimensionHandler
@@ -80,7 +80,7 @@ public class TardisDimensionHandler
 
 	public static void refreshConfigs()
 	{
-		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("Dimensions");
+		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("dimensions");
 		String ids = config.getString("Blacklisted Dimension IDs", "", "A comma separated blacklist of dimension ids which no tardis should be able to reach");
 		String[] splitIDs = ids.split(",");
 		blacklistedIDs = new ArrayList(splitIDs.length);
@@ -116,7 +116,7 @@ public class TardisDimensionHandler
 	{
 		if(energyCosts.containsKey(dimID))
 			return energyCosts.get(dimID);
-		return CoreTileEntity.energyCostDimChange;
+		return FlightConfiguration.energyCostDimChange;
 	}
 
 	private boolean isBlacklisted(int id)

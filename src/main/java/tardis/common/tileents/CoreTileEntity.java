@@ -1,7 +1,6 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
@@ -38,6 +37,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.TardisFunction;
@@ -65,7 +65,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class CoreTileEntity extends AbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider, IExplodable
 {
-	private static ConfigFile				config					= null;
 	public static final ChatComponentText	cannotModifyFly			= new ChatComponentText("[TARDIS] You do not have permission to fly this TARDIS");
 	public static final ChatComponentText	cannotModifyRecall		= new ChatComponentText("[TARDIS] You do not have permission to recall this TARDIS");
 	public static final ChatComponentText	cannotModifyRecolour	= new ChatComponentText("[TARDIS] You do not have permission to recolour this block");
@@ -79,7 +78,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private double							lastSpin				= 0;
 
 	private double							speed					= 2;
-	private static double					maxSpeed;
 
 	private int								energy;
 	private static int						buttonTime				= 80;
@@ -97,7 +95,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private SimpleCoordStore				transmatPoint			= null;
 	private boolean							deletingRooms			= false;
-	private static double					explodeChance			= 0.25;
 	private boolean							explode					= false;
 
 	private TardisDataStore					ds						= null;
@@ -117,7 +114,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private LockState					lockState			= LockState.Open;
 	private int							lastLockSound		= Integer.MIN_VALUE;
-	private static int					lockSoundDelay		= 80;
 
 	private HashSet<SimpleCoordStore>	roomSet				= new HashSet<SimpleCoordStore>();
 	private String						ownerName;
@@ -140,17 +136,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private int							currentBlockSpeed	= 0;
 	private int							maxBlockSpeed		= 0;
 
-	private static int					maxNumRooms			= 30;
-	private static int					maxNumRoomsInc		= 10;
-
-	private static int					maxEnergy			= 1000;
-	private static int					maxEnergyInc		= 1000;
-	private static int					energyPerSecond		= 1;
-	private static int					energyPerSecondInc	= 1;
-	public static int					energyCostDimChange	= 2000;
-	private static int					energyCostFlightMax	= 3000;
-	private static int					maxMoveForFast		= 3;
-	private static int					energyPerSpeed		= 200;
 	private IGridNode					node				= null;
 	private int							unstableTicks		= 0;
 	private int							flightTicks			= 0;
@@ -159,7 +144,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	static
 	{
-		if (config == null) refreshConfigs();
 		loadable = new ChunkCoordIntPair[4];
 		loadable[0] = new ChunkCoordIntPair(0, 0);
 		loadable[1] = new ChunkCoordIntPair(-1, 0);
@@ -185,24 +169,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (ds == null) if (worldObj != null) ds = Helper.getDataStore(worldObj);
 		return ds;
-	}
-
-	public static void refreshConfigs()
-	{
-		if (config == null) config = TardisMod.configHandler.registerConfigNeeder("TARDIS Core");
-		explodeChance = config.getDouble("Explosion chance", 0.6, "The chance of an explosion being caused if an active control is not pressed");
-		maxSpeed = config.getDouble("max speed", 8, "The maximum speed setting that can be reached");
-		maxEnergy = config.getInt("Max energy", 1000, "The base maximum energy");
-		maxNumRooms = config.getInt("Max rooms", 30, "The base maximum number of rooms");
-		maxNumRoomsInc = config.getInt("Max rooms increase", 10, "How much a level of max rooms increases the maximum number of rooms");
-		maxEnergyInc = config.getInt("Max energy increase", 1000, "How much a level of energy increases the max amount of energy");
-		energyPerSecondInc = config.getInt("Energy Rate increase", 1, "How much a level of energy rate increases the amount of energy per second");
-		energyCostDimChange = config.getInt("Dimension jump cost", 2000, "How much energy it costs to jump between dimensions");
-		energyCostFlightMax = config.getInt("Max flight cost", 3000, "The maximum amount that a flight can cost");
-		maxMoveForFast = config.getInt("Short hop distance", 3, "The maximum distance for which a jump can be considered a short hop which takes less time");
-		energyPerSecond = config.getInt("Energy rate", 1, "The base amount of energy the TARDIS generates per second");
-		energyPerSpeed = config.getInt("Energy per speed", 50, "Energy per unit of block speed", "The tardis moves at a max speed of (max flight cost / energy per speed) blocks per tick");
-		lockSoundDelay = config.getInt("Lock sound delay", 80, "Amount of ticks between lock sounds being allowed to play");
 	}
 
 	private void calculateFlightDistances()
@@ -330,7 +296,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 		if (flightState == FlightState.FLIGHT)
 		{
-			if (((flightTimer % 20) == 0) && (currentBlockSpeed < maxBlockSpeed) && takeArtronEnergy(energyPerSpeed, false))
+			if (((flightTimer % 20) == 0) && (currentBlockSpeed < maxBlockSpeed) && takeArtronEnergy(FlightConfiguration.energyPerSpeed, false))
 			{
 				currentBlockSpeed++;
 				sendUpdate();
@@ -523,7 +489,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void playLockSound()
 	{
-		if(tt < (lastLockSound + lockSoundDelay)) return;
+		if(tt < (lastLockSound + Configs.lockSoundDelay)) return;
 		lastLockSound = tt;
 		SoundHelper.playSound(worldObj, xCoord+13, yCoord-1, zCoord, "tardismod:locked", 0.5f);
 		TardisDataStore ds = gDS();
@@ -740,9 +706,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		int[] posArr = new int[] { con.getXFromControls(gDS().exteriorX), con.getYFromControls(gDS().exteriorY), con.getZFromControls(gDS().exteriorZ) };
 		posArr = getModifiedControls(con, posArr);
 		TardisOutput.print("TCTE", "Moving to :" + Arrays.toString(posArr) + " from " + gDS().exteriorX + "," + gDS().exteriorY + "," + gDS().exteriorZ);
-		if (Math.abs(posArr[0] - gDS().exteriorX) > maxMoveForFast) return true;
-		if (Math.abs(posArr[1] - gDS().exteriorY) > maxMoveForFast) return true;
-		if (Math.abs(posArr[2] - gDS().exteriorZ) > maxMoveForFast) return true;
+		if (Math.abs(posArr[0] - gDS().exteriorX) > FlightConfiguration.maxMoveForFast) return true;
+		if (Math.abs(posArr[1] - gDS().exteriorY) > FlightConfiguration.maxMoveForFast) return true;
+		if (Math.abs(posArr[2] - gDS().exteriorZ) > FlightConfiguration.maxMoveForFast) return true;
 		return false;
 	}
 
@@ -935,7 +901,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		if (inAbortableFlight())
 		{
-			if (distanceTravelled <= maxMoveForFast) fast = true;
+			if (distanceTravelled <= FlightConfiguration.maxMoveForFast) fast = true;
 			nextFlightState();
 			if (flightState == FlightState.LANDING) return true;
 		}
@@ -985,7 +951,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private boolean shouldExplode()
 	{
-		double eC = explodeChance * (((getSpeed(false) + 1) * 3) / getMaxSpeed());
+		double eC = FlightConfiguration.explodeChance * (((getSpeed(false) + 1) * 3) / getMaxSpeed());
 		eC *= MathHelper.clamp(3.0 / ((gDS().getLevel() + 1) / 2), 0.2, 1);
 		return rand.nextDouble() < eC;
 	}
@@ -1122,7 +1088,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public double getMaxSpeed()
 	{
-		return maxSpeed;
+		return FlightConfiguration.maxSpeed;
 	}
 
 	public double getSpeed(boolean modified)
@@ -1155,7 +1121,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void updateMaxBlockSpeed()
 	{
-		maxBlockSpeed = MathHelper.floor((energyCostFlightMax * (getSpeed(true) / getMaxSpeed())) / energyPerSpeed);
+		maxBlockSpeed = MathHelper.floor((FlightConfiguration.energyCostFlightMax * (getSpeed(true) / getMaxSpeed())) / FlightConfiguration.energyPerSpeed);
 		if (maxBlockSpeed < 3) maxBlockSpeed = 3;
 	}
 
@@ -1167,7 +1133,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public int getMaxNumRooms(int level)
 	{
-		return maxNumRooms + (maxNumRoomsInc * level);
+		return Configs.maxNumRooms + (Configs.maxNumRoomsInc * level);
 	}
 
 	public int getMaxNumRooms()
@@ -1275,12 +1241,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public int getEnergyPerSecond(int level)
 	{
-		return energyPerSecond + (energyPerSecondInc * level);
+		return Configs.energyPerSecond + (Configs.energyPerSecondInc * level);
 	}
 
 	public int getMaxArtronEnergy(int level)
 	{
-		return maxEnergy + (maxEnergyInc * level);
+		return Configs.maxEnergy + (Configs.maxEnergyInc * level);
 	}
 
 	@Override
@@ -1406,7 +1372,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				EntityLivingBase livingEnt = (EntityLivingBase) ent;
 				SimpleDoubleCoordStore entPos = new SimpleDoubleCoordStore(livingEnt);
 				double dist = entPos.distance(to);
-				if((dist < TardisMod.transmatExitDist) && (entPos.world == to.world))
+				if((dist < Configs.transmatExitDist) && (entPos.world == to.world))
 				{
 					if(teleportOutside(ent))
 					{
@@ -1676,7 +1642,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		energy = en;
 		numRooms = numRoom;
-		maxNumRooms = config.getInt("maxRooms", 30);
 		setOwner(newO);
 	}
 

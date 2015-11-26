@@ -17,6 +17,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
@@ -143,7 +144,7 @@ public class DecoratingTool extends AbstractItem
 			if((c != null) && (c != t))
 			{
 				playSound(pl);
-				BlockIterator iter = new BlockIterator(pos, c.getCondition(), false, TardisMod.decoratorRange);
+				BlockIterator iter = new BlockIterator(pos, c.getCondition(), false, Configs.decoratorRange);
 				while(iter.hasNext())
 				{
 					SimpleCoordStore next = iter.next();

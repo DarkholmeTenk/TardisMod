@@ -1,7 +1,6 @@
 package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
@@ -14,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
@@ -21,11 +21,6 @@ import tardis.common.core.helpers.ScrewdriverHelper;
 
 public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewable
 {
-	private static ConfigFile config = null;
-	private static int maxDistance = 64;
-	private static int scanCeilingInterval = 20;
-	private static int scanPlayerInterval = 2;
-	private static double movePerTick = 0.25;
 	private static double bevel = 0.28;
 
 	private static final double amountAboveToStopUp = 1.05;
@@ -36,18 +31,6 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	private List<Integer> distances = new ArrayList<Integer>();
 	private int maxDist = 0;
 	private HashMap<EntityPlayer,Boolean> goingUp = new HashMap<EntityPlayer,Boolean>();
-
-	public static void refreshConfigs()
-	{
-		if(config == null)
-		{
-			config = TardisMod.configHandler.registerConfigNeeder("GravityLift");
-			maxDistance = config.getInt("max distance", 64);
-			scanCeilingInterval = config.getInt("interval for ceiling scan", 20);
-			scanPlayerInterval = config.getInt("interval for player scan", 2);
-			movePerTick = config.getDouble("move per tick", 0.25);
-		}
-	}
 
 	private int getBlock(double y, boolean start)
 	{
@@ -84,7 +67,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	{
 		maxDist = -1;
 		distances.clear();
-		for(int distance = 2; distance<(maxDistance+3);distance++)
+		for(int distance = 2; distance<(Configs.gravMaxDistance+3);distance++)
 		{
 			if(!WorldHelper.softBlock(worldObj,xCoord,yCoord+distance,zCoord))
 			{
@@ -162,9 +145,9 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	{
 		double dir = 0;
 		if(up)
-			dir = Math.min(movePerTick, getStopPointAbove(posY(pl)) - posY(pl));
+			dir = Math.min(Configs.gravMovePerTick, getStopPointAbove(posY(pl)) - posY(pl));
 		else
-			dir = Math.max(-movePerTick, getStopPointBelow(posY(pl)) - posY(pl));
+			dir = Math.max(-Configs.gravMovePerTick, getStopPointBelow(posY(pl)) - posY(pl));
 		pl.fallDistance = 0;
 		pl.motionY = dir / 3;
 		pl.velocityChanged = true;
@@ -209,8 +192,6 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	@Override
 	public void init()
 	{
-		if(config == null)
-			refreshConfigs();
 		scanForCeiling();
 	}
 
@@ -218,9 +199,9 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 	public void updateEntity()
 	{
 		super.updateEntity();
-		if((tt % scanCeilingInterval) == 0)
+		if((tt % Configs.gravScanCeilingInterval) == 0)
 			scanForCeiling();
-		if((tt % scanPlayerInterval) == 0)
+		if((tt % Configs.gravScanPlayerInterval) == 0)
 			scanForPlayers();
 		validatePlayers();
 		movePlayers();

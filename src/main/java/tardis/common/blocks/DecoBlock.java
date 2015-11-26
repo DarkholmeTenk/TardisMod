@@ -6,6 +6,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import java.util.HashMap;
 
 import net.minecraft.world.IBlockAccess;
+import tardis.Configs;
 import tardis.TardisMod;
 
 public class DecoBlock extends AbstractBlock
@@ -31,7 +32,7 @@ public class DecoBlock extends AbstractBlock
 	{
 		setBlockName("DecoBlock");
 		setSubNames(subs);
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override
