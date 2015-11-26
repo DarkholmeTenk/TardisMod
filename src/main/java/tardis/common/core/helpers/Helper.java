@@ -147,7 +147,7 @@ public class Helper
 	{
 		if (TardisMod.plReg.hasTardis(player.getCommandSenderName())) return;
 
-		TardisTileEntity te = summonTardis(player);
+		TardisTileEntity te = summonTardisExterior(player);
 		if (te != null)
 		{
 			int dimID = generateTardisInterior(player.getCommandSenderName(), te);
@@ -158,17 +158,13 @@ public class Helper
 		}
 	}
 
-	public static boolean summonOldTardis(EntityPlayer player)
+	public static boolean summonOldTardis(int dim, EntityPlayer player)
 	{
-		Integer dim = TardisMod.plReg.getDimension(player);
-		if (dim == null) return false;
-
-		CoreTileEntity oldCore = TardisMod.plReg.getCore(player);
-		if (oldCore != null)
-			oldCore.removeOldBox();
-		else
+		CoreTileEntity oldCore = getTardisCore(dim);
+		if(oldCore == null)
 			return false;
-		TardisTileEntity te = summonTardis(player);
+		oldCore.removeOldBox();
+		TardisTileEntity te = summonTardisExterior(player);
 		if (te != null)
 		{
 			te.land(true);
@@ -182,7 +178,14 @@ public class Helper
 		return false;
 	}
 
-	private static TardisTileEntity summonTardis(EntityPlayer player)
+	public static boolean summonOldTardis(EntityPlayer player)
+	{
+		Integer dim = TardisMod.plReg.getDimension(player);
+		if (dim == null) return false;
+		return summonOldTardis(dim, player);
+	}
+
+	private static TardisTileEntity summonTardisExterior(EntityPlayer player)
 	{
 		World w = player.worldObj;
 		if (ServerHelper.isClient()) return null;

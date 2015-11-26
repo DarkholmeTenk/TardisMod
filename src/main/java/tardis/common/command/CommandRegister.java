@@ -16,6 +16,7 @@ public class CommandRegister
 	private static AbstractCommand xpCommand;
 	private static AbstractCommand regCommand;
 	private static AbstractCommand conCommand;
+	private static AbstractCommand sumCommand;
 
 	public static void registerCommands(FMLServerStartingEvent event)
 	{
@@ -42,5 +43,6 @@ public class CommandRegister
 		event.registerServerCommand(regCommand);
 		event.registerServerCommand(conCommand);
 		event.registerServerCommand(new SetValueCommand());
+		event.registerServerCommand(sumCommand = new SummonTardisCommand());
 	}
 }
