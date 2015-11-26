@@ -54,7 +54,7 @@ public class ScrewdriverHelperFactory
 		{
 			HalfMutablePair<Integer, ScrewdriverHelper> dataBundle = hMap().get(id);
 			dataBundle.a = t;
-			if(dataBundle.b.itemstack == null)
+			if(dataBundle.b.itemstack != is)
 				dataBundle.b.setItemStack(is);
 			return dataBundle.b;
 		}
