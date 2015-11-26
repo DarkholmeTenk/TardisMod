@@ -89,7 +89,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	{
 		if (!hasComponent(comp) && (getNumComponents() < maxComponents))
 		{
-			if (isComponentValid(comp))
+			if (isComponentValid(comp) || !valid)
 			{
 				compAdded = true;
 				comps.put(comp.ordinal(), comp.baseObj.create(this));
