@@ -82,7 +82,6 @@ import tardis.common.tileents.BatteryTileEntity;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.GravityLiftTileEntity;
-import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.components.AbstractComponent;
 import tardis.common.tileents.extensions.chameleon.ChameleonRegistry;
 import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
@@ -314,12 +313,12 @@ public class TardisMod implements IConfigHandlerMod
 		ComponentTileEntity.refreshConfigs();
 		CoreTileEntity.refreshConfigs();
 		GravityLiftTileEntity.refreshConfigs();
-		LabTileEntity.refreshConfigs();
 		InteriorDirtBlock.refreshConfigs();
 
 		TardisDimensionHandler.refreshConfigs();
 		TardisDamageSystem.refreshConfigs();
 		FlightConfiguration.refreshConfigs();
+		Configs.refreshConfigs();
 	}
 
 	@EventHandler
