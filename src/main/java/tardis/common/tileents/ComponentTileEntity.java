@@ -232,7 +232,6 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			TardisDataStore ds = getDS();
 			if ((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
 			{
-
 				dismantle(player);
 				return true;
 			}
@@ -340,8 +339,17 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			ScrewdriverMode mode = SonicScrewdriverItem.getMode(is);
 			if(mode == ScrewdriverMode.Dismantle)
 			{
-				dismantle(pl);
-				return true;
+				TardisDataStore ds = getDS();
+				if((ds == null) || ds.hasPermission(pl, TardisPermission.ROUNDEL))
+				{
+					dismantle(pl);
+					return true;
+				}
+				else
+				{
+					ServerHelper.sendString(pl, "You do not have permission to modify this");
+					return false;
+				}
 			}
 		}
 		int n = comps.size();
