@@ -180,6 +180,7 @@ public class Configs
 	public static boolean		tardisLoaded		= true;
 	public static boolean		keyInHand			= true;
 	public static int			lockSoundDelay		= 40;
+	public static boolean		loadWhenOffline		= true;
 
 	private static void refreshMechanicsConfig()
 	{
@@ -192,6 +193,7 @@ public class Configs
 		transmatExitDist = mechConfig.getDouble("Transmat - Exit distance", 2, "The distance from the transmat point within which you will be transmatted out of the TARDIS");
 		keyInHand = mechConfig.getConfigItem(new ConfigItem("Key - In hand", CType.BOOLEAN, true, "Does a player need to have the key in hand to get through a locked TARDIS door")).getBoolean();
 		lockSoundDelay = mechConfig.getInt("Lock sound delay", 40, "Amount of ticks between lock sounds being allowed to play", "20 ticks = 1 second");
+		loadWhenOffline = mechConfig.getBoolean("Chunkload - Offline", true, "Chunkload when player is offline");
 	}
 
 	/*
