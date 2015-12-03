@@ -183,7 +183,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		else if ((sourceLocation != null) && (destLocation != null))
 		{
 			if(distanceToTravel > 0)
-				newStart = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true).floor();
+			{
+				SimpleDoubleCoordStore sdcs = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true);
+				if(sdcs != null)
+					newStart = sdcs.floor();
+			}
 		}
 		if (newStart != null)
 		{
