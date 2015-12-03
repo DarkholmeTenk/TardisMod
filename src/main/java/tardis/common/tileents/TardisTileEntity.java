@@ -288,7 +288,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			return;
 		if(!inFlight())
 		{
-			if(linkedDimension == null)
+			if((linkedDimension == null) || !TardisMod.dimReg.hasDimension(linkedDimension))
 			{
 				if(!TardisMod.plReg.hasTardis(player.getCommandSenderName()))
 					linkedDimension = Helper.generateTardisInterior(player,this);
