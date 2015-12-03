@@ -2,11 +2,19 @@ package tardis.common.command;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import tardis.TardisMod;
+import tardis.common.core.helpers.Helper;
+import tardis.common.tileents.CoreTileEntity;
+import tardis.common.tileents.SchemaCoreTileEntity;
 
 public class RegCommand extends AbstractCommand
 {
@@ -47,6 +55,37 @@ public class RegCommand extends AbstractCommand
 						sendString(comsen,un + " removed from listing");
 					else
 						sendString(comsen,un + " could not be removed");
+				}
+				else if(astring.length == 3)
+				{
+					if(astring[1].equals("total"))
+					{
+						String un = astring[2];
+						Integer dim = TardisMod.plReg.getDimension(un);
+						if(dim != null)
+						{
+							World w = WorldHelper.getWorld(dim);
+							if(w != null)
+							{
+								for(Object o : w.playerEntities)
+								{
+									if(o instanceof Entity)
+										TeleportHelper.teleportEntityToOverworldSpawn((Entity)o);
+								}
+								CoreTileEntity core = Helper.getTardisCore(w);
+								if(core != null)
+									core.removeAllRooms(true);
+								WorldHelper.removeTE(w, Helper.getTardisEngine(w));
+								WorldHelper.removeTE(w, Helper.getTardisConsole(w));
+								WorldHelper.removeTE(w, Helper.getTardisCore(w));
+								TileEntity te = w.getTileEntity(Helper.tardisCoreX, Helper.tardisCoreY - 10, Helper.tardisCoreZ);
+								if(te instanceof SchemaCoreTileEntity)
+									((SchemaCoreTileEntity)te).remove(false);
+								TardisMod.dimReg.unregisterDim(dim);
+								TardisMod.plReg.removePlayer(un);
+							}
+						}
+					}
 				}
 			}
 			else if(astring[0].equals("set"))

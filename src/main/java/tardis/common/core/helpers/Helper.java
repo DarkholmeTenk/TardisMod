@@ -106,22 +106,27 @@ public class Helper
 		}
 	}
 
+
+	private static boolean isFree(int dim)
+	{
+		try
+		{
+			World w = WorldHelper.getWorld(dim);
+			if(w != null)
+				return false;
+		}
+		catch(Exception e){}
+		return !DimensionManager.isDimensionRegistered(dim);
+	}
+
 	private static int getNextFreeDimID()
 	{
 		int startPoint = DimensionManager.getNextFreeDimId();
 		while(true)
 		{
-			try
-			{
-				World w = WorldHelper.getWorld(startPoint);
-				if(w == null)
-					return startPoint;
-				startPoint++;
-			}
-			catch(Exception e)
-			{
+			if(isFree(startPoint))
 				return startPoint;
-			}
+			startPoint++;
 		}
 	}
 

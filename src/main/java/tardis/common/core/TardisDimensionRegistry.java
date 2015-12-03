@@ -78,7 +78,7 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 			registerDim(i);
 	}
 
-	private void registerDim(int id)
+	private boolean registerDim(int id)
 	{
 		if(!DimensionManager.isDimensionRegistered(id))
 		{
@@ -86,7 +86,21 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 			DimensionManager.registerDimension(id, Configs.providerID);
 			if(ServerHelper.isServer())
 				DarkcoreMod.networkChannel.sendToAll(getPacket());
+			return true;
 		}
+		return false;
+	}
+
+	public void unregisterDim(Integer dim)
+	{
+		if(dim == null)
+			return;
+		if(!DimensionManager.isDimensionRegistered(dim))
+			return;
+		int provider = DimensionManager.getProviderType(dim);
+		if(provider == Configs.providerID)
+			DimensionManager.unregisterDimension(dim);
+		dimensionIDs.remove(dim);
 	}
 
 	public boolean hasDimension(int id)
