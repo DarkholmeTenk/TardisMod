@@ -1668,11 +1668,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				mods[i] = modders.get(i);
 			nbt.setIntArray("mods", mods);
 		}
-		if ((sourceLocation != null) && (destLocation != null) && !inFlight())
-		{
-			sourceLocation.writeToNBT(nbt, "srcLoc");
-			destLocation.writeToNBT(nbt, "dstLoc");
-		}
 	}
 
 	@Override
@@ -1694,6 +1689,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			nbt.setInteger("scrAng", screenAngle);
 			if ((sourceLocation != null) && (destLocation != null) && !inFlight())
 			{
+				sourceLocation.writeToNBT(nbt, "srcLoc");
+				destLocation.writeToNBT(nbt, "dstLoc");
 				nbt.setDouble("dT", distanceTravelled);
 				nbt.setDouble("dtT", distanceToTravel);
 				nbt.setInteger("cbs", currentBlockSpeed);
@@ -1729,11 +1726,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		forcedFlight = nbt.getBoolean("fF");
 		lockState = LockState.values()[nbt.getInteger("lS")];
 		if (nbt.hasKey("tP")) transmatPoint = SimpleCoordStore.readFromNBT(nbt.getCompoundTag("tP"));
-		if (nbt.hasKey("dT"))
-		{
-			sourceLocation = SimpleCoordStore.readFromNBT(nbt, "srcLoc");
-			destLocation = SimpleCoordStore.readFromNBT(nbt, "dstLoc");
-		}
 		if (nbt.hasKey("mods"))
 		{
 			int[] mods = nbt.getIntArray("mods");
@@ -1770,6 +1762,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 			screenAngle = nbt.getInteger("scrAng");
 			stableFlight = nbt.getBoolean("sta");
+			if (nbt.hasKey("dT"))
+			{
+				sourceLocation = SimpleCoordStore.readFromNBT(nbt, "srcLoc");
+				destLocation = SimpleCoordStore.readFromNBT(nbt, "dstLoc");
+			}
 		}
 	}
 
