@@ -922,7 +922,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			forcedFlight = false;
 			stableFlight = false;
 			currentBlockSpeed = 1;
-			if(!forcedFlight)
+			if(!forcedFlight && !fast)
 				gDS().addXP((con != null) && !fast && (unstableTicks >= (flightTicks/2)) ? 15 : (45 - instability));
 			fast = false;
 			flightState = FlightState.LANDED;
