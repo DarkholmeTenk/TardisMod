@@ -5,6 +5,7 @@ import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
@@ -67,7 +68,8 @@ public class RegCommand extends AbstractCommand
 							World w = WorldHelper.getWorld(dim);
 							if(w != null)
 							{
-								for(Object o : w.playerEntities)
+								List l = new ArrayList(w.playerEntities);
+								for(Object o : l)
 								{
 									if(o instanceof Entity)
 										TeleportHelper.teleportEntityToOverworldSpawn((Entity)o);
