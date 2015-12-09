@@ -57,6 +57,7 @@ import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.dimension.damage.TardisDamageSystem;
+import tardis.common.integration.ae.AEHelper;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.DecoratingTool;
@@ -79,8 +80,6 @@ import tardis.common.tileents.extensions.chameleon.tardis.DefaultTardisCham;
 import tardis.common.tileents.extensions.chameleon.tardis.NewTardisCham;
 import tardis.common.tileents.extensions.chameleon.tardis.PostboxTardisCham;
 import thaumcraft.api.ItemApi;
-import appeng.api.AEApi;
-import appeng.api.IAppEngApi;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -104,8 +103,6 @@ public class TardisMod implements IConfigHandlerMod
 	@SidedProxy(clientSide = "tardis.client.TardisClientProxy", serverSide = "tardis.common.TardisProxy")
 	public static TardisProxy									proxy;
 	public static DimensionEventHandler							dimEventHandler		= new DimensionEventHandler();
-
-	public static IAppEngApi									aeAPI				= null;
 
 	public static ConfigHandler									configHandler;
 	public static SchemaHandler									schemaHandler;
@@ -226,11 +223,7 @@ public class TardisMod implements IConfigHandlerMod
 	public void postInit(FMLPostInitializationEvent event)
 	{
 		tardisChameleonReg.postInit();
-		try
-		{
-			aeAPI = AEApi.instance();
-		}
-		catch(Exception e){System.err.println("Error loading AE API");};
+		AEHelper.init();
 		initRecipes();
 		FMLCommonHandler.instance().bus().register(dimEventHandler);
 		MinecraftForge.EVENT_BUS.register(dimEventHandler);

@@ -1813,8 +1813,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public IGridNode getNode()
 	{
-		if (TardisMod.aeAPI == null) return null;
-		if (node == null) node = TardisMod.aeAPI.createGridNode(new CoreGrid(this));
+		if (AEHelper.aeAPI == null) return null;
+		if (node == null) node = AEHelper.aeAPI.createGridNode(new CoreGrid(this));
 		return node;
 	}
 

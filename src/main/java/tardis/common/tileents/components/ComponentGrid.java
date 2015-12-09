@@ -2,7 +2,6 @@ package tardis.common.tileents.components;
 
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 
 import java.util.ArrayList;
@@ -16,6 +15,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
+import tardis.common.integration.ae.AEHelper;
+import tardis.common.integration.ae.ITMGrid;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import appeng.api.networking.GridFlags;
@@ -32,10 +33,10 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
-@Optional.Interface(iface="appeng.api.networking.IGridHost",modid="appliedenergistics2"),
+@Optional.Interface(iface="tardis.common.integration.ae.ITMGrid",modid="appliedenergistics2"),
 @Optional.Interface(iface="appeng.api.networking.IGridBlock",modid="appliedenergistics2")
 })
-public class ComponentGrid extends AbstractComponent implements IGridHost, IGridBlock, IBlockUpdateDetector
+public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBlock, IBlockUpdateDetector
 {
 	private boolean inited = false;
 	private SimpleCoordStore myCoords = null;
@@ -130,18 +131,17 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		if(core != null)
 		{
 			linkedToCore = true;
-			addConnection(core.getNode());
+			addConnection(core, ForgeDirection.UNKNOWN);
 		}
 	}
 
 	private void createNode()
 	{
-		if(TardisMod.aeAPI == null)
+		if(AEHelper.aeAPI == null)
 			return;
 		if((node == null) && ServerHelper.isServer())
 		{
-			TardisOutput.print("TCG","Grid node creation! " + WorldHelper.getWorldID(parentObj));
-			node = TardisMod.aeAPI.createGridNode(this);
+			node = AEHelper.aeAPI.createGridNode(this);
 			node.updateState();
 			linkedToCore = false;
 			connections.clear();
@@ -149,43 +149,58 @@ public class ComponentGrid extends AbstractComponent implements IGridHost, IGrid
 		linkToCore();
 	}
 
+	private static boolean doesConnectionExist(IGridNode aNode, IGridNode oNode, Iterable<IGridConnection> connections)
+	{
+		for(IGridConnection c : connections)
+			if((c.a().equals(oNode) && c.b().equals(aNode)) || (c.a().equals(aNode) && c.b().equals(oNode)))
+				return true;
+		return false;
+	}
+
 	private boolean doesConnectionExist(IGridNode aNode, IGridNode oNode)
 	{
 		if((aNode == null) || (oNode == null))
 			return false;
-		for(IGridConnection c : connections)
-		{
-			if((c.a().equals(oNode) && c.b().equals(aNode)) || (c.a().equals(aNode) && c.b().equals(oNode)))
-				return true;
-		}
-		if(oNode.getConnections().contains(aNode) || aNode.getConnections().contains(oNode))
-			return true;
+		if(doesConnectionExist(aNode, oNode, connections)) return true;
+		if(doesConnectionExist(aNode, oNode, oNode.getConnections())) return true;
+		if(doesConnectionExist(aNode, oNode, aNode.getConnections())) return true;
 		return false;
 	}
 
-	private boolean addConnection(IGridNode otherNode)
+	private boolean addConnection(IGridHost otherHost, ForgeDirection dir)
 	{
 		if(ServerHelper.isClient())
 			return true;
+		if(otherHost == null)
+			return false;
+		IGridNode otherNode = otherHost.getGridNode(dir);
 		try
 		{
 			if(otherNode != null)
 			{
 				if(!doesConnectionExist(node, otherNode))
 				{
-					IGridConnection con = TardisMod.aeAPI.createGridConnection(node, otherNode);
+					IGridConnection con = AEHelper.aeAPI.createGridConnection(node, otherNode);
 					otherNode.updateState();
-					connections.add(con);
+					addConnection(con);
+					if(otherHost instanceof ITMGrid)
+						((ITMGrid)otherHost).addConnection(con);
 					return true;
 				}
 			}
 		}
 		catch(Exception c)
 		{
-			System.out.println(c.getMessage());
 			c.printStackTrace();
 		}
 		return false;
+	}
+
+	@Override
+	public void addConnection(IGridConnection con)
+	{
+		if((con.a() == node) || (con.b() == node))
+			connections.add(con);
 	}
 
 	private void scan()
