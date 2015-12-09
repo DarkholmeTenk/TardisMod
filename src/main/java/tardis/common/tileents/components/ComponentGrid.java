@@ -179,7 +179,6 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 				if(!doesConnectionExist(node, otherNode))
 				{
 					IGridConnection con = AEHelper.aeAPI.createGridConnection(node, otherNode);
-					otherNode.updateState();
 					addConnection(con);
 					if(otherHost instanceof ITMGrid)
 						((ITMGrid)otherHost).addConnection(con);

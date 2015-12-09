@@ -53,6 +53,7 @@ import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.dimension.damage.TardisDamageType;
+import tardis.common.integration.ae.AEHelper;
 import tardis.common.items.KeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CoreGrid;
@@ -1119,7 +1120,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		speed = speed + a;
 		speed = MathHelper.clamp(speed, 0, getMaxSpeed());
-		System.out.println("HI!" + speed);
 		updateMaxBlockSpeed();
 		sendUpdate();
 		return speed;
