@@ -1687,7 +1687,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			nbt.setBoolean("sta", stableFlight);
 
 			nbt.setInteger("scrAng", screenAngle);
-			if ((sourceLocation != null) && (destLocation != null) && !inFlight())
+			if ((sourceLocation != null) && (destLocation != null) && inFlight())
 			{
 				sourceLocation.writeToNBT(nbt, "srcLoc");
 				destLocation.writeToNBT(nbt, "dstLoc");
