@@ -83,8 +83,8 @@ public class RegCommand extends AbstractCommand
 								TileEntity te = w.getTileEntity(Helper.tardisCoreX, Helper.tardisCoreY - 10, Helper.tardisCoreZ);
 								if(te instanceof SchemaCoreTileEntity)
 									((SchemaCoreTileEntity)te).remove(false);
-								TardisMod.dimReg.unregisterDim(dim);
 								TardisMod.plReg.removePlayer(un);
+								TardisMod.dimReg.unregisterDim(dim);
 							}
 						}
 					}
