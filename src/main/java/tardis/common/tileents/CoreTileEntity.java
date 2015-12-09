@@ -1745,6 +1745,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		{
 			if(nbt.hasKey("dT"))
 			{
+				sourceLocation = SimpleCoordStore.readFromNBT(nbt, "srcLoc");
+				destLocation = SimpleCoordStore.readFromNBT(nbt, "dstLoc");
 				distanceTravelled = nbt.getDouble("dT");
 				distanceToTravel = nbt.getDouble("dtT");
 				currentBlockSpeed = nbt.getInteger("cbs");
@@ -1762,11 +1764,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 			screenAngle = nbt.getInteger("scrAng");
 			stableFlight = nbt.getBoolean("sta");
-			if (nbt.hasKey("dT"))
-			{
-				sourceLocation = SimpleCoordStore.readFromNBT(nbt, "srcLoc");
-				destLocation = SimpleCoordStore.readFromNBT(nbt, "dstLoc");
-			}
 		}
 	}
 
