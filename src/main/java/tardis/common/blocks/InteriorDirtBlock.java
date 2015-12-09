@@ -55,15 +55,16 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 	@Override
 	public void initRecipes()
 	{
-		LabTileEntity.addRecipe(new LabRecipe(
-				new ItemStack[] { new ItemStack(Blocks.dirt,64),
-						CraftingComponentType.KONTRON.getIS(1),
-						CraftingComponentType.CHRONOSTEEL.getIS(1),
-						new ItemStack(Items.dye,32,15)},
-				new ItemStack[] { getIS(Configs.numDirtRecipe, 0) },
-				EnumSet.of(LabFlag.INFLIGHT),
-				100
-				));
+		if(Configs.numDirtRecipe > 0)
+			LabTileEntity.addRecipe(new LabRecipe(
+					new ItemStack[] { new ItemStack(Blocks.dirt,64),
+							CraftingComponentType.KONTRON.getIS(1),
+							CraftingComponentType.CHRONOSTEEL.getIS(1),
+							new ItemStack(Items.dye,32,15)},
+					new ItemStack[] { getIS(Configs.numDirtRecipe, 0) },
+					EnumSet.of(LabFlag.INFLIGHT),
+					100
+					));
 	}
 
 	@Override
