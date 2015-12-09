@@ -79,7 +79,7 @@ public class DimensionEventHandler
 		if(Helper.isTardisWorld(w))
 		{
 			TardisDataStore store = Helper.getDataStore(w);
-			if(store.hasFunction(TardisFunction.TRANQUILITY))
+			if(store.hasFunction(TardisFunction.TRANQUILITY) && (ent instanceof EntityPlayer))
 			{
 				if((source == DamageSource.wither) || (source == DamageSource.magic) || (source == DamageSource.generic))
 				{
