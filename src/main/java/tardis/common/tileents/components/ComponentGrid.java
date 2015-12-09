@@ -14,7 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
-import tardis.common.core.TardisOutput;
 import tardis.common.integration.ae.AEHelper;
 import tardis.common.integration.ae.ITMGrid;
 import tardis.common.tileents.ComponentTileEntity;
@@ -105,7 +104,6 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 	@Override
 	public IGridNode getGridNode(ForgeDirection dir)
 	{
-		TardisOutput.print("TCG", "Attempted node get! " + node);
 		createNode();
 		return node;
 	}
