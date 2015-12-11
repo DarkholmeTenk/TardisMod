@@ -182,6 +182,7 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 					addConnection(con);
 					if(otherHost instanceof ITMGrid)
 						((ITMGrid)otherHost).addConnection(con);
+					otherNode.updateState();
 					return true;
 				}
 			}
