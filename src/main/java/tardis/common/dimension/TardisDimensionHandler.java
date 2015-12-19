@@ -297,7 +297,8 @@ public class TardisDimensionHandler
 		if (ServerHelper.isClient()) return 0;
 		List<Integer> dims = getDims(level);
 		int index = MathHelper.clamp(control, 0, dims.size() - 1);
-		int dim = dims.get(index);
+		Integer dim = dims.get(index);
+		if(dim == null) return 0;
 		return dim;
 	}
 
