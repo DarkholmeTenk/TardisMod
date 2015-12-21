@@ -25,7 +25,8 @@ import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid=CofHCore.modname),
-		@Optional.Interface(iface="ic2.api.energy.tile.IEnergyTile",modid=IC2.modname)
+		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySource",modid=IC2.modname),
+		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySink",modid=IC2.modname)
 })
 public class ComponentEnergy extends AbstractComponent implements IEnergyHandler, IActivatable, IEnergySink, IEnergySource, IScrewable
 {
