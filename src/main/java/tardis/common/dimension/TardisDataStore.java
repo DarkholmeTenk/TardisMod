@@ -51,7 +51,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	private volatile double									tardisXP		= 0;
 	private volatile int									tardisLevel		= 0;
 	private volatile HashMap<TardisUpgradeMode, Integer>	upgradeLevels	= new HashMap<TardisUpgradeMode, Integer>();
-	private int												rfStored;
+	private volatile int									rfStored;
 	private ItemStack[]										items			= new ItemStack[Configs.numInvs];
 	private FluidStack[]									fluids			= new FluidStack[Configs.numTanks];
 	private AspectList										aspectList		= new AspectList();

@@ -176,7 +176,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	{
 		if(emitter instanceof ComponentTileEntity)
 			return false;
-		return true;
+		return tier == 0;
 	}
 
 	@Override
@@ -184,19 +184,23 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	{
 		if(receiver instanceof ComponentTileEntity)
 			return false;
-		return true;
+		return tier > 0;
 	}
 
 	@Override
 	public double getOfferedEnergy()
 	{
-		return getEnergyStored(null)/Configs.euRatio;
+		if(ServerHelper.isClient()) return 0;
+		double v = getEnergyStored(null)/Configs.euRatio;
+		return v;
 	}
 
 	@Override
 	public void drawEnergy(double amount)
 	{
-		extractEnergy(null,(int)Math.ceil(amount * Configs.euRatio),false);
+		if(ServerHelper.isClient()) return;
+		extractEnergy(null,(int)Math.ceil(amount * Configs.euRatio),ServerHelper.isClient());
+		System.out.println("I:"+amount+":"+getEnergyStored(null));
 	}
 
 	@Override
@@ -208,20 +212,23 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	@Override
 	public double getDemandedEnergy()
 	{
-		return (getMaxEnergyStored(null)-getEnergyStored(null)) / (double)Configs.euRatio;
+		if(ServerHelper.isClient()) return 0;
+		return (getMaxEnergyStored(null)-getEnergyStored(null)) / Configs.euRatio;
 	}
 
 	@Override
 	public int getSinkTier()
 	{
-		return 4;
+		return 8;
 	}
 
 	@Override
 	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage)
 	{
+		if(ServerHelper.isClient()) return 0;
 		double accepted = receiveEnergy(directionFrom, (int) Math.floor(amount * Configs.euRatio),false)/(double)Configs.euRatio;
-		return amount - accepted;
+		System.out.println("I:"+amount+":"+voltage+":"+getEnergyStored(null));
+		return 0;
 	}
 
 	@Override
@@ -229,7 +236,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	{
 		if(IC2.isIC2Installed())
 		{
-			tier = (tier + 1) % 4;
+			tier = (tier + 1) % 5;
 			if(ServerHelper.isServer())
 				ServerHelper.sendString(player, "Energy tier set to " + tierString());
 			return true;
@@ -241,10 +248,11 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	{
 		switch(tier)
 		{
-			case 0: return "LV";
-			case 1: return "MV";
-			case 2: return "HV";
-			case 3: return "EV";
+			case 0: return "Input";
+			case 1: return "LV";
+			case 2: return "MV";
+			case 3: return "HV";
+			case 4: return "EV";
 		}
 		return "";
 	}
