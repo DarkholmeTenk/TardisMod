@@ -5,6 +5,7 @@ import appeng.api.IAppEngApi;
 
 public class AEHelper
 {
+	public static final String modname = "appliedenergistics2";
 	public static IAppEngApi	aeAPI	= null;
 
 	public static void init()

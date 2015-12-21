@@ -36,8 +36,10 @@ import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.integration.ae.AEHelper;
 import tardis.common.integration.other.CofHCore;
 import tardis.common.integration.other.IC2;
+import tardis.common.integration.other.Thaumcraft;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.components.ComponentAspect;
@@ -55,8 +57,8 @@ import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid=CofHCore.modname),
-		@Optional.Interface(iface="appeng.api.networking.IGridHost",modid="appliedenergistics2"),
-		@Optional.Interface(iface="thaumcraft.api.aspects.IEssentiaTransport",modid="Thaumcraft"),
+		@Optional.Interface(iface="appeng.api.networking.IGridHost",modid=AEHelper.modname),
+		@Optional.Interface(iface="thaumcraft.api.aspects.IEssentiaTransport",modid=Thaumcraft.modname),
 		@Optional.Interface(iface="ic2.api.energy.tile.IEnergyTile",modid=IC2.modname)
 })
 public class ComponentTileEntity extends AbstractTileEntity implements IActivatablePrecise, IBlockUpdateDetector,
@@ -509,6 +511,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
 	{
 		for (ITardisComponent comp : comps.values())
@@ -520,6 +523,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate)
 	{
 		for (ITardisComponent comp : comps.values())
@@ -531,6 +535,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public boolean canConnectEnergy(ForgeDirection from)
 	{
 		if (!valid || compAdded)
@@ -544,6 +549,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public int getEnergyStored(ForgeDirection from)
 	{
 		for (ITardisComponent comp : comps.values())
@@ -555,6 +561,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public int getMaxEnergyStored(ForgeDirection from)
 	{
 		for (ITardisComponent comp : comps.values())
@@ -779,6 +786,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=AEHelper.modname)
 	public IGridNode getGridNode(ForgeDirection dir)
 	{
 		if (valid && !compAdded)
@@ -791,6 +799,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=AEHelper.modname)
 	public AECableType getCableConnectionType(ForgeDirection dir)
 	{
 		if (valid && !compAdded)
@@ -803,6 +812,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=AEHelper.modname)
 	public void securityBreak()
 	{
 		if (valid && !compAdded)
@@ -813,6 +823,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			}
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public AspectList getAspects()
 	{
 		if (valid && !compAdded)
@@ -824,6 +835,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return null;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public void setAspects(AspectList aspects)
 	{
 		if (valid && !compAdded)
@@ -834,6 +846,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			}
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean doesContainerAccept(Aspect tag)
 	{
 		if (valid && !compAdded)
@@ -845,6 +858,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return false;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int addToContainer(Aspect tag, int amount)
 	{
 		if (valid && !compAdded)
@@ -856,6 +870,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return amount;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean takeFromContainer(Aspect tag, int amount)
 	{
 		if (valid && !compAdded)
@@ -867,6 +882,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return false;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean takeFromContainer(AspectList ot)
 	{
 		if (valid && !compAdded)
@@ -878,6 +894,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return false;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean doesContainerContainAmount(Aspect tag, int amount)
 	{
 		if (valid && !compAdded)
@@ -890,6 +907,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@SuppressWarnings("deprecation")
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean doesContainerContain(AspectList ot)
 	{
 		if (valid && !compAdded)
@@ -901,6 +919,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return false;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int containerContains(Aspect tag)
 	{
 		if (valid && !compAdded)
@@ -913,6 +932,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean isConnectable(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -925,6 +945,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean canInputFrom(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -937,6 +958,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean canOutputTo(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -949,11 +971,13 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public void setSuction(Aspect aspect, int amount)
 	{
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public Aspect getSuctionType(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -966,6 +990,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int getSuctionAmount(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -978,6 +1003,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -990,6 +1016,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -1002,6 +1029,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public Aspect getEssentiaType(ForgeDirection face)
 	{
 		// TODO Auto-generated method stub
@@ -1009,6 +1037,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int getEssentiaAmount(ForgeDirection face)
 	{
 		// TODO Auto-generated method stub
@@ -1016,18 +1045,21 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int getMinimumSuction()
 	{
 		return 0;
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean renderExtendedTube()
 	{
 		return false;
 	}
 
 	@Override
+	@Optional.Method(modid=IC2.modname)
 	public boolean acceptsEnergyFrom(TileEntity emitter, ForgeDirection direction)
 	{
 		if (valid && !compAdded)
@@ -1040,6 +1072,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=IC2.modname)
 	public double getDemandedEnergy()
 	{
 		if (valid && !compAdded)
@@ -1052,6 +1085,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=IC2.modname)
 	public int getSinkTier()
 	{
 		if (valid && !compAdded)
@@ -1064,6 +1098,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=IC2.modname)
 	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage)
 	{
 		if (valid && !compAdded)
@@ -1076,6 +1111,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=IC2.modname)
 	public boolean emitsEnergyTo(TileEntity receiver, ForgeDirection direction)
 	{
 		if (valid && !compAdded)
@@ -1088,6 +1124,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=IC2.modname)
 	public double getOfferedEnergy()
 	{
 		if (valid && !compAdded)
@@ -1100,6 +1137,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=IC2.modname)
 	public void drawEnergy(double amount)
 	{
 		if (valid && !compAdded)
@@ -1111,6 +1149,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=IC2.modname)
 	public int getSourceTier()
 	{
 		if (valid && !compAdded)

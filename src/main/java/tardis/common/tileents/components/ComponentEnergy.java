@@ -74,6 +74,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 		}
 	}
 
+	@Optional.Method(modid=CofHCore.modname)
 	private void scanNearby()
 	{
 		World w = parentObj.getWorldObj();
