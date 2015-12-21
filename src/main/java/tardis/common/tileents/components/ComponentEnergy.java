@@ -1,7 +1,5 @@
 package tardis.common.tileents.components;
 
-import ic2.api.energy.event.EnergyTileLoadEvent;
-import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergySource;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
@@ -13,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.Configs;
 import tardis.api.IScrewable;
@@ -28,11 +25,7 @@ import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid=CofHCore.modname),
-		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySink",modid=IC2.modname),
-		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySource",modid=IC2.modname),
-		@Optional.Interface(iface="ic2.api.energy.tile.IEnergyTile",modid=IC2.modname),
-		@Optional.Interface(iface="ic2.api.energy.tile.IEnergyAcceptor",modid=IC2.modname),
-		@Optional.Interface(iface="ic2.api.energy.tile.IEnergyEmitter",modid=IC2.modname)
+		@Optional.Interface(iface="ic2.api.energy.tile.IEnergyTile",modid=IC2.modname)
 })
 public class ComponentEnergy extends AbstractComponent implements IEnergyHandler, IActivatable, IEnergySink, IEnergySource, IScrewable
 {
@@ -168,10 +161,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	{
 		if((on == posted) || (parentObj == null) || parentObj.isInvalid()) return;
 		posted = on;
-		if(on)
-			MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(parentObj));
-		else
-			MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(parentObj));
+		IC2.post(parentObj, on);
 	}
 
 	@Override
