@@ -58,9 +58,14 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	@Override
 	public boolean activate(EntityPlayer ent, int side)
 	{
-		ServerHelper.sendString(ent, "Energy: " + getEnergyStored(null) + "/" + getMaxEnergyStored(null)+"RF");
+		if(CofHCore.isCOFHInstalled())
+			ServerHelper.sendString(ent, "Energy: " + getEnergyStored(null) + "/" + getMaxEnergyStored(null)+"RF");
 		if(IC2.isIC2Installed())
+		{
+			ServerHelper.sendString(ent, "Energy: " + (getEnergyStored(null)/Configs.euRatio) + "/"
+					+ (getMaxEnergyStored(null)/Configs.euRatio)+"EU");
 			ServerHelper.sendString(ent, "Tier: " + tierString());
+		}
 		return true;
 	}
 
@@ -108,7 +113,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 			rfc = 0;
 			scanNearby();
 		}
-		if(IC2.isIC2Installed() && !posted)
+		if(IC2.isIC2Installed() && ServerHelper.isServer() && !posted)
 			post(true);
 	}
 
@@ -161,7 +166,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 
 	private void post(boolean on)
 	{
-		if((on == posted) || (parentObj == null) || parentObj.isInvalid()) return;
+		if((on == posted) || (parentObj == null) || parentObj.isInvalid() || ServerHelper.isClient()) return;
 		posted = on;
 		IC2.post(parentObj, on);
 	}
