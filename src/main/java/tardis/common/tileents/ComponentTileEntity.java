@@ -1,5 +1,7 @@
 package tardis.common.tileents;
 
+import ic2.api.energy.tile.IEnergySink;
+import ic2.api.energy.tile.IEnergySource;
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
@@ -18,6 +20,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -33,6 +36,8 @@ import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.integration.other.CofHCore;
+import tardis.common.integration.other.IC2;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.components.ComponentAspect;
@@ -49,12 +54,14 @@ import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
-		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid="CoFHCore"),
+		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid=CofHCore.modname),
 		@Optional.Interface(iface="appeng.api.networking.IGridHost",modid="appliedenergistics2"),
-		@Optional.Interface(iface="thaumcraft.api.aspects.IEssentiaTransport",modid="Thaumcraft")
+		@Optional.Interface(iface="thaumcraft.api.aspects.IEssentiaTransport",modid="Thaumcraft"),
+		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySink",modid=IC2.modname),
+		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySource",modid=IC2.modname)
 })
 public class ComponentTileEntity extends AbstractTileEntity implements IActivatablePrecise, IBlockUpdateDetector,
-		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport
+		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport, IEnergySource, IEnergySink
 {
 	private HashMap<Integer, ITardisComponent>	comps			= new HashMap<Integer, ITardisComponent>();
 	private boolean								valid			= false;
@@ -392,6 +399,19 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		}
 		comps = null;
 		valid = false;
+	}
+
+	@Override
+	public void onChunkUnload()
+	{
+		if (comps.size() > 0)
+		{
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp != null)
+					comp.die();
+			}
+		}
 	}
 
 	@Override
@@ -973,7 +993,6 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	@Override
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face)
 	{
-		System.out.println("A!");
 		if (valid && !compAdded)
 			for (ITardisComponent comp : comps.values())
 			{
@@ -1007,6 +1026,101 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	public boolean renderExtendedTube()
 	{
 		return false;
+	}
+
+	@Override
+	public boolean acceptsEnergyFrom(TileEntity emitter, ForgeDirection direction)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySink)
+					return ((IEnergySink)comp).acceptsEnergyFrom(emitter, direction);
+			}
+		return false;
+	}
+
+	@Override
+	public double getDemandedEnergy()
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySink)
+					return ((IEnergySink)comp).getDemandedEnergy();
+			}
+		return 0;
+	}
+
+	@Override
+	public int getSinkTier()
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySink)
+					return ((IEnergySink)comp).getSinkTier();
+			}
+		return 0;
+	}
+
+	@Override
+	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySink)
+					return ((IEnergySink)comp).injectEnergy(directionFrom, amount, voltage);
+			}
+		return amount;
+	}
+
+	@Override
+	public boolean emitsEnergyTo(TileEntity receiver, ForgeDirection direction)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySource)
+					return ((IEnergySource)comp).emitsEnergyTo(receiver, direction);
+			}
+		return false;
+	}
+
+	@Override
+	public double getOfferedEnergy()
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySource)
+					return ((IEnergySource)comp).getOfferedEnergy();
+			}
+		return 0;
+	}
+
+	@Override
+	public void drawEnergy(double amount)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySource)
+					((IEnergySource)comp).drawEnergy(amount);
+			}
+	}
+
+	@Override
+	public int getSourceTier()
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySource)
+					return ((IEnergySource)comp).getSourceTier();
+			}
+		return 0;
 	}
 
 }

@@ -1,5 +1,9 @@
 package tardis.common.tileents.components;
 
+import ic2.api.energy.event.EnergyTileLoadEvent;
+import ic2.api.energy.event.EnergyTileUnloadEvent;
+import ic2.api.energy.tile.IEnergySink;
+import ic2.api.energy.tile.IEnergySource;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 
@@ -9,20 +13,31 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.Configs;
+import tardis.api.IScrewable;
+import tardis.api.ScrewdriverMode;
+import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.integration.other.CofHCore;
+import tardis.common.integration.other.IC2;
 import tardis.common.tileents.ComponentTileEntity;
 import cofh.api.energy.IEnergyHandler;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
 
-@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid="CoFHCore")
-public class ComponentEnergy extends AbstractComponent implements IEnergyHandler, IActivatable
+@Optional.InterfaceList(value={
+		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid=CofHCore.modname),
+		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySink",modid=IC2.modname),
+		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySource",modid=IC2.modname)
+})
+public class ComponentEnergy extends AbstractComponent implements IEnergyHandler, IActivatable, IEnergySink, IEnergySource, IScrewable
 {
 	private HashMap<ForgeDirection,AtomicInteger> hasFilled = new HashMap<ForgeDirection,AtomicInteger>(ForgeDirection.VALID_DIRECTIONS.length);
 	protected ComponentEnergy() {}
 	private int rfc = 0;
+	private boolean posted = false;
+	private int tier = 0;
 
 	public ComponentEnergy(ComponentTileEntity parent)
 	{
@@ -36,9 +51,19 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	}
 
 	@Override
+	public void die()
+	{
+		if(IC2.isIC2Installed())
+			post(false);
+		super.die();
+	}
+
+	@Override
 	public boolean activate(EntityPlayer ent, int side)
 	{
 		ServerHelper.sendString(ent, "Energy: " + getEnergyStored(null) + "/" + getMaxEnergyStored(null)+"RF");
+		if(IC2.isIC2Installed())
+			ServerHelper.sendString(ent, "Tier: " + tierString());
 		return true;
 	}
 
@@ -80,9 +105,13 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	@Override
 	public void updateTick()
 	{
-		if(!Loader.isModLoaded("CoFHCore")) return;
-		rfc = 0;
-		scanNearby();
+		if(CofHCore.isCOFHInstalled())
+		{
+			rfc = 0;
+			scanNearby();
+		}
+		if(IC2.isIC2Installed() && !posted)
+			post(true);
 	}
 
 	@Override
@@ -132,6 +161,92 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 		return 0;
 	}
 
+	private void post(boolean on)
+	{
+		if((on == posted) || (parentObj == null) || parentObj.isInvalid()) return;
+		posted = on;
+		if(on)
+			MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(parentObj));
+		else
+			MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(parentObj));
+	}
 
+	@Override
+	public boolean acceptsEnergyFrom(TileEntity emitter, ForgeDirection direction)
+	{
+		if(emitter instanceof ComponentTileEntity)
+			return false;
+		return true;
+	}
+
+	@Override
+	public boolean emitsEnergyTo(TileEntity receiver, ForgeDirection direction)
+	{
+		if(receiver instanceof ComponentTileEntity)
+			return false;
+		return true;
+	}
+
+	@Override
+	public double getOfferedEnergy()
+	{
+		return getEnergyStored(null)/Configs.euRatio;
+	}
+
+	@Override
+	public void drawEnergy(double amount)
+	{
+		extractEnergy(null,(int)Math.ceil(amount * Configs.euRatio),false);
+	}
+
+	@Override
+	public int getSourceTier()
+	{
+		return tier + 1;
+	}
+
+	@Override
+	public double getDemandedEnergy()
+	{
+		return (getMaxEnergyStored(null)-getEnergyStored(null)) / (double)Configs.euRatio;
+	}
+
+	@Override
+	public int getSinkTier()
+	{
+		return 4;
+	}
+
+	@Override
+	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage)
+	{
+		double accepted = receiveEnergy(directionFrom, (int) Math.floor(amount * Configs.euRatio),false)/(double)Configs.euRatio;
+		return amount - accepted;
+	}
+
+	@Override
+	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player)
+	{
+		if(IC2.isIC2Installed())
+		{
+			tier = (tier + 1) % 4;
+			if(ServerHelper.isServer())
+				ServerHelper.sendString(player, "Energy tier set to " + tierString());
+			return true;
+		}
+		return false;
+	}
+
+	public String tierString()
+	{
+		switch(tier)
+		{
+			case 0: return "LV";
+			case 1: return "MV";
+			case 2: return "HV";
+			case 3: return "EV";
+		}
+		return "";
+	}
 
 }

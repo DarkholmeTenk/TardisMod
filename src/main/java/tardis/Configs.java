@@ -59,6 +59,7 @@ public class Configs
 	 * ROUNDEL CONFIG
 	 */
 	public static ConfigFile	roundelConfig;
+	public static int			euRatio				= 4;
 	public static int			rfBase				= 50000;
 	public static int			rfInc				= 50000;
 	public static int			rfPerT				= 4098;
@@ -80,6 +81,7 @@ public class Configs
 	{
 		if (roundelConfig == null) roundelConfig = TardisMod.configHandler.registerConfigNeeder("roundels");
 		maxComponents = rfBase = roundelConfig.getInt("RF storage base", 50000, "The amount of RF that can be stored when a TARDIS is level 0");
+		euRatio = roundelConfig.getInt("RF->EU Conversion ratio", 4, "How many RF make up a single unit of EU");
 		rfInc = roundelConfig.getInt("RF storage increase per level", 50000, "The extra amount of storage which is added every time the TARDIS levels up");
 		rfPerT = roundelConfig.getInt("RF output per tick", 4098, "The amount of RF which the TARDIS can output per tick");
 		maxFlu = roundelConfig.getInt("Internal tanks - Max mb", 16000, "The amount of millibuckets of fluid that can be stored for each internal tank");

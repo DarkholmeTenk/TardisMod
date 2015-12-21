@@ -8,10 +8,11 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
 import tardis.common.integration.ae.AEHelper;
+import tardis.common.integration.other.CofHCore;
+import tardis.common.integration.other.IC2;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import thaumcraft.api.ItemApi;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ComponentItem extends AbstractItem
@@ -34,7 +35,7 @@ public class ComponentItem extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
-		if(Loader.isModLoaded("CoFHCore"))
+		if(CofHCore.isCOFHInstalled() || IC2.isIC2Installed())
 			GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.ENERGY), true, "grg","iii","grg",
 					'g', Items.gold_nugget,
 					'r', Items.redstone,
