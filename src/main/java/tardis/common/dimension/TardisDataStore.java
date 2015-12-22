@@ -106,7 +106,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public TardisTileEntity getExterior()
 	{
-		World w = WorldHelper.getWorld(exteriorWorld);
+		World w = getExteriorWorld();
 		if (w != null)
 		{
 			TileEntity te = w.getTileEntity(exteriorX, exteriorY, exteriorZ);
@@ -117,12 +117,13 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public World getExteriorWorld()
 	{
+		if(exteriorWorld == 10000) return null;
 		return WorldHelper.getWorld(exteriorWorld);
 	}
 
 	public boolean hasValidExterior()
 	{
-		World w = WorldHelper.getWorld(exteriorWorld);
+		World w = getExteriorWorld();
 		if (w != null)
 		{
 			if (w.getBlock(exteriorX, exteriorY, exteriorZ) == TardisMod.tardisBlock) return true;

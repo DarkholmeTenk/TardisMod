@@ -862,7 +862,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public void removeOldBox()
 	{
 		if(ServerHelper.isClient())return;
-		World w = WorldHelper.getWorld(gDS().exteriorWorld);
+		World w = gDS().getExteriorWorld();
 		if (w != null)
 		{
 			if (w.getBlock(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ) == TardisMod.tardisBlock)
