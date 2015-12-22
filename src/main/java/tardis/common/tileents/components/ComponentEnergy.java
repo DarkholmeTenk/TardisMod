@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -255,6 +256,18 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 			case 4: return "EV";
 		}
 		return "";
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound nbt)
+	{
+		nbt.setInteger("tier", tier);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbt)
+	{
+		tier = nbt.getInteger("tier");
 	}
 
 }
