@@ -2,6 +2,7 @@ package tardis.common.tileents.components;
 
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 
@@ -333,9 +334,19 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 	{
 		if((scs == null) || scs.equals(myCoords)) return false;
 		TileEntity te = scs.getTileEntity();
-		if(!(te instanceof ComponentTileEntity)) return false;
+		if(!(te instanceof ComponentTileEntity) || (scs.world != WorldHelper.getWorldID(parentObj)))
+		{
+			if(otherGrid == scs)
+				otherGrid = null;
+			return false;
+		}
 		ITardisComponent comp = ((ComponentTileEntity)te).getComponent(TardisTEComponent.GRID);
-		if(comp == null) return false;
+		if(comp == null)
+		{
+			if(otherGrid == scs)
+				otherGrid = null;
+			return false;
+		}
 		linkedToOther = false;
 		ComponentGrid cg = (ComponentGrid) comp;
 		if((otherGrid != null) && !otherGrid.equals(scs))
