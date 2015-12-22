@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.ILinkable;
 import tardis.api.ScrewdriverMode;
@@ -296,6 +297,7 @@ public class ScrewdriverHelper
 	public boolean isModeValid(EntityPlayer pl, ScrewdriverMode mode)
 	{
 		if(!hasPermission(mode)) return false;
+		if((mode == ScrewdriverMode.Link) && !Configs.enableLinking) return false;
 		if(mode.requiredFunction != null)
 		{
 			TardisDataStore ds = getLinkedDS();
@@ -350,8 +352,8 @@ public class ScrewdriverHelper
 
 	private boolean clearLinkSCS(EntityPlayer pl, boolean mess)
 	{
-		if(mess)
-			ServerHelper.sendString(pl, "[Screwdriver]Link destination has been cleared (no linkable object)");
+		if(mess && ServerHelper.isServer())
+			ServerHelper.sendString(pl, SonicScrewdriverItem.screwName, "Link target has been cleared (no linkable object)");
 		setLinkSCS(null);
 		return true;
 	}
@@ -367,7 +369,8 @@ public class ScrewdriverHelper
 		{
 			if(usedOn != null)
 				if(usedOn.unlink(pl, usedPos))
-					System.out.println("Removed links");
+					if(ServerHelper.isServer())
+						System.out.println("Removed links");
 			return clearLinkSCS(pl,true);
 		}
 
@@ -381,7 +384,8 @@ public class ScrewdriverHelper
 		if(linkLinkable == null) //Used on something good but we have no link currently
 		{
 			setLinkSCS(usedPos);
-			ServerHelper.sendString(pl, SonicScrewdriverItem.screwName, "Link destination set to " + usedPos);
+			if(ServerHelper.isServer())
+				ServerHelper.sendString(pl, SonicScrewdriverItem.screwName, "Link target set to " + usedPos);
 			return true;
 		}
 
@@ -392,7 +396,8 @@ public class ScrewdriverHelper
 				if(linkLinkable.link(pl, linkSCS, usedPos))
 				{
 					clearLinkSCS(pl, false);
-					ServerHelper.sendString(pl, SonicScrewdriverItem.screwName, "Linked " + linkSCS + " to " + usedPos);
+					if(ServerHelper.isServer())
+						ServerHelper.sendString(pl, SonicScrewdriverItem.screwName, "Linked " + linkSCS + " to " + usedPos);
 					return true;
 				}
 				else

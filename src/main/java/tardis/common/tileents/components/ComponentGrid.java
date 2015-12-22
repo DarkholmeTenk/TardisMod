@@ -2,6 +2,7 @@ package tardis.common.tileents.components;
 
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 
 import java.util.ArrayList;
@@ -9,13 +10,19 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import tardis.TardisMod;
+import tardis.api.IScrewable;
+import tardis.api.ScrewdriverMode;
+import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.integration.ae.AEHelper;
 import tardis.common.integration.ae.ITMGrid;
+import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import appeng.api.networking.GridFlags;
@@ -35,12 +42,14 @@ import cpw.mods.fml.common.Optional;
 @Optional.Interface(iface="tardis.common.integration.ae.ITMGrid",modid="appliedenergistics2"),
 @Optional.Interface(iface="appeng.api.networking.IGridBlock",modid="appliedenergistics2")
 })
-public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBlock, IBlockUpdateDetector
+public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBlock, IBlockUpdateDetector, IScrewable, IActivatable
 {
 	private boolean inited = false;
 	private SimpleCoordStore myCoords = null;
 	private IGridNode node = null;
 	private boolean linkedToCore = false;
+	private boolean linkedToOther = false;
+	private SimpleCoordStore otherGrid;
 
 	private ArrayList<IGridConnection> connections = new ArrayList<IGridConnection>();
 
@@ -61,16 +70,17 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 	@Override
 	public void updateTick()
 	{
+		super.updateTick();
 		if(!Loader.isModLoaded("appliedenergistics2")) return;
 		if(!inited && (parentObj != null))
 		{
 			inited = true;
 			CoreTileEntity core = getCore();
 			if(core != null)
-			{
 				core.addGridLink(myCoords);
-			}
 		}
+		if((!linkedToOther) && (otherGrid != null) && parentObj.isValid())
+			linkToSCS(otherGrid);
 		if(!linkedToCore)
 			linkToCore();
 	}
@@ -104,6 +114,8 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 	@Override
 	public IGridNode getGridNode(ForgeDirection dir)
 	{
+		if((parentObj == null) || !parentObj.isValid())
+			return null;
 		createNode();
 		return node;
 	}
@@ -307,6 +319,103 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 	public ItemStack getMachineRepresentation()
 	{
 		return new ItemStack(TardisMod.componentBlock);
+	}
+
+	private void breakOGConnection()
+	{
+		for(IGridConnection n : connections)
+			n.destroy();
+		connections.clear();
+		linkToCore();
+	}
+
+	private boolean linkToSCS(SimpleCoordStore scs)
+	{
+		if((scs == null) || scs.equals(myCoords)) return false;
+		TileEntity te = scs.getTileEntity();
+		if(!(te instanceof ComponentTileEntity)) return false;
+		ITardisComponent comp = ((ComponentTileEntity)te).getComponent(TardisTEComponent.GRID);
+		if(comp == null) return false;
+		linkedToOther = false;
+		ComponentGrid cg = (ComponentGrid) comp;
+		if((otherGrid != null) && !otherGrid.equals(scs))
+			breakOGConnection();
+		otherGrid = scs;
+		if(addConnection(cg,null))
+			linkedToOther = true;
+		return linkedToOther;
+	}
+
+	@Override
+	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player)
+	{
+		if(mode != ScrewdriverMode.Link) return false;
+		if(helper.getLinkSCS() == null)
+		{
+			helper.setLinkSCS(myCoords);
+			if(ServerHelper.isServer())
+				ServerHelper.sendString(player, SonicScrewdriverItem.screwName, "Link target set to " + myCoords);
+			return true;
+		}
+		else
+		{
+			SimpleCoordStore scs = helper.getLinkSCS();
+			if(scs.equals(myCoords) && (otherGrid != null))
+			{
+				breakOGConnection();
+				if(ServerHelper.isServer())
+					ServerHelper.sendString(player, SonicScrewdriverItem.screwName, "Removed link");
+			}
+			else if(linkToSCS(scs))
+			{
+				if(ServerHelper.isServer())
+					ServerHelper.sendString(player, SonicScrewdriverItem.screwName, "Linked " + myCoords + " to " + scs);
+			}
+			else if(ServerHelper.isServer())
+				ServerHelper.sendString(player, SonicScrewdriverItem.screwName, "Link target has been cleared");
+			helper.setLinkSCS(null);
+			return true;
+		}
+	}
+	@Override
+	public void writeToNBT(NBTTagCompound nbt)
+	{
+		if(otherGrid != null)
+			otherGrid.writeToNBT(nbt, "og");
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbt)
+	{
+		if(nbt.hasKey("og"))
+		{
+			SimpleCoordStore scs = SimpleCoordStore.readFromNBT(nbt, "og");
+			if(!scs.equals(otherGrid))
+			{
+				if(inited)
+					linkToSCS(scs);
+				else
+					otherGrid = scs;
+			}
+		}
+		else if(otherGrid != null)
+		{
+			breakOGConnection();
+			otherGrid = null;
+		}
+	}
+
+	@Override
+	public boolean activate(EntityPlayer ent, int side)
+	{
+		if(ServerHelper.isServer())
+		{
+			if(otherGrid == null)
+				ServerHelper.sendString(ent, "Direct connection: None");
+			else
+				ServerHelper.sendString(ent, "Direct connection: " + otherGrid);
+		}
+		return true;
 	}
 
 }

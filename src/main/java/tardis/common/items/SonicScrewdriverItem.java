@@ -34,6 +34,7 @@ import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
@@ -188,10 +189,6 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			if(Loader.isModLoaded("CoFHCore"))
 				if(dismantle(te,pos,pl) || dismantle(b,pos,pl)) return true;
 		}
-		else if(mode == ScrewdriverMode.Link)
-		{
-			return helper.linkUsed(pl, pos);
-		}
 		else if(mode == ScrewdriverMode.Reconfigure)
 		{
 			if (b == TardisMod.colorableRoundelBlock)
@@ -219,6 +216,10 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 			}
 		}
 		if(screwScrewable(te,helper,mode,pl,pos) || screwScrewable(b,helper, mode, pl, pos)) return true;
+		if((mode == ScrewdriverMode.Link) && !(te instanceof ComponentTileEntity))
+		{
+			return helper.linkUsed(pl, pos);
+		}
 		return false;
 	}
 
