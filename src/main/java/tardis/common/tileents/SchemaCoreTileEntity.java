@@ -129,7 +129,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 		remove(deleteUnconnected, true);
 	}
 
-	private void remove(boolean deleteUnconnected, boolean refreshRooms)
+	void remove(boolean deleteUnconnected, boolean refreshRooms)
 	{
 		if(name != null)
 		{

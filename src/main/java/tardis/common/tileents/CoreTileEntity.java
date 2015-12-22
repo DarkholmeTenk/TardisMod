@@ -399,7 +399,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 		if (inFlight()) flightTick();
 
-		if (!worldObj.isRemote)
+		if (ServerHelper.isServer())
 		{
 			if((tt % 12000) == 11999)
 				refreshRoomCount();
@@ -409,24 +409,29 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 			if (deletingRooms)
 			{
-				Iterator<SimpleCoordStore> i = roomSet.iterator();
-				if (i.hasNext())
+				synchronized(roomSet)
 				{
-					SimpleCoordStore coord = i.next();
-					TileEntity te = worldObj.getTileEntity(coord.x, coord.y, coord.z);
-					if ((te != null) && (te instanceof SchemaCoreTileEntity))
+					Iterator<SimpleCoordStore> i = ((HashSet<SimpleCoordStore>)roomSet.clone()).iterator();
+					if (i.hasNext())
 					{
-						TardisOutput.print("TCTE", "Removing room @ " + coord);
-						SchemaCoreTileEntity schemaCore = (SchemaCoreTileEntity) te;
-						schemaCore.remove(false);
+						SimpleCoordStore coord = i.next();
+						TileEntity te = worldObj.getTileEntity(coord.x, coord.y, coord.z);
+						if ((te != null) && (te instanceof SchemaCoreTileEntity))
+						{
+							TardisOutput.print("TCTE", "Removing room @ " + coord);
+							SchemaCoreTileEntity schemaCore = (SchemaCoreTileEntity) te;
+							schemaCore.remove(false,false);
+						}
+						i.remove();
+						while(i.hasNext())i.next(); //Close remaining things
 					}
-					i.remove();
-				}
-				else
-				{
-					deletingRooms = false;
-					refreshDoors(true);
-					numRooms = 0;
+					else
+					{
+						deletingRooms = false;
+						roomSet.clear();
+						refreshDoors(true);
+						numRooms = 0;
+					}
 				}
 			}
 			if ((tt % 1200) == 0)
@@ -1133,8 +1138,11 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public int getNumRooms()
 	{
-		if (ServerHelper.isServer()) return roomSet.size();
-		return numRooms;
+		synchronized(roomSet)
+		{
+			if (ServerHelper.isServer()) return roomSet.size();
+			return numRooms;
+		}
 	}
 
 	public int getMaxNumRooms(int level)
@@ -1149,12 +1157,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public void refreshRoomCount()
 	{
-		Iterator<SimpleCoordStore> iter = roomSet.iterator();
-		while (iter.hasNext())
+		synchronized(roomSet)
 		{
-			SimpleCoordStore scs = iter.next();
-			TileEntity te = scs.getTileEntity();
-			if (!(te instanceof SchemaCoreTileEntity)) iter.remove();
+			Iterator<SimpleCoordStore> iter = roomSet.iterator();
+			while (iter.hasNext())
+			{
+				SimpleCoordStore scs = iter.next();
+				TileEntity te = scs.getTileEntity();
+				if (!(te instanceof SchemaCoreTileEntity)) iter.remove();
+			}
 		}
 	}
 
@@ -1204,12 +1215,15 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public void removeRoom(SimpleCoordStore scs)
 	{
-		roomSet.remove(scs);
+		synchronized(roomSet)
+		{
+			roomSet.remove(scs);
+		}
 	}
 
 	public Set<SimpleCoordStore> getRooms()
 	{
-		return roomSet;
+		return (Set<SimpleCoordStore>) roomSet.clone();
 	}
 
 	public void removeAllRooms(boolean force)
@@ -1218,18 +1232,21 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			removeAllRooms();
 		else
 		{
-			for (SimpleCoordStore coord : roomSet)
+			synchronized(roomSet)
 			{
-				TileEntity te = worldObj.getTileEntity(coord.x, coord.y, coord.z);
-				if ((te != null) && (te instanceof SchemaCoreTileEntity))
+				for (SimpleCoordStore coord : roomSet)
 				{
-					TardisOutput.print("TCTE", "Removing room @ " + coord);
-					SchemaCoreTileEntity schemaCore = (SchemaCoreTileEntity) te;
-					schemaCore.remove(false);
+					TileEntity te = worldObj.getTileEntity(coord.x, coord.y, coord.z);
+					if ((te != null) && (te instanceof SchemaCoreTileEntity))
+					{
+						TardisOutput.print("TCTE", "Removing room @ " + coord);
+						SchemaCoreTileEntity schemaCore = (SchemaCoreTileEntity) te;
+						schemaCore.remove(false);
+					}
 				}
+				roomSet.clear();
+				numRooms = 0;
 			}
-			roomSet.clear();
-			numRooms = 0;
 		}
 	}
 
