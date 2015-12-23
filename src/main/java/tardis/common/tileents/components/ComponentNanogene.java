@@ -7,16 +7,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.FoodStats;
 import tardis.Configs;
 import tardis.api.IArtronEnergyProvider;
+import tardis.api.IScrewable;
+import tardis.api.ScrewdriverMode;
+import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelper;
+import tardis.common.dimension.TardisDataStore;
 import tardis.common.entities.particles.ParticleType;
 import tardis.common.tileents.ComponentTileEntity;
 
-public class ComponentNanogene extends AbstractComponent
+public class ComponentNanogene extends AbstractComponent implements IScrewable
 {
+	/**
+	 * 0 = All.
+	 * 1 = No mobs.
+	 * 2 = No animals.
+	 */
+	private int state = 0;
 
 	public ComponentNanogene(ComponentTileEntity parent)
 	{
@@ -57,6 +71,8 @@ public class ComponentNanogene extends AbstractComponent
 			if(o instanceof EntityLivingBase)
 			{
 				EntityLivingBase ent = (EntityLivingBase)o;
+				if((state >= 1) && (ent instanceof EntityMob)) continue;
+				if((state == 2) && !(ent instanceof EntityPlayer)) continue;
 				if(isPlayerInNeedOfHelp(ent))
 				{
 					double dist = ((ent.posX - x) * (ent.posX - x));
@@ -96,5 +112,42 @@ public class ComponentNanogene extends AbstractComponent
 				}
 			}
 		}
+	}
+
+	private static String getModeString(int state)
+	{
+		switch(state)
+		{
+			case 0: return "Heal all";
+			case 1: return "Heal players/animals";
+			case 2: return "Heal only players";
+			default: return "Nope";
+		}
+	}
+
+	@Override
+	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player)
+	{
+		TardisDataStore ds = getDatastore();
+		if((mode == ScrewdriverMode.Reconfigure) && ((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL)))
+		{
+			state = (state + 1) % 3;
+			if(ServerHelper.isServer())
+				ServerHelper.sendString(player, "New mode: " + getModeString(state));
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound nbt)
+	{
+		nbt.setInteger("state", state);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbt)
+	{
+		state = nbt.getInteger("state");
 	}
 }
