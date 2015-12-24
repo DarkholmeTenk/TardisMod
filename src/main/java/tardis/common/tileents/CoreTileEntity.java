@@ -836,6 +836,36 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return false;
 	}
 
+	private int getShunt(int min, int max)
+	{
+		int shuntBase = min + rand.nextInt(max-min);
+		if(rand.nextBoolean())
+			return -shuntBase;
+		return shuntBase;
+	}
+
+	public boolean shunt(EntityPlayer pl)
+	{
+		if(inFlight())
+			return false;
+		ConsoleTileEntity con = getConsole();
+		TardisTileEntity ext = gDS().getExterior();
+		if((ext == null) || (con == null))
+			return false;
+		int dim = WorldHelper.getWorldID(ext);
+		int x = ext.xCoord;
+		int y = ext.yCoord;
+		int z = ext.zCoord;
+
+		int shuntMin = 2;
+		int shuntMax = 10;
+		int xShunt = getShunt(shuntMin, shuntMax);
+		int zShunt = getShunt(shuntMin, shuntMax);
+		con.setControls(dim, x+xShunt, y, z+zShunt, true);
+		setStableFlight(true);
+		return takeOff(true, pl);
+	}
+
 	private boolean isValidPos(World w, int x, int y, int z, int mh)
 	{
 		return (y > 0) && (y < (mh - 1)) && WorldHelper.softBlock(w, x, y, z) && WorldHelper.softBlock(w, x, y + 1, z);
