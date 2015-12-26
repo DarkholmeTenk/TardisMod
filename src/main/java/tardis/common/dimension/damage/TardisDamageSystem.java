@@ -32,8 +32,8 @@ public class TardisDamageSystem
 	private static int			maxShieldsInc		= 500;
 	public static int			maxHull;
 
-	public static double		explosionDamageMult	= 50;
-	public static double		missedDamageMult	= 10;
+	public static double		explosionDamageMult	= 100;
+	public static double		missedDamageMult	= 30;
 	public static double		combatDamageMult	= 30;
 	public static int			hullToFly			= 30;
 	public static int			hullToControl		= 50;
@@ -46,8 +46,8 @@ public class TardisDamageSystem
 		maxShields = config.getInt("Max shields", 1000, "The base maximum amount of shielding");
 		maxShieldsInc = config.getInt("Max shields increase", 500, "How much a level of max shields increases the amount of shielding");
 
-		explosionDamageMult = config.getDouble("explosionDamageMult", 50, "Explosion damage is multiplied by this number before being applied to a TARDIS");
-		missedDamageMult = config.getDouble("missedDamageMult", 10, "Damage from missing a blue control is multiplied by this number before being applied to a TARDIS");
+		explosionDamageMult = config.getDouble("explosionDamageMult", 100, "Explosion damage is multiplied by this number before being applied to a TARDIS");
+		missedDamageMult = config.getDouble("missedDamageMult", 30, "Damage from missing a blue control is multiplied by this number before being applied to a TARDIS");
 
 		hullToFly = config.getInt("Hull To Fly", 300, "Minimum hull needed for the TARDIS to be in flight");
 		hullToControl = config.getInt("Hull to Control", 500, "Hull needed for console controls to respond");
