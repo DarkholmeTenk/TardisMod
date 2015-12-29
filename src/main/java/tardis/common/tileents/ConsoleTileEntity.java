@@ -906,7 +906,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private int getDimFromControl(int dCont)
 	{
 		TardisDataStore ds = Helper.getDataStore(this);
-		if((ds != null) || (TardisMod.otherDims == null))
+		if((ds != null) && (TardisMod.otherDims != null))
 		{
 			Integer i = TardisMod.otherDims.getDimFromControl(dCont,ds.getLevel());
 			if(i != null)
