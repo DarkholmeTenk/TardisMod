@@ -33,7 +33,11 @@ public class ForceFieldBlock extends AbstractBlock
 	@Override
 	public void initRecipes()
 	{
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,9,1), false, "ggg","gcg","ggg",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,9,1), false, "gcg","ggg","gcg",
+				'g', "blockGlass",
+				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
+
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,9,1), false, "ggg","cgc","ggg",
 				'g', "blockGlass",
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 	}
