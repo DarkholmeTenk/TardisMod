@@ -15,8 +15,8 @@ public class Configs
 	public static int			xpBase				= 80;
 	public static int			xpInc				= 20;
 
-	public static int			maxNumRooms			= 30;
-	public static int			maxNumRoomsInc		= 10;
+	public static int			maxNumRooms			= 6;
+	public static int			maxNumRoomsInc		= 6;
 	public static int			maxEnergy			= 1000;
 	public static int			maxEnergyInc		= 1000;
 	public static int			energyPerSecond		= 1;
@@ -40,8 +40,8 @@ public class Configs
 
 		maxEnergy = levelConfig.getInt("Max energy", 1000, "The base maximum energy");
 		maxEnergyInc = levelConfig.getInt("Max energy increase", 1000, "How much a level of energy increases the max amount of energy");
-		maxNumRooms = levelConfig.getInt("Max rooms", 30, "The base maximum number of rooms");
-		maxNumRoomsInc = levelConfig.getInt("Max rooms increase", 10, "How much a level of max rooms increases the maximum number of rooms");
+		maxNumRooms = Math.max(1,levelConfig.getInt("Max rooms", 6, "The base maximum number of rooms"));
+		maxNumRoomsInc = Math.max(1,levelConfig.getInt("Max rooms increase", 6, "How much a level of max rooms increases the maximum number of rooms"));
 		energyPerSecond = levelConfig.getInt("Energy rate", 1, "The base amount of energy the TARDIS generates per second");
 		energyPerSecondInc = levelConfig.getInt("Energy rate increase", 1, "How much a level of energy rate increases the amount of energy per second");
 
