@@ -1,6 +1,6 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
@@ -13,8 +13,15 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import tardis.TardisMod;
 import tardis.common.core.helpers.Helper;
 
-public class TeleportCommand extends AbstractCommand
+public class TeleportCommand extends AbstractCommandNew
 {
+	@Override
+	public void getAliases(List<String> list)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
 	@Override
 	public String getCommandName()
 	{
@@ -34,19 +41,30 @@ public class TeleportCommand extends AbstractCommand
 	}
 
 	@Override
-	public void commandBody(ICommandSender comSen, String[] astring)
+	public List addTabCompletionOptions(ICommandSender sen, String[] args)
+	{
+		String lastArg = args[args.length - 1];
+		if(lastArg.startsWith("#"))
+		{
+			return match(lastArg,TardisMod.plReg.getPlayersWithHash());
+		}
+		return super.addTabCompletionOptions(sen, args);
+	}
+
+	@Override
+	public boolean process(ICommandSender comSen, List<String> astring)
 	{
 		if(comSen instanceof EntityPlayerMP)
 		{
 			EntityPlayerMP pl = (EntityPlayerMP) comSen;
-			if(astring.length >= 1)
+			if(astring.size() >= 1)
 			{
 				boolean nonPlayerFound = false;
 				int offset = 0;
 				ArrayList<EntityPlayerMP> pls = new ArrayList<EntityPlayerMP>();
-				for(int i = 0;(i<astring.length)&&!nonPlayerFound;i++)
+				for(int i = 0;(i<astring.size())&&!nonPlayerFound;i++)
 				{
-					EntityPlayerMP plx = ServerHelper.getPlayer(astring[i]);
+					EntityPlayerMP plx = ServerHelper.getPlayer(astring.get(i));
 					if(plx != null)
 					{
 						pls.add(plx);
@@ -55,35 +73,35 @@ public class TeleportCommand extends AbstractCommand
 					else
 						nonPlayerFound = true;
 				}
-				if(offset < astring.length)
+				if(offset < astring.size())
 				{
 					if(pls.size() == 0)
 						pls.add(pl);
 
 					try
 					{
-						Integer w = Helper.getTardisDim(astring[offset]);
+						Integer w = Helper.getTardisDim(astring.get(offset));
 						if(w == null)
 						{
-							sendString(comSen,"Unable to identify dimension " + astring[offset]);
-							return;
+							sendString(comSen,"Unable to identify dimension " + astring.get(offset));
+							return true;
 						}
-						int x = Integer.parseInt(astring[1+offset]);
-						int y = Integer.parseInt(astring[2+offset]);
-						int z = Integer.parseInt(astring[3+offset]);
+						int x = Integer.parseInt(astring.get(1+offset));
+						int y = Integer.parseInt(astring.get(2+offset));
+						int z = Integer.parseInt(astring.get(3+offset));
 						for(EntityPlayerMP plx : pls)
 							TeleportHelper.teleportEntity(plx,w,x,y,z);
 					}
 					catch(Exception e)
 					{
 						Integer w = null;
-						if(astring[0+offset].startsWith("#"))
+						if(astring.get(0+offset).startsWith("#"))
 						{
-							w = TardisMod.plReg.getDimension(astring[offset].replaceFirst("#", ""));
+							w = TardisMod.plReg.getDimension(astring.get(offset).replaceFirst("#", ""));
 							if(w == null)
 							{
-								sendString(comSen,"Unable to identify dimension " + astring[offset]);
-								return;
+								sendString(comSen,"Unable to identify dimension " + astring.get(offset));
+								return true;
 							}
 							for(EntityPlayerMP plx : pls)
 								TeleportHelper.teleportEntity(plx,w,2,Helper.tardisCoreY,0);
@@ -92,7 +110,7 @@ public class TeleportCommand extends AbstractCommand
 						{
 							try
 							{
-								w = Integer.parseInt(astring[offset]);
+								w = Integer.parseInt(astring.get(offset));
 								for(EntityPlayerMP plx : pls)
 									TeleportHelper.teleportEntity(plx,w);
 							}
@@ -125,5 +143,12 @@ public class TeleportCommand extends AbstractCommand
 				sendString(pl,getCommandUsage(comSen));
 			}
 		}
+		return true;
+	}
+
+	@Override
+	public boolean isUsernameIndex(String[] args, int index)
+	{
+		return true;
 	}
 }
