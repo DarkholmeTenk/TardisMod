@@ -934,9 +934,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		TardisTileEntity tardis = gDS().getExterior();
 		if (tardis != null)
 		{
+			System.out.println("Exterior found");
 			tardis.linkToDimension(WorldHelper.getWorldID(this));
 			tardis.land(fast);
 		}
+		else
+			System.err.println("No exterior found");
 	}
 
 	public boolean attemptToLand()

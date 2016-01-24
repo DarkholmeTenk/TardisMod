@@ -128,6 +128,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 		{
 			if (w.getBlock(exteriorX, exteriorY, exteriorZ) == TardisMod.tardisBlock) return true;
 		}
+		else if(exteriorWorld != 10000)
+			System.err.println("Failed to get exterior world");
 		return false;
 	}
 
