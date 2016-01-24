@@ -97,7 +97,6 @@ public class TardisDataStore extends AbstractWorldDataStore
 		exteriorX = x;
 		exteriorY = y;
 		exteriorZ = z;
-		System.out.println("SE:"+exteriorX+","+exteriorY+","+exteriorZ);
 		markDirty();
 	}
 
