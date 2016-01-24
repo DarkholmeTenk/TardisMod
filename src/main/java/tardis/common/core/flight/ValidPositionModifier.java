@@ -21,7 +21,7 @@ public class ValidPositionModifier implements IFlightModifier
 	public int[] getModifiedControls(CoreTileEntity core, ConsoleTileEntity console, World w, int[] pos)
 	{
 		TardisDataStore ds = Helper.getDataStore(core);
-		if ((ds != null) && (pos[0] != ds.exteriorX) && (pos[1] != ds.exteriorY) && (pos[2] == ds.exteriorZ)) return pos;
+		if ((ds != null) && (pos[0] == ds.exteriorX) && (pos[1] == ds.exteriorY) && (pos[2] == ds.exteriorZ)) return pos;
 		int mh = TardisDimensionHandler.getMaxHeight(w);
 		for (int yO : check)
 			for(int xO : check)
