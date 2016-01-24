@@ -184,6 +184,7 @@ public class Configs
 	public static int			lockSoundDelay		= 40;
 	public static boolean		loadWhenOffline		= true;
 	public static boolean		enableLinking		= true;
+	public static boolean		deleteAllOwnerOnly	= false;
 
 	private static void refreshMechanicsConfig()
 	{
@@ -198,6 +199,7 @@ public class Configs
 		lockSoundDelay = mechConfig.getInt("Lock sound delay", 40, "Amount of ticks between lock sounds being allowed to play", "20 ticks = 1 second");
 		loadWhenOffline = mechConfig.getBoolean("Chunkload - Offline", true, "Chunkload when player is offline");
 		enableLinking = mechConfig.getBoolean("Enable screwdriver linking mode", true, "Enable the linking mode on the sonic","Note: WIP. Some linking features are still buggy");
+		deleteAllOwnerOnly = mechConfig.getBoolean("Delete all rooms owner only", false, "Whether or not the delete all rooms button should be owner only");
 	}
 
 	/*

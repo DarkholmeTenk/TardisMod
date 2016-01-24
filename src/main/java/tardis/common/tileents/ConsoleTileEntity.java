@@ -22,6 +22,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.TardisFunction;
@@ -731,7 +732,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			}
 		}
 
-		if ((controlID == 901) && ds.hasPermission(pl, TardisPermission.ROOMS))
+		if ((controlID == 901) && ((Configs.deleteAllOwnerOnly && core.isOwner(pl)) || ds.hasPermission(pl, TardisPermission.ROOMS)))
 		{
 			if (!roomDeletePrepare)
 			{
