@@ -557,7 +557,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public void leaveTardis(EntityPlayer player, boolean ignoreLock)
 	{
 		if (ServerHelper.isClient()) return;
-		if (!inFlight() && gDS().hasValidExterior())
+		boolean validExt = gDS().hasValidExterior();
+		boolean inFlight = inFlight();
+		if (!inFlight && validExt)
 		{
 			if (ignoreLock || canOpenLock(player, true))
 			{
@@ -583,10 +585,13 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 				ServerHelper.sendString(player, "TARDIS", "The door is locked");
 			}
 		}
-		else if (inFlight())
+		else if (inFlight)
 			ServerHelper.sendString(player, "TARDIS", "The door won't open in flight");
 		else
+		{
+			System.err.println("E"+validExt+"/"+inFlight);
 			ServerHelper.sendString(player, "TARDIS", "The door refuses to open for some reason");
+		}
 	}
 
 	public boolean changeLock(EntityPlayer pl, boolean inside)

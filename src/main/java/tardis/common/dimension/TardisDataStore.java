@@ -10,6 +10,7 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -126,7 +127,11 @@ public class TardisDataStore extends AbstractWorldDataStore
 		World w = getExteriorWorld();
 		if (w != null)
 		{
-			if (w.getBlock(exteriorX, exteriorY, exteriorZ) == TardisMod.tardisBlock) return true;
+			Block b = w.getBlock(exteriorX, exteriorY, exteriorZ);
+			if (b == TardisMod.tardisBlock)
+				return true;
+			else
+				System.out.println("Ext not tb :" + b.toString());
 		}
 		else if(exteriorWorld != 10000)
 			System.err.println("Failed to get exterior world");
