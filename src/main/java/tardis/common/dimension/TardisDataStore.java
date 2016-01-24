@@ -97,6 +97,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		exteriorX = x;
 		exteriorY = y;
 		exteriorZ = z;
+		System.out.println("SE:"+exteriorX+","+exteriorY+","+exteriorZ);
 		markDirty();
 	}
 
@@ -131,7 +132,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 			if (b == TardisMod.tardisBlock)
 				return true;
 			else
-				System.out.println("Ext not tb :" + b.toString());
+				System.out.println("Ext not tb :" + b.toString()+":"+exteriorX+","+exteriorY+","+exteriorZ);
 		}
 		else if(exteriorWorld != 10000)
 			System.err.println("Failed to get exterior world");
