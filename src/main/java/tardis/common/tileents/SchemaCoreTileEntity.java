@@ -2,6 +2,7 @@ package tardis.common.tileents;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 
@@ -384,6 +385,22 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			boolean primary = worldObj.getBlockMetadata(door.scs.x, door.scs.y, door.scs.z) >= 4;
 			worldObj.setBlockMetadataWithNotify(door.scs.x, door.scs.y, door.scs.z, (door.facing ) + (primary?4:0) , 3);
 		}
+	}
+
+	public boolean isInside(SimpleCoordStore pos)
+	{
+		if((pos.x < (xCoord - bounds[0])) || (pos.x > (xCoord+bounds[2]))) return false;
+		if((pos.y < yCoord)				  || (pos.y > (yCoord+bounds[4]))) return false;
+		if((pos.z < (zCoord - bounds[1])) || (pos.z > (zCoord+bounds[3]))) return false;
+		return true;
+	}
+
+	public boolean isInside(SimpleDoubleCoordStore pos)
+	{
+		if((pos.x < (xCoord - bounds[0])) || (pos.x > (xCoord+1+bounds[2]))) return false;
+		if((pos.y < yCoord)				  || (pos.y > (yCoord+1+bounds[4]))) return false;
+		if((pos.z < (zCoord - bounds[1])) || (pos.z > (zCoord+1+bounds[3]))) return false;
+		return true;
 	}
 
 	public boolean isDoor(SimpleCoordStore pos)

@@ -1086,6 +1086,21 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		return null;
 	}
 
+	public SchemaCoreTileEntity getSchemaCore(SimpleCoordStore pos)
+	{
+		synchronized(roomSet)
+		{
+			for(SimpleCoordStore roomPos : roomSet)
+			{
+				TileEntity te = roomPos.getTileEntity();
+				if(te instanceof SchemaCoreTileEntity)
+					if(((SchemaCoreTileEntity)te).isInside(pos))
+						return ((SchemaCoreTileEntity)te);
+			}
+		}
+		return null;
+	}
+
 	public void loadConsoleRoom(String sub)
 	{
 		String fullName = "tardisConsole" + sub;
