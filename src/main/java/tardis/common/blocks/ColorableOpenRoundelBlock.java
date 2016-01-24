@@ -1,6 +1,8 @@
 package tardis.common.blocks;
 
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IBlockIteratorCondition;
 import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -46,7 +48,7 @@ public class ColorableOpenRoundelBlock extends AbstractScrewableBlockContainer i
 	}
 
 	@Override
-	protected boolean colorBlock(World w, int x, int y, int z, EntityPlayer pl, ItemStack is, int color, int depth)
+	protected boolean colorBlock(World w, int x, int y, int z, EntityPlayer pl, IBlockIteratorCondition cond, ItemStack is, int color, int depth)
 	{
 		if(Helper.isTardisWorld(w))
 		{
@@ -58,7 +60,13 @@ public class ColorableOpenRoundelBlock extends AbstractScrewableBlockContainer i
 				return false;
 			}
 		}
-		return super.colorBlock(w, x, y, z, pl, is, color, depth);
+		return super.colorBlock(w, x, y, z, pl, cond, is, color, depth);
+	}
+
+	@Override
+	public IBlockIteratorCondition getColoringIterator(SimpleCoordStore coord)
+	{
+		return ColorableBlock.getIterator(coord);
 	}
 
 }

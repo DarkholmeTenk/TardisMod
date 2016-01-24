@@ -53,8 +53,7 @@ public class ColorableBlock extends AbstractBlock implements IColorableBlock
 		return super.colorBlock(w, x, y, z, pl, cond, is, color, depth);
 	}
 
-	@Override
-	public IBlockIteratorCondition getColoringIterator(SimpleCoordStore pos)
+	public static IBlockIteratorCondition getIterator(SimpleCoordStore pos)
 	{
 		if(Helper.isTardisWorld(pos.world))
 		{
@@ -66,7 +65,13 @@ public class ColorableBlock extends AbstractBlock implements IColorableBlock
 		return BlockIterator.sameExcMetaNS;
 	}
 
-	private class TardisSchemaColorableCondition implements IBlockIteratorCondition
+	@Override
+	public IBlockIteratorCondition getColoringIterator(SimpleCoordStore pos)
+	{
+		return getIterator(pos);
+	}
+
+	private static class TardisSchemaColorableCondition implements IBlockIteratorCondition
 	{
 		private SchemaCoreTileEntity scte;
 
