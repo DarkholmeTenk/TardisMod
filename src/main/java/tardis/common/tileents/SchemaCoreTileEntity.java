@@ -241,6 +241,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 					if((core== null) || core.addRoom(true,this))
 					{
 						remove(Configs.deleteDisconnected);
+						ServerHelper.sendString(player, "Room counter after removal: " + (core.getNumRooms()) + "/" + core.getMaxNumRooms());
 						return true;
 					}
 				}
