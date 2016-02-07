@@ -70,7 +70,6 @@ public class LandingEventCommand<K, V> extends AbstractCommandNew
 		if(core == null) return;
 		String o = core.getOwner();
 		if(o == null) return;
-		System.out.println(event);
 		list.add(o, event);
 		List l = list.get(o);
 		while(l.size() > 6)

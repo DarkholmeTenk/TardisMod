@@ -176,9 +176,7 @@ public class TardisDamageSystem
 		if (amount == 0) return;
 		ds.markDirty();
 		int damage = handleDamageReductions(damageType, amount);
-		// System.out.println("[TDS] Damage amount: " + amount + ">" + damage);
 		int hullDamage = damageShields(damage);
-		// if (ServerHelper.isServer()) System.out.println("Newshields:" + shields);
 		if (hullDamage == 0) return;
 		damageHull(hullDamage);
 	}

@@ -34,7 +34,6 @@ public class BatteryBlock extends AbstractScrewableBlockContainer
 	@Override
 	public TileEntity createNewTileEntity(World w, int m)
 	{
-		System.out.println(m);
 		return new BatteryTileEntity(m+1);
 	}
 

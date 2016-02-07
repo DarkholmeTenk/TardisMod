@@ -326,7 +326,6 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 						ds.damage.damage(TardisDamageType.MISSEDCONTROL, 5+rand.nextInt(5));
 						instability = MathHelper.clamp(MathHelper.floor(instability + getSpeed(false)), 0, 100);
 						if (shouldExplode()) explode = true;
-						System.out.println("Miss:"+flightButtonTimer+":"+buttonTime+":"+ServerHelper.isServer());
 					}
 				}
 				con.getNextUnstableControl();

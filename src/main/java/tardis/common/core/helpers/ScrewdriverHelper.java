@@ -367,10 +367,6 @@ public class ScrewdriverHelper
 			return clearLinkSCS(pl,true);
 		if((linkSCS != null) && linkSCS.equals(usedPos)) //Trying to link the same place as before
 		{
-			if(usedOn != null)
-				if(usedOn.unlink(pl, usedPos))
-					if(ServerHelper.isServer())
-						System.out.println("Removed links");
 			return clearLinkSCS(pl,true);
 		}
 

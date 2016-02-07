@@ -106,8 +106,6 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 	@Override
 	public boolean onBlockActivated(World w, int x, int y, int z, EntityPlayer player, int side, float i, float j, float k)
 	{
-		if(ServerHelper.isServer())
-			System.out.println("X");
 		if(player != null)
 		{
 			ItemStack held =player.getHeldItem();

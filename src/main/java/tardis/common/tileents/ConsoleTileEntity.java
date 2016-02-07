@@ -1227,8 +1227,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	private void pressedUnstable()
 	{
-		if(ServerHelper.isServer())
-			System.out.println("Correct!");
 		unstableControl = -1;
 		unstablePressed = true;
 	}
@@ -1273,7 +1271,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		else
 			unstableControl = unstableQueue.remove();
 		unstablePressed = false;
-		System.out.println("UC:" + unstableControl + ":" + ServerHelper.isServer() + ":"+unstableQueue);
 		sendUpdate();
 	}
 

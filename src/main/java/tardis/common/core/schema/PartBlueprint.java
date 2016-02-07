@@ -512,7 +512,6 @@ public class PartBlueprint
 			Block cb = w.getBlock(nx, ny, nz);
 			if((cb != st.getBlock()) || ((w.getBlockMetadata(nx, ny, nz) != newMeta) && !(cb instanceof IColorableBlock)))
 			{
-				System.out.println("Repaired:" + nx +","+ny+","+nz+":" + newMeta);
 				st.loadToWorld(w, newMeta, nx, ny, nz);
 				return true;
 			}

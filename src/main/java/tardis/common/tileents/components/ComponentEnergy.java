@@ -201,7 +201,6 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	{
 		if(ServerHelper.isClient()) return;
 		extractEnergy(null,(int)Math.ceil(amount * Configs.euRatio),ServerHelper.isClient());
-		System.out.println("I:"+amount+":"+getEnergyStored(null));
 	}
 
 	@Override
@@ -228,7 +227,6 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	{
 		if(ServerHelper.isClient()) return 0;
 		double accepted = receiveEnergy(directionFrom, (int) Math.floor(amount * Configs.euRatio),false)/(double)Configs.euRatio;
-		System.out.println("I:"+amount+":"+voltage+":"+getEnergyStored(null));
 		return 0;
 	}
 

@@ -103,7 +103,7 @@ public class SchemaHandler
 				String l;
 				while ((l = r.readLine()) != null)
 				{
-					TardisOutput.print("TCH", "TCHSS:" + l);
+					TardisOutput.print("SchHand", "TCHSS:" + l);
 					if (addSchema(l, consoleSchemas))
 					{
 						TardisOutput.print("CH", "Added schema " + l + " " + consoleSchemas);
@@ -128,7 +128,7 @@ public class SchemaHandler
 		String[] files = tardisSchemaDir.list();
 		for (String s : files)
 		{
-			TardisOutput.print("TCH", "TCHSS:" + s);
+			TardisOutput.print("SchHand", "TCHSS:" + s);
 			if (addSchema(s, consoleSchemas))
 			{
 				String q = s.replace(".schema", "");

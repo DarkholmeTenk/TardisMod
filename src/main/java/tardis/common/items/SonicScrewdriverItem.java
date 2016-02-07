@@ -229,7 +229,6 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		{
 			MovingObjectPosition hitPos = getMovingObjectPositionFromPlayer(w, player, true);
 			if (hitPos == null) return false;
-			System.out.println("T");
 			SimpleCoordStore pos = new SimpleCoordStore(w,hitPos);
 			boolean r = handleBlock(pos, player);
 			if(r)
