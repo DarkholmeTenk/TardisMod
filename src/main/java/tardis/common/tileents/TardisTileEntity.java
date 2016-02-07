@@ -4,6 +4,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
 import io.darkcraft.darkcore.mod.interfaces.IExplodable;
@@ -318,8 +319,17 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 
 	public CoreTileEntity getCore()
 	{
+		if(ServerHelper.isClient()) return null;
 		if((linkedDimension != null) && (linkedDimension != 0))
+		{
+			World w = WorldHelper.getWorld(linkedDimension);
+			if(w == null)
+			{
+				coords().setToAir();
+				return null;
+			}
 			return Helper.getTardisCore(linkedDimension);
+		}
 		return null;
 	}
 
