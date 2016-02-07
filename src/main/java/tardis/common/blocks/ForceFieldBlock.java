@@ -1,7 +1,6 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 
 import java.util.List;
 
@@ -25,12 +24,6 @@ public class ForceFieldBlock extends AbstractBlock
 	}
 
 	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return ForceFieldItemBlock.class;
-	}
-
-	@Override
 	public void initData()
 	{
 		setBlockName("ForceField");
@@ -40,7 +33,11 @@ public class ForceFieldBlock extends AbstractBlock
 	@Override
 	public void initRecipes()
 	{
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,9,1), false, "ggg","gcg","ggg",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,9,1), false, "gcg","ggg","gcg",
+				'g', "blockGlass",
+				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
+
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(this,9,1), false, "ggg","cgc","ggg",
 				'g', "blockGlass",
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 	}

@@ -3,8 +3,10 @@ package tardis.common.core;
 import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.command.ICommandSender;
@@ -13,23 +15,24 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import tardis.TardisMod;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 
 public class TardisOwnershipRegistry extends AbstractWorldDataStore
 {
 	public HashMap<Integer,String> ownedDimMapping = new HashMap<Integer,String>();
-	
+
 	public TardisOwnershipRegistry()
 	{
 		super("TModPReg");
 	}
-	
+
 	public TardisOwnershipRegistry(String s)
 	{
 		super("TModPReg");
 	}
-	
+
 	public static void loadAll()
 	{
 		if(TardisMod.plReg == null)
@@ -42,10 +45,10 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 		if(ServerHelper.isServer())
 			TardisMod.plReg.save();
 	}
-	
+
 	public boolean addPlayer(String username, int dimension)
 	{
-		if(username == null || dimension == 0)
+		if((username == null) || (dimension == 0))
 			return false;
 		TardisOutput.print("TPlReg", "Mapping dim " + dimension + " to " + username);
 		if(hasTardis(username))
@@ -54,7 +57,7 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 		markDirty();
 		return true;
 	}
-	
+
 	public boolean removePlayer(String username)
 	{
 		if(username != null)
@@ -63,7 +66,7 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 		}
 		return false;
 	}
-	
+
 	public Integer getDimension(String username)
 	{
 		Set<Integer> dims = ownedDimMapping.keySet();
@@ -79,12 +82,12 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 		}
 		return null;
 	}
-	
+
 	public Integer getDimension(EntityPlayer player)
 	{
 		return getDimension(ServerHelper.getUsername(player));
 	}
-	
+
 	public CoreTileEntity getCore(EntityPlayer player)
 	{
 		Integer dimID = getDimension(player);
@@ -94,7 +97,7 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 		}
 		return null;
 	}
-	
+
 	public TardisDataStore getDataStore(EntityPlayer player)
 	{
 		Integer dimID = getDimension(player);
@@ -104,21 +107,21 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 		}
 		return null;
 	}
-	
+
 	public EntityPlayerMP getPlayer(int dimension)
 	{
 		if(ownedDimMapping.containsKey(dimension))
 			return ServerHelper.getPlayer(ownedDimMapping.get(dimension));
 		return null;
 	}
-	
+
 	public String getPlayerName(int dimension)
 	{
 		if(ownedDimMapping.containsKey(dimension))
 			return ownedDimMapping.get(dimension);
 		return null;
 	}
-	
+
 	public boolean hasTardis(String username)
 	{
 		Collection<String> values = ownedDimMapping.values();
@@ -126,7 +129,7 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 			return values.contains(username);
 		return false;
 	}
-	
+
 	public void chatMapping(ICommandSender comsen)
 	{
 		comsen.addChatMessage(new ChatComponentText("Dimension mapping:"));
@@ -136,6 +139,14 @@ public class TardisOwnershipRegistry extends AbstractWorldDataStore
 			if(i != null)
 				comsen.addChatMessage(new ChatComponentText(owner + "->" + i));
 		}
+	}
+
+	public List<String> getPlayersWithHash()
+	{
+		List<String> strings = new ArrayList<String>(ownedDimMapping.size());
+		for(String s : ownedDimMapping.values())
+			strings.add("#"+s);
+		return strings;
 	}
 
 	@Override

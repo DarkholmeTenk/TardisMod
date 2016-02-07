@@ -1,7 +1,8 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IBlockIteratorCondition;
 import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -9,23 +10,17 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.TardisPermission;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 
-public class ColorableOpenRoundelBlock extends AbstractScrewableBlock implements IColorableBlock
+public class ColorableOpenRoundelBlock extends AbstractScrewableBlockContainer implements IColorableBlock
 {
 
 	public ColorableOpenRoundelBlock()
 	{
 		super(TardisMod.modName);
-	}
-
-	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return ColorableOpenRoundelItemBlock.class;
 	}
 
 	@Override
@@ -53,7 +48,7 @@ public class ColorableOpenRoundelBlock extends AbstractScrewableBlock implements
 	}
 
 	@Override
-	protected boolean colorBlock(World w, int x, int y, int z, EntityPlayer pl, ItemStack is, int color, int depth)
+	protected boolean colorBlock(World w, int x, int y, int z, EntityPlayer pl, IBlockIteratorCondition cond, ItemStack is, int color, int depth)
 	{
 		if(Helper.isTardisWorld(w))
 		{
@@ -65,7 +60,13 @@ public class ColorableOpenRoundelBlock extends AbstractScrewableBlock implements
 				return false;
 			}
 		}
-		return super.colorBlock(w, x, y, z, pl, is, color, depth);
+		return super.colorBlock(w, x, y, z, pl, cond, is, color, depth);
+	}
+
+	@Override
+	public IBlockIteratorCondition getColoringIterator(SimpleCoordStore coord)
+	{
+		return ColorableBlock.getIterator(coord);
 	}
 
 }

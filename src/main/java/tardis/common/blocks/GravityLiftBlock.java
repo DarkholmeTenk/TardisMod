@@ -1,11 +1,11 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.tileents.GravityLiftTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
@@ -22,12 +22,6 @@ public class GravityLiftBlock extends AbstractBlockContainer
 	}
 
 	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return GravityLiftItemBlock.class;
-	}
-
-	@Override
 	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_)
 	{
 		return new GravityLiftTileEntity();
@@ -38,7 +32,7 @@ public class GravityLiftBlock extends AbstractBlockContainer
 	{
 		setBlockName("GravityLift");
 		setSubNames("Normal","Craftable");
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override

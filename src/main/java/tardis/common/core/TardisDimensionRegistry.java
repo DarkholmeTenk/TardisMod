@@ -8,12 +8,14 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.network.TardisPacketHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -32,7 +34,7 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 
 	public TardisDimensionRegistry(String par1Str)
 	{
-		super(par1Str);
+		super(par1Str, 0);
 	}
 
 	private static HashSet<Integer> dimensionIDs = new HashSet<Integer>();
@@ -46,6 +48,11 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 			TardisOutput.print("TDR", "Adding dimension:" + id,TardisOutput.Priority.DEBUG);
 			markDirty();
 		}
+	}
+
+	public static Set<Integer> getDims()
+	{
+		return dimensionIDs;
 	}
 
 	public static void loadAll()
@@ -71,26 +78,34 @@ public class TardisDimensionRegistry extends AbstractWorldDataStore implements G
 			registerDim(i);
 	}
 
-	private void registerDim(int id)
+	private boolean registerDim(int id)
 	{
 		if(!DimensionManager.isDimensionRegistered(id))
 		{
 			TardisOutput.print("TDR", "Registering dim " + id,TardisOutput.Priority.DEBUG);
-			DimensionManager.registerDimension(id, TardisMod.providerID);
+			DimensionManager.registerDimension(id, Configs.providerID);
 			if(ServerHelper.isServer())
 				DarkcoreMod.networkChannel.sendToAll(getPacket());
+			return true;
 		}
+		return false;
+	}
+
+	public void unregisterDim(Integer dim)
+	{
+		if(dim == null)
+			return;
+		if(!DimensionManager.isDimensionRegistered(dim))
+			return;
+		int provider = DimensionManager.getProviderType(dim);
+		if(provider == Configs.providerID)
+			DimensionManager.unregisterDimension(dim);
+		dimensionIDs.remove(dim);
 	}
 
 	public boolean hasDimension(int id)
 	{
 		return dimensionIDs.contains(id);
-	}
-
-	@Override
-	public int getDimension()
-	{
-		return 0;
 	}
 
 	@Override

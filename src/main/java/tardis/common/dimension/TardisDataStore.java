@@ -1,6 +1,7 @@
 package tardis.common.dimension;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
@@ -9,26 +10,34 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
+import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.TardisTileEntity;
+import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
+import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
+import tardis.common.tileents.extensions.upgrades.ChameleonUpgrade;
+import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 
 public class TardisDataStore extends AbstractWorldDataStore
 {
+	public final TardisDamageSystem							damage;
 
 	private int												pExtW			= 0;
 	private int												pExtX			= 0;
@@ -43,24 +52,28 @@ public class TardisDataStore extends AbstractWorldDataStore
 	private volatile double									tardisXP		= 0;
 	private volatile int									tardisLevel		= 0;
 	private volatile HashMap<TardisUpgradeMode, Integer>	upgradeLevels	= new HashMap<TardisUpgradeMode, Integer>();
-	private int												rfStored;
-	private ItemStack[]										items			= new ItemStack[TardisMod.numInvs];
-	private FluidStack[]									fluids			= new FluidStack[TardisMod.numTanks];
+	private volatile int									rfStored;
+	private ItemStack[]										items			= new ItemStack[Configs.numInvs];
+	private FluidStack[]									fluids			= new FluidStack[Configs.numTanks];
 	private AspectList										aspectList		= new AspectList();
 	public int												maxSuck			= 16;
 	public Aspect											maxSuckT		= null;
 	public int												desiredDim		= 0;
 
-	private HashMap<Integer,Integer>						permissionList	= new HashMap();
+	private HashMap<Integer, Integer>						permissionList	= new HashMap();
+	public AbstractUpgrade[]								upgrades		= new AbstractUpgrade[8];
+	private int tt = 0;
 
 	public TardisDataStore(String n)
 	{
-		super(n);
+		super(n, WorldHelper.getClientWorldID());
+		damage = new TardisDamageSystem(this);
 	}
 
 	public TardisDataStore(int dim)
 	{
 		super("tardisIDS", dim);
+		damage = new TardisDamageSystem(this);
 	}
 
 	public void markMaybeDirty()
@@ -94,7 +107,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public TardisTileEntity getExterior()
 	{
-		World w = WorldHelper.getWorld(exteriorWorld);
+		World w = getExteriorWorld();
 		if (w != null)
 		{
 			TileEntity te = w.getTileEntity(exteriorX, exteriorY, exteriorZ);
@@ -105,16 +118,23 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public World getExteriorWorld()
 	{
+		if(exteriorWorld == 10000) return null;
 		return WorldHelper.getWorld(exteriorWorld);
 	}
 
 	public boolean hasValidExterior()
 	{
-		World w = WorldHelper.getWorld(exteriorWorld);
+		World w = getExteriorWorld();
 		if (w != null)
 		{
-			if (w.getBlock(exteriorX, exteriorY, exteriorZ) == TardisMod.tardisBlock) return true;
+			Block b = w.getBlock(exteriorX, exteriorY, exteriorZ);
+			if (b == TardisMod.tardisBlock)
+				return true;
+			else
+				System.out.println("Ext not tb :" + b.toString()+":"+exteriorX+","+exteriorY+","+exteriorZ);
 		}
+		else if(exteriorWorld != 10000)
+			System.err.println("Failed to get exterior world");
 		return false;
 	}
 
@@ -184,7 +204,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public double getXPNeeded()
 	{
 		if (tardisLevel <= 0) return 1;
-		return TardisMod.xpBase + (tardisLevel * TardisMod.xpInc);
+		return Configs.xpBase + (tardisLevel * Configs.xpInc);
 	}
 
 	public int getLevel()
@@ -192,10 +212,25 @@ public class TardisDataStore extends AbstractWorldDataStore
 		return tardisLevel;
 	}
 
+	public int getLevel(TardisUpgradeMode mode, boolean trueValue)
+	{
+		if(trueValue)
+		{
+			if (upgradeLevels.containsKey(mode)) return upgradeLevels.get(mode);
+			return 0;
+		}
+		return getLevel(mode);
+	}
+
 	public int getLevel(TardisUpgradeMode mode)
 	{
 		int level = 0;
 		if (upgradeLevels.containsKey(mode)) level = upgradeLevels.get(mode);
+		for(AbstractUpgrade up : upgrades)
+		{
+			if(up == null) continue;
+			level += up.getUpgradeEffect(mode, this);
+		}
 		return level;
 	}
 
@@ -203,7 +238,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	{
 		if (unspentLevelPoints() >= am)
 		{
-			upgradeLevels.put(mode, am + getLevel(mode));
+			upgradeLevels.put(mode, am + getLevel(mode,true));
 			markDirty();
 		}
 	}
@@ -228,7 +263,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public int getMaxRF()
 	{
-		return TardisMod.rfBase + Math.max((tardisLevel - 1) * TardisMod.rfInc, 0);
+		return Configs.rfBase + Math.max((tardisLevel - 1) * Configs.rfInc, 0);
 	}
 
 	public int getRF()
@@ -261,7 +296,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public ItemStack setIS(ItemStack is, int slot)
 	{
 		ItemStack ret = items[slot];
-		if((is != null) && (is.stackSize > 0))
+		if ((is != null) && (is.stackSize > 0))
 			items[slot] = is;
 		else
 			items[slot] = null;
@@ -311,6 +346,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 			for (int i = 0; i < fluids.length; i++)
 			{
 				if (invTag.hasKey("i" + i)) fluids[i] = FluidStack.loadFluidStackFromNBT(invTag.getCompoundTag("i" + i));
+				else fluids[i] = null;
 			}
 		}
 		readTransmittable(nbt);
@@ -322,15 +358,16 @@ public class TardisDataStore extends AbstractWorldDataStore
 			aspectList.readFromNBT(nbt, "aspectList");
 		tardisLevel = nbt.getInteger("tL");
 		tardisXP = nbt.getDouble("txp");
-		int i = 0;
 		permissionList.clear();
-		while(nbt.hasKey("permO"+i))
 		{
-			int h = nbt.getInteger("permO"+i);
-			int d = nbt.getInteger("permD"+i);
-			if(d != 0)
-				permissionList.put(h, d);
-			i++;
+			int i = 0;
+			while (nbt.hasKey("permO" + i))
+			{
+				int h = nbt.getInteger("permO" + i);
+				int d = nbt.getInteger("permD" + i);
+				if (d != 0) permissionList.put(h, d);
+				i++;
+			}
 		}
 		for (TardisUpgradeMode mode : TardisUpgradeMode.values())
 			if (nbt.hasKey("uG" + mode.ordinal()))
@@ -338,22 +375,46 @@ public class TardisDataStore extends AbstractWorldDataStore
 				int am = nbt.getInteger("uG" + mode.ordinal());
 				if (am > 0) upgradeLevels.put(mode, am);
 			}
+
+		NBTTagCompound damageNBT = nbt.getCompoundTag("damage");
+		if (damageNBT != null) damage.readFromNBT(damageNBT);
+
+		EngineTileEntity eng = getEngine();
+		SimpleCoordStore engPos = null;
+		if(eng != null)
+			engPos = eng.coords;
+		for (int i = 0; i < upgrades.length; i++)
+		{
+			if(nbt.hasKey("upgrade"+i))
+			{
+				if(upgrades[i] != null)
+					upgrades[i].readFromNBT(nbt.getCompoundTag("upgrade"+i));
+				else
+					upgrades[i] = UpgradeFactory.createUpgrade(nbt.getCompoundTag("upgrade"+i));
+			}
+			else if(upgrades[i] != null)
+			{
+				upgrades[i] = null;
+			}
+			if((upgrades[i] != null) && (engPos != null))
+				upgrades[i].setEnginePos(engPos);
+		}
 	}
 
 	private void storeFlu(NBTTagCompound nbt)
 	{
-		int j = 0;
 		NBTTagCompound invTag = new NBTTagCompound();
+		boolean save = false;
 		for (int i = 0; i < fluids.length; i++)
 		{
 			if (fluids[i] != null)
 			{
+				save = true;
 				NBTTagCompound iTag = new NBTTagCompound();
-				invTag.setTag("i" + j, fluids[i].writeToNBT(iTag));
-				j++;
+				invTag.setTag("i" + i, fluids[i].writeToNBT(iTag));
 			}
 		}
-		if (j > 0) nbt.setTag("fS", invTag);
+		if (save) nbt.setTag("fS", invTag);
 	}
 
 	private void storeInv(NBTTagCompound nbt)
@@ -387,22 +448,22 @@ public class TardisDataStore extends AbstractWorldDataStore
 		nbt.setInteger("desDim", desiredDim);
 		storeInv(nbt);
 		storeFlu(nbt);
-
 		writeTransmittable(nbt);
 	}
 
 	public void writeTransmittable(NBTTagCompound nbt)
 	{
-		if(TardisMod.tcInstalled)
-			aspectList.writeToNBT(nbt, "aspectList");
+		if (TardisMod.tcInstalled) aspectList.writeToNBT(nbt, "aspectList");
 		nbt.setInteger("tL", tardisLevel);
 		nbt.setDouble("txp", tardisXP);
-		int i = 0;
-		for(Integer hash : permissionList.keySet())
 		{
-			nbt.setInteger("permO"+i, hash);
-			nbt.setInteger("permD"+i, permissionList.get(hash));
-			i++;
+			int i = 0;
+			for (Integer hash : permissionList.keySet())
+			{
+				nbt.setInteger("permO" + i, hash);
+				nbt.setInteger("permD" + i, permissionList.get(hash));
+				i++;
+			}
 		}
 
 		if (upgradeLevels.size() > 0) for (TardisUpgradeMode mode : upgradeLevels.keySet())
@@ -410,19 +471,32 @@ public class TardisDataStore extends AbstractWorldDataStore
 			int am = upgradeLevels.get(mode);
 			if (am > 0) nbt.setInteger("uG" + mode.ordinal(), am);
 		}
+		NBTTagCompound damageNBT = new NBTTagCompound();
+		damage.writeToNBT(damageNBT);
+		nbt.setTag("damage", damageNBT);
+		for(int i = 0; i < upgrades.length; i++)
+		{
+			if(upgrades[i] != null)
+			{
+				NBTTagCompound upgradeNBT = new NBTTagCompound();
+				AbstractUpgrade upgrade = upgrades[i];
+				upgrade.writeToNBT(upgradeNBT);
+				nbt.setTag("upgrade"+i, upgradeNBT);
+			}
+		}
 	}
 
-	private ConsoleTileEntity getConsole()
+	public ConsoleTileEntity getConsole()
 	{
 		return Helper.getTardisConsole(dimID);
 	}
 
-	private EngineTileEntity getEngine()
+	public EngineTileEntity getEngine()
 	{
 		return Helper.getTardisEngine(dimID);
 	}
 
-	private CoreTileEntity getCore()
+	public CoreTileEntity getCore()
 	{
 		return Helper.getTardisCore(dimID);
 	}
@@ -441,21 +515,19 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public boolean canHaveAspect(Aspect a, int am)
 	{
 		int cAm = aspectList.getAmount(a);
-		if(cAm >= getMaxAspectStorage())
-			return false;
-		return (aspectList.size() < TardisMod.numAspects) || ((cAm != 0) && ((cAm + am) <= getMaxAspectStorage()));
+		if (cAm >= getMaxAspectStorage()) return false;
+		return (aspectList.size() < Configs.numAspects) || ((cAm != 0) && ((cAm + am) <= getMaxAspectStorage()));
 	}
 
 	public int addAspect(Aspect a, int am)
 	{
 		int cAm = aspectList.getAmount(a);
-		if((cAm == 0) && (aspectList.size() >= TardisMod.numAspects))
-			return am;
+		if ((cAm == 0) && (aspectList.size() >= Configs.numAspects)) return am;
 		int toAdd = am;
 		int toRet = 0;
-		if((am + cAm) > getMaxAspectStorage())
+		if ((am + cAm) > getMaxAspectStorage())
 		{
-			toAdd = Math.max(0,getMaxAspectStorage() - cAm);
+			toAdd = Math.max(0, getMaxAspectStorage() - cAm);
 			toRet = am - toAdd;
 		}
 		aspectList.add(a, toAdd);
@@ -466,8 +538,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public boolean removeAspect(Aspect a, int am)
 	{
 		int cAm = aspectList.getAmount(a);
-		if(cAm < am)
-			return false;
+		if (cAm < am) return false;
 		aspectList.remove(a, am);
 		markDirty();
 		return true;
@@ -475,57 +546,64 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public int getMaxAspectStorage()
 	{
-		return ((getLevel() - 1) * TardisMod.maxEachAspectInc) + TardisMod.maxEachAspect;
+		return ((getLevel() - 1) * Configs.maxEachAspectInc) + Configs.maxEachAspect;
 	}
 
-	public boolean hasFunction(TardisFunction fun)
+	private int getRequiredLevel(TardisFunction fun)
 	{
 		switch (fun)
 		{
 			case LOCATE:
-				return getLevel() >= 3;
+				return Configs.levelLocate;
 			case SENSORS:
-				return getLevel() >= 5;
+				return Configs.levelSensors;
 			case STABILISE:
-				return getLevel() >= 7;
+				return Configs.levelStable;
 			case TRANSMAT:
-				return getLevel() >= 9;
+				return Configs.levelTransmat;
 			case RECALL:
-				return getLevel() >= 11;
+				return Configs.levelRecall;
 			case TRANQUILITY:
-				return getLevel() >= 15;
+				return Configs.levelTranq;
 			case CLARITY:
-				return getLevel() >= 13;
+				return Configs.levelClarity;
+			case SPAWNPROT:
+				return Configs.levelSpawnProt;
 			default:
-				return false;
+				return -1;
 		}
+	}
+
+	public boolean hasFunction(TardisFunction fun)
+	{
+		int level = getRequiredLevel(fun);
+		return (level >= 0) && (getLevel() >= level);
 	}
 
 	public boolean hasPermission(Object ent, TardisPermission perm)
 	{
-		if(ent instanceof EntityPlayer)
-			return hasPermission((EntityPlayer)ent, perm);
+		if (ent instanceof String) return hasPermission((String) ent, perm);
+		if (ent instanceof EntityPlayer) return hasPermission((EntityPlayer) ent, perm);
 		return false;
 	}
 
 	public boolean hasPermission(EntityPlayer pl, TardisPermission perm)
 	{
-		if(pl.capabilities.isCreativeMode) return true;
+		if (pl.capabilities.isCreativeMode) return true;
 		CoreTileEntity core = getCore();
-		if((core != null) && core.isOwner(pl)) return true;
-		return hasPermission(ServerHelper.getUsername(pl),perm);
+		if ((core != null) && core.isOwner(pl)) return true;
+		return hasPermission(ServerHelper.getUsername(pl), perm);
 	}
 
 	public boolean hasPermission(String pl, TardisPermission perm)
 	{
-		if((pl == null) || (perm == null))
-			return false;
+		if ((pl == null) || pl.isEmpty() || (perm == null)) return false;
 		CoreTileEntity core = getCore();
-		if((core != null) && core.isOwner(pl)) return true;
+		if ((core != null) && core.isOwner(pl)) return true;
 		int hash = pl.hashCode();
-		synchronized(permissionList)
+		synchronized (permissionList)
 		{
-			if(permissionList.containsKey(hash))
+			if (permissionList.containsKey(hash))
 			{
 				int data = permissionList.get(hash);
 				return perm.isIn(data);
@@ -536,15 +614,15 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	public boolean togglePermission(EntityPlayer giver, EntityPlayer givee, TardisPermission perm)
 	{
-		return togglePermission(ServerHelper.getUsername(giver),ServerHelper.getUsername(givee),perm);
+		return togglePermission(giver, ServerHelper.getUsername(givee), perm);
 	}
 
-	public boolean togglePermission(String giver, String givee, TardisPermission perm)
+	public boolean togglePermission(EntityPlayer giver, String givee, TardisPermission perm)
 	{
-		if(hasPermission(giver,TardisPermission.PERMISSIONS))
+		if (hasPermission(giver, TardisPermission.PERMISSIONS))
 		{
 			int hash = givee.hashCode();
-			synchronized(permissionList)
+			synchronized (permissionList)
 			{
 				int data = permissionList.containsKey(hash) ? permissionList.get(hash) : 0;
 				data = perm.toggle(data);
@@ -553,6 +631,31 @@ public class TardisDataStore extends AbstractWorldDataStore
 			return true;
 		}
 		return false;
+	}
+
+	public void tick()
+	{
+		damage.tick();
+		if(!ServerHelper.isIntegratedClient())
+			tt = (tt + 1) % 827026200;
+		for(AbstractUpgrade up : upgrades)
+		{
+			if((up != null) && !ServerHelper.isIntegratedClient())
+				up.tick(tt);
+		}
+	}
+
+	public AbstractTardisChameleon getChameleon()
+	{
+		for(AbstractUpgrade up : upgrades)
+			if(up instanceof ChameleonUpgrade)
+				return ((ChameleonUpgrade)up).chameleon;
+		return TardisMod.tardisChameleonReg.getDefault();
+	}
+
+	public SimpleCoordStore getExteriorSCS()
+	{
+		return new SimpleCoordStore(exteriorWorld, exteriorX, exteriorY, exteriorZ);
 	}
 
 }

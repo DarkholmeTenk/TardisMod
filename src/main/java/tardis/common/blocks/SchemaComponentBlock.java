@@ -1,7 +1,6 @@
 package tardis.common.blocks;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 
@@ -13,8 +12,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import tardis.Configs;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
@@ -28,18 +28,12 @@ public class SchemaComponentBlock extends AbstractBlock
 	}
 
 	@Override
-	public Class<? extends AbstractItemBlock> getIB()
-	{
-		return SchemaComponentItemBlock.class;
-	}
-
-	@Override
 	public void initData()
 	{
 		opaque = false;
 		setBlockName("SchemaComponent");
 		setSubNames("DoorConnector","DoorConnectorHidden","ControlPanel","ConsoleBlock", "TardisDoorBottom","TardisDoorTop","ConsoleTop","Engine","TimeRotor");
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override
@@ -143,15 +137,18 @@ public class SchemaComponentBlock extends AbstractBlock
 				core.activate(pl, s);
 			return true;
 		}
-    	if((meta == 2) && ser)
+    	if(meta == 2)
     	{
     		boolean found = false;
     		for(int i = 1;(i<10) && (found == false);i++)
     		{
     			if(w.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
     			{
-    				if(TardisMod.screwItem.rightClickBlock(pl, new SimpleCoordStore(w,x,y-i,z)))
+    				if(TardisMod.screwItem.handleBlock(new SimpleCoordStore(w,x,y-i,z), pl))
+    				{
+    					TardisMod.screwItem.toolUsed(null, pl, x, y, z);
     					return true;
+    				}
     				else
     				{
     					TileEntity te = w.getTileEntity(x, y-i, z);

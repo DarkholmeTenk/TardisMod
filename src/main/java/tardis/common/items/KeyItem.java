@@ -1,6 +1,7 @@
 package tardis.common.items;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 
 import java.util.List;
@@ -11,9 +12,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import tardis.Configs;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
+import tardis.api.TardisPermission;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
@@ -37,8 +41,7 @@ public class KeyItem extends AbstractItem
 			if (is.getItem() instanceof KeyItem)
 			{
 				NBTTagCompound data = is.stackTagCompound;
-				if (data != null)
-					return data.getString("keyOwner");
+				if (data != null) return data.getString("keyOwner");
 			}
 		}
 		return null;
@@ -46,8 +49,7 @@ public class KeyItem extends AbstractItem
 
 	public static void setOwnerName(ItemStack is, String ownerName)
 	{
-		if (is.stackTagCompound == null)
-			is.stackTagCompound = new NBTTagCompound();
+		if (is.stackTagCompound == null) is.stackTagCompound = new NBTTagCompound();
 		is.stackTagCompound.setString("keyOwner", ownerName);
 	}
 
@@ -76,27 +78,46 @@ public class KeyItem extends AbstractItem
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
 	{
-		if ((is != null) && (getOwnerName(is) == null))
-			setOwnerName(is, ServerHelper.getUsername(player));
+		if ((is != null) && (getOwnerName(is) == null) && !(player instanceof FakePlayer)) setOwnerName(is, ServerHelper.getUsername(player));
 
-		if (ServerHelper.isServer() && !TardisMod.plReg.hasTardis(getOwnerName(is))
-				&& ServerHelper.getUsername(player).equals(getOwnerName(is)))
+		if(ServerHelper.isServer())
 		{
-			Helper.summonNewTardis(player);
-			player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
-		}
-		else if (ServerHelper.isServer() && ServerHelper.getUsername(player).equals(getOwnerName(is)))
-		{
-			CoreTileEntity core = TardisMod.plReg.getCore(player);
-			TardisDataStore ds = TardisMod.plReg.getDataStore(player);
-			if ((core != null) && (ds != null))
+			if (!(player instanceof FakePlayer) && !TardisMod.plReg.hasTardis(getOwnerName(is)) && ServerHelper.getUsername(player).equals(getOwnerName(is)))
 			{
-				if (!ds.hasValidExterior() && !core.inFlight())
+				Helper.summonNewTardis(player);
+				player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
+			}
+			else
+			{
+				String on = getOwnerName(is);
+				if((on != null) && !on.isEmpty())
 				{
-					if(!Helper.isTardisWorld(world))
+					Integer dimensionID = TardisMod.plReg.getDimension(on);
+					if(dimensionID == null) return is;
+					CoreTileEntity core = Helper.getTardisCore(dimensionID);
+					TardisDataStore ds = Helper.getDataStore(dimensionID);
+					if ((core != null) && (ds != null))
 					{
-						Helper.summonOldTardis(player);
-						player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
+						if(!Helper.isTardisWorld(world))
+						{
+							if (ServerHelper.getUsername(player).equals(on) && !ds.hasValidExterior() && !core.inFlight())
+							{
+									Helper.summonOldTardis(player);
+									player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
+									return is;
+							}
+							if(ds.hasPermission(player, TardisPermission.FLY) && player.isSneaking())
+							{
+								SimpleDoubleCoordStore extPos = core.getPosition().getCenter();
+								if(extPos.distance(player) < 8)
+								{
+									if(!core.inFlight())
+											core.takeOffUncoordinated(player);
+									else if(core.inAbortableFlight() && !core.inCoordinatedFlight())
+											core.attemptToLand();
+								}
+							}
+						}
 					}
 				}
 			}
@@ -107,14 +128,12 @@ public class KeyItem extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
-		if(TardisMod.keyCraftable)
+		if (Configs.keyCraftable)
 		{
-			if(TardisMod.keyReqKontron)
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " ik", " ii", 'i',
-						Items.iron_ingot, 'k', CraftingComponentType.KONTRON.getIS(1)));
+			if (Configs.keyReqKontron)
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " ik", " ii", 'i', Items.iron_ingot, 'k', CraftingComponentType.KONTRON.getIS(1)));
 			else
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " i ", " ii", 'i',
-						Items.iron_ingot));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " i ", " ii", 'i', Items.iron_ingot));
 		}
 	}
 

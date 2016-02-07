@@ -8,7 +8,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import tardis.api.IControlMatrix;
+import tardis.common.core.events.TardisControlEvent;
 
 public class ControlPacketHandler implements IDataPacketHandler
 {
@@ -31,10 +33,16 @@ public class ControlPacketHandler implements IDataPacketHandler
 					TileEntity te = w.getTileEntity(x, y, z);
 					if(te instanceof IControlMatrix)
 					{
+						IControlMatrix matrix = (IControlMatrix)te;
 						int controlID = data.getInteger("cID");
-						((IControlMatrix)te).activateControl(player, controlID);
-						if(te instanceof AbstractTileEntity)
-							((AbstractTileEntity)te).sendUpdate();
+						TardisControlEvent event = new TardisControlEvent(matrix,controlID,player);
+						MinecraftForge.EVENT_BUS.post(event);
+						if(!event.isCanceled())
+						{
+							matrix.activateControl(player, controlID);
+							if(te instanceof AbstractTileEntity)
+								((AbstractTileEntity)te).queueUpdate();
+						}
 					}
 				}
 			}

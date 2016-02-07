@@ -5,7 +5,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import tardis.TardisMod;
 import tardis.api.TardisPermission;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.EngineTileEntity;
 
@@ -41,6 +41,12 @@ public class WailaEngineProvider extends AbstractWailaProvider
 			addControl(new TwoIntStore(80+o), "Toggle permission: " + p.name);
 			addControl(new TwoIntStore(90+o), "Permission light: " + p.name);
 		}
+		addControl(new TwoIntStore(100), "Engine Panel Release","Opens or closes the engine panel");
+		addControl(new TwoIntStore(101,108), "Upgrade Slot","Allows you to insert upgrades");
+		addControl(new TwoIntStore(110), "Master Damage Repair Unit");
+		addControl(new TwoIntStore(111,119), "Damage Repair Unit");
+		addControl(130, "Spawn Protection Lever", "Allows you to vary the radius of spawn prevention");
+		addControl(131, "Screwdriver Style Button", "Allows you to change your Screwdriver's style");
 	}
 
 	private boolean isEngine(IWailaDataAccessor accessor)
@@ -48,6 +54,11 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		if((accessor.getBlock()== TardisMod.tardisEngineBlock) || ((accessor.getBlock()==TardisMod.schemaComponentBlock) && (accessor.getMetadata() == 7)))
 			return true;
 		return false;
+	}
+
+	private void addControl(int i, String name, String desc)
+	{
+		addControl(new TwoIntStore(i), name, desc);
 	}
 
 	@Override

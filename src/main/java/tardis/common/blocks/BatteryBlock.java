@@ -17,7 +17,7 @@ import tardis.common.tileents.extensions.LabFlag;
 import tardis.common.tileents.extensions.LabRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BatteryBlock extends AbstractScrewableBlock
+public class BatteryBlock extends AbstractScrewableBlockContainer
 {
 	public BatteryBlock()
 	{
@@ -34,7 +34,6 @@ public class BatteryBlock extends AbstractScrewableBlock
 	@Override
 	public TileEntity createNewTileEntity(World w, int m)
 	{
-		System.out.println(m);
 		return new BatteryTileEntity(m+1);
 	}
 

@@ -8,9 +8,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import tardis.api.IControlMatrix;
-import tardis.client.TardisClientProxy;
-import tardis.client.renderer.model.SonicScrewdriverLightModel;
-import tardis.client.renderer.model.SonicScrewdriverModel;
 import tardis.client.renderer.model.console.ButtonModel;
 import tardis.client.renderer.model.console.GaugeDisplayModel;
 import tardis.client.renderer.model.console.GaugeNeedleModel;
@@ -24,11 +21,10 @@ import tardis.client.renderer.model.console.SonicScrewdriverHolderModel;
 import tardis.client.renderer.model.console.SpecialLeverModel;
 import tardis.client.renderer.model.console.TardisLightModel;
 import tardis.client.renderer.model.console.ValveWheelModel;
+import tardis.common.core.helpers.ScrewdriverHelper;
 
 public class ControlRenderer
 {
-	private static SonicScrewdriverModel screw = new SonicScrewdriverModel();
-	private static SonicScrewdriverLightModel screwLight = new SonicScrewdriverLightModel();
 	private static SonicScrewdriverHolderModel holder = new SonicScrewdriverHolderModel();
 	private static GaugeDisplayModel gaugeDisplay = new GaugeDisplayModel();
 	private static GaugeNeedleModel gaugeNeedle = new GaugeNeedleModel();
@@ -124,17 +120,13 @@ public class ControlRenderer
 
 	public void renderScrewdriver(Tessellator tess, IControlMatrix te, int slot, double x, double y, double z, double rX,double rY, double rZ,double sX, double sY, double sZ)
 	{
-		if(te.hasScrewdriver(slot))
+		ScrewdriverHelper helper = te.getScrewHelper(slot);
+		if(helper != null)
 		{
 			GL11.glPushMatrix();
 			handleSettings(x,y,z,rX,rY,rZ,sX,sY,sZ);
 			resetHighlight();
-			/*bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriver.png"));
-			screw.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-			double[] colors = SonicScrewdriverItem.getColors(te.getScrewMode(slot));
-			GL11.glColor3d(colors[0], colors[1], colors[2]);
-			screwLight.render(null,0F,0F,0F,0F,0F,0.0625F);*/
-			TardisClientProxy.screwRenderer.render(null);
+			helper.render();
 			resetHighlight();
 			GL11.glPopMatrix();
 		}

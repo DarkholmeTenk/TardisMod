@@ -5,6 +5,7 @@ import io.darkcraft.darkcore.mod.interfaces.IDataPacketHandler;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.common.core.TardisDimensionRegistry;
+import tardis.common.core.TardisOutput;
 
 public class DimRegPacketHandler implements IDataPacketHandler
 {
@@ -13,7 +14,7 @@ public class DimRegPacketHandler implements IDataPacketHandler
 	{
 		if((nbt != null) && ServerHelper.isClient())
 		{
-			System.out.println("Recieved new dimensions list from server");
+			TardisOutput.print("DRPH","Recieved new dimensions list from server");
 			if(TardisMod.dimReg == null)
 				TardisMod.dimReg = new TardisDimensionRegistry();
 			TardisMod.dimReg.readFromNBT(nbt);

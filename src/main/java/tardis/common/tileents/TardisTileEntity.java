@@ -6,6 +6,7 @@ import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
 import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +19,22 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.EmptyChunk;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkProviderServer;
+import tardis.Configs;
 import tardis.TardisMod;
-import tardis.common.core.Helper;
-import tardis.common.core.TardisOutput;
+import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.dimension.damage.ExplosionDamageHelper;
+import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector
+public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector, IExplodable
 {
 	private int fadeTimer = 0;
 
@@ -40,15 +48,73 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 
 	public String owner;
 	public static String baseURL = null;
+	public AbstractTardisChameleon chameleon;
 
 	Integer linkedDimension = null;
+
+	private boolean gened = false;
+	private int cgR = 1;
+	private int cgP = 0;
+	private int cgT = 0;
+	private int totalGen = 0;
+
+	private Runnable chunkGenerated = new Runnable(){@Override
+	public void run(){}};
+
+	private void genChunks()
+	{
+		cgT = 0;
+		IChunkProvider icp = worldObj.getChunkProvider();
+		if(cgR == 0)
+			cgR = 1;
+		if(icp instanceof ChunkProviderServer)
+		{
+			ChunkProviderServer cps = (ChunkProviderServer) icp;
+			boolean temp = cps.loadChunkOnProvideRequest;
+			cps.loadChunkOnProvideRequest = false;
+			while((cgT < Configs.exteriorGenChunksPT) && (cgR <= Configs.exteriorGenChunksRad))
+			{
+				int sidePos = cgP % (2 * cgR);
+				int side = cgP / (2 * cgR);
+				int x, z;
+				switch(side)
+				{
+					case 0: x = (sidePos - cgR) + 1; z = -cgR; break;
+					case 1: x = cgR; z = (sidePos - cgR) + 1; break;
+					case 2: x = -((sidePos - cgR) + 1); z = cgR; break;
+					case 3: x = -cgR; z = -((sidePos - cgR) + 1); break;
+					default: cgP = 0; cgR++; continue;
+				}
+				cgP++;
+				int chunkX = (xCoord >> 4) + x;
+				int chunkZ = (zCoord >> 4) + z;
+				Chunk c = cps.provideChunk(chunkX, chunkZ);
+				if(c instanceof EmptyChunk)
+				{
+					cps.loadChunk(chunkX, chunkZ, chunkGenerated);
+					cgT++;
+					totalGen++;
+				}
+			}
+			cps.loadChunkOnProvideRequest = temp;
+			if(cgR > Configs.exteriorGenChunksRad)
+			{
+				System.out.println("Generated " + totalGen + " chunks");
+				gened = true;
+			}
+		}
+	}
 
 	@Override
 	public void updateEntity()
 	{
 		super.updateEntity();
 		if(baseURL == null)
-			baseURL = TardisMod.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
+			baseURL = Configs.modConfig.getString("Skin URL", "http://skins.darkcraft.io/tardis/");
+
+		if(ServerHelper.isServer() && (Configs.exteriorGenChunksRad > 0) && ((tt % Configs.exteriorGenChunksTR) == 0) && !gened)
+			genChunks();
+
 		if(ServerHelper.isServer())
 		{
 			CoreTileEntity linkedCore = getCore();
@@ -140,6 +206,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	private void playLandSound()
 	{
 		if(ServerHelper.isClient())return;
+
 		if(!landFast)
 			SoundHelper.playSound(this, "tardismod:landing", 1);
 		else
@@ -154,7 +221,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			playLandSound();
 		landing = true;
 		landFast = fast;
-		TardisOutput.print("TTE", "LANDING!!!! " + (fast ? "FAST " : "SLOW ") + (ServerHelper.isClient()?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
+		//TardisOutput.print("TTE", "LANDING!!!! " + (fast ? "FAST " : "SLOW ") + (ServerHelper.isClient()?"REM":"SER") + ":" + (landed?"LAN":"UNL"));
 		sendUpdate();
 	}
 
@@ -169,8 +236,17 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		TardisDataStore ds = Helper.getDataStore(dimID);
 		if(ds != null)
 		{
-			ds.linkToExterior(this);
+ 			ds.linkToExterior(this);
+			chameleon = ds.getChameleon();
+			sendUpdate();
 		}
+	}
+
+	public AbstractTardisChameleon getChameleon()
+	{
+		if(chameleon == null)
+			return TardisMod.tardisChameleonReg.getDefault();
+		return chameleon;
 	}
 
 	public float getTransparency()
@@ -212,7 +288,7 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 			return;
 		if(!inFlight())
 		{
-			if(linkedDimension == null)
+			if((linkedDimension == null) || !TardisMod.dimReg.hasDimension(linkedDimension))
 			{
 				if(!TardisMod.plReg.hasTardis(player.getCommandSenderName()))
 					linkedDimension = Helper.generateTardisInterior(player,this);
@@ -233,6 +309,13 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 		}
 	}
 
+	public TardisDataStore getDataStore()
+	{
+		if((linkedDimension != null) && (linkedDimension != 0))
+			return Helper.getDataStore(linkedDimension);
+		return null;
+	}
+
 	public CoreTileEntity getCore()
 	{
 		if((linkedDimension != null) && (linkedDimension != 0))
@@ -241,43 +324,37 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound tag)
+	public void writeTransmittable(NBTTagCompound nbt)
 	{
-		super.readFromNBT(tag);
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound tag)
-	{
-		super.writeToNBT(tag);
-	}
-
-	@Override
-	public void writeTransmittable(NBTTagCompound tag)
-	{
-		tag.setBoolean("takingOff",takingOff);
-		tag.setBoolean("landing",landing);
-		tag.setBoolean("landFast", landFast);
-		tag.setBoolean("landed", landed);
-		tag.setInteger("fadeTimer", fadeTimer);
+		nbt.setBoolean("takingOff",takingOff);
+		nbt.setBoolean("landing",landing);
+		nbt.setBoolean("landFast", landFast);
+		nbt.setBoolean("landed", landed);
+		nbt.setInteger("fadeTimer", fadeTimer);
+		nbt.setBoolean("gened", gened);
 		if(linkedDimension != null)
-			tag.setInteger("linkedDimension", linkedDimension);
+			nbt.setInteger("linkedDimension", linkedDimension);
 		if(owner != null)
-			tag.setString("owner", owner);
+			nbt.setString("owner", owner);
+		if((chameleon != TardisMod.tardisChameleonReg.getDefault()) && (chameleon != null))
+			if(ServerHelper.isServer())
+				chameleon.writeToNBT(nbt);
 	}
 
 	@Override
-	public void readTransmittable(NBTTagCompound tag)
+	public void readTransmittable(NBTTagCompound nbt)
 	{
-		takingOff = tag.getBoolean("takingOff");
-		landing = tag.getBoolean("landing");
-		landFast = tag.getBoolean("landFast");
-		landed = tag.getBoolean("landed");
-		fadeTimer = tag.getInteger("fadeTimer");
-		if(tag.hasKey("linkedDimension"))
-			linkedDimension = tag.getInteger("linkedDimension");
-		if(tag.hasKey("owner"))
-			owner = tag.getString("owner");
+		takingOff = nbt.getBoolean("takingOff");
+		landing = nbt.getBoolean("landing");
+		landFast = nbt.getBoolean("landFast");
+		landed = nbt.getBoolean("landed");
+		fadeTimer = nbt.getInteger("fadeTimer");
+		if(nbt.hasKey("linkedDimension"))
+			linkedDimension = nbt.getInteger("linkedDimension");
+		if(nbt.hasKey("owner"))
+			owner = nbt.getString("owner");
+		chameleon = TardisMod.tardisChameleonReg.get(nbt, AbstractTardisChameleon.nbtKey);
+		gened = nbt.getBoolean("gened");
 	}
 
 	public List<Entity> getEntitiesInside()
@@ -330,4 +407,12 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
     {
 		return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord+1, yCoord+2, zCoord+1);
     }
+
+	@Override
+	public void explode(SimpleCoordStore pos, Explosion explosion)
+	{
+		TardisDataStore ds = getDataStore();
+		if(ds != null)
+			ExplosionDamageHelper.damage(ds.damage, pos, explosion, 1);
+	}
 }

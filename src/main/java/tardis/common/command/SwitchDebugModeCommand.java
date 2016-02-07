@@ -5,7 +5,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
-import tardis.TardisMod;
+import tardis.Configs;
 import tardis.common.core.TardisOutput;
 
 public class SwitchDebugModeCommand extends AbstractCommand
@@ -35,8 +35,8 @@ public class SwitchDebugModeCommand extends AbstractCommand
 		try
 		{
 			int a = Integer.parseInt(astring[1]);
-			TardisMod.priorityLevel = TardisOutput.Priority.get(a);
-			sendString(icommandsender, "Debug mode set to " + TardisMod.priorityLevel.toString());
+			Configs.priorityLevel = TardisOutput.Priority.get(a);
+			sendString(icommandsender, "Debug mode set to " + Configs.priorityLevel.toString());
 		}
 		catch(Exception e)
 		{

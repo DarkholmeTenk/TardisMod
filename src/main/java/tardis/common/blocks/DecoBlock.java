@@ -6,11 +6,12 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import java.util.HashMap;
 
 import net.minecraft.world.IBlockAccess;
+import tardis.Configs;
 import tardis.TardisMod;
 
 public class DecoBlock extends AbstractBlock
 {
-	private static final String[]		subs		= { "Floor", "Wall" };
+	private static final String[]		subs		= { "Floor", "Wall", "Walkway"};
 	private static String[]				suffixes	= { "topbottom", "side" };
 	public HashMap<Integer, Boolean>	litUpDim	= new HashMap<Integer, Boolean>();
 
@@ -31,7 +32,7 @@ public class DecoBlock extends AbstractBlock
 	{
 		setBlockName("DecoBlock");
 		setSubNames(subs);
-		setLightLevel(TardisMod.lightBlocks ? 1 : 0);
+		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
 
 	@Override

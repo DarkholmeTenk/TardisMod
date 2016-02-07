@@ -1,7 +1,8 @@
 package tardis.common.tileents;
 
+import ic2.api.energy.tile.IEnergySink;
+import ic2.api.energy.tile.IEnergySource;
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
@@ -19,19 +20,26 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
+import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.integration.ae.AEHelper;
+import tardis.common.integration.other.CofHCore;
+import tardis.common.integration.other.IC2;
+import tardis.common.integration.other.Thaumcraft;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.components.ComponentAspect;
@@ -48,34 +56,20 @@ import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
-		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid="CoFHCore"),
-		@Optional.Interface(iface="appeng.api.networking.IGridHost",modid="appliedenergistics2"),
-		@Optional.Interface(iface="thaumcraft.api.aspects.IEssentiaTransport",modid="Thaumcraft")
+		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid=CofHCore.modname),
+		@Optional.Interface(iface="appeng.api.networking.IGridHost",modid=AEHelper.modname),
+		@Optional.Interface(iface="thaumcraft.api.aspects.IEssentiaTransport",modid=Thaumcraft.modname),
+		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySource",modid=IC2.modname),
+		@Optional.Interface(iface="ic2.api.energy.tile.IEnergySink",modid=IC2.modname)
 })
 public class ComponentTileEntity extends AbstractTileEntity implements IActivatablePrecise, IBlockUpdateDetector,
-		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport
+		IGridHost, IEnergyHandler, IInventory, IFluidHandler, IChunkLoader, IEssentiaTransport, IEnergySource, IEnergySink
 {
 	private HashMap<Integer, ITardisComponent>	comps			= new HashMap<Integer, ITardisComponent>();
 	private boolean								valid			= false;
 	private boolean								compAdded		= false;
 	private Boolean								inside			= null;
 
-	private static ConfigFile					config			= null;
-	private static int							maxComponents	= 6;
-
-	static
-	{
-		if(config == null)
-			refreshConfigs();
-	}
-
-	public static void refreshConfigs()
-	{
-		if(config == null)
-			config = TardisMod.configHandler.registerConfigNeeder("Components");
-		maxComponents = config.getInt("Max components", 6,
-				"The maximum number of TARDIS components (cable interfaces, etc), which can be applied to one open roundel");
-	}
 
 	public boolean isComponentValid(TardisTEComponent comp)
 	{
@@ -86,9 +80,9 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 
 	public boolean addComponent(TardisTEComponent comp)
 	{
-		if (!hasComponent(comp) && (getNumComponents() < maxComponents))
+		if (!hasComponent(comp) && (getNumComponents() < Configs.maxComponents))
 		{
-			if (isComponentValid(comp))
+			if (isComponentValid(comp) || !valid)
 			{
 				compAdded = true;
 				comps.put(comp.ordinal(), comp.baseObj.create(this));
@@ -139,6 +133,8 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 
 	protected void reviveComps()
 	{
+		if (comps == null)
+			return;
 		if (comps.size() > 0)
 		{
 			for (ITardisComponent comp : comps.values())
@@ -229,12 +225,15 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			TardisDataStore ds = getDS();
 			if ((ds == null) || ds.hasPermission(player, TardisPermission.ROUNDEL))
 			{
-
 				dismantle(player);
 				return true;
 			}
 			else
 				player.addChatMessage(CoreTileEntity.cannotModifyMessage);
+		}
+		if (mode == ScrewdriverMode.Link)
+		{
+
 		}
 
 		/*
@@ -313,8 +312,6 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 								if (!pl.capabilities.isCreativeMode)
 								{
 									pl.inventory.decrStackSize(pl.inventory.currentItem, 1);
-									// pl.inventory.setInventorySlotContents(pl.inventory.currentItem,
-									// null);
 									pl.inventory.markDirty();
 								}
 								return true;
@@ -335,8 +332,17 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			ScrewdriverMode mode = SonicScrewdriverItem.getMode(is);
 			if(mode == ScrewdriverMode.Dismantle)
 			{
-				dismantle(pl);
-				return true;
+				TardisDataStore ds = getDS();
+				if((ds == null) || ds.hasPermission(pl, TardisPermission.ROUNDEL))
+				{
+					dismantle(pl);
+					return true;
+				}
+				else
+				{
+					ServerHelper.sendString(pl, "You do not have permission to modify this");
+					return false;
+				}
 			}
 		}
 		int n = comps.size();
@@ -349,7 +355,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 				{
 					IScrewable screwable = (IScrewable)o;
 					ScrewdriverMode mode = SonicScrewdriverItem.getMode(is);
-					if(screwable.screw(mode, pl)) return true;
+					if(screwable.screw(ScrewdriverHelperFactory.get(is), mode, pl)) return true;
 				}
 			}
 			if(o instanceof IActivatable)
@@ -395,6 +401,19 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		}
 		comps = null;
 		valid = false;
+	}
+
+	@Override
+	public void onChunkUnload()
+	{
+		if (comps.size() > 0)
+		{
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp != null)
+					comp.die();
+			}
+		}
 	}
 
 	@Override
@@ -493,6 +512,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
 	{
 		for (ITardisComponent comp : comps.values())
@@ -504,6 +524,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate)
 	{
 		for (ITardisComponent comp : comps.values())
@@ -515,6 +536,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public boolean canConnectEnergy(ForgeDirection from)
 	{
 		if (!valid || compAdded)
@@ -528,6 +550,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public int getEnergyStored(ForgeDirection from)
 	{
 		for (ITardisComponent comp : comps.values())
@@ -539,6 +562,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=CofHCore.modname)
 	public int getMaxEnergyStored(ForgeDirection from)
 	{
 		for (ITardisComponent comp : comps.values())
@@ -763,6 +787,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=AEHelper.modname)
 	public IGridNode getGridNode(ForgeDirection dir)
 	{
 		if (valid && !compAdded)
@@ -775,6 +800,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=AEHelper.modname)
 	public AECableType getCableConnectionType(ForgeDirection dir)
 	{
 		if (valid && !compAdded)
@@ -787,6 +813,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=AEHelper.modname)
 	public void securityBreak()
 	{
 		if (valid && !compAdded)
@@ -797,6 +824,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			}
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public AspectList getAspects()
 	{
 		if (valid && !compAdded)
@@ -808,6 +836,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return null;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public void setAspects(AspectList aspects)
 	{
 		if (valid && !compAdded)
@@ -818,6 +847,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			}
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean doesContainerAccept(Aspect tag)
 	{
 		if (valid && !compAdded)
@@ -829,6 +859,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return false;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int addToContainer(Aspect tag, int amount)
 	{
 		if (valid && !compAdded)
@@ -840,6 +871,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return amount;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean takeFromContainer(Aspect tag, int amount)
 	{
 		if (valid && !compAdded)
@@ -851,6 +883,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return false;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean takeFromContainer(AspectList ot)
 	{
 		if (valid && !compAdded)
@@ -862,6 +895,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return false;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean doesContainerContainAmount(Aspect tag, int amount)
 	{
 		if (valid && !compAdded)
@@ -874,6 +908,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@SuppressWarnings("deprecation")
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean doesContainerContain(AspectList ot)
 	{
 		if (valid && !compAdded)
@@ -885,6 +920,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 		return false;
 	}
 
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int containerContains(Aspect tag)
 	{
 		if (valid && !compAdded)
@@ -897,6 +933,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean isConnectable(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -909,6 +946,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean canInputFrom(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -921,6 +959,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean canOutputTo(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -933,11 +972,13 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public void setSuction(Aspect aspect, int amount)
 	{
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public Aspect getSuctionType(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -950,6 +991,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int getSuctionAmount(ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -962,6 +1004,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face)
 	{
 		if (valid && !compAdded)
@@ -974,9 +1017,9 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face)
 	{
-		System.out.println("A!");
 		if (valid && !compAdded)
 			for (ITardisComponent comp : comps.values())
 			{
@@ -987,6 +1030,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public Aspect getEssentiaType(ForgeDirection face)
 	{
 		// TODO Auto-generated method stub
@@ -994,6 +1038,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int getEssentiaAmount(ForgeDirection face)
 	{
 		// TODO Auto-generated method stub
@@ -1001,15 +1046,120 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public int getMinimumSuction()
 	{
 		return 0;
 	}
 
 	@Override
+	@Optional.Method(modid=Thaumcraft.modname)
 	public boolean renderExtendedTube()
 	{
 		return false;
+	}
+
+	@Override
+	@Optional.Method(modid=IC2.modname)
+	public boolean acceptsEnergyFrom(TileEntity emitter, ForgeDirection direction)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySink)
+					return ((IEnergySink)comp).acceptsEnergyFrom(emitter, direction);
+			}
+		return false;
+	}
+
+	@Override
+	@Optional.Method(modid=IC2.modname)
+	public double getDemandedEnergy()
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySink)
+					return ((IEnergySink)comp).getDemandedEnergy();
+			}
+		return 0;
+	}
+
+	@Override
+	@Optional.Method(modid=IC2.modname)
+	public int getSinkTier()
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySink)
+					return ((IEnergySink)comp).getSinkTier();
+			}
+		return 0;
+	}
+
+	@Override
+	@Optional.Method(modid=IC2.modname)
+	public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySink)
+					return ((IEnergySink)comp).injectEnergy(directionFrom, amount, voltage);
+			}
+		return amount;
+	}
+
+	@Override
+	@Optional.Method(modid=IC2.modname)
+	public boolean emitsEnergyTo(TileEntity receiver, ForgeDirection direction)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySource)
+					return ((IEnergySource)comp).emitsEnergyTo(receiver, direction);
+			}
+		return false;
+	}
+
+	@Override
+	@Optional.Method(modid=IC2.modname)
+	public double getOfferedEnergy()
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySource)
+					return ((IEnergySource)comp).getOfferedEnergy();
+			}
+		return 0;
+	}
+
+	@Override
+	@Optional.Method(modid=IC2.modname)
+	public void drawEnergy(double amount)
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySource)
+					((IEnergySource)comp).drawEnergy(amount);
+			}
+	}
+
+	@Override
+	@Optional.Method(modid=IC2.modname)
+	public int getSourceTier()
+	{
+		if (valid && !compAdded)
+			for (ITardisComponent comp : comps.values())
+			{
+				if (comp instanceof IEnergySource)
+					return ((IEnergySource)comp).getSourceTier();
+			}
+		return 0;
 	}
 
 }

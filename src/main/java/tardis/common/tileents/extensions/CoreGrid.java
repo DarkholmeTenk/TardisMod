@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
-import tardis.common.core.Helper;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.CoreTileEntity;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.GridNotification;
@@ -17,7 +17,7 @@ import appeng.api.util.DimensionalCoord;
 public class CoreGrid implements IGridBlock
 {
 	private DimensionalCoord coreCoords = null;
-	
+
 	public CoreGrid(CoreTileEntity core)
 	{
 		coreCoords = new DimensionalCoord(core);
@@ -39,7 +39,8 @@ public class CoreGrid implements IGridBlock
 	{
 		return false;
 	}
-	
+
+	@Override
 	public boolean isWorldAccessible()
 	{
 		return isWorldAccessable();
@@ -74,8 +75,7 @@ public class CoreGrid implements IGridBlock
 	@Override
 	public EnumSet<ForgeDirection> getConnectableSides()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return EnumSet.noneOf(ForgeDirection.class);
 	}
 
 	@Override

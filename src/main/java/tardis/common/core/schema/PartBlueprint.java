@@ -1,6 +1,7 @@
 package tardis.common.core.schema;
 
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,12 +18,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import tardis.TardisMod;
-import tardis.common.blocks.InternalDoorBlock;
-import tardis.common.core.Helper;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
 import tardis.common.core.exception.schema.UnmatchingSchemaException;
+import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.SchemaCoreTileEntity;
 
 public class PartBlueprint
@@ -132,8 +132,8 @@ public class PartBlueprint
 			}
 		}
 		w.setBlockMetadataWithNotify(x, y, z, face + (primary ? 4 : 0), 3);
-		InternalDoorBlock.manageConnected(w, x, y, z, face);
-		InternalDoorBlock.manageConnected(w, x + InternalDoorBlock.dx(face), y, z + InternalDoorBlock.dz(face), face);
+		//InternalDoorBlock.manageConnected(w, x, y, z, face);
+		//InternalDoorBlock.manageConnected(w, x + InternalDoorBlock.dx(face), y, z + InternalDoorBlock.dz(face), face);
 	}
 
 	private void getDoor(World world, int x, int y, int z, int facing)
@@ -509,9 +509,9 @@ public class PartBlueprint
 		{
 			SchemaStore st = storage.get(oldBlock);
 			int newMeta = SchemaRotationHandler.getNewMetadata(st.getBlock(), st.getBlockMeta(), primaryDoorFace, facing);
-			if((w.getBlock(nx,ny,nz) != st.getBlock()) || (w.getBlockMetadata(nx, ny, nz) != newMeta))
+			Block cb = w.getBlock(nx, ny, nz);
+			if((cb != st.getBlock()) || ((w.getBlockMetadata(nx, ny, nz) != newMeta) && !(cb instanceof IColorableBlock)))
 			{
-				System.out.println("Repaired:" + nx +","+ny+","+nz+":" + newMeta);
 				st.loadToWorld(w, newMeta, nx, ny, nz);
 				return true;
 			}
