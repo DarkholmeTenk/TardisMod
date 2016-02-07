@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.Configs;
 import tardis.TardisMod;
@@ -77,41 +78,44 @@ public class KeyItem extends AbstractItem
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer player)
 	{
-		if ((is != null) && (getOwnerName(is) == null)) setOwnerName(is, ServerHelper.getUsername(player));
+		if ((is != null) && (getOwnerName(is) == null) && !(player instanceof FakePlayer)) setOwnerName(is, ServerHelper.getUsername(player));
 
-		if (ServerHelper.isServer() && !TardisMod.plReg.hasTardis(getOwnerName(is)) && ServerHelper.getUsername(player).equals(getOwnerName(is)))
+		if(ServerHelper.isServer())
 		{
-			Helper.summonNewTardis(player);
-			player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
-		}
-		else if (ServerHelper.isServer())
-		{
-			String on = getOwnerName(is);
-			if((on != null) && !on.isEmpty())
+			if (!(player instanceof FakePlayer) && !TardisMod.plReg.hasTardis(getOwnerName(is)) && ServerHelper.getUsername(player).equals(getOwnerName(is)))
 			{
-				Integer dimensionID = TardisMod.plReg.getDimension(on);
-				if(dimensionID == null) return is;
-				CoreTileEntity core = Helper.getTardisCore(dimensionID);
-				TardisDataStore ds = Helper.getDataStore(dimensionID);
-				if ((core != null) && (ds != null))
+				Helper.summonNewTardis(player);
+				player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
+			}
+			else
+			{
+				String on = getOwnerName(is);
+				if((on != null) && !on.isEmpty())
 				{
-					if(!Helper.isTardisWorld(world))
+					Integer dimensionID = TardisMod.plReg.getDimension(on);
+					if(dimensionID == null) return is;
+					CoreTileEntity core = Helper.getTardisCore(dimensionID);
+					TardisDataStore ds = Helper.getDataStore(dimensionID);
+					if ((core != null) && (ds != null))
 					{
-						if (ServerHelper.getUsername(player).equals(on) && !ds.hasValidExterior() && !core.inFlight())
+						if(!Helper.isTardisWorld(world))
 						{
-								Helper.summonOldTardis(player);
-								player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
-								return is;
-						}
-						if(ds.hasPermission(player, TardisPermission.FLY) && player.isSneaking())
-						{
-							SimpleDoubleCoordStore extPos = core.getPosition().getCenter();
-							if(extPos.distance(player) < 8)
+							if (ServerHelper.getUsername(player).equals(on) && !ds.hasValidExterior() && !core.inFlight())
 							{
-								if(!core.inFlight())
-										core.takeOffUncoordinated(player);
-								else if(core.inAbortableFlight() && !core.inCoordinatedFlight())
-										core.attemptToLand();
+									Helper.summonOldTardis(player);
+									player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
+									return is;
+							}
+							if(ds.hasPermission(player, TardisPermission.FLY) && player.isSneaking())
+							{
+								SimpleDoubleCoordStore extPos = core.getPosition().getCenter();
+								if(extPos.distance(player) < 8)
+								{
+									if(!core.inFlight())
+											core.takeOffUncoordinated(player);
+									else if(core.inAbortableFlight() && !core.inCoordinatedFlight())
+											core.attemptToLand();
+								}
 							}
 						}
 					}
