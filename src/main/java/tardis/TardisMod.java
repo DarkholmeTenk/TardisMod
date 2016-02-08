@@ -10,12 +10,12 @@ import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
-import scala.actors.threadpool.Arrays;
 import tardis.common.TardisProxy;
 import tardis.common.blocks.BatteryBlock;
 import tardis.common.blocks.ColorableBlock;
