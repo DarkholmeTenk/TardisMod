@@ -10,10 +10,12 @@ import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
+import scala.actors.threadpool.Arrays;
 import tardis.common.TardisProxy;
 import tardis.common.blocks.BatteryBlock;
 import tardis.common.blocks.ColorableBlock;
@@ -155,6 +157,8 @@ public class TardisMod implements IConfigHandlerMod
 
 	public static AbstractBlock									decoSimulacrumBlock;
 	public static LabBlock										labBlock;
+	
+	public static HashSet<AbstractBlock> 						unbreakableBlocks;
 
 	public static AbstractItem									schemaItem;
 	public static AbstractItem									componentItem;
@@ -273,6 +277,19 @@ public class TardisMod implements IConfigHandlerMod
 		glassSimulacrumBlock = new CraftableSimBlock(decoTransBlock).register();
 		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
 		shieldBlock = new ShieldBlock().register();
+		
+		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock, 
+												   tardisConsoleBlock, tardisEngineBlock, componentBlock, 
+												   internalDoorBlock, decoBlock, decoTransBlock, 
+												   interiorDirtBlock, schemaBlock, schemaCoreBlock,
+												   schemaComponentBlock, slabBlock, landingPad,
+												   labBlock, gravityLift, forcefield, battery,
+												   colorableWallBlock, colorableFloorBlock, colorableBrickBlock,
+												   colorablePlankBlock, colorableRoundelBlock, colorableOpenRoundelBlock,
+												   manualBlock, manualHelperBlock, shieldBlock};
+		
+		
+		unbreakableBlocks = new HashSet<AbstractBlock>(Arrays.asList(unbreakableTardisBlocks));
 	}
 
 	private void initItems()
