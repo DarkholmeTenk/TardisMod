@@ -661,20 +661,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			refreshSchemas();
 		}
 		else if (controlID == 52)
-		{
-			switch(dayNightControl)
-			{
-			case 0:
-				dayNightControl = 1;
-				break;
-			case 1:
-				dayNightControl = 2;
-				break;
-			case 2:
-				dayNightControl = 0;
-				break;
-			}
-		}
+			dayNightControl = ((dayNightControl)+1) % 3;
 		else if ((controlID == 54) && core.hasFunction(TardisFunction.SENSORS))
 			core.sendScannerStrings(pl);
 		else if ((controlID == 56) && core.hasFunction(TardisFunction.STABILISE))
@@ -1138,7 +1125,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 					|| (controlID == 58) || (controlID == 43))
 				return lastButton == controlID ? 1 : 0;
 			if (controlID == 52)
-				return dayNightControl;
+				return dayNightControl / 2.0;
 			if (controlID == 53)
 				return relativeCoords ? 1 : 0;
 			if (controlID == 55)

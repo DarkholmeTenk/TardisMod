@@ -4,7 +4,11 @@ import io.darkcraft.darkcore.mod.helpers.MathHelper;
 
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -24,7 +28,7 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		return "Tardis Interior";
 	}
-
+	
 	@Override
 	public String getSaveFolder()
 	{
@@ -84,61 +88,30 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		return super.getSunBrightnessFactor(par1);
 	}
-
+	
 	@Override
-	public float calculateCelestialAngle(long p_76563_1_, float p_76563_3_)
+	public long getWorldTime()
     {
 		if(dimensionId != 0)
 		{
 			ConsoleTileEntity con = Helper.getTardisConsole(worldObj);
-			int position = 0;
-			position = con.getDaytimeSetting();
+			if(con == null)
+				return worldObj.getWorldInfo().getWorldTime();
+			
+			int position = con.getDaytimeSetting();
 			switch(position)
 			{
 				case 0:
-					return 0f;
-			
+					return 18000L;
 				case 1:
-					int j = (int)(p_76563_1_ % 24000L);
-					float f1 = ((float)j + p_76563_3_) / 24000.0F - 0.25F;
-
-					if (f1 < 0.0F)
-					{
-						++f1;
-					}
-
-					if (f1 > 1.0F)
-					{
-						--f1;
-					}
-
-					float f2 = f1;
-					f1 = 1.0F - (float)((Math.cos((double)f1 * Math.PI) + 1.0D) / 2.0D);
-					f1 = f2 + (f1 - f2) / 3.0F;
-					return f1;
-			
+					return worldObj.getWorldInfo().getWorldTime();
 				case 2:
-					return 1f;
+					return 6000L;
 			}
 		}
-		return 0f;
-			
+		return worldObj.getWorldInfo().getWorldTime();
     }
-
-//	@Override
-//	public boolean isDaytime()
-//	{
-//		if(dimensionId != 0)
-//		{
-//			ConsoleTileEntity con = getConsole();
-//			//ConsoleTileEntity con = Helper.getTardisConsole(worldObj);
-//			if(con != null)
-//				return con.getDaytimeSetting();
-//		}
-//		return true;
-//	}
 	
-
 	public ConsoleTileEntity getConsole()
 	{
 		if(worldObj == null)
@@ -158,10 +131,4 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		return MathHelper.round((Math.random() * 10) - 5);
 	}
-
-	@Override
-	public long getWorldTime()
-    {
-		return getWorldVariance() + (isDaytime() ? 6000 : 18000);
-    }
 }
