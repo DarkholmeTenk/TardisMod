@@ -3,6 +3,7 @@ package tardis.common.items;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.TardisMod;
@@ -67,6 +68,12 @@ public class ComponentItem extends AbstractItem
 				'r', Items.redstone,
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1),
 				'a', Items.apple));
+		
+		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(TardisTEComponent.RESTORATIONFIELD), true, "grg", "cac", "grg",
+				'g', Items.gold_nugget,
+				'r', Items.redstone,
+				'c', CraftingComponentType.CHRONOSTEEL.getIS(1),
+				'a', Item.getItemFromBlock(Blocks.anvil)));
 
 		if(AEHelper.aeAPI != null)
 		{
