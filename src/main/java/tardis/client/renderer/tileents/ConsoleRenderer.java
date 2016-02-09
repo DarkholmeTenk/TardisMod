@@ -143,7 +143,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 		//compRender.renderLever(tess, tce, 1020, 1.36, -0.15, -0.1, 0, 0, 45, 0.5, 0.5, 0.5);
 		//compRender.renderLever(tess, tce, 1021, 1.36, -0.15, 0.4, 0, 0, 45, 0.5, 0.5, 0.5);
 		//compRender.renderLever(tess, tce, 1022, 1.36, -0.15, 0.9, 0, 0, 45, 0.5, 0.5, 0.5);
-		compRender.renderButton(tess, tce, 52, 1.36, -0.15, -1.15, 0, 0, 45, 0.6, 0.6, 0.6);
+		compRender.renderLever(tess, tce, 52, 1.36, -0.15, -1.135, 0, 0, 45, 0.3, 0.3, 0.3);
 		compRender.renderPushSwitch(tess,tce, 904, 0.81, -0.68, -0.45,-45,90, 0, 0.5,  0.5,  0.5);
 		compRender.renderLever(tess, tce, 1024, 0.97, -0.49, -0.6, 0, 0, 45, 0.3, 0.4, 0.4);
 		compRender.renderLever(tess, tce, 1025, 1.02, -0.43, -0.32, 0, 0, 45, 0.3, 0.4, 0.4);

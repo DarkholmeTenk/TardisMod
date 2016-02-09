@@ -86,23 +86,58 @@ public class TardisWorldProvider extends WorldProvider
 	}
 
 	@Override
-	public float calculateCelestialAngle(long par1, float par3)
+	public float calculateCelestialAngle(long p_76563_1_, float p_76563_3_)
     {
-		return isDaytime() ? 0 : 0.5F;
-    }
-
-	@Override
-	public boolean isDaytime()
-	{
 		if(dimensionId != 0)
 		{
-			ConsoleTileEntity con = getConsole();
-			//ConsoleTileEntity con = Helper.getTardisConsole(worldObj);
-			if(con != null)
-				return con.getDaytimeSetting();
+			ConsoleTileEntity con = Helper.getTardisConsole(worldObj);
+			int position = 0;
+			position = con.getDaytimeSetting();
+			switch(position)
+			{
+				case 0:
+					return 0f;
+			
+				case 1:
+					int j = (int)(p_76563_1_ % 24000L);
+					float f1 = ((float)j + p_76563_3_) / 24000.0F - 0.25F;
+
+					if (f1 < 0.0F)
+					{
+						++f1;
+					}
+
+					if (f1 > 1.0F)
+					{
+						--f1;
+					}
+
+					float f2 = f1;
+					f1 = 1.0F - (float)((Math.cos((double)f1 * Math.PI) + 1.0D) / 2.0D);
+					f1 = f2 + (f1 - f2) / 3.0F;
+					return f1;
+			
+				case 2:
+					return 1f;
+			}
 		}
-		return true;
-	}
+		return 0f;
+			
+    }
+
+//	@Override
+//	public boolean isDaytime()
+//	{
+//		if(dimensionId != 0)
+//		{
+//			ConsoleTileEntity con = getConsole();
+//			//ConsoleTileEntity con = Helper.getTardisConsole(worldObj);
+//			if(con != null)
+//				return con.getDaytimeSetting();
+//		}
+//		return true;
+//	}
+	
 
 	public ConsoleTileEntity getConsole()
 	{

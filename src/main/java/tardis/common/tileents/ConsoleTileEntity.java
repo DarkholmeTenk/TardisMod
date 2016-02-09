@@ -53,7 +53,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private int[]								zControls				= new int[7];
 	private int[]								yControls				= new int[4];
 	private boolean								landGroundControl		= true;
-	private boolean								dayNightControl			= false;
+	private int									dayNightControl			= 0;
 	private boolean								relativeCoords			= false;
 	private boolean								uncoordinated			= false;
 	private boolean								stable					= false;
@@ -661,7 +661,20 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			refreshSchemas();
 		}
 		else if (controlID == 52)
-			dayNightControl = !dayNightControl;
+		{
+			switch(dayNightControl)
+			{
+			case 0:
+				dayNightControl = 1;
+				break;
+			case 1:
+				dayNightControl = 2;
+				break;
+			case 2:
+				dayNightControl = 0;
+				break;
+			}
+		}
 		else if ((controlID == 54) && core.hasFunction(TardisFunction.SENSORS))
 			core.sendScannerStrings(pl);
 		else if ((controlID == 56) && core.hasFunction(TardisFunction.STABILISE))
@@ -1125,7 +1138,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 					|| (controlID == 58) || (controlID == 43))
 				return lastButton == controlID ? 1 : 0;
 			if (controlID == 52)
-				return dayNightControl ? 1 : 0;
+				return dayNightControl;
 			if (controlID == 53)
 				return relativeCoords ? 1 : 0;
 			if (controlID == 55)
@@ -1182,7 +1195,18 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if (controlID == 56)
 				return new String[] { "Current: " + (stable ? "Stable flight" : "Unstable flight")};
 			if (controlID == 52)
-				return new String[] { "Current: " + (dayNightControl ? "Daytime" : "Nighttime")};
+			{
+				switch(dayNightControl){
+				case 0:
+					return new String[] { "Current: Nighttime"};
+					
+				case 1:
+					return new String[] { "Current: Cycling"};
+					
+				case 2:
+					return new String[] { "Current: Daytime"};
+				}
+			}
 			if (controlID == 55)
 				return new String[] { "Current: "
 						+ (uncoordinated ? "Uncoordinated flight (Drifting)" : "Coordinated flight") };
@@ -1321,7 +1345,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return relativeCoords;
 	}
 
-	public boolean getDaytimeSetting()
+	public int getDaytimeSetting()
 	{
 		return dayNightControl;
 	}
@@ -1402,7 +1426,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		stable = nbt.getBoolean("stable");
 		uncoordinated = nbt.getBoolean("uncoordinated");
 		relativeCoords = nbt.getBoolean("relativeCoords");
-		dayNightControl = nbt.getBoolean("dayNightControl");
+		dayNightControl = nbt.getInteger("dayNightControl");
 		roomDeletePrepare = nbt.getBoolean("rdp");
 		tickTimer = nbt.getInteger("tickTimer");
 		frontScrewHelper = ScrewdriverHelperFactory.get(nbt, "scNBT");
@@ -1436,7 +1460,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		nbt.setBoolean("stable", stable);
 		nbt.setBoolean("uncoordinated", uncoordinated);
 		nbt.setBoolean("relativeCoords", relativeCoords);
-		nbt.setBoolean("dayNightControl", dayNightControl);
+		nbt.setInteger("dayNightControl", dayNightControl);
 		if(frontScrewHelper != null) frontScrewHelper.writeToNBT(nbt, "scNBT");
 		if(backScrewHelper != null) backScrewHelper.writeToNBT(nbt, "bscNBT");
 		nbt.setBoolean("rdp", roomDeletePrepare);
