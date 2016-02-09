@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
+import tardis.Configs;
 
 public class TardisChunkProvider implements IChunkProvider
 {
@@ -72,8 +73,10 @@ public class TardisChunkProvider implements IChunkProvider
 	}
 
 	@Override
-	public List getPossibleCreatures(EnumCreatureType enumcreaturetype, int i, int j, int k)
-	{
+	public List getPossibleCreatures(EnumCreatureType enumCreatureType, int i, int j, int k)
+	{	
+		if(Configs.enableTardisMobSpawning)
+			return BiomeGenBase.plains.getSpawnableList(enumCreatureType);
 		return null;
 	}
 

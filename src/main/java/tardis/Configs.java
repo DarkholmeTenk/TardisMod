@@ -173,18 +173,20 @@ public class Configs
 	 */
 	public static ConfigFile	mechConfig;
 
-	public static boolean		deathTransmat		= true;
-	public static boolean		deathTransmatLive	= true;
-	public static double		transmatExitDist	= 2;
-	public static int			kontronRarity		= 4;
-	public static boolean		keyOnFirstJoin		= true;
-	public static boolean		deleteDisconnected	= true;
-	public static boolean		tardisLoaded		= true;
-	public static boolean		keyInHand			= true;
-	public static int			lockSoundDelay		= 40;
-	public static boolean		loadWhenOffline		= true;
-	public static boolean		enableLinking		= true;
-	public static boolean		deleteAllOwnerOnly	= false;
+	public static boolean		deathTransmat			= true;
+	public static boolean		deathTransmatLive		= true;
+	public static double		transmatExitDist		= 2;
+	public static int			kontronRarity			= 4;
+	public static boolean		keyOnFirstJoin			= true;
+	public static boolean		deleteDisconnected		= true;
+	public static boolean		tardisLoaded			= true;
+	public static boolean		keyInHand				= true;
+	public static int			lockSoundDelay			= 40;
+	public static boolean		loadWhenOffline			= true;
+	public static boolean		enableLinking			= true;
+	public static boolean		deleteAllOwnerOnly		= false;
+	public static boolean		enableTardisMobSpawning	= false;
+
 
 	private static void refreshMechanicsConfig()
 	{
@@ -200,6 +202,8 @@ public class Configs
 		loadWhenOffline = mechConfig.getBoolean("Chunkload - Offline", true, "Chunkload when player is offline");
 		enableLinking = mechConfig.getBoolean("Enable screwdriver linking mode", true, "Enable the linking mode on the sonic","Note: WIP. Some linking features are still buggy");
 		deleteAllOwnerOnly = mechConfig.getBoolean("Delete all rooms owner only", false, "Whether or not the delete all rooms button should be owner only");
+		enableTardisMobSpawning= mechConfig.getBoolean("Enable mob spawning", false, "Whether or not mobs are able to spawn in the TARDIS dimension");
+
 	}
 
 	/*
