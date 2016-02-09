@@ -1,13 +1,20 @@
 package tardis.common.core;
 
-import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.SoundHelper;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import cpw.mods.fml.common.eventhandler.Event.Result;
+import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+import cpw.mods.fml.relauncher.Side;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,11 +37,6 @@ import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
-import cpw.mods.fml.common.eventhandler.Event.Result;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
-import cpw.mods.fml.relauncher.Side;
 
 public class DimensionEventHandler
 {
@@ -221,14 +223,25 @@ public class DimensionEventHandler
 		}
 	}
 
+	
+	
 	@SubscribeEvent
 	public void handleBlockBreak(BreakEvent event)
-	{
+	{		
 		EntityPlayer pl = event.getPlayer();
 		if(pl == null) return;
 		ItemStack is = pl.getHeldItem();
 		if(is == null) return;
 		Item i = is.getItem();
 		if(i == TardisMod.decoTool) event.setCanceled(true);
+	}
+	
+	@Optional.Method(modid=tardis.common.integration.other.IC2.modname)
+	@SubscribeEvent
+	public void handleLaserBlockBreak(ic2.api.event.LaserEvent.LaserHitsBlockEvent event)
+	{
+		Block bl = event.world.getBlock(event.x, event.y, event.z);
+			if(bl instanceof AbstractBlock)
+				if(TardisMod.unbreakableBlocks.contains((AbstractBlock) bl)) event.setCanceled(true);
 	}
 }
