@@ -1188,7 +1188,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 					return new String[] { "Current: Nighttime"};
 					
 				case 1:
-					return new String[] { "Current: Cycling"};
+					return new String[] { "Currently: Simulating Overworld"};
 					
 				case 2:
 					return new String[] { "Current: Daytime"};
