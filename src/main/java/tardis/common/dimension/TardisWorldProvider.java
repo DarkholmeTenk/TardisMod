@@ -1,6 +1,7 @@
 package tardis.common.dimension;
 
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import javafx.scene.paint.Color;
 
 import java.util.List;
 
@@ -73,11 +74,11 @@ public class TardisWorldProvider extends WorldProvider
 		return getSpawnPoint();
     }
 
-	@Override
-	public BiomeGenBase getBiomeGenForCoords(int x, int z)
-    {
-		return BiomeGenBase.plains;
-    }
+//	@Override
+//	public BiomeGenBase getBiomeGenForCoords(int x, int z)
+//    {
+//		return BiomeGenBase.plains;
+//    }
 
 	@Override
 	public float getSunBrightnessFactor(float par1)
