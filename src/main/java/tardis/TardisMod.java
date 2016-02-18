@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
@@ -56,6 +58,7 @@ import tardis.common.core.events.internal.DamageEventHandler;
 import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
+import tardis.common.dimension.BiomeGenConsoleRoom;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.dimension.damage.TardisDamageSystem;
@@ -115,6 +118,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static TardisOwnershipRegistry						plReg;
 	public static CreativeTab									tab					= null;
 	public static CreativeTab									cTab				= null;
+	public static BiomeGenBase									consoleBiome		;
 
 	public static AbstractBlock									tardisBlock;
 	public static AbstractBlock									tardisTopBlock;
@@ -184,14 +188,17 @@ public class TardisMod implements IConfigHandlerMod
 		schemaHandler.getSchemas();
 		tab = new CreativeTab("TardisModTab");
 		cTab = new CreativeTab("TardisModCraftableTab");
+		consoleBiome = new BiomeGenConsoleRoom(Configs.consoleBiomeID);
 		DarkcoreMod.registerCreativeTab(modName, tab);
 
 		refreshConfigs();
 
+		BiomeDictionary.registerBiomeType(consoleBiome, BiomeDictionary.Type.PLAINS);
 		DimensionManager.registerProviderType(Configs.providerID, TardisWorldProvider.class, Configs.tardisLoaded);
 		initChameleonTypes();
 		initBlocks();
 		initItems();
+		
 
 		// MinecraftForge.EVENT_BUS.register(new SoundHandler());
 
