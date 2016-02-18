@@ -11,22 +11,14 @@ public class BiomeGenConsoleRoom extends BiomeGenPlains{
 
 	public BiomeGenConsoleRoom(int id) {
 		super(id);
-        this.biomeName = "Console Room";
-        this.color = 7746177;
+        this.biomeName = "TARDIS";
+        this.color = 4396444;
     }
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public int getBiomeGrassColor(int x, int y, int z){
-//		if(System.currentTimeMillis() % 350 == 0)
-//		{
-//			setColor(new Random().nextInt(16777215));
-//			System.out.println(color);
-//			System.out.println(System.currentTimeMillis() + " true");
-//
-//		}
-
-		return this.color;
+		return 4396444;
 	}
 	
 	@Override
