@@ -48,6 +48,8 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 					return tanks;
 				return new FluidStack[] {tanks[currentTank]};
 			}
+			else
+				return new FluidStack[] {};
 
 		}
 		return null;
@@ -227,6 +229,11 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 	public boolean activate(EntityPlayer ent, int side)
 	{
 		FluidStack[] tanks = getTanks(false);
+		if(tanks.length == 0){
+			ServerHelper.sendString(ent, "No tanks found");
+			return true;
+		}
+		
 		for(int i = 0; i < tanks.length; i++)
 		{
 			FluidStack ft = tanks[i];
