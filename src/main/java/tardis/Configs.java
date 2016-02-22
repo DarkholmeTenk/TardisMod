@@ -59,23 +59,30 @@ public class Configs
 	 * ROUNDEL CONFIG
 	 */
 	public static ConfigFile	roundelConfig;
-	public static int			euRatio				= 4;
-	public static int			rfBase				= 50000;
-	public static int			rfInc				= 50000;
-	public static int			rfPerT				= 4098;
-	public static int			maxFlu				= 32000;
-	public static int			numTanks			= 5;
-	public static int			numInvs				= 30;
-	public static int			maxEachAspect		= 16;
-	public static int			maxEachAspectInc	= 16;
-	public static int			numAspects			= 16;
+	public static int			euRatio						= 4;
+	public static int			rfBase						= 50000;
+	public static int			rfInc						= 50000;
+	public static int			rfPerT						= 4098;
+	public static int			maxFlu						= 32000;
+	public static int			numTanks					= 5;
+	public static int			numInvs						= 30;
+	public static int			maxEachAspect				= 16;
+	public static int			maxEachAspectInc			= 16;
+	public static int			numAspects					= 16;
 
-	public static double		nanogeneRange		= 36;
-	public static double		nanogeneTimer		= 10;
-	public static int			nanogeneCost		= 1;
-	public static int			nanogeneHealAmount	= 2;
-	public static boolean		nanogeneFeed		= true;
-	public static int			maxComponents		= 6;
+	public static double		nanogeneRange				= 36;
+	public static int			nanogeneTimer				= 10;
+	public static int			nanogeneCost				= 1;
+	public static int			nanogeneHealAmount			= 2;
+	public static boolean		nanogeneFeed				= true;
+	
+	public static int			restorationFieldTimer 		= 120;
+	public static int			restorationFieldPercentage 	= 70;
+	public static int			restorationFieldCost 		= 5;
+	public static double		restorationFieldRange		= 16;
+
+
+	public static int			maxComponents				= 6;
 
 	private static void refreshRoundelConfig()
 	{
@@ -96,6 +103,11 @@ public class Configs
 		nanogeneCost = roundelConfig.getInt("Nanogene - Cost", 1, "The amount of Artron energy used up each time a nanogene heals");
 		nanogeneHealAmount = roundelConfig.getInt("Nanogene - Heal amount", 2, "The amount of health a nanogene can restore per pulse");
 		nanogeneFeed = roundelConfig.getBoolean("Nanogene - Feeds", true, "Whether nanogenes should also feed players as well as heal");
+		
+		restorationFieldTimer = roundelConfig.getInt("Restoration Field - Timer", 120, "The number of ticks between each restoration field pulse");
+		restorationFieldPercentage = roundelConfig.getInt("Restoration Field - Repair percentage", 70, "What percentage of the tool will be repaired (1 - 100)");
+		restorationFieldCost = roundelConfig.getInt("Restoration Field - Cost", 5, "The amount of Artron energy used up each time a tool gets healed by 1 point");
+		restorationFieldRange = Math.pow(roundelConfig.getDouble("Restoration Field - Range", 4, "The range at which the restoration field has effect"), 2);
 
 		maxComponents = roundelConfig.getInt("Maximum components", 6, "The number of cable interfaces/components per roundel/landing pad");
 	}

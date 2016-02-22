@@ -1,17 +1,17 @@
 package tardis.common.network.packet;
 
+import java.util.Random;
+
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IDataPacketHandler;
-
-import java.util.Random;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import tardis.common.entities.particles.NanogeneParticleEntity;
 import tardis.common.entities.particles.ParticleType;
+import tardis.common.entities.particles.RestorationFieldParticleEntity;
 
 public class ParticlePacketHandler implements IDataPacketHandler
 {
@@ -42,6 +42,9 @@ public class ParticlePacketHandler implements IDataPacketHandler
 			{
 				if(type == ParticleType.NANOGENE)
 					fx[i] = new NanogeneParticleEntity(WorldHelper.getWorld(dim),x+pO(r),y+pO(r),z+pO(r));
+				
+				if(type == ParticleType.RESTORATIONFIELD)
+					fx[i] = new RestorationFieldParticleEntity(WorldHelper.getWorld(dim),x+pO(r),y+pO(r),z+pO(r));
 			}
 			
 			for(EntityFX f : fx)
