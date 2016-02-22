@@ -441,12 +441,17 @@ public class Helper
 		int x = source.xCoord;
 		int y = source.yCoord;
 		int z = source.zCoord;
+		IArtronEnergyProvider iaep = null;
 		for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
 		{
 			TileEntity te = w.getTileEntity(x + dir.offsetX, y + dir.offsetY, z + dir.offsetZ);
-			if (te instanceof IArtronEnergyProvider) return (IArtronEnergyProvider) te;
+			if (te instanceof IArtronEnergyProvider)
+				if((iaep == null) || (((IArtronEnergyProvider)te).getArtronEnergy() > iaep.getArtronEnergy()))
+					iaep = (IArtronEnergyProvider) te;
 		}
-		return getTardisCore(w);
+		if(iaep == null)
+			return getTardisCore(w);
+		return iaep;
 	}
 
 	public static TardisDataStore getDataStore(World w)
