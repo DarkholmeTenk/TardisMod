@@ -46,6 +46,14 @@ public class ComponentRestorationField extends AbstractComponent
 						return true;
 				}
 			}
+			if(pl.inventory.armorInventory != null){
+				for(ItemStack s : pl.inventory.armorInventory)
+				{
+					if(s != null && s.isItemStackDamageable() && s.isItemDamaged())
+						return true;
+				}
+			}
+			
 		}
 		return false;
 	}
@@ -93,6 +101,26 @@ public class ComponentRestorationField extends AbstractComponent
 					{
 						EntityPlayerMP pl = (EntityPlayerMP)ent;
 						for(ItemStack s : pl.inventory.mainInventory){
+							if(s != null){
+								if(IC2.isItemElectric(s) || CofHCore.isItemElectric(s) || AEHelper.isItemElectric(s))
+									return;
+								
+								if(s.isItemStackDamageable())
+								{
+									if( s.isItemDamaged())
+									{
+										Item i = s.getItem();
+										if(i.getDamage(s) > (i.getMaxDamage() * ((double) (100 - Configs.restorationFieldPercentage) / 100)) && core.takeArtronEnergy(Configs.restorationFieldCost, false))
+										{
+											i.setDamage(s, i.getDamage(s) - 1);
+											Helper.spawnParticle(ParticleType.RESTORATIONFIELD, WorldHelper.getWorldID(parentObj), ent.posX , ent.posY+1, ent.posZ,20,true);
+										}
+									}
+								}
+							}
+						}
+						
+						for(ItemStack s : pl.inventory.armorInventory){
 							if(s != null){
 								if(IC2.isItemElectric(s) || CofHCore.isItemElectric(s) || AEHelper.isItemElectric(s))
 									return;
