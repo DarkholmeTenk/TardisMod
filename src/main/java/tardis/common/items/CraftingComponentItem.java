@@ -9,6 +9,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.Configs;
 import tardis.TardisMod;
@@ -42,6 +43,10 @@ public class CraftingComponentItem extends AbstractItem
 	@Override
 	public void initRecipes()
 	{
+		OreDictionary.registerOre("ingotChronosteel", CraftingComponentType.CHRONOSTEEL.getIS(1));
+		OreDictionary.registerOre("ingotDalekanium", CraftingComponentType.DALEKANIUM.getIS(1));
+		OreDictionary.registerOre("gemKontron", CraftingComponentType.KONTRON.getIS(1));
+
 		if(Configs.kontronCraftable)
 			GameRegistry.addRecipe(new ShapedOreRecipe(CraftingComponentType.KONTRON.getIS(1),false,"gdg","ded","gdg",
 					'g', Blocks.glass,

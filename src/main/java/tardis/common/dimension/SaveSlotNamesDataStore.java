@@ -25,6 +25,7 @@ public class SaveSlotNamesDataStore extends AbstractWorldDataStore
 	{
 		if((slot < 0) || (slot >= 20)) return false;
 		nameMap.put(slot, name);
+		markDirty();
 		save();
 		sendUpdate();
 		return true;
