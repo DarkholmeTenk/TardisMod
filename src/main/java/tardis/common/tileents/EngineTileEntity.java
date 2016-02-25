@@ -57,7 +57,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	private static final int	maxProtectedRadius		= 16 * 10;
 	private String				consoleSettingString	= "Main";	// The string displayed on the console room selection screen.
 	private static String[]		availableConsoleRooms	= null;
-	private boolean				spaceProjection			= false;
 
 	public boolean				isEngineOpen			= false;
 	public double				visibility				= 1;
@@ -492,7 +491,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			}
 			else if(control == 132)
 			{
-				spaceProjection = !spaceProjection;
+				ds.setSpaceProjection(!ds.getSpaceProjection());
 			}
 			else if(isEngineOpen)
 			{
@@ -631,7 +630,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			if(cID == 130)
 				return protectedRadius / (double) maxProtectedRadius;
 			if(cID == 132){
-				return spaceProjection ? 1 : 0;
+				return ds.getSpaceProjection() ? 1 : 0;
 			}
 		}
 		return (float) (((tt + cID) % 40) / 39.0);
@@ -728,7 +727,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		nbt.setInteger("lB", lastButton);
 		nbt.setBoolean("eO", isEngineOpen);
 		nbt.setInteger("sp", protectedRadius);
-		nbt.setBoolean("spaceProjection", spaceProjection);
 	}
 
 	@Override
@@ -747,7 +745,6 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		else if (nbt.hasKey("ptUN"))
 			preparingToUpgrade = null;
 		protectedRadius = nbt.getInteger("sp");
-		spaceProjection = nbt.getBoolean("spaceProjection");
 	}
 
 	@Override
@@ -799,7 +796,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		else if(control == 130)
 			return new String[]{ String.format("Protection radius: %d blocks", getProtectedSpawnRadius()) };
 		else if(control == 132)
-			return new String[]{ String.format("Current style: " + (getSpaceProjection() ? "Space" : "Overworld")) };
+			return new String[]{ String.format("Current style: " + (ds.getSpaceProjection() ? "Space" : "Overworld")) };
 		return null;
 	}
 
@@ -810,9 +807,4 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			return protectedRadius;
 		return 0;
 	}
-
-	public boolean getSpaceProjection() {
-		return spaceProjection;
-	}
-
 }
