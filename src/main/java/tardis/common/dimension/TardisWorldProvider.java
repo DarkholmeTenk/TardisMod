@@ -1,13 +1,10 @@
 package tardis.common.dimension;
 
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import javafx.scene.paint.Color;
-
 import java.util.List;
 
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
