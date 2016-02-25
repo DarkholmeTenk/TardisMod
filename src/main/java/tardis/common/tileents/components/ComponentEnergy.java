@@ -121,6 +121,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate)
 	{
+		if(from == ForgeDirection.UNKNOWN) return 0;
 		TardisDataStore ds = getDatastore();
 		if(ds != null)
 		{
