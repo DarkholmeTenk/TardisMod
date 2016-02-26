@@ -10,8 +10,6 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.IRenderHandler;
 import tardis.common.core.helpers.Helper;
-import tardis.common.tileents.ConsoleTileEntity;
-import tardis.common.tileents.EngineTileEntity;
 
 public class TardisWorldProvider extends WorldProvider
 {
@@ -57,10 +55,10 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		if(dimensionId != 0)
 		{
-			EngineTileEntity eng = Helper.getTardisEngine(worldObj);
-			if(eng == null)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
 				return super.getSkyRenderer();
-			if(eng.getSpaceProjection())
+			if(ds.getSpaceProjection())
 				return new TardisWorldSkyRenderer();
 			else{
 				return super.getSkyRenderer();
@@ -75,10 +73,10 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		if(dimensionId != 0)
 		{
-			EngineTileEntity eng = Helper.getTardisEngine(worldObj);
-			if(eng == null)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
 				return super.getCloudRenderer();
-			if(eng.getSpaceProjection())
+			if(ds.getSpaceProjection())
 				return new TardisWorldSkyRenderer();
 			else
 				return super.getCloudRenderer();
@@ -115,10 +113,10 @@ public class TardisWorldProvider extends WorldProvider
     {
 		if(dimensionId != 0)
 		{
-			ConsoleTileEntity con = Helper.getTardisConsole(worldObj);
-			if(con == null)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
 				return super.getWorldTime();
-			int position = con.getDaytimeSetting();
+			int position = ds.getDaytimeSetting();
 			switch(position)
 			{
 				case 0:
@@ -143,10 +141,10 @@ public class TardisWorldProvider extends WorldProvider
     {
 		if(dimensionId != 0)
 		{
-			EngineTileEntity eng = Helper.getTardisEngine(worldObj);
-			if(eng == null)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
 				return super.getSkyColor(cameraEntity, partialTicks);
-			if(eng.getSpaceProjection())
+			if(ds.getSpaceProjection())
 				return Vec3.createVectorHelper(0, 0, 0);
 			else
 				return super.getSkyColor(cameraEntity, partialTicks);
@@ -160,10 +158,10 @@ public class TardisWorldProvider extends WorldProvider
     {
 		if(dimensionId != 0)
 		{
-			EngineTileEntity eng = Helper.getTardisEngine(worldObj);
-			if(eng == null)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
 				return super.getStarBrightness(par1);
-			if(eng.getSpaceProjection())
+			if(ds.getSpaceProjection())
 				return 1f;
 			else
 				return super.getStarBrightness(par1);
@@ -176,10 +174,10 @@ public class TardisWorldProvider extends WorldProvider
     {
 		if(dimensionId != 0)
 		{
-			EngineTileEntity eng = Helper.getTardisEngine(worldObj);
-			if(eng == null)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
 				return super.getHorizon();
-			if(eng.getSpaceProjection())
+			if(ds.getSpaceProjection())
 				return 0;
 			else
 				return super.getHorizon();
@@ -193,10 +191,10 @@ public class TardisWorldProvider extends WorldProvider
     {
 		if(dimensionId != 0)
 		{
-			EngineTileEntity eng = Helper.getTardisEngine(worldObj);
-			if(eng == null)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
 				return super.calcSunriseSunsetColors(p_76560_1_, p_76560_2_);
-			if(eng.getSpaceProjection())
+			if(ds.getSpaceProjection())
 				return null;
 			else
 				return super.calcSunriseSunsetColors(p_76560_1_, p_76560_2_);
@@ -210,10 +208,10 @@ public class TardisWorldProvider extends WorldProvider
     {
 		if(dimensionId != 0)
 		{
-			EngineTileEntity eng = Helper.getTardisEngine(worldObj);
-			if(eng == null)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
 				return super.getCloudHeight();
-			if(eng.getSpaceProjection())
+			if(ds.getSpaceProjection())
 				return 1f;
 			else
 				return super.getCloudHeight();
@@ -226,10 +224,10 @@ public class TardisWorldProvider extends WorldProvider
     {
 		if(dimensionId != 0)
 		{
-			EngineTileEntity eng = Helper.getTardisEngine(worldObj);
-			if(eng == null)
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
 				return super.getFogColor(p_76562_1_, p_76562_2_);
-			if(eng.getSpaceProjection())
+			if(ds.getSpaceProjection())
 				return Vec3.createVectorHelper(0, 0, 0);
 			else
 				return super.getFogColor(p_76562_1_, p_76562_2_);
