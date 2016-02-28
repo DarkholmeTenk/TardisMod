@@ -20,10 +20,4 @@ public class BiomeGenConsoleRoom extends BiomeGenPlains{
 	public int getBiomeGrassColor(int x, int y, int z){
 		return 4396444;
 	}
-	
-	@Override
-	public BiomeGenBase createMutation() {
-		return null;
-	}
-
 }
