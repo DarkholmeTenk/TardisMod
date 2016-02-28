@@ -21,14 +21,14 @@ public class CraftableSimBlock extends SimulacrumBlock
 
 	public static void initStaticRecipes()
 	{
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.wallSimulacrumBlock,8,15), false, "sss", "scs", "sss",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.wallSimulacrumBlock,8), false, "sss", "scs", "sss",
 				's', "stone",
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(TardisMod.wallSimulacrumBlock,1,15), TardisMod.floorSimulacrumBlock));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(TardisMod.brickSimulacrumBlock,1,15), TardisMod.wallSimulacrumBlock));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(TardisMod.plankSimulacrumBlock,1,15), TardisMod.brickSimulacrumBlock));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(TardisMod.floorSimulacrumBlock,1,15), TardisMod.plankSimulacrumBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(TardisMod.wallSimulacrumBlock,1), TardisMod.floorSimulacrumBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(TardisMod.brickSimulacrumBlock,1), TardisMod.wallSimulacrumBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(TardisMod.plankSimulacrumBlock,1), TardisMod.brickSimulacrumBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(TardisMod.floorSimulacrumBlock,1), TardisMod.plankSimulacrumBlock));
 
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.glassSimulacrumBlock,8), false, "ggg","gcg","ggg",
 				'g', "glass",
