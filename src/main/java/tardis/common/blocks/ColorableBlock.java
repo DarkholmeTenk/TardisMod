@@ -58,9 +58,12 @@ public class ColorableBlock extends AbstractBlock implements IColorableBlock
 		if(Helper.isTardisWorld(pos.world))
 		{
 			CoreTileEntity cte = Helper.getTardisCore(pos.world);
-			SchemaCoreTileEntity scte = cte.getSchemaCore(pos);
-			if(scte != null)
-				return new TardisSchemaColorableCondition(scte);
+			if(cte != null)
+			{
+				SchemaCoreTileEntity scte = cte.getSchemaCore(pos);
+				if(scte != null)
+					return new TardisSchemaColorableCondition(scte);
+			}
 		}
 		return BlockIterator.sameExcMetaNS;
 	}
