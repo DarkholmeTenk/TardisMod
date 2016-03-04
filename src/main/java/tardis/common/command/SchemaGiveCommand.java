@@ -1,6 +1,6 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.List;
@@ -11,37 +11,35 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 
-public class SchemaGiveCommand extends AbstractCommand
+public class SchemaGiveCommand extends AbstractCommandNew
 {
 
 	@Override
 	public String getCommandName()
 	{
-		return "tardisschema";
+		return "give";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender)
+	public void getCommandUsage(ICommandSender sen, String totalCommand)
 	{
-		return "/tardisschema <schemaname>";
+		sendString(sen, totalCommand +" <schemaname>");
 	}
 
 	@Override
-	public void addAliases(List<String> aliases)
+	public void getAliases(List<String> aliases)
 	{
-		aliases.add("tschema");
-		aliases.add("tschem");
 	}
 
 	@Override
-	public void commandBody(ICommandSender comSen, String[] astring)
+	public boolean process(ICommandSender comSen, List<String> astring)
 	{
 		if(comSen instanceof EntityPlayerMP)
 		{
 			EntityPlayerMP pl = (EntityPlayerMP)comSen;
-			if(astring.length == 1)
+			if(astring.size() == 1)
 			{
-				String name = astring[0];
+				String name = astring.get(0);
 				if(TardisMod.schemaHandler.getSchemaFile(name).exists())
 				{
 					ItemStack is = new ItemStack(TardisMod.schemaItem,1);
@@ -54,7 +52,11 @@ public class SchemaGiveCommand extends AbstractCommand
 				{
 					sendString(pl,"Schema " + name + " does not exist");
 				}
+				return true;
 			}
+			return false;
 		}
+		sendString(comSen,"Command only usable by players");
+		return true;
 	}
 }
