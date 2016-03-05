@@ -1,6 +1,6 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,44 +14,34 @@ import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.SchemaCoreTileEntity;
 
-public class SchemaReloadCommand extends AbstractCommand
+public class SchemaReloadCommand extends AbstractCommandNew
 {
 	@Override
 	public String getCommandName()
 	{
-		return "tardisreload";
+		return "reload";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender)
+	public void getAliases(List<String> list)
 	{
-		return "/tardisreload";
+		list.add("refresh");
 	}
 
 	@Override
-	public void addAliases(List<String> aliases)
+	public boolean process(ICommandSender sen, List<String> astring)
 	{
-		aliases.add("tardisrefresh");
-		aliases.add("treload");
-		aliases.add("trefresh");
-		aliases.add("trel");
-		aliases.add("tref");
-	}
-
-	@Override
-	public void commandBody(ICommandSender icommandsender, String[] astring)
-	{
-		if(icommandsender instanceof EntityPlayerMP)
+		if(sen instanceof EntityPlayerMP)
 		{
-			EntityPlayerMP pl = (EntityPlayerMP)icommandsender;
-			if(astring.length == 4)
+			EntityPlayerMP pl = (EntityPlayerMP)sen;
+			if(astring.size() == 4)
 			{
 				try
 				{
-					int x = Integer.parseInt(astring[0]);
-					int y = Integer.parseInt(astring[1]);
-					int z = Integer.parseInt(astring[2]);
-					int facing = Integer.parseInt(astring[3]);
+					int x = Integer.parseInt(astring.get(0));
+					int y = Integer.parseInt(astring.get(1));
+					int z = Integer.parseInt(astring.get(2));
+					int facing = Integer.parseInt(astring.get(3));
 					String[] schemas = TardisMod.schemaHandler.getSchemas();
 					String[] consoles = TardisMod.schemaHandler.getSchemas(true);
 					ArrayList<String> schemaList = new ArrayList();
@@ -70,10 +60,13 @@ public class SchemaReloadCommand extends AbstractCommand
 				}
 				catch(Exception e)
 				{
+					e.printStackTrace();
 				}
 			}
 		}
 		ConsoleTileEntity.refreshCategories();
 		EngineTileEntity.refreshAvailableConsoleRooms();
+		sendString(sen,"Schemas reloaded");
+		return true;
 	}
 }
