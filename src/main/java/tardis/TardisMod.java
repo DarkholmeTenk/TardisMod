@@ -311,6 +311,13 @@ public class TardisMod implements IConfigHandlerMod
 		nameTag = (NameTagItem) new NameTagItem().register();
 		decoTool = new DecoratingTool().register();
 		chameleonUpgradeItem = (UpgradeChameleonItem) new UpgradeChameleonItem().register();
+		
+		for(int i = 0; i <= Configs.dimUpgradesIds.length; i++){
+			
+			
+			
+		}
+		
 	}
 
 	private void initRecipes()
