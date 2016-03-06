@@ -11,7 +11,9 @@ import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -66,6 +68,7 @@ import tardis.common.integration.ae.AEHelper;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.DecoratingTool;
+import tardis.common.items.DimensionUpgradeItem;
 import tardis.common.items.KeyItem;
 import tardis.common.items.ManualItem;
 import tardis.common.items.NameTagItem;
@@ -174,6 +177,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static NameTagItem									nameTag;
 	public static AbstractItem									decoTool;
 	public static UpgradeChameleonItem							chameleonUpgradeItem;
+	public static Map<Integer,AbstractItem>						dimensionUpgradeItems = new HashMap<Integer, AbstractItem>();
 
 	public static boolean										tcInstalled			= false;
 
@@ -312,12 +316,17 @@ public class TardisMod implements IConfigHandlerMod
 		decoTool = new DecoratingTool().register();
 		chameleonUpgradeItem = (UpgradeChameleonItem) new UpgradeChameleonItem().register();
 		
-		for(int i = 0; i <= Configs.dimUpgradesIds.length; i++){
-			
-			
-			
-		}
 		
+			if(!Configs.dimUpgradesIds[0].isEmpty())
+				for(int i = 0; i < Configs.dimUpgradesIds.length; i++){
+						try{
+						dimensionUpgradeItems.put(Integer.parseInt(Configs.dimUpgradesIds[i]), new DimensionUpgradeItem(Integer.parseInt(Configs.dimUpgradesIds[i])).register());
+						System.out.println("i : " + i + " - id : " + Integer.parseInt(Configs.dimUpgradesIds[i]));
+						}catch(Exception e){
+							System.out.println("OOOOOOOOOOOOOH");
+							e.printStackTrace();
+						}
+				}
 	}
 
 	private void initRecipes()
