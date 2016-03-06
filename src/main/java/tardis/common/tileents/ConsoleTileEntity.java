@@ -909,7 +909,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		TardisDataStore ds = Helper.getDataStore(this);
 		if((ds != null) && (TardisMod.otherDims != null))
 		{
-			Integer i = TardisMod.otherDims.getDimFromControl(dCont,ds.getLevel());
+			Integer i = TardisMod.otherDims.getDimFromControl(dCont,ds.getLevel(),ds);
 			if(i != null)
 				return i;
 		}
@@ -920,7 +920,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		TardisDataStore ds = Helper.getDataStore(this);
 		if(ds != null)
-			return TardisMod.otherDims.getControlFromDim(dim, ds.getLevel());
+			return TardisMod.otherDims.getControlFromDim(dim, ds.getLevel(),ds);
 		return 0;
 	}
 
@@ -930,7 +930,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		if(ds == null)
 			return TardisMod.otherDims.numDims();
 		else
-			return TardisMod.otherDims.numDims(ds.getLevel());
+			return TardisMod.otherDims.numDims(ds.getLevel(),ds);
 
 	}
 
