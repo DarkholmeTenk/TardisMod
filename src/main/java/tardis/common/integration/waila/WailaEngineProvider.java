@@ -47,6 +47,7 @@ public class WailaEngineProvider extends AbstractWailaProvider
 		addControl(new TwoIntStore(111,119), "Damage Repair Unit");
 		addControl(130, "Spawn Protection Lever", "Allows you to vary the radius of spawn prevention");
 		addControl(131, "Screwdriver Style Button", "Allows you to change your Screwdriver's style");
+		addControl(132, "Interior Temporal Style", "Allows you to switch the sky between overworld and space");
 	}
 
 	private boolean isEngine(IWailaDataAccessor accessor)
