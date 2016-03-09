@@ -7,12 +7,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import tardis.TardisMod;
 import tardis.api.TardisUpgradeMode;
+import tardis.common.items.DimensionUpgradeItem;
 import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import tardis.common.tileents.extensions.upgrades.ChameleonUpgrade;
 import tardis.common.tileents.extensions.upgrades.DamReduceCombat;
 import tardis.common.tileents.extensions.upgrades.DamReduceExplosion;
 import tardis.common.tileents.extensions.upgrades.DamReduceMissedControl;
+import tardis.common.tileents.extensions.upgrades.DimensionUpgrade;
 import tardis.common.tileents.extensions.upgrades.LevelUpgrade;
 
 public class UpgradeFactory implements IUpgradeFactory
@@ -68,6 +70,8 @@ public class UpgradeFactory implements IUpgradeFactory
 				return new LevelUpgrade(TardisUpgradeMode.getUpgradeMode(nbt.getInteger("tum")));
 			if(id.equals("cham"))
 				return new ChameleonUpgrade(TardisMod.tardisChameleonReg.get(nbt, AbstractTardisChameleon.nbtKey));
+			if(id.equals("dim"))
+				return new DimensionUpgrade(nbt.getInteger("dimID"));
 		}
 		return null;
 	}
@@ -105,6 +109,14 @@ public class UpgradeFactory implements IUpgradeFactory
 			int meta = is.getItemDamage();
 			if((meta < 0) || (meta >= TardisMod.chameleonUpgradeItem.types.length)) return null;
 			return new ChameleonUpgrade(TardisMod.chameleonUpgradeItem.types[meta]);
+		}
+		
+		if(i instanceof DimensionUpgradeItem){
+			for(int k : TardisMod.dimensionUpgradeItems.keySet()){
+				if(TardisMod.dimensionUpgradeItems.get(k) == i){
+					return new DimensionUpgrade(k);
+				}
+			}
 		}
 		return null;
 	}

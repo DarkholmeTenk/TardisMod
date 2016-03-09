@@ -59,6 +59,9 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public int												maxSuck			= 16;
 	public Aspect											maxSuckT		= null;
 	public int												desiredDim		= 0;
+	
+	private int												daytimeSetting 	= 0;
+	private boolean											spaceProjection = false;
 
 	private HashMap<Integer, Integer>						permissionList	= new HashMap();
 	public AbstractUpgrade[]								upgrades		= new AbstractUpgrade[8];
@@ -399,6 +402,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 			if((upgrades[i] != null) && (engPos != null))
 				upgrades[i].setEnginePos(engPos);
 		}
+		spaceProjection = nbt.getBoolean("spaceProjection");
+		daytimeSetting = nbt.getInteger("dayNightControl");
 	}
 
 	private void storeFlu(NBTTagCompound nbt)
@@ -484,6 +489,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 				nbt.setTag("upgrade"+i, upgradeNBT);
 			}
 		}
+		nbt.setBoolean("spaceProjection", spaceProjection);
+		nbt.setInteger("dayNightControl", daytimeSetting);
 	}
 
 	public ConsoleTileEntity getConsole()
@@ -656,6 +663,26 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public SimpleCoordStore getExteriorSCS()
 	{
 		return new SimpleCoordStore(exteriorWorld, exteriorX, exteriorY, exteriorZ);
+	}
+	
+	public int getDaytimeSetting()
+	{
+		return daytimeSetting;
+	}
+	
+	public boolean getSpaceProjection()
+	{
+		return spaceProjection;
+	}
+	
+	public void setDaytimeSetting(int var)
+	{
+		daytimeSetting = var;
+	}
+	
+	public void setSpaceProjection(boolean var)
+	{
+		spaceProjection = var;
 	}
 
 }

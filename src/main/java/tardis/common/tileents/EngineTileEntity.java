@@ -61,6 +61,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public boolean				isEngineOpen			= false;
 	public double				visibility				= 1;
 
+
 	public static void updateConsoleRooms()
 	{
 		availableConsoleRooms = TardisMod.schemaHandler.getSchemas(true);
@@ -212,6 +213,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			return 130;
 		else if(hit.within(3, 0.450, 0.72, 0.55, 0.82))
 			return 131;
+		else if(hit.within(3, 0.76, 0.61, 0.87, 0.72))
+			return 132;
 		return -1;
 	}
 
@@ -486,6 +489,10 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			{
 				screwHelper.cycleScrewdriverType();
 			}
+			else if(control == 132)
+			{
+				ds.setSpaceProjection(!ds.getSpaceProjection());
+			}
 			else if(isEngineOpen)
 			{
 				if((control >= 101) && (control <= 108))
@@ -622,6 +629,9 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				return 1 - visibility;
 			if(cID == 130)
 				return protectedRadius / (double) maxProtectedRadius;
+			if(cID == 132){
+				return ds.getSpaceProjection() ? 1 : 0;
+			}
 		}
 		return (float) (((tt + cID) % 40) / 39.0);
 	}
@@ -785,6 +795,8 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		}
 		else if(control == 130)
 			return new String[]{ String.format("Protection radius: %d blocks", getProtectedSpawnRadius()) };
+		else if(control == 132)
+			return new String[]{ String.format("Current style: " + (ds.getSpaceProjection() ? "Space" : "Overworld")) };
 		return null;
 	}
 
@@ -795,5 +807,4 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			return protectedRadius;
 		return 0;
 	}
-
 }
