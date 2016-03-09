@@ -120,11 +120,11 @@ public class TardisWorldProvider extends WorldProvider
 			switch(position)
 			{
 				case 0:
-					return 18000L;
+					return 18000L + getWorldVariance();
 				case 1:
 					return super.getWorldTime();
 				case 2:
-					return 6000L;
+					return 6000L + getWorldVariance();
 			}
 		}
 		return super.getWorldTime();

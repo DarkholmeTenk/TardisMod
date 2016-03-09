@@ -84,8 +84,8 @@ public class KeyItem extends AbstractItem
 		{
 			if (!(player instanceof FakePlayer) && !TardisMod.plReg.hasTardis(getOwnerName(is)) && ServerHelper.getUsername(player).equals(getOwnerName(is)))
 			{
-				Helper.summonNewTardis(player);
-				player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
+				if(Helper.summonNewTardis(player))
+					player.addChatMessage(new ChatComponentText("[TARDIS KEY]The key feels warm"));
 			}
 			else
 			{

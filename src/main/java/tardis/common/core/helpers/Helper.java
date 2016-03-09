@@ -9,6 +9,7 @@ import io.darkcraft.darkcore.mod.network.DataPacket;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -150,9 +151,16 @@ public class Helper
 		return dimID;
 	}
 
-	public static void summonNewTardis(EntityPlayer player)
+	public static boolean summonNewTardis(EntityPlayer player)
 	{
-		if (TardisMod.plReg.hasTardis(player.getCommandSenderName())) return;
+		if (TardisMod.plReg.hasTardis(player.getCommandSenderName())) return false;
+		int w = WorldHelper.getWorldID(player);
+		List<Integer> allowedDims = TardisMod.otherDims.getDims(0,null);
+		if(!allowedDims.contains(w))
+		{
+			ServerHelper.sendString(player, "[TARDIS KEY]The key warms up and then goes cold");
+			return false;
+		}
 
 		TardisTileEntity te = summonTardisExterior(player);
 		if (te != null)
@@ -163,6 +171,7 @@ public class Helper
 			ConsoleTileEntity con = getTardisConsole(dimID);
 			if (con != null) con.setControls(te, true);
 		}
+		return true;
 	}
 
 	public static boolean summonOldTardis(int dim, EntityPlayer player)
