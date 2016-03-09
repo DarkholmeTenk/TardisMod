@@ -155,7 +155,7 @@ public class Helper
 	{
 		if (TardisMod.plReg.hasTardis(player.getCommandSenderName())) return false;
 		int w = WorldHelper.getWorldID(player);
-		List<Integer> allowedDims = TardisMod.otherDims.getDims(0);
+		List<Integer> allowedDims = TardisMod.otherDims.getDims(0,null);
 		if(!allowedDims.contains(w))
 		{
 			ServerHelper.sendString(player, "[TARDIS KEY]The key warms up and then goes cold");
