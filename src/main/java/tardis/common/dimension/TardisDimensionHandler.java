@@ -250,7 +250,7 @@ public class TardisDimensionHandler
 		return Math.max(1, dimensionIDs.size());
 	}
 
-	private List<Integer> getDims(int level)
+	public List<Integer> getDims(int level)
 	{
 		ArrayList<Integer> list = new ArrayList();
 		if(!dimensionIDs.contains(0))
