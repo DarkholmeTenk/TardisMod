@@ -130,6 +130,42 @@ public class TardisWorldProvider extends WorldProvider
 		return super.getWorldTime();
     }
 	
+	public float calculateRealCelestialAngle(float var)
+    {
+		if(dimensionId != 0)
+		{
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.getWorldTime();
+			int position = ds.getDaytimeSetting();
+			switch(position)
+			{
+				case 0:
+					return 0.5f;
+				case 1:
+					System.out.println(super.getWorldTime());
+					float worldTime = super.getWorldTime();
+			        int j = (int)(worldTime % 24000L);
+			        float f1 = ((float)j + var) / 24000.0F - 0.25F;
+			        if (f1 < 0.0F)
+			        {
+			            ++f1;
+			        }
+			        if (f1 > 1.0F)
+			        {
+			            --f1;
+			        }
+			        float f2 = f1;
+			        f1 = 1.0F - (float)((Math.cos((double)f1 * Math.PI) + 1.0D) / 2.0D);
+			        f1 = f2 + (f1 - f2) / 3.0F;
+			        return f1;
+				case 2:
+					return 0f;
+			}
+		}
+		return 0f;
+    }
+	
 	public int getWorldVariance()
 	{
 		return MathHelper.round((Math.random() * 10) - 5);
