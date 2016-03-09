@@ -20,7 +20,8 @@ public class ManualPageTree
 		ManualPageTree uncoord	= new ManualPageTree(ManualPage.UNCOORDINATED, nullT);
 		ManualPageTree coords	= new ManualPageTree(ManualPage.COORDS, nullT);
 		ManualPageTree takeoff	= new ManualPageTree(ManualPage.TAKEOFF, nullT);
-		ManualPageTree flight	= new ManualPageTree(ManualPage.FLIGHT, con, coords, takeoff, uncoord);
+		ManualPageTree damage	= new ManualPageTree(ManualPage.DAMAGE, nullT);
+		ManualPageTree flight	= new ManualPageTree(ManualPage.FLIGHT, con, coords, takeoff, uncoord, damage);
 		ManualPageTree recChr	= new ManualPageTree(ManualPage.LRCHRONO, nullT);
 		ManualPageTree recDal	= new ManualPageTree(ManualPage.LRDALEK, nullT);
 		ManualPageTree recKon	= new ManualPageTree(ManualPage.LRKONTRON, nullT);
