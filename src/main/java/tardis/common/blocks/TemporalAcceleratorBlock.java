@@ -11,12 +11,12 @@ import java.util.EnumSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.IGrowable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -38,9 +38,9 @@ import tardis.common.tileents.extensions.CraftingComponentType;
 import tardis.common.tileents.extensions.LabFlag;
 import tardis.common.tileents.extensions.LabRecipe;
 
-public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecise
+public class TemporalAcceleratorBlock extends AbstractBlock implements IScrewablePrecise
 {
-	public InteriorDirtBlock()
+	public TemporalAcceleratorBlock()
 	{
 		super(TardisMod.modName);
 	}
@@ -48,7 +48,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 	@Override
 	public void initData()
 	{
-		setBlockName("TardisDirt");
+		setBlockName("TemporalAccelerator");
 		setTickRandomly(true);
 		setLightLevel(Configs.lightBlocks ? 1 : 0);
 	}
@@ -58,30 +58,17 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 	{
 		if(Configs.numDirtRecipe > 0)
 			LabTileEntity.addRecipe(new LabRecipe(
-					new ItemStack[] { new ItemStack(Blocks.dirt,64),
+					new ItemStack[] { 
+							new ItemStack(Blocks.dirt,64),
 							CraftingComponentType.KONTRON.getIS(1),
 							CraftingComponentType.CHRONOSTEEL.getIS(1),
 							new ItemStack(Items.dye,32,15)},
-					new ItemStack[] { getIS(Configs.numDirtRecipe, 0) },
+					new ItemStack[] { getIS(1, 0) },
 					EnumSet.of(LabFlag.INFLIGHT),
 					100
 					));
 	}
-
-	@Override
-	public boolean isFertile(World world, int x, int y, int z)
-	{
-		return true;
-	}
-
-	@Override
-	public boolean canSustainPlant(IBlockAccess world, int x, int y, int z, ForgeDirection direction, IPlantable plantable)
-	{
-		if(Helper.isTardisWorld(world))
-			return true;
-		return false;
-	}
-
+	
 	@Override
 	public int tickRate(World w)
     {
@@ -90,9 +77,9 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 		return 100;
     }
 
-	public int getNewTickRate(int old)
+	public double getNewTickRate(int old)
 	{
-		return MathHelper.ceil(old * Configs.dirtTickMult);
+		return MathHelper.ceil((old * Configs.tempAccTickMult));
 	}
 
 	@Override
@@ -109,24 +96,22 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 		Block b = w.getBlock(x, y+1, z);
 		if(b != null)
 		{
-			if(b instanceof InteriorDirtBlock)
-				return;
-			
 			CoreTileEntity core = Helper.getTardisCore(w);
-			if((core != null) && ((core.tt % getNewTickRate(b.tickRate(w))) == 0))
+			if((core != null))
 			{
 				if(w instanceof WorldServer)
 				{
-					FakePlayer pl = FakePlayerFactory.getMinecraft((WorldServer)w);
-					ItemStack is = new ItemStack(Items.dye,1,15);
-					if(rand.nextDouble() <= Configs.dirtBoneChance)
-						ItemDye.applyBonemeal(is, w, x, y+1, z, pl);
-					int i=1;
-					if(w.getBlock(x, y+1, z) == b  && b instanceof IGrowable)
-					{
-						for(i=1;w.getBlock(x, y+i, z)==b;i++);
-						b.updateTick(w, x, (y+i)-1, z, rand);
-					}
+					if(b instanceof TemporalAcceleratorBlock)
+						return;
+					b.updateTick(w, x, y + 1, z, rand);
+					
+					if(!b.hasTileEntity(b.getDamageValue(w, x, y+1, z)))
+						return;
+					TileEntity te = w.getTileEntity(x, y+1, z);
+//					for(int i = 0; i < (getNewTickRate(b.tickRate(w))); i++){
+						te.updateEntity();
+						System.out.println(ServerHelper.isClient() + " : " + 1 + " / " + b.tickRate(w) + te);
+//					}
 				}
 			}
 		}
@@ -143,7 +128,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 			if((ds == null) || (ds.hasPermission(player, TardisPermission.ROOMS)))
 			{
 				Block b = s.getBlock();
-				if(b instanceof InteriorDirtBlock)
+				if(b instanceof TemporalAcceleratorBlock)
 				{
 					w.setBlockToAir(s.x, s.y, s.z);
 					WorldHelper.dropItemStack(new ItemStack(this,1), new SimpleDoubleCoordStore(player));

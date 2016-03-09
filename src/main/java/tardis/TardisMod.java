@@ -49,6 +49,7 @@ import tardis.common.blocks.SlabBlock;
 import tardis.common.blocks.StairBlock;
 import tardis.common.blocks.SummonerBlock;
 import tardis.common.blocks.TardisBlock;
+import tardis.common.blocks.TemporalAcceleratorBlock;
 import tardis.common.blocks.TopBlock;
 import tardis.common.command.CommandRegister;
 import tardis.common.core.CreativeTab;
@@ -143,6 +144,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static StairBlock									stairBlock;
 	public static AbstractBlock									slabBlock;
 	public static AbstractBlock									interiorDirtBlock;
+	public static AbstractBlock									temporalAccelerator;
 	public static AbstractBlock									manualBlock;
 	public static AbstractBlock									manualHelperBlock;
 	public static AbstractBlock									summonerBlock;
@@ -261,6 +263,7 @@ public class TardisMod implements IConfigHandlerMod
 		decoBlock = new DecoBlock().register();
 		decoTransBlock = new DecoTransBlock().register();
 		interiorDirtBlock = new InteriorDirtBlock().register();
+		temporalAccelerator = new TemporalAcceleratorBlock().register();
 		schemaBlock = new SchemaBlock(Configs.visibleSchema).register();
 		schemaCoreBlock = new SchemaCoreBlock(Configs.visibleSchema).register();
 		schemaComponentBlock = new SchemaComponentBlock().register();
