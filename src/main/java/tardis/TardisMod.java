@@ -321,9 +321,7 @@ public class TardisMod implements IConfigHandlerMod
 				for(int i = 0; i < Configs.dimUpgradesIds.length; i++){
 						try{
 						dimensionUpgradeItems.put(Integer.parseInt(Configs.dimUpgradesIds[i]), new DimensionUpgradeItem(Integer.parseInt(Configs.dimUpgradesIds[i])).register());
-						System.out.println("i : " + i + " - id : " + Integer.parseInt(Configs.dimUpgradesIds[i]));
 						}catch(Exception e){
-							System.out.println("OOOOOOOOOOOOOH");
 							e.printStackTrace();
 						}
 				}

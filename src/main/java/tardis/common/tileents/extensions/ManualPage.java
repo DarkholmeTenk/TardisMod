@@ -4,6 +4,7 @@ public enum ManualPage
 {
 	MAIN("Menu","Main"),
 	FLIGHT("Flight","Flight"),
+	DAMAGE("Damage repair","DamageRepair"),
 	COORDS("Coordinates","Coords"),
 	TAKEOFF("Takeoff","Takeoff"),
 	UNCOORDINATED("Drifting","Uncoord"),
