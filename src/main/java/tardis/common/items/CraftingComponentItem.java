@@ -83,7 +83,7 @@ public class CraftingComponentItem extends AbstractItem
 				EnumSet.noneOf(LabFlag.class),
 				100));
 
-		if(Configs.kontronRarity <= 0)
+		if(Configs.kontronRarity > 0)
 		{
 			ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,Configs.kontronRarity));
 			ChestGenHooks.getInfo(ChestGenHooks.VILLAGE_BLACKSMITH).addItem(new WeightedRandomChestContent(CraftingComponentType.KONTRON.getIS(1),1,1,Configs.kontronRarity));

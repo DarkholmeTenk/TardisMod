@@ -97,7 +97,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 		return null;
 	}
 
-	private ItemStack[] getInputSlots()
+	public ItemStack[] getInputSlots()
 	{
 		ItemStack[] inputSlots = new ItemStack[5];
 		for(int i = 0; i < 5; i++)

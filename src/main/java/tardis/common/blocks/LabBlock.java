@@ -4,6 +4,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
@@ -79,5 +80,27 @@ public class LabBlock extends AbstractBlockContainer
 	{
 		return LabTileEntity.class;
 	}
+	
+	@Override
+    public boolean hasComparatorInputOverride()
+    {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride(World world, int x, int y, int z, int par5)
+    {
+    	int power = 0;
+    	for(ItemStack is : ((LabTileEntity) world.getTileEntity(x, y, z)).getInputSlots())
+    		if(is != null)
+    			power++;
+    	
+    	world.scheduleBlockUpdate(x+1, y, z, Blocks.powered_comparator, 20);
+    	world.scheduleBlockUpdate(x-1, y, z, Blocks.powered_comparator, 20);
+    	world.scheduleBlockUpdate(x, y, z+1, Blocks.powered_comparator, 20);
+    	world.scheduleBlockUpdate(x, y, z-1, Blocks.powered_comparator, 20);
+
+        return power;
+    }
 
 }

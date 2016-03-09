@@ -21,6 +21,8 @@ import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
+import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
+import tardis.common.tileents.extensions.upgrades.DimensionUpgrade;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class TardisDimensionHandler
@@ -250,30 +252,46 @@ public class TardisDimensionHandler
 		return Math.max(1, dimensionIDs.size());
 	}
 
-	public List<Integer> getDims(int level)
+	public List<Integer> getDims(int level, TardisDataStore ds)
 	{
 		ArrayList<Integer> list = new ArrayList();
 		if(!dimensionIDs.contains(0))
 			dimensionIDs.add(0);
-		for(Integer dim : dimensionIDs)
+
+		mainLoop: for (Integer dim : dimensionIDs)
 		{
-			if(minLevels.containsKey(dim) && (minLevels.get(dim) > level))
-				continue;
+			if (minLevels.containsKey(dim) && (minLevels.get(dim) > level)) continue;
+			if (TardisMod.dimensionUpgradeItems.containsKey(dim))
+			{
+				if (ds == null) continue;
+				for (AbstractUpgrade up : ds.upgrades)
+				{
+					if (up instanceof DimensionUpgrade)
+					{
+						if (((DimensionUpgrade) up).getDimID() == dim)
+						{
+							list.add(dim);
+							continue mainLoop;
+						}
+					}
+				}
+				continue mainLoop;
+			}
 			list.add(dim);
 		}
 		return list;
 	}
 
-	public int numDims(int level)
+	public int numDims(int level, TardisDataStore ds)
 	{
-		return getDims(level).size();
+		return getDims(level, ds).size();
 	}
 
-	public Integer getControlFromDim(int dim, int level)
+	public Integer getControlFromDim(int dim, int level, TardisDataStore ds)
 	{
 		if (ServerHelper.isClient()) return 0;
 		cleanUp();
-		List<Integer> dims = getDims(level);
+		List<Integer> dims = getDims(level, ds);
 		if (dimensionIDs.contains(dim))
 		{
 			if(dims.contains(dim))
@@ -285,17 +303,17 @@ public class TardisDimensionHandler
 			if ((w != null) && !Helper.isTardisWorld(w) && !blacklistedIDs.contains(WorldHelper.getWorldID(w)) && !blacklistedNames.contains(WorldHelper.getDimensionName(w)))
 			{
 				if(addDimension(w))
-					return getControlFromDim(dim,level);
+					return getControlFromDim(dim,level, ds);
 			}
 		}
 		if (dimensionIDs.contains(0)) return dimensionIDs.indexOf(0);
 		return 0;
 	}
 
-	public Integer getDimFromControl(int control, int level)
+	public Integer getDimFromControl(int control, int level, TardisDataStore ds)
 	{
 		if (ServerHelper.isClient()) return 0;
-		List<Integer> dims = getDims(level);
+		List<Integer> dims = getDims(level, ds);
 		int index = MathHelper.clamp(control, 0, dims.size() - 1);
 		Integer dim = dims.get(index);
 		if(dim == null) return 0;

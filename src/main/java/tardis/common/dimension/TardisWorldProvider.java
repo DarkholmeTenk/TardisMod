@@ -1,13 +1,15 @@
 package tardis.common.dimension;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import java.util.List;
-
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.client.IRenderHandler;
 import tardis.common.core.helpers.Helper;
-import tardis.common.tileents.ConsoleTileEntity;
 
 public class TardisWorldProvider extends WorldProvider
 {
@@ -22,7 +24,7 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		return "Tardis Interior";
 	}
-
+	
 	@Override
 	public String getSaveFolder()
 	{
@@ -45,6 +47,41 @@ public class TardisWorldProvider extends WorldProvider
 	public IChunkProvider createChunkGenerator()
 	{
 		return new TardisChunkProvider(worldObj);
+	}
+	
+	@Override
+    @SideOnly(Side.CLIENT)
+    public IRenderHandler getSkyRenderer() 
+	{
+		if(dimensionId != 0)
+		{
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.getSkyRenderer();
+			if(ds.getSpaceProjection())
+				return new TardisWorldSkyRenderer();
+			else{
+				return super.getSkyRenderer();
+			}
+		}
+		return super.getSkyRenderer();
+    }
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IRenderHandler getCloudRenderer()
+	{
+		if(dimensionId != 0)
+		{
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.getCloudRenderer();
+			if(ds.getSpaceProjection())
+				return new TardisWorldSkyRenderer();
+			else
+				return super.getCloudRenderer();
+		}
+		return super.getCloudRenderer();
 	}
 
 	@Override
@@ -71,60 +108,130 @@ public class TardisWorldProvider extends WorldProvider
 		return getSpawnPoint();
     }
 
-//	@Override
-//	public BiomeGenBase getBiomeGenForCoords(int x, int z)
-//    {
-//		return BiomeGenBase.plains;
-//    }
-
 	@Override
-	public float getSunBrightnessFactor(float par1)
-	{
-		return super.getSunBrightnessFactor(par1);
-	}
-
-	@Override
-	public float calculateCelestialAngle(long par1, float par3)
+	public long getWorldTime()
     {
-		return isDaytime() ? 0 : 0.5F;
-    }
-
-	@Override
-	public boolean isDaytime()
-	{
 		if(dimensionId != 0)
 		{
-			ConsoleTileEntity con = getConsole();
-			//ConsoleTileEntity con = Helper.getTardisConsole(worldObj);
-			if(con != null)
-				return con.getDaytimeSetting();
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.getWorldTime();
+			int position = ds.getDaytimeSetting();
+			switch(position)
+			{
+				case 0:
+					return 18000L + getWorldVariance();
+				case 1:
+					return super.getWorldTime();
+				case 2:
+					return 6000L + getWorldVariance();
+			}
 		}
-		return true;
-	}
-
-	public ConsoleTileEntity getConsole()
-	{
-		if(worldObj == null)
-			return null;
-		List<Object> ents = worldObj.loadedTileEntityList;
-		if(ents == null)
-			return null;
-		for(Object o : ents)
-		{
-			if(o instanceof ConsoleTileEntity)
-				return ((ConsoleTileEntity)o);
-		}
-		return null;
-	}
-
+		return super.getWorldTime();
+    }
+	
 	public int getWorldVariance()
 	{
 		return MathHelper.round((Math.random() * 10) - 5);
 	}
-
+	
 	@Override
-	public long getWorldTime()
+	@SideOnly(Side.CLIENT)
+    public Vec3 getSkyColor(Entity cameraEntity, float partialTicks)
     {
-		return getWorldVariance() + (isDaytime() ? 6000 : 18000);
+		if(dimensionId != 0)
+		{
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.getSkyColor(cameraEntity, partialTicks);
+			if(ds.getSpaceProjection())
+				return Vec3.createVectorHelper(0, 0, 0);
+			else
+				return super.getSkyColor(cameraEntity, partialTicks);
+		}
+        return super.getSkyColor(cameraEntity, partialTicks);
+    }
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+    public float getStarBrightness(float par1)
+    {
+		if(dimensionId != 0)
+		{
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.getStarBrightness(par1);
+			if(ds.getSpaceProjection())
+				return 1f;
+			else
+				return super.getStarBrightness(par1);
+		}
+		return super.getStarBrightness(par1);
+    }
+	
+	@Override
+	public double getHorizon()
+    {
+		if(dimensionId != 0)
+		{
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.getHorizon();
+			if(ds.getSpaceProjection())
+				return 0;
+			else
+				return super.getHorizon();
+		}
+		return super.getHorizon();
+    }
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+    public float[] calcSunriseSunsetColors(float p_76560_1_, float p_76560_2_)
+    {
+		if(dimensionId != 0)
+		{
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.calcSunriseSunsetColors(p_76560_1_, p_76560_2_);
+			if(ds.getSpaceProjection())
+				return null;
+			else
+				return super.calcSunriseSunsetColors(p_76560_1_, p_76560_2_);
+		}
+		return super.calcSunriseSunsetColors(p_76560_1_, p_76560_2_);
+    }
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+    public float getCloudHeight()
+    {
+		if(dimensionId != 0)
+		{
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.getCloudHeight();
+			if(ds.getSpaceProjection())
+				return 1f;
+			else
+				return super.getCloudHeight();
+		}
+		return super.getCloudHeight();
+    }
+	
+	@SideOnly(Side.CLIENT)
+    public Vec3 getFogColor(float p_76562_1_, float p_76562_2_)
+    {
+		if(dimensionId != 0)
+		{
+			TardisDataStore ds = Helper.getDataStore(worldObj);
+			if(ds == null)
+				return super.getFogColor(p_76562_1_, p_76562_2_);
+			if(ds.getSpaceProjection())
+				return Vec3.createVectorHelper(0, 0, 0);
+			else
+				return super.getFogColor(p_76562_1_, p_76562_2_);
+		}
+        return super.getFogColor(p_76562_1_, p_76562_2_);
     }
 }
