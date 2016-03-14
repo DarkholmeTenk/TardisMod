@@ -316,7 +316,6 @@ public class TardisMod implements IConfigHandlerMod
 		decoTool = new DecoratingTool().register();
 		chameleonUpgradeItem = (UpgradeChameleonItem) new UpgradeChameleonItem().register();
 		
-		
 			if(!Configs.dimUpgradesIds[0].isEmpty())
 				for(int i = 0; i < Configs.dimUpgradesIds.length; i++){
 						try{
