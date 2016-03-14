@@ -241,6 +241,14 @@ public class TardisDamageSystem
 
 	public boolean repairComponent(EntityPlayer pl, int component)
 	{
+		if(pl.capabilities.isCreativeMode){
+			breakables[component] = false;
+			hull = hull + (getMaxHull() / numBreakables);
+			hull = MathHelper.clamp(hull, 0, getMaxHull());
+			ds.sendUpdate();
+			return true;
+		}
+			
 		if ((component < 0) || (component >= numBreakables)) return false;
 		if (!breakables[component]) return false;
 		if (!isHoldingRepairComponent(pl, component)) return false;

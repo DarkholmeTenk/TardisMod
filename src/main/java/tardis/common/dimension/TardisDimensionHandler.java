@@ -260,7 +260,6 @@ public class TardisDimensionHandler
 
 		mainLoop: for (Integer dim : dimensionIDs)
 		{
-			if (minLevels.containsKey(dim) && (minLevels.get(dim) > level)) continue;
 			if (TardisMod.dimensionUpgradeItems.containsKey(dim))
 			{
 				if (ds == null) continue;
@@ -277,6 +276,7 @@ public class TardisDimensionHandler
 				}
 				continue mainLoop;
 			}
+			if (minLevels.containsKey(dim) && (minLevels.get(dim) > level)) continue;
 			list.add(dim);
 		}
 		return list;
