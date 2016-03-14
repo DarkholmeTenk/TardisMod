@@ -24,6 +24,7 @@ public class ManualBlock extends AbstractBlockContainer implements IRotatableBlo
 	public void initData()
 	{
 		setBlockName("Manual");
+		setLightLevel(1);
 	}
 
 	@Override
