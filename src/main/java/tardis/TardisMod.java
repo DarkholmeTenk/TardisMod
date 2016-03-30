@@ -100,7 +100,7 @@ import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
-@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.994", dependencies = "required-after:FML; required-after:darkcore@[0.3,]; after:CoFHCore; after:appliedenergistics2; after:Waila; before:DragonAPI")
+@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.994", dependencies = "required-after:FML; required-after:darkcore@[0.35]; after:CoFHCore; after:appliedenergistics2; after:Waila; before:DragonAPI")
 public class TardisMod implements IConfigHandlerMod
 {
 	@Instance
@@ -164,7 +164,7 @@ public class TardisMod implements IConfigHandlerMod
 
 	public static AbstractBlock									decoSimulacrumBlock;
 	public static LabBlock										labBlock;
-	
+
 	public static HashSet<AbstractBlock> 						unbreakableBlocks;
 
 	public static AbstractItem									schemaItem;
@@ -202,7 +202,7 @@ public class TardisMod implements IConfigHandlerMod
 		initChameleonTypes();
 		initBlocks();
 		initItems();
-		
+
 
 		// MinecraftForge.EVENT_BUS.register(new SoundHandler());
 
@@ -288,18 +288,18 @@ public class TardisMod implements IConfigHandlerMod
 		glassSimulacrumBlock = new CraftableSimBlock(decoTransBlock).register();
 		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
 		shieldBlock = new ShieldBlock().register();
-		
-		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock, 
-												   tardisConsoleBlock, tardisEngineBlock, componentBlock, 
-												   internalDoorBlock, decoBlock, decoTransBlock, 
+
+		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock,
+												   tardisConsoleBlock, tardisEngineBlock, componentBlock,
+												   internalDoorBlock, decoBlock, decoTransBlock,
 												   interiorDirtBlock, schemaBlock, schemaCoreBlock,
 												   schemaComponentBlock, slabBlock, landingPad,
 												   labBlock, gravityLift, forcefield, battery,
 												   colorableWallBlock, colorableFloorBlock, colorableBrickBlock,
 												   colorablePlankBlock, colorableRoundelBlock, colorableOpenRoundelBlock,
 												   manualBlock, manualHelperBlock, shieldBlock};
-		
-		
+
+
 		unbreakableBlocks = new HashSet<AbstractBlock>(Arrays.asList(unbreakableTardisBlocks));
 	}
 
@@ -315,7 +315,7 @@ public class TardisMod implements IConfigHandlerMod
 		nameTag = (NameTagItem) new NameTagItem().register();
 		decoTool = new DecoratingTool().register();
 		chameleonUpgradeItem = (UpgradeChameleonItem) new UpgradeChameleonItem().register();
-		
+
 			if(!Configs.dimUpgradesIds[0].isEmpty())
 				for(int i = 0; i < Configs.dimUpgradesIds.length; i++){
 						try{
