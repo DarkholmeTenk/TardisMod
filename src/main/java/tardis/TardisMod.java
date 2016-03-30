@@ -319,14 +319,11 @@ public class TardisMod implements IConfigHandlerMod
 		decoTool = new DecoratingTool().register();
 		chameleonUpgradeItem = (UpgradeChameleonItem) new UpgradeChameleonItem().register();
 		
-		
 			if(!Configs.dimUpgradesIds[0].isEmpty())
 				for(int i = 0; i < Configs.dimUpgradesIds.length; i++){
 						try{
 						dimensionUpgradeItems.put(Integer.parseInt(Configs.dimUpgradesIds[i]), new DimensionUpgradeItem(Integer.parseInt(Configs.dimUpgradesIds[i])).register());
-						System.out.println("i : " + i + " - id : " + Integer.parseInt(Configs.dimUpgradesIds[i]));
 						}catch(Exception e){
-							System.out.println("OOOOOOOOOOOOOH");
 							e.printStackTrace();
 						}
 				}

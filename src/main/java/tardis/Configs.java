@@ -221,10 +221,8 @@ public class Configs
 		deleteAllOwnerOnly = mechConfig.getBoolean("Delete all rooms owner only", false, "Whether or not the delete all rooms button should be owner only");
 		enableTardisMobSpawning= mechConfig.getBoolean("Enable mob spawning", false, "Whether or not mobs are able to spawn in the TARDIS dimension");
 
-		String dimIds = mechConfig.getString("Dimension ID's locked by upgrades", "", "Put all the dimension ID's you want to lock using an engine upgrade here, seperating each ID with a comma", "Like this: 1,2,3,4");
-		System.out.println("AAAAAAAAAH : " + dimIds);
+		String dimIds = mechConfig.getString("Dimension ID's locked by upgrades", "", "Put all the dimension ID's you want to lock using an engine upgrade here, seperating each ID with a comma", "Like this:1,2,3,4").trim();
 		dimUpgradesIds = dimIds.split(",");
-		System.out.println("AAAAAAAAAH : " + dimUpgradesIds.length);
 
 		
 	}

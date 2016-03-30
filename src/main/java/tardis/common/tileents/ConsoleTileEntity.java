@@ -3,6 +3,7 @@ package tardis.common.tileents;
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.MessageHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IExplodable;
@@ -699,6 +700,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 						String n = is.getDisplayName();
 						if(ssnds.setName(n, controlID-1000))
 						{
+							MessageHelper.sendMessage(pl, "Bookmark slot " + (controlID -1000) + " renamed to " + n);
 							run = false;
 							if(!pl.capabilities.isCreativeMode)
 								is.stackSize--;
@@ -1185,10 +1187,10 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				switch(ds.getDaytimeSetting()){
 				case 0:
 					return new String[] { "Current: Nighttime"};
-					
+
 				case 1:
 					return new String[] { "Currently: Simulating Overworld"};
-					
+
 				case 2:
 					return new String[] { "Current: Daytime"};
 				}
@@ -1331,7 +1333,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return relativeCoords;
 	}
 
-	
+
 
 	@Override
 	public ScrewdriverHelper getScrewHelper(int slot)

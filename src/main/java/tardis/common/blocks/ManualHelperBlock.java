@@ -22,6 +22,7 @@ public class ManualHelperBlock extends AbstractBlock implements IRotatableBlock
 	{
 		setBlockName("ManualHelper");
 		setBlockBounds(0,0,0,1,1,1);
+		setLightLevel(1);
 	}
 
 	@Override

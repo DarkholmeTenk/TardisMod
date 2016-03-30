@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.world.WorldEvent.Load;
-import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.flight.FlightConfiguration;
@@ -253,19 +252,23 @@ public class TardisDimensionHandler
 		return Math.max(1, dimensionIDs.size());
 	}
 
-	private List<Integer> getDims(int level, TardisDataStore ds)
+	public List<Integer> getDims(int level, TardisDataStore ds)
 	{
 		ArrayList<Integer> list = new ArrayList();
 		if(!dimensionIDs.contains(0))
 			dimensionIDs.add(0);
-		
-		mainLoop: 
-		for(Integer dim : dimensionIDs)
+
+		mainLoop: for (Integer dim : dimensionIDs)
 		{
-			if(TardisMod.dimensionUpgradeItems.containsKey(dim)){
-				for(AbstractUpgrade up : ds.upgrades){
-					if(up instanceof DimensionUpgrade){
-						if(((DimensionUpgrade) up).getDimID() == dim){
+			if (TardisMod.dimensionUpgradeItems.containsKey(dim))
+			{
+				if (ds == null) continue;
+				for (AbstractUpgrade up : ds.upgrades)
+				{
+					if (up instanceof DimensionUpgrade)
+					{
+						if (((DimensionUpgrade) up).getDimID() == dim)
+						{
 							list.add(dim);
 							continue mainLoop;
 						}
@@ -273,10 +276,7 @@ public class TardisDimensionHandler
 				}
 				continue mainLoop;
 			}
-			
-			if(minLevels.containsKey(dim) && (minLevels.get(dim) > level))
-				continue;
-
+			if (minLevels.containsKey(dim) && (minLevels.get(dim) > level)) continue;
 			list.add(dim);
 		}
 		return list;

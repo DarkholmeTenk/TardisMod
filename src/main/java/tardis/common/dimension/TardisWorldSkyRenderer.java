@@ -53,7 +53,7 @@ public class TardisWorldSkyRenderer extends IRenderHandler {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1);
 		OpenGlHelper.glBlendFunc(770, 1, 1, 0);
 		GL11.glPushMatrix();
-		GL11.glRotatef(theWorld.getCelestialAngle(p_72714_1_) * 360.0F, 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef(((TardisWorldProvider) theWorld.provider).calculateRealCelestialAngle(p_72714_1_) * 360.0F, 0.0F, 1.0F, 0.0F);
 		renderStars();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		f6 = 1.0F - 0;
@@ -66,7 +66,7 @@ public class TardisWorldSkyRenderer extends IRenderHandler {
 
 		GL11.glTranslatef(f7, f8, f9);
 		GL11.glRotatef(-120.0F, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(theWorld.getCelestialAngle(p_72714_1_) * 360.0F, 1.0F, 0.0F, 0.0F);
+		GL11.glRotatef(((TardisWorldProvider) theWorld.provider).calculateRealCelestialAngle(p_72714_1_) * 360.0F, 1.0F, 0.0F, 0.0F);
 		tessellator1.startDrawingQuads();
 		tessellator1.addVertexWithUV((double) (-f10), 100.0D, (double) (-f10), 0.0D, 0.0D);
 		tessellator1.addVertexWithUV((double) f10, 100.0D, (double) (-f10), 1.0D, 0.0D);
@@ -78,7 +78,7 @@ public class TardisWorldSkyRenderer extends IRenderHandler {
 		GL11.glPushMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(locationSunPng);
 		Tessellator tessellator2 = Tessellator.instance;
-		GL11.glRotatef(-((theWorld.getCelestialAngle(p_72714_1_) * 4) * 360.0F), 1F, 2F, 1.5F);
+		GL11.glRotatef(-((((TardisWorldProvider) theWorld.provider).calculateRealCelestialAngle(p_72714_1_) * 4) * 360.0F), 1F, 2F, 1.5F);
 		f10 = 15.0F;
 		tessellator2.startDrawingQuads();
 		tessellator2.addVertexWithUV((double) (-f10) / 2, 110.0D, (double) (-f10) / 2, 0.0D, 0.0D);
@@ -89,8 +89,8 @@ public class TardisWorldSkyRenderer extends IRenderHandler {
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
 		
-		GL11.glRotatef(-(theWorld.getCelestialAngle(p_72714_1_) * 360.0F), 1.0F, 0.0F, 0.0F);
-		GL11.glRotatef(-(theWorld.getCelestialAngle(p_72714_1_) * 2) * 360.0F, 0.2F, 0.5F, 1.3F);
+		GL11.glRotatef(-(((TardisWorldProvider) theWorld.provider).calculateRealCelestialAngle(p_72714_1_) * 360.0F), 1.0F, 0.0F, 0.0F);
+		GL11.glRotatef(-(((TardisWorldProvider) theWorld.provider).calculateRealCelestialAngle(p_72714_1_) * 2) * 360.0F, 0.2F, 0.5F, 1.3F);
 
 		f10 = 10.0F;
 		Minecraft.getMinecraft().renderEngine.bindTexture(locationMoonPhasesPng);
@@ -101,7 +101,7 @@ public class TardisWorldSkyRenderer extends IRenderHandler {
 		GL11.glRotatef(-90, 1f, 0f, 0f);
 		GL11.glRotatef(-90, 0f, 0f, 1f);
 
-		GL11.glRotatef(-(theWorld.getCelestialAngle(p_72714_1_) * 360.0F), 0f, 1f, 1f);
+		GL11.glRotatef(-(((TardisWorldProvider) theWorld.provider).calculateRealCelestialAngle(p_72714_1_) * 360.0F), 0f, 1f, 1f);
 	
 		tessellator1.startDrawingQuads();
 		tessellator1.setColorRGBA(111, 150, 255, 255);
