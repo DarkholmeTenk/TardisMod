@@ -59,23 +59,30 @@ public class Configs
 	 * ROUNDEL CONFIG
 	 */
 	public static ConfigFile	roundelConfig;
-	public static int			euRatio				= 4;
-	public static int			rfBase				= 50000;
-	public static int			rfInc				= 50000;
-	public static int			rfPerT				= 4098;
-	public static int			maxFlu				= 32000;
-	public static int			numTanks			= 5;
-	public static int			numInvs				= 30;
-	public static int			maxEachAspect		= 16;
-	public static int			maxEachAspectInc	= 16;
-	public static int			numAspects			= 16;
+	public static int			euRatio						= 4;
+	public static int			rfBase						= 50000;
+	public static int			rfInc						= 50000;
+	public static int			rfPerT						= 4098;
+	public static int			maxFlu						= 32000;
+	public static int			numTanks					= 5;
+	public static int			numInvs						= 30;
+	public static int			maxEachAspect				= 16;
+	public static int			maxEachAspectInc			= 16;
+	public static int			numAspects					= 16;
 
-	public static double		nanogeneRange		= 36;
-	public static double		nanogeneTimer		= 10;
-	public static int			nanogeneCost		= 1;
-	public static int			nanogeneHealAmount	= 2;
-	public static boolean		nanogeneFeed		= true;
-	public static int			maxComponents		= 6;
+	public static double		nanogeneRange				= 36;
+	public static int			nanogeneTimer				= 10;
+	public static int			nanogeneCost				= 1;
+	public static int			nanogeneHealAmount			= 2;
+	public static boolean		nanogeneFeed				= true;
+	
+	public static int			restorationFieldTimer 		= 120;
+	public static int			restorationFieldPercentage 	= 70;
+	public static int			restorationFieldCost 		= 5;
+	public static double		restorationFieldRange		= 16;
+
+
+	public static int			maxComponents				= 6;
 
 	private static void refreshRoundelConfig()
 	{
@@ -96,6 +103,11 @@ public class Configs
 		nanogeneCost = roundelConfig.getInt("Nanogene - Cost", 1, "The amount of Artron energy used up each time a nanogene heals");
 		nanogeneHealAmount = roundelConfig.getInt("Nanogene - Heal amount", 2, "The amount of health a nanogene can restore per pulse");
 		nanogeneFeed = roundelConfig.getBoolean("Nanogene - Feeds", true, "Whether nanogenes should also feed players as well as heal");
+		
+		restorationFieldTimer = roundelConfig.getInt("Restoration Field - Timer", 120, "The number of ticks between each restoration field pulse");
+		restorationFieldPercentage = roundelConfig.getInt("Restoration Field - Repair percentage", 70, "What percentage of the tool will be repaired (1 - 100)");
+		restorationFieldCost = roundelConfig.getInt("Restoration Field - Cost", 5, "The amount of Artron energy used up each time a tool gets healed by 1 point");
+		restorationFieldRange = Math.pow(roundelConfig.getDouble("Restoration Field - Range", 4, "The range at which the restoration field has effect"), 2);
 
 		maxComponents = roundelConfig.getInt("Maximum components", 6, "The number of cable interfaces/components per roundel/landing pad");
 	}
@@ -173,18 +185,21 @@ public class Configs
 	 */
 	public static ConfigFile	mechConfig;
 
-	public static boolean		deathTransmat		= true;
-	public static boolean		deathTransmatLive	= true;
-	public static double		transmatExitDist	= 2;
-	public static int			kontronRarity		= 4;
-	public static boolean		keyOnFirstJoin		= true;
-	public static boolean		deleteDisconnected	= true;
-	public static boolean		tardisLoaded		= true;
-	public static boolean		keyInHand			= true;
-	public static int			lockSoundDelay		= 40;
-	public static boolean		loadWhenOffline		= true;
-	public static boolean		enableLinking		= true;
-	public static boolean		deleteAllOwnerOnly	= false;
+	public static boolean		deathTransmat			= true;
+	public static boolean		deathTransmatLive		= true;
+	public static double		transmatExitDist		= 2;
+	public static int			kontronRarity			= 4;
+	public static boolean		keyOnFirstJoin			= true;
+	public static boolean		deleteDisconnected		= true;
+	public static boolean		tardisLoaded			= true;
+	public static boolean		keyInHand				= true;
+	public static int			lockSoundDelay			= 40;
+	public static boolean		loadWhenOffline			= true;
+	public static boolean		enableLinking			= true;
+	public static boolean		deleteAllOwnerOnly		= false;
+	public static boolean		enableTardisMobSpawning	= false;
+	public static String[]		dimUpgradesIds			;
+
 
 	private static void refreshMechanicsConfig()
 	{
@@ -200,6 +215,12 @@ public class Configs
 		loadWhenOffline = mechConfig.getBoolean("Chunkload - Offline", true, "Chunkload when player is offline");
 		enableLinking = mechConfig.getBoolean("Enable screwdriver linking mode", true, "Enable the linking mode on the sonic","Note: WIP. Some linking features are still buggy");
 		deleteAllOwnerOnly = mechConfig.getBoolean("Delete all rooms owner only", false, "Whether or not the delete all rooms button should be owner only");
+		enableTardisMobSpawning= mechConfig.getBoolean("Enable mob spawning", false, "Whether or not mobs are able to spawn in the TARDIS dimension");
+
+		String dimIds = mechConfig.getString("Dimension ID's locked by upgrades", "", "Put all the dimension ID's you want to lock using an engine upgrade here, seperating each ID with a comma", "Like this:1,2,3,4").trim();
+		dimUpgradesIds = dimIds.split(",");
+
+		
 	}
 
 	/*
@@ -213,6 +234,8 @@ public class Configs
 	public static int					exteriorGenChunksTR		= 4;
 	public static TardisOutput.Priority	priorityLevel			= TardisOutput.Priority.INFO;
 	public static int					providerID				= 54;
+	public static int					consoleBiomeID			= 42;
+
 
 	private static void refreshModConfig()
 	{
@@ -224,6 +247,8 @@ public class Configs
 		exteriorGenChunksRad = MathHelper.clamp(modConfig.getInt("exterior chunk gen radius", 8, "Radius in chunks for the exterior to generate while landing"), -1, 10);
 		exteriorGenChunksPT = MathHelper.clamp(modConfig.getInt("exterior chunk gen per pulse", 1, "Number of chunks for the exterior to generate per pulse"), 1, 20);
 		exteriorGenChunksTR = MathHelper.clamp(modConfig.getInt("exterior chunk gen ticks per pulse", 4, "Number of ticks between chunk generation pulses"), 1, 20);
+		consoleBiomeID = modConfig.getInt("Console Room Dimension ID", 42, "The id of the biome which is used in the console room");
+
 
 	}
 

@@ -7,12 +7,14 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import tardis.TardisMod;
+import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.SchemaCoreTileEntity;
@@ -29,7 +31,7 @@ public class RegCommand extends AbstractCommand
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender)
 	{
-		return "/treg <list|set|remove> <player> <dim>";
+		return "/treg <list|set|remove|listdims> <player> <dim>";
 	}
 
 	@Override
@@ -101,6 +103,14 @@ public class RegCommand extends AbstractCommand
 					else
 						sendString(comsen,un + " could not be added to listing");
 				}
+			}
+			else if(astring[0].equals("listdims"))
+			{
+				Set<Integer> dims = TardisDimensionRegistry.getDims();
+				String s = "Dims: ";
+				for(Integer i : dims)
+					s+=i+",";
+				sendString(comsen, s);
 			}
 		}
 	}

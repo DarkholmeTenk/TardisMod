@@ -139,7 +139,10 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 									{
 										CoreTileEntity te = Helper.getTardisCore(w);
 										if((te == null) || te.addRoom(false, null)) //pass null as arg for schemacore since it adds itself
+										{
 											pb.reconstitute(w, nX, nY, nZ, opposingFace(facing));
+											ServerHelper.sendString(player, "Room counter after creation: " + (te.getNumRooms() + 1) + "/" + te.getMaxNumRooms());
+										}
 										else
 											player.addChatMessage(new ChatComponentText("Too many rooms in this TARDIS"));
 									}

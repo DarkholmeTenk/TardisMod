@@ -3,6 +3,7 @@ package tardis.common.tileents;
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.MessageHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IExplodable;
@@ -53,7 +54,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private int[]								zControls				= new int[7];
 	private int[]								yControls				= new int[4];
 	private boolean								landGroundControl		= true;
-	private boolean								dayNightControl			= false;
 	private boolean								relativeCoords			= false;
 	private boolean								uncoordinated			= false;
 	private boolean								stable					= false;
@@ -661,7 +661,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			refreshSchemas();
 		}
 		else if (controlID == 52)
-			dayNightControl = !dayNightControl;
+			ds.setDaytimeSetting(((ds.getDaytimeSetting())+1) % 3);
 		else if ((controlID == 54) && core.hasFunction(TardisFunction.SENSORS))
 			core.sendScannerStrings(pl);
 		else if ((controlID == 56) && core.hasFunction(TardisFunction.STABILISE))
@@ -700,6 +700,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 						String n = is.getDisplayName();
 						if(ssnds.setName(n, controlID-1000))
 						{
+							MessageHelper.sendMessage(pl, "Bookmark slot " + (controlID -1000) + " renamed to " + n);
 							run = false;
 							if(!pl.capabilities.isCreativeMode)
 								is.stackSize--;
@@ -909,7 +910,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		TardisDataStore ds = Helper.getDataStore(this);
 		if((ds != null) && (TardisMod.otherDims != null))
 		{
-			Integer i = TardisMod.otherDims.getDimFromControl(dCont,ds.getLevel());
+			Integer i = TardisMod.otherDims.getDimFromControl(dCont,ds.getLevel(),ds);
 			if(i != null)
 				return i;
 		}
@@ -920,7 +921,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	{
 		TardisDataStore ds = Helper.getDataStore(this);
 		if(ds != null)
-			return TardisMod.otherDims.getControlFromDim(dim, ds.getLevel());
+			return TardisMod.otherDims.getControlFromDim(dim, ds.getLevel(),ds);
 		return 0;
 	}
 
@@ -930,7 +931,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		if(ds == null)
 			return TardisMod.otherDims.numDims();
 		else
-			return TardisMod.otherDims.numDims(ds.getLevel());
+			return TardisMod.otherDims.numDims(ds.getLevel(),ds);
 
 	}
 
@@ -1125,7 +1126,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 					|| (controlID == 58) || (controlID == 43))
 				return lastButton == controlID ? 1 : 0;
 			if (controlID == 52)
-				return dayNightControl ? 1 : 0;
+				return ds.getDaytimeSetting() / 2.0;
 			if (controlID == 53)
 				return relativeCoords ? 1 : 0;
 			if (controlID == 55)
@@ -1182,7 +1183,18 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if (controlID == 56)
 				return new String[] { "Current: " + (stable ? "Stable flight" : "Unstable flight")};
 			if (controlID == 52)
-				return new String[] { "Current: " + (dayNightControl ? "Daytime" : "Nighttime")};
+			{
+				switch(ds.getDaytimeSetting()){
+				case 0:
+					return new String[] { "Current: Nighttime"};
+
+				case 1:
+					return new String[] { "Currently: Simulating Overworld"};
+
+				case 2:
+					return new String[] { "Current: Daytime"};
+				}
+			}
 			if (controlID == 55)
 				return new String[] { "Current: "
 						+ (uncoordinated ? "Uncoordinated flight (Drifting)" : "Coordinated flight") };
@@ -1321,10 +1333,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return relativeCoords;
 	}
 
-	public boolean getDaytimeSetting()
-	{
-		return dayNightControl;
-	}
+
 
 	@Override
 	public ScrewdriverHelper getScrewHelper(int slot)
@@ -1402,7 +1411,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		stable = nbt.getBoolean("stable");
 		uncoordinated = nbt.getBoolean("uncoordinated");
 		relativeCoords = nbt.getBoolean("relativeCoords");
-		dayNightControl = nbt.getBoolean("dayNightControl");
 		roomDeletePrepare = nbt.getBoolean("rdp");
 		tickTimer = nbt.getInteger("tickTimer");
 		frontScrewHelper = ScrewdriverHelperFactory.get(nbt, "scNBT");
@@ -1436,7 +1444,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		nbt.setBoolean("stable", stable);
 		nbt.setBoolean("uncoordinated", uncoordinated);
 		nbt.setBoolean("relativeCoords", relativeCoords);
-		nbt.setBoolean("dayNightControl", dayNightControl);
 		if(frontScrewHelper != null) frontScrewHelper.writeToNBT(nbt, "scNBT");
 		if(backScrewHelper != null) backScrewHelper.writeToNBT(nbt, "bscNBT");
 		nbt.setBoolean("rdp", roomDeletePrepare);

@@ -10,8 +10,14 @@ import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
@@ -54,6 +60,7 @@ import tardis.common.core.events.internal.DamageEventHandler;
 import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
+import tardis.common.dimension.BiomeGenConsoleRoom;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.TardisWorldProvider;
 import tardis.common.dimension.damage.TardisDamageSystem;
@@ -61,6 +68,7 @@ import tardis.common.integration.ae.AEHelper;
 import tardis.common.items.ComponentItem;
 import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.DecoratingTool;
+import tardis.common.items.DimensionUpgradeItem;
 import tardis.common.items.KeyItem;
 import tardis.common.items.ManualItem;
 import tardis.common.items.NameTagItem;
@@ -113,6 +121,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static TardisOwnershipRegistry						plReg;
 	public static CreativeTab									tab					= null;
 	public static CreativeTab									cTab				= null;
+	public static BiomeGenBase									consoleBiome		;
 
 	public static AbstractBlock									tardisBlock;
 	public static AbstractBlock									tardisTopBlock;
@@ -155,6 +164,8 @@ public class TardisMod implements IConfigHandlerMod
 
 	public static AbstractBlock									decoSimulacrumBlock;
 	public static LabBlock										labBlock;
+	
+	public static HashSet<AbstractBlock> 						unbreakableBlocks;
 
 	public static AbstractItem									schemaItem;
 	public static AbstractItem									componentItem;
@@ -166,6 +177,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static NameTagItem									nameTag;
 	public static AbstractItem									decoTool;
 	public static UpgradeChameleonItem							chameleonUpgradeItem;
+	public static Map<Integer,AbstractItem>						dimensionUpgradeItems = new HashMap<Integer, AbstractItem>();
 
 	public static boolean										tcInstalled			= false;
 
@@ -180,14 +192,17 @@ public class TardisMod implements IConfigHandlerMod
 		schemaHandler.getSchemas();
 		tab = new CreativeTab("TardisModTab");
 		cTab = new CreativeTab("TardisModCraftableTab");
+		consoleBiome = new BiomeGenConsoleRoom(Configs.consoleBiomeID);
 		DarkcoreMod.registerCreativeTab(modName, tab);
 
 		refreshConfigs();
 
+		BiomeDictionary.registerBiomeType(consoleBiome, BiomeDictionary.Type.PLAINS);
 		DimensionManager.registerProviderType(Configs.providerID, TardisWorldProvider.class, Configs.tardisLoaded);
 		initChameleonTypes();
 		initBlocks();
 		initItems();
+		
 
 		// MinecraftForge.EVENT_BUS.register(new SoundHandler());
 
@@ -273,6 +288,19 @@ public class TardisMod implements IConfigHandlerMod
 		glassSimulacrumBlock = new CraftableSimBlock(decoTransBlock).register();
 		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
 		shieldBlock = new ShieldBlock().register();
+		
+		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock, 
+												   tardisConsoleBlock, tardisEngineBlock, componentBlock, 
+												   internalDoorBlock, decoBlock, decoTransBlock, 
+												   interiorDirtBlock, schemaBlock, schemaCoreBlock,
+												   schemaComponentBlock, slabBlock, landingPad,
+												   labBlock, gravityLift, forcefield, battery,
+												   colorableWallBlock, colorableFloorBlock, colorableBrickBlock,
+												   colorablePlankBlock, colorableRoundelBlock, colorableOpenRoundelBlock,
+												   manualBlock, manualHelperBlock, shieldBlock};
+		
+		
+		unbreakableBlocks = new HashSet<AbstractBlock>(Arrays.asList(unbreakableTardisBlocks));
 	}
 
 	private void initItems()
@@ -287,6 +315,15 @@ public class TardisMod implements IConfigHandlerMod
 		nameTag = (NameTagItem) new NameTagItem().register();
 		decoTool = new DecoratingTool().register();
 		chameleonUpgradeItem = (UpgradeChameleonItem) new UpgradeChameleonItem().register();
+		
+			if(!Configs.dimUpgradesIds[0].isEmpty())
+				for(int i = 0; i < Configs.dimUpgradesIds.length; i++){
+						try{
+						dimensionUpgradeItems.put(Integer.parseInt(Configs.dimUpgradesIds[i]), new DimensionUpgradeItem(Integer.parseInt(Configs.dimUpgradesIds[i])).register());
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+				}
 	}
 
 	private void initRecipes()

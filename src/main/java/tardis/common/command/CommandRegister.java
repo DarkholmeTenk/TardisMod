@@ -1,18 +1,19 @@
 package tardis.common.command;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.handlers.CommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 public class CommandRegister
 {
 	private static AbstractCommand teleportCommand;
-	private static AbstractCommand saveCommand;
-	private static AbstractCommand loadCommand;
-	private static AbstractCommand giveCommand;
+	//private static AbstractCommand saveCommand;
+	//private static AbstractCommand loadCommand;
+	//private static AbstractCommand giveCommand;
 	private static AbstractCommand repCCommand;
-	private static AbstractCommand refCommand;
-	private static AbstractCommand remCommand;
+	//private static AbstractCommand refCommand;
+	//private static AbstractCommand remCommand;
 	private static AbstractCommand keyCommand;
 	private static AbstractCommand xpCommand;
 	private static AbstractCommand regCommand;
@@ -22,13 +23,14 @@ public class CommandRegister
 
 	static
 	{
+		CommandHandler.registerCommand(new SchemaCommand());
 		teleportCommand = new TeleportCommand();
-		saveCommand = new SchemaSaveCommand();
-		loadCommand = new SchemaLoadCommand();
-		giveCommand = new SchemaGiveCommand();
+		//saveCommand = new SchemaSaveCommand();
+		//loadCommand = new SchemaLoadCommand();
+		//giveCommand = new SchemaGiveCommand();
 		repCCommand = new RepairCoreCommand();
-		refCommand  = new SchemaReloadCommand();
-		remCommand  = new SchemaRemoveCommand();
+		//refCommand  = new SchemaReloadCommand();
+		//remCommand  = new SchemaRemoveCommand();
 		keyCommand  = new KeyCommand();
 		xpCommand	= new XpCommand();
 		regCommand	= new RegCommand();
@@ -46,12 +48,12 @@ public class CommandRegister
 	{
 		LandingEventCommand.clear();
 		event.registerServerCommand(teleportCommand);
-		event.registerServerCommand(saveCommand);
-		event.registerServerCommand(loadCommand);
-		event.registerServerCommand(giveCommand);
+		//event.registerServerCommand(saveCommand);
+		//event.registerServerCommand(loadCommand);
+		//event.registerServerCommand(giveCommand);
 		event.registerServerCommand(repCCommand);
-		event.registerServerCommand(refCommand);
-		event.registerServerCommand(remCommand);
+		//event.registerServerCommand(refCommand);
+		//event.registerServerCommand(remCommand);
 		event.registerServerCommand(keyCommand);
 		event.registerServerCommand(xpCommand);
 		event.registerServerCommand(regCommand);

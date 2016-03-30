@@ -1,6 +1,6 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 
 import java.io.File;
@@ -16,24 +16,25 @@ import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
 import tardis.common.core.schema.PartBlueprint;
 import tardis.common.tileents.ConsoleTileEntity;
 
-public class SchemaSaveCommand extends AbstractCommand
+public class SchemaSaveCommand extends AbstractCommandNew
 {
 	@Override
 	public String getCommandName()
 	{
-		return "tardissave";
+		return "save";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender)
+	public void getAliases(List<String> list)
 	{
-		return "/tardissave <name> <x> <y> <z>";
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public void addAliases(List<String> aliases)
+	public void getCommandUsage(ICommandSender icommandsender, String total)
 	{
-		aliases.add("tsave");
+		sendString(icommandsender, total + " <name> <x> <y> <z>");
 	}
 
 	public static boolean save(String name, EntityPlayerMP pl, World w, int x, int y, int z)
@@ -67,7 +68,7 @@ public class SchemaSaveCommand extends AbstractCommand
 	}
 
 	@Override
-	public void commandBody(ICommandSender comSen, String[] astring)
+	public boolean process(ICommandSender comSen, List<String> astring)
 	{
 		if(comSen instanceof EntityPlayerMP)
 		{
@@ -76,14 +77,14 @@ public class SchemaSaveCommand extends AbstractCommand
 			int z=0;
 			String name=null;
 			EntityPlayerMP pl = (EntityPlayerMP)comSen;
-			if(astring.length == 4)
+			if(astring.size() == 4)
 			{
-				name = astring[0];
+				name = astring.get(0);
 				try
 				{
-					x = Integer.parseInt(astring[1]);
-					y = Integer.parseInt(astring[2]);
-					z = Integer.parseInt(astring[3]);
+					x = Integer.parseInt(astring.get(1));
+					y = Integer.parseInt(astring.get(2));
+					z = Integer.parseInt(astring.get(3));
 				}
 				catch(NumberFormatException e)
 				{
@@ -91,9 +92,9 @@ public class SchemaSaveCommand extends AbstractCommand
 				}
 
 			}
-			else if(astring.length == 1)
+			else if(astring.size() == 1)
 			{
-				name = astring[0];
+				name = astring.get(0);
 				x = (int) Math.floor(pl.posX);
 				y = (int) Math.floor(pl.posY);
 				z = (int) Math.floor(pl.posZ);
@@ -108,11 +109,17 @@ public class SchemaSaveCommand extends AbstractCommand
 				}
 			}
 
-			if(astring.length >= 1)
+			if(astring.size() >= 1)
 			{
 				if(save(name,pl,pl.worldObj,x,y,z))
+				{
 					sendString(pl,"Schema saved");
+					return true;
+				}
 			}
+			return false;
 		}
+		sendString(comSen,"Players only");
+		return true;
 	}
 }

@@ -1,6 +1,6 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
 
 import java.io.File;
 import java.util.List;
@@ -9,34 +9,27 @@ import net.minecraft.command.ICommandSender;
 import tardis.TardisMod;
 import tardis.common.tileents.ConsoleTileEntity;
 
-public class SchemaRemoveCommand extends AbstractCommand
+public class SchemaRemoveCommand extends AbstractCommandNew
 {
 
 	@Override
 	public String getCommandName()
 	{
-		return "tardisremove";
+		return "remove";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender)
+	public void getAliases(List<String> list)
 	{
-		return "/tardisremove <schemaName>";
+		list.add("rem");
 	}
 
 	@Override
-	public void addAliases(List<String> aliases)
+	public boolean process(ICommandSender icommandsender, List<String> astring)
 	{
-		aliases.add("trem");
-		aliases.add("tremove");
-	}
-
-	@Override
-	public void commandBody(ICommandSender icommandsender, String[] astring)
-	{
-		if(astring.length == 1)
+		if(astring.size() == 1)
 		{
-			String name = astring[0];
+			String name = astring.get(0);
 			File schema = TardisMod.schemaHandler.getSchemaFile(name);
 			try
 			{
@@ -46,11 +39,16 @@ public class SchemaRemoveCommand extends AbstractCommand
 					sendString(icommandsender,"Removed schematic " + name);
 					ConsoleTileEntity.refreshCategories();
 				}
+				else
+					sendString(icommandsender,"Schema does not exist");
+				return true;
 			}
 			catch(Exception e)
 			{
 				sendString(icommandsender,"Unable to remove");
+				e.printStackTrace();
 			}
 		}
+		return false;
 	}
 }

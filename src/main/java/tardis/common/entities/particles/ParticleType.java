@@ -2,7 +2,9 @@ package tardis.common.entities.particles;
 
 public enum ParticleType
 {
-	NANOGENE;
+	NANOGENE,
+	RESTORATIONFIELD;
+	
 	
 	public static ParticleType get(int type)
 	{

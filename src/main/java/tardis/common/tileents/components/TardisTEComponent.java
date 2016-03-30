@@ -2,15 +2,16 @@ package tardis.common.tileents.components;
 
 public enum TardisTEComponent
 {
-		TRANSMAT	("Transmat","stickTrans",new ComponentTransmat(),ValPos.INSIDE),
-		GRID		("Mass-Energy","stickGrid",new ComponentGrid(),ValPos.BOTH),
-		ENERGY		("RF","stickEnergy",new ComponentEnergy(),ValPos.BOTH),
-		INVENTORY	("Inv","stickInv",new ComponentInventory(),ValPos.BOTH),
-		FLUID		("Fluid","stickFlu",new ComponentFluid(),ValPos.BOTH),
-		CHUNK		("ChunkLoader","stickChLo", new ComponentChunkLoader(),ValPos.BOTH),
-		COMPUTER	("Peripheral","stickPer", new ComponentPeripheral(),ValPos.BOTH),
-		NANOGENE	("Nanogene","stickNano", new ComponentNanogene(),ValPos.BOTH),
-		THAUMCRAFT	("Aspects","stickAspect",new ComponentAspect(),ValPos.BOTH);
+		TRANSMAT		("Transmat","stickTrans",new ComponentTransmat(),ValPos.INSIDE),
+		GRID			("Mass-Energy","stickGrid",new ComponentGrid(),ValPos.BOTH),
+		ENERGY			("RF","stickEnergy",new ComponentEnergy(),ValPos.BOTH),
+		INVENTORY		("Inv","stickInv",new ComponentInventory(),ValPos.BOTH),
+		FLUID			("Fluid","stickFlu",new ComponentFluid(),ValPos.BOTH),
+		CHUNK			("ChunkLoader","stickChLo", new ComponentChunkLoader(),ValPos.BOTH),
+		COMPUTER		("Peripheral","stickPer", new ComponentPeripheral(),ValPos.BOTH),
+		NANOGENE		("Nanogene","stickNano", new ComponentNanogene(),ValPos.BOTH),
+		RESTORATIONFIELD("RestorationField","stickRestoration", new ComponentRestorationField(),ValPos.BOTH),
+		THAUMCRAFT		("Aspects","stickAspect",new ComponentAspect(),ValPos.BOTH);
 
 		public enum ValPos
 		{
