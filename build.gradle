@@ -15,6 +15,13 @@ buildscript {
     }
 }
 
+repositories {
+	maven {
+		name = "darkcraft"
+		url = "http://maven.darkcraft.io"
+	}
+}
+
 apply plugin: 'forge'
 
 version = "1.7.10-0.994"
@@ -39,7 +46,7 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+	compile "io.darkcraft:darkcore:0.4:source"
 }
 
 processResources
