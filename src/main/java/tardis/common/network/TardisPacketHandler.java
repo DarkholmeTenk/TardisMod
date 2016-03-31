@@ -9,10 +9,10 @@ import tardis.common.network.packet.ScrewdriverHelperPacketHandler;
 
 public class TardisPacketHandler
 {
-	public static final byte				controlFlag		= 10;
-	public static final byte				dimRegFlag		= 11;
-	public static final byte				particleFlag	= 12;
-	public static final byte				screwFlag		= 13;
+	public static final String				controlFlag		= "tm.control";
+	public static final String				dimRegFlag		= "tm.dimreg";
+	public static final String				particleFlag	= "tm.particle";
+	public static final String				screwFlag		= "tm.screw";
 	public static final IDataPacketHandler	controlHandler	= new ControlPacketHandler();
 	public static final IDataPacketHandler	dimRegHandler	= new DimRegPacketHandler();
 	public static final IDataPacketHandler	particleHandler	= new ParticlePacketHandler();

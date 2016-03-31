@@ -5,11 +5,13 @@
     "name": "Tardis Mod",
     "description": "A mod which adds functional TARDISes to minecraft",
     "url": "http://tardismod.com",
+	"version": "${version}",
+	"mcversion": "${mcversion}",
     "updateUrl": "",
     "authorList": [ "DarkholmeTenk" ],
     "credits": "Created by DarkholmeTenk, Textures and Models by DarkholmeTenk and Kilynn",
     "requiredMods": [ "Forge", "darkcore" ],
-    "dependencies": [ "darkcore@[0.3,]" ],
+    "dependencies": [ "darkcore@[0.4]" ],
     "useDependencyInformation": true
   }]
 }
