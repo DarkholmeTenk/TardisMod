@@ -1,29 +1,22 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import java.util.EnumSet;
+import java.util.Random;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
-import java.util.EnumSet;
-import java.util.Random;
-
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.common.util.ForgeDirection;
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IScrewablePrecise;
@@ -34,12 +27,16 @@ import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.LabTileEntity;
+import tardis.common.tileents.TemporalAcceleratorTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import tardis.common.tileents.extensions.LabFlag;
 import tardis.common.tileents.extensions.LabRecipe;
 
-public class TemporalAcceleratorBlock extends AbstractBlock implements IScrewablePrecise
+public class TemporalAcceleratorBlock extends AbstractBlockContainer implements IScrewablePrecise
 {
+	
+	public IIcon[] icons = new IIcon[6];
+	
 	public TemporalAcceleratorBlock()
 	{
 		super(TardisMod.modName);
@@ -59,13 +56,13 @@ public class TemporalAcceleratorBlock extends AbstractBlock implements IScrewabl
 		if(Configs.numDirtRecipe > 0)
 			LabTileEntity.addRecipe(new LabRecipe(
 					new ItemStack[] { 
-							new ItemStack(Blocks.dirt,64),
-							CraftingComponentType.KONTRON.getIS(1),
-							CraftingComponentType.CHRONOSTEEL.getIS(1),
-							new ItemStack(Items.dye,32,15)},
+							new ItemStack(TardisMod.interiorDirtBlock,Configs.numDirtRecipe),
+							new ItemStack(TardisMod.compressedBlock,2,0),
+							new ItemStack(TardisMod.compressedBlock,2,1),
+							CraftingComponentType.KONTRON.getIS(1)},
 					new ItemStack[] { getIS(1, 0) },
 					EnumSet.of(LabFlag.INFLIGHT),
-					100
+					500
 					));
 	}
 	
@@ -76,47 +73,6 @@ public class TemporalAcceleratorBlock extends AbstractBlock implements IScrewabl
 			return 1;
 		return 100;
     }
-
-	public double getNewTickRate(int old)
-	{
-		return MathHelper.ceil((old * Configs.tempAccTickMult));
-	}
-
-	@Override
-	public void updateTick(World w, int x, int y, int z, Random rand)
-	{
-		if(!Helper.isTardisWorld(w))
-			return;
-		if(w.isAirBlock(x, y+1, z))
-		{
-			w.scheduleBlockUpdate(x, y, z, this, 40);
-			return;
-		}
-		w.scheduleBlockUpdate(x, y, z, this, 1);
-		Block b = w.getBlock(x, y+1, z);
-		if(b != null)
-		{
-			CoreTileEntity core = Helper.getTardisCore(w);
-			if((core != null))
-			{
-				if(w instanceof WorldServer)
-				{
-					if(b instanceof TemporalAcceleratorBlock)
-						return;
-					b.updateTick(w, x, y + 1, z, rand);
-					
-					if(!b.hasTileEntity(b.getDamageValue(w, x, y+1, z)))
-						return;
-					TileEntity te = w.getTileEntity(x, y+1, z);
-//					for(int i = 0; i < (getNewTickRate(b.tickRate(w))); i++){
-						te.updateEntity();
-						System.out.println(ServerHelper.isClient() + " : " + 1 + " / " + b.tickRate(w) + te);
-//					}
-				}
-			}
-		}
-
-	}
 
 	@Override
 	public boolean screw(ScrewdriverHelper helper, ScrewdriverMode mode, EntityPlayer player, SimpleCoordStore s)
@@ -138,6 +94,30 @@ public class TemporalAcceleratorBlock extends AbstractBlock implements IScrewabl
 				ServerHelper.sendString(player, CoreTileEntity.cannotModifyMessage);
 		}
 		return false;
+	}
+	
+	@Override
+	public void registerBlockIcons(IIconRegister reg) {
+		this.icons[0] = reg.registerIcon(TardisMod.modName+":TemporalAccelerator");
+		this.icons[1] = reg.registerIcon(TardisMod.modName+":TemporalAcceleratorTop");
+		for (int i = 2; i < 6; i ++) {
+			this.icons[i] = reg.registerIcon(TardisMod.modName+":TemporalAccelerator");
+	    }
+	}
+	
+	@Override
+	public IIcon getIcon(int side, int meta) {
+	    return this.icons[side];
+	}
+
+	@Override
+	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
+		return new TemporalAcceleratorTileEntity();
+	}
+
+	@Override
+	public Class<? extends TileEntity> getTEClass() {
+		return TemporalAcceleratorTileEntity.class;
 	}
 
 }

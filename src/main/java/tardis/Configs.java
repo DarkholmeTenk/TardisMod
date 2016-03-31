@@ -151,7 +151,7 @@ public class Configs
 	public static double		dirtTickMult			= 1;
 	public static double		dirtBoneChance			= 0.3;
 	
-	public static double		tempAccTickMult			= 0.5;
+	public static double		tempAccTickMult			= 0.2;
 
 	public static int			decoratorRange			= 6;
 	public static boolean		visibleSchema			= false;
@@ -173,8 +173,8 @@ public class Configs
 
 		dirtTickMult = toolConfig.getDouble("Dirt block - Tick mult", 0.5, "The number the tick rate of the plant is multipied by to work out how often the dirt block applies a dirt tick",
 				"e.g. A mult of 0.5 means a plant which would normally get a tick every 10 ticks will get an extra growth tick every 5 ticks");
-		tempAccTickMult = toolConfig.getDouble("Temporal Accelerator - Tick mult", 0.5, "The number the tick rate of the block is multipied by to work out how often the accelerator block applies an update tick",
-				"e.g. A mult of 0.5 means a block which would normally get a tick every 10 ticks will get an extra tick every 5 ticks");
+		tempAccTickMult = toolConfig.getDouble("Temporal Accelerator - Tick mult", 0.2, "The multiplier which decides when the tile above it gets an extra update tick.",
+				"e.g. A mult of 0.2 means a block which has a tick rate of 10, will get an extra update tick every 2 ticks.");
 		dirtBoneChance = toolConfig.getDouble("Dirt block - Bonemeal chance", 0.25, "The chance for a TARDIS dirt block to apply a bonemeal affect to the plant (as well as a growth tick)");
 
 		decoratorRange = toolConfig.getInt("Decorator - Range", 6, "The maximum range the decorator can work to");
