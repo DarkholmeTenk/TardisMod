@@ -293,32 +293,18 @@ public class TardisMod implements IConfigHandlerMod
 		glassSimulacrumBlock = new CraftableSimBlock(decoTransBlock).register();
 		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
 		shieldBlock = new ShieldBlock().register();
-<<<<<<< HEAD
 		compressedBlock = new CompressedBlock().register();
 		
 		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock, 
 												   tardisConsoleBlock, tardisEngineBlock, componentBlock, 
 												   internalDoorBlock, decoBlock, decoTransBlock, 
-=======
-
-		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock,
-												   tardisConsoleBlock, tardisEngineBlock, componentBlock,
-												   internalDoorBlock, decoBlock, decoTransBlock,
->>>>>>> refs/remotes/DarkholmeTenk/master
 												   interiorDirtBlock, schemaBlock, schemaCoreBlock,
 												   schemaComponentBlock, slabBlock, landingPad,
 												   labBlock, gravityLift, forcefield, battery,
 												   colorableWallBlock, colorableFloorBlock, colorableBrickBlock,
 												   colorablePlankBlock, colorableRoundelBlock, colorableOpenRoundelBlock,
-<<<<<<< HEAD
 												   manualBlock, manualHelperBlock, shieldBlock, temporalAccelerator};
-		
-		
-=======
-												   manualBlock, manualHelperBlock, shieldBlock};
 
-
->>>>>>> refs/remotes/DarkholmeTenk/master
 		unbreakableBlocks = new HashSet<AbstractBlock>(Arrays.asList(unbreakableTardisBlocks));
 	}
 
