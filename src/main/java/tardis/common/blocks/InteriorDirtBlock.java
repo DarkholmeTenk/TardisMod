@@ -122,7 +122,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 					if(rand.nextDouble() <= Configs.dirtBoneChance)
 						ItemDye.applyBonemeal(is, w, x, y+1, z, pl);
 					int i=1;
-					if(w.getBlock(x, y+1, z) == b  && b instanceof IGrowable)
+					if(w.getBlock(x, y+1, z) == b  && (b instanceof IGrowable || b instanceof IPlantable))
 					{
 						for(i=1;w.getBlock(x, y+i, z)==b;i++);
 						b.updateTick(w, x, (y+i)-1, z, rand);
