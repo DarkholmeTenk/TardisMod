@@ -11,7 +11,7 @@
     "authorList": [ "DarkholmeTenk" ],
     "credits": "Created by DarkholmeTenk, Textures and Models by DarkholmeTenk and Kilynn",
     "requiredMods": [ "Forge", "darkcore" ],
-    "dependencies": [ "darkcore@[0.4]" ],
+    "dependencies": [ "darkcore@[0.4,0.49]" ],
     "useDependencyInformation": true
   }]
 }
