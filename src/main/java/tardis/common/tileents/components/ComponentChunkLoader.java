@@ -69,11 +69,8 @@ public class ComponentChunkLoader extends AbstractComponent implements IChunkLoa
 			{
 				for(int k = -1;k<=1;k++)
 				{
-					if((j == 0) && (k == 0))
-						continue;
-					ChunkCoordIntPair ccip = new ChunkCoordIntPair(loadable[0].chunkXPos + j,loadable[0].chunkZPos + k);
-					loadable[i] = ccip;
-					i++;
+					if((j == 0) && (k == 0)) continue;
+					loadable[i++] = new ChunkCoordIntPair(loadable[0].chunkXPos + j,loadable[0].chunkZPos + k);
 				}
 			}
 			return loadable;
