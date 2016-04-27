@@ -1,5 +1,22 @@
 package tardis;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.DarkcoreTeleporter;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
@@ -8,13 +25,6 @@ import io.darkcraft.darkcore.mod.config.ConfigHandler;
 import io.darkcraft.darkcore.mod.config.ConfigHandlerFactory;
 import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
@@ -25,6 +35,7 @@ import tardis.common.blocks.BatteryBlock;
 import tardis.common.blocks.ColorableBlock;
 import tardis.common.blocks.ColorableOpenRoundelBlock;
 import tardis.common.blocks.ComponentBlock;
+import tardis.common.blocks.CompressedBlock;
 import tardis.common.blocks.ConsoleBlock;
 import tardis.common.blocks.CoreBlock;
 import tardis.common.blocks.CraftableCSimBlock;
@@ -49,6 +60,7 @@ import tardis.common.blocks.SlabBlock;
 import tardis.common.blocks.StairBlock;
 import tardis.common.blocks.SummonerBlock;
 import tardis.common.blocks.TardisBlock;
+import tardis.common.blocks.TemporalAcceleratorBlock;
 import tardis.common.blocks.TopBlock;
 import tardis.common.command.CommandRegister;
 import tardis.common.core.CreativeTab;
@@ -88,17 +100,6 @@ import tardis.common.tileents.extensions.chameleon.tardis.DefaultTardisCham;
 import tardis.common.tileents.extensions.chameleon.tardis.NewTardisCham;
 import tardis.common.tileents.extensions.chameleon.tardis.PostboxTardisCham;
 import thaumcraft.api.ItemApi;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
-import cpw.mods.fml.common.event.FMLServerStartedEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 @Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.994", dependencies = "required-after:FML; required-after:darkcore@[0.4,0.49]; after:CoFHCore; after:appliedenergistics2; after:Waila; before:DragonAPI")
 public class TardisMod implements IConfigHandlerMod
@@ -143,6 +144,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static StairBlock									stairBlock;
 	public static AbstractBlock									slabBlock;
 	public static AbstractBlock									interiorDirtBlock;
+	public static AbstractBlock									temporalAccelerator;
 	public static AbstractBlock									manualBlock;
 	public static AbstractBlock									manualHelperBlock;
 	public static AbstractBlock									summonerBlock;
@@ -161,7 +163,9 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock									glassSimulacrumBlock;
 	public static AbstractBlock									brickSimulacrumBlock;
 	public static AbstractBlock									plankSimulacrumBlock;
-
+	
+	public static AbstractBlock									compressedBlock;
+	
 	public static AbstractBlock									decoSimulacrumBlock;
 	public static LabBlock										labBlock;
 
@@ -261,6 +265,7 @@ public class TardisMod implements IConfigHandlerMod
 		decoBlock = new DecoBlock().register();
 		decoTransBlock = new DecoTransBlock().register();
 		interiorDirtBlock = new InteriorDirtBlock().register();
+		temporalAccelerator = new TemporalAcceleratorBlock().register();
 		schemaBlock = new SchemaBlock(Configs.visibleSchema).register();
 		schemaCoreBlock = new SchemaCoreBlock(Configs.visibleSchema).register();
 		schemaComponentBlock = new SchemaComponentBlock().register();
@@ -288,17 +293,17 @@ public class TardisMod implements IConfigHandlerMod
 		glassSimulacrumBlock = new CraftableSimBlock(decoTransBlock).register();
 		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
 		shieldBlock = new ShieldBlock().register();
-
-		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock,
-												   tardisConsoleBlock, tardisEngineBlock, componentBlock,
-												   internalDoorBlock, decoBlock, decoTransBlock,
+		compressedBlock = new CompressedBlock().register();
+		
+		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock, 
+												   tardisConsoleBlock, tardisEngineBlock, componentBlock, 
+												   internalDoorBlock, decoBlock, decoTransBlock, 
 												   interiorDirtBlock, schemaBlock, schemaCoreBlock,
 												   schemaComponentBlock, slabBlock, landingPad,
 												   labBlock, gravityLift, forcefield, battery,
 												   colorableWallBlock, colorableFloorBlock, colorableBrickBlock,
 												   colorablePlankBlock, colorableRoundelBlock, colorableOpenRoundelBlock,
-												   manualBlock, manualHelperBlock, shieldBlock};
-
+												   manualBlock, manualHelperBlock, shieldBlock, temporalAccelerator};
 
 		unbreakableBlocks = new HashSet<AbstractBlock>(Arrays.asList(unbreakableTardisBlocks));
 	}
@@ -345,6 +350,8 @@ public class TardisMod implements IConfigHandlerMod
 		chameleonUpgradeItem.initRecipes();
 		shieldBlock.initRecipes();
 		CraftableSimBlock.initStaticRecipes();
+		temporalAccelerator.initRecipes();
+		compressedBlock.initRecipes();
 	}
 
 	@EventHandler
