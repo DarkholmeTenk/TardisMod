@@ -26,15 +26,20 @@ public class ManualPageTree
 		ManualPageTree recDal	= new ManualPageTree(ManualPage.LRDALEK, nullT);
 		ManualPageTree recKon	= new ManualPageTree(ManualPage.LRKONTRON, nullT);
 		ManualPageTree recDir	= new ManualPageTree(ManualPage.LRTEMPDIRT, nullT);
-		ManualPageTree lab		= new ManualPageTree(ManualPage.LAB, recChr, recDal, recKon, recDir);
+		ManualPageTree recTag	= new ManualPageTree(ManualPage.LRNAMETAG, nullT);
+		ManualPageTree lab		= new ManualPageTree(ManualPage.LAB, recChr, recDal, recKon, recDir, recTag);
 		ManualPageTree craft	= new ManualPageTree(ManualPage.CRAFTING, lab);
 		ManualPageTree grav		= new ManualPageTree(ManualPage.GRAVLIFT, nullT);
 		ManualPageTree batt		= new ManualPageTree(ManualPage.BATTERY, nullT);
 		ManualPageTree roundels	= new ManualPageTree(ManualPage.ROUNDELS, nullT);
+		ManualPageTree upgrades	= new ManualPageTree(ManualPage.UPGRADES, nullT);
 		ManualPageTree landpad	= new ManualPageTree(ManualPage.LANDPAD, nullT);
-		ManualPageTree engine	= new ManualPageTree(ManualPage.ENGINE, nullT);
-		ManualPageTree sonic	= new ManualPageTree(ManualPage.SONIC, nullT);
-		ManualPageTree tools	= new ManualPageTree(ManualPage.TOOLS, sonic, grav, batt, roundels, landpad, engine);
+		ManualPageTree engine	= new ManualPageTree(ManualPage.ENGINE, upgrades);
+		ManualPageTree style	= new ManualPageTree(ManualPage.STYLE, nullT);
+		ManualPageTree sonic	= new ManualPageTree(ManualPage.SONIC, style);
+		ManualPageTree tpm		= new ManualPageTree(ManualPage.TPM, nullT);
+		ManualPageTree decor	= new ManualPageTree(ManualPage.DECORATOR, nullT);
+		ManualPageTree tools	= new ManualPageTree(ManualPage.TOOLS, sonic, decor, grav, batt, roundels, landpad, engine, tpm);
 		ManualPageTree creds	= new ManualPageTree(ManualPage.CREDITS, nullT);
 		topTree = new ManualPageTree(ManualPage.MAIN, flight, craft, tools, creds);
 	}
