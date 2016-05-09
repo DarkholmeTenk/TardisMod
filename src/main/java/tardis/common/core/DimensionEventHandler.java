@@ -244,4 +244,11 @@ public class DimensionEventHandler
 			if(bl instanceof AbstractBlock)
 				if(TardisMod.unbreakableBlocks.contains((AbstractBlock) bl)) event.setCanceled(true);
 	}
+	
+	@Optional.Method(modid=tardis.common.integration.other.IC2.modname)
+	@SubscribeEvent
+	public void handleLaserBlockBreak(ic2.api.event.ExplosionEvent event)
+	{
+		if(Helper.isTardisWorld(event.world)) event.setCanceled(true);
+	}
 }
