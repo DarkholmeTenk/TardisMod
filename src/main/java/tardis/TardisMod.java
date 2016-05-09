@@ -196,12 +196,12 @@ public class TardisMod implements IConfigHandlerMod
 		schemaHandler.getSchemas();
 		tab = new CreativeTab("TardisModTab");
 		cTab = new CreativeTab("TardisModCraftableTab");
-		consoleBiome = new BiomeGenConsoleRoom(Configs.consoleBiomeID);
 		DarkcoreMod.registerCreativeTab(modName, tab);
 
 		refreshConfigs();
-
-		BiomeDictionary.registerBiomeType(consoleBiome, BiomeDictionary.Type.PLAINS);
+		
+		consoleBiome = new BiomeGenConsoleRoom(Configs.consoleBiomeID);
+//		BiomeDictionary.registerBiomeType(consoleBiome, BiomeDictionary.Type.PLAINS);
 		DimensionManager.registerProviderType(Configs.providerID, TardisWorldProvider.class, Configs.tardisLoaded);
 		initChameleonTypes();
 		initBlocks();
