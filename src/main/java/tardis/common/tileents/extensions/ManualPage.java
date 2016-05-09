@@ -20,12 +20,17 @@ public enum ManualPage
 	LRDALEK("Dalekanium","LRDalek"),
 	LRKONTRON("Kontron","LRKontron"),
 	LRTEMPDIRT("Temporal Dirt","LRDirt"),
+	LRNAMETAG("Nametag","LRNametag"),
 	TOOLS("Tools","Tools"),
 	ROUNDELS("Roundels","Roundels"),
 	LANDPAD("Landing Pad","LandPad"),
 	GRAVLIFT("Gravity Lift","GravLift"),
+	TPM("T.P.M.","Tpm"),
 	ENGINE("Engine","Engine"),
+	UPGRADES("Upgrades","Upgrades"),
 	SONIC("Screwdriver","Sonic"),
+	STYLE("Style","Style"),
+	DECORATOR("Decorator", "Decorator"),
 	CREDITS("Credits","Credits");
 
 	public final String title;
