@@ -36,6 +36,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 		return new ComponentFluid(parent);
 	}
 
+	private static final FluidStack[] noTanks = new FluidStack[0];
 	private FluidStack[] getTanks(boolean limit)
 	{
 		if((parentObj != null) && (parentObj.getWorldObj() != null))
@@ -49,7 +50,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 				return new FluidStack[] {tanks[currentTank]};
 			}
 			else
-				return new FluidStack[] {};
+				return noTanks;
 
 		}
 		return null;
@@ -57,6 +58,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 
 	private int fill(FluidStack[] tanks, int i, boolean doFill, FluidStack resource)
 	{
+		if(tanks.length == 0) return 0;
 		if(tanks[i] == null)
 		{
 			if(doFill)
@@ -233,7 +235,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 			ServerHelper.sendString(ent, "No tanks found");
 			return true;
 		}
-		
+
 		for(int i = 0; i < tanks.length; i++)
 		{
 			FluidStack ft = tanks[i];
