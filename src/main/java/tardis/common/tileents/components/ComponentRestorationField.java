@@ -103,7 +103,7 @@ public class ComponentRestorationField extends AbstractComponent
 						for(ItemStack s : pl.inventory.mainInventory){
 							if(s != null){
 								if(IC2.isItemElectric(s) || CofHCore.isItemElectric(s) || AEHelper.isItemElectric(s))
-									return;
+									continue;
 								
 								if(s.isItemStackDamageable())
 								{
