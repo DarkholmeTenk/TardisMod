@@ -1,11 +1,10 @@
 package tardis.common.tileents.components;
 
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -98,7 +97,7 @@ public class ComponentNanogene extends AbstractComponent implements IScrewable
 			for(EntityLivingBase ent : ents)
 			{
 				IArtronEnergyProvider core = getArtronEnergyProvider();
-				if((core != null) && core.takeArtronEnergy(1, false))
+				if((core != null) && core.takeArtronEnergy(Configs.nanogeneCost, false))
 				{
 					Helper.spawnParticle(ParticleType.NANOGENE, WorldHelper.getWorldID(parentObj), ent.posX , ent.posY+1, ent.posZ,20,true);
 					if(ent.isBurning())
