@@ -8,6 +8,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.client.IRenderHandler;
 import tardis.common.core.helpers.Helper;
 
@@ -24,7 +25,7 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		return "Tardis Interior";
 	}
-	
+
 	@Override
 	public String getSaveFolder()
 	{
@@ -48,10 +49,10 @@ public class TardisWorldProvider extends WorldProvider
 	{
 		return new TardisChunkProvider(worldObj);
 	}
-	
+
 	@Override
     @SideOnly(Side.CLIENT)
-    public IRenderHandler getSkyRenderer() 
+    public IRenderHandler getSkyRenderer()
 	{
 		if(dimensionId != 0)
 		{
@@ -66,7 +67,7 @@ public class TardisWorldProvider extends WorldProvider
 		}
 		return super.getSkyRenderer();
     }
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IRenderHandler getCloudRenderer()
@@ -93,7 +94,15 @@ public class TardisWorldProvider extends WorldProvider
 		worldObj.thunderingStrength = 0;
 		worldObj.updateWeatherBody();
 		if(worldObj.isRaining())
+		{
 			worldObj.setRainStrength(0);
+			WorldInfo wi = worldObj.getWorldInfo();
+			if(wi != null)
+			{
+				wi.setRaining(false);
+				wi.setRainTime(Integer.MAX_VALUE);
+			}
+		}
 	}
 
 	@Override
@@ -129,7 +138,7 @@ public class TardisWorldProvider extends WorldProvider
 		}
 		return super.getWorldTime();
     }
-	
+
 	public float calculateRealCelestialAngle(float var)
     {
 		if(dimensionId != 0)
@@ -146,7 +155,7 @@ public class TardisWorldProvider extends WorldProvider
 					System.out.println(super.getWorldTime());
 					float worldTime = super.getWorldTime();
 			        int j = (int)(worldTime % 24000L);
-			        float f1 = ((float)j + var) / 24000.0F - 0.25F;
+			        float f1 = ((j + var) / 24000.0F) - 0.25F;
 			        if (f1 < 0.0F)
 			        {
 			            ++f1;
@@ -156,8 +165,8 @@ public class TardisWorldProvider extends WorldProvider
 			            --f1;
 			        }
 			        float f2 = f1;
-			        f1 = 1.0F - (float)((Math.cos((double)f1 * Math.PI) + 1.0D) / 2.0D);
-			        f1 = f2 + (f1 - f2) / 3.0F;
+			        f1 = 1.0F - (float)((Math.cos(f1 * Math.PI) + 1.0D) / 2.0D);
+			        f1 = f2 + ((f1 - f2) / 3.0F);
 			        return f1;
 				case 2:
 					return 0f;
@@ -165,12 +174,12 @@ public class TardisWorldProvider extends WorldProvider
 		}
 		return 0f;
     }
-	
+
 	public int getWorldVariance()
 	{
 		return MathHelper.round((Math.random() * 10) - 5);
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
     public Vec3 getSkyColor(Entity cameraEntity, float partialTicks)
@@ -187,7 +196,7 @@ public class TardisWorldProvider extends WorldProvider
 		}
         return super.getSkyColor(cameraEntity, partialTicks);
     }
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
     public float getStarBrightness(float par1)
@@ -204,7 +213,7 @@ public class TardisWorldProvider extends WorldProvider
 		}
 		return super.getStarBrightness(par1);
     }
-	
+
 	@Override
 	public double getHorizon()
     {
@@ -220,7 +229,7 @@ public class TardisWorldProvider extends WorldProvider
 		}
 		return super.getHorizon();
     }
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
     public float[] calcSunriseSunsetColors(float p_76560_1_, float p_76560_2_)
@@ -237,7 +246,7 @@ public class TardisWorldProvider extends WorldProvider
 		}
 		return super.calcSunriseSunsetColors(p_76560_1_, p_76560_2_);
     }
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
     public float getCloudHeight()
@@ -254,7 +263,8 @@ public class TardisWorldProvider extends WorldProvider
 		}
 		return super.getCloudHeight();
     }
-	
+
+	@Override
 	@SideOnly(Side.CLIENT)
     public Vec3 getFogColor(float p_76562_1_, float p_76562_2_)
     {
