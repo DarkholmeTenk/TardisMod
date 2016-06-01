@@ -1,13 +1,15 @@
 package tardis.common.tileents.components;
 
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import cofh.api.energy.IEnergyHandler;
+import cpw.mods.fml.common.Optional;
+import ic2.api.energy.EnergyNet;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergySource;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
-
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -21,8 +23,6 @@ import tardis.common.dimension.TardisDataStore;
 import tardis.common.integration.other.CofHCore;
 import tardis.common.integration.other.IC2;
 import tardis.common.tileents.ComponentTileEntity;
-import cofh.api.energy.IEnergyHandler;
-import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid=CofHCore.modname),
@@ -194,7 +194,7 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 	{
 		if(ServerHelper.isClient()) return 0;
 		double v = getEnergyStored(null)/Configs.euRatio;
-		return v;
+		return Math.min(v, tierMax());
 	}
 
 	@Override
@@ -255,6 +255,11 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 			case 4: return "EV";
 		}
 		return "";
+	}
+
+	public double tierMax()
+	{
+		return EnergyNet.instance.getPowerFromTier(tier);
 	}
 
 	@Override
