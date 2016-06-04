@@ -1,5 +1,7 @@
 package tardis.common.dimension;
 
+import java.util.HashMap;
+
 import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
@@ -7,9 +9,6 @@ import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
-import java.util.HashMap;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -59,7 +58,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 	public int												maxSuck			= 16;
 	public Aspect											maxSuckT		= null;
 	public int												desiredDim		= 0;
-	
+
 	private int												daytimeSetting 	= 0;
 	private boolean											spaceProjection = false;
 
@@ -556,6 +555,14 @@ public class TardisDataStore extends AbstractWorldDataStore
 		return ((getLevel() - 1) * Configs.maxEachAspectInc) + Configs.maxEachAspect;
 	}
 
+	public String getOwnerName()
+	{
+		CoreTileEntity cte = getCore();
+		if(cte != null)
+			return cte.getOwner();
+		return "##NO OWNER##";
+	}
+
 	private int getRequiredLevel(TardisFunction fun)
 	{
 		switch (fun)
@@ -664,22 +671,22 @@ public class TardisDataStore extends AbstractWorldDataStore
 	{
 		return new SimpleCoordStore(exteriorWorld, exteriorX, exteriorY, exteriorZ);
 	}
-	
+
 	public int getDaytimeSetting()
 	{
 		return daytimeSetting;
 	}
-	
+
 	public boolean getSpaceProjection()
 	{
 		return spaceProjection;
 	}
-	
+
 	public void setDaytimeSetting(int var)
 	{
 		daytimeSetting = var;
 	}
-	
+
 	public void setSpaceProjection(boolean var)
 	{
 		spaceProjection = var;

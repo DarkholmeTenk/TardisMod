@@ -1,18 +1,19 @@
 package tardis.common.core.helpers;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
 import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.network.DataPacket;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -486,6 +487,11 @@ public class Helper
 	{
 		if (te != null) return getDataStore(te.getWorldObj());
 		return null;
+	}
+
+	public static Collection<TardisDataStore> getAllDataStores()
+	{
+		return Collections.unmodifiableCollection(datastoreMap.values());
 	}
 
 	public static SaveSlotNamesDataStore getSSNDataStore(int dimID)
