@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
@@ -200,6 +200,12 @@ public class DimensionEventHandler
 	{
 		EntityLivingBase base = event.entityLiving;
 		if((base instanceof EntityPlayer) && !(base instanceof IMob)) return;
+		if(Helper.isTardisWorld(event.world))
+		{
+			if(!Configs.enableTardisMobSpawning)
+				event.setResult(Result.DENY);
+			return;
+		}
 		SimpleDoubleCoordStore spawnPos = new SimpleDoubleCoordStore(event.world, event.x, event.y, event.z);
 		Set<Integer> dimIDs = TardisDimensionRegistry.getDims();
 		for(Integer dim : dimIDs)
@@ -223,11 +229,11 @@ public class DimensionEventHandler
 		}
 	}
 
-	
-	
+
+
 	@SubscribeEvent
 	public void handleBlockBreak(BreakEvent event)
-	{		
+	{
 		EntityPlayer pl = event.getPlayer();
 		if(pl == null) return;
 		ItemStack is = pl.getHeldItem();
@@ -235,16 +241,16 @@ public class DimensionEventHandler
 		Item i = is.getItem();
 		if(i == TardisMod.decoTool) event.setCanceled(true);
 	}
-	
+
 	@Optional.Method(modid=tardis.common.integration.other.IC2.modname)
 	@SubscribeEvent
 	public void handleLaserBlockBreak(ic2.api.event.LaserEvent.LaserHitsBlockEvent event)
 	{
 		Block bl = event.world.getBlock(event.x, event.y, event.z);
 			if(bl instanceof AbstractBlock)
-				if(TardisMod.unbreakableBlocks.contains((AbstractBlock) bl)) event.setCanceled(true);
+				if(TardisMod.unbreakableBlocks.contains(bl)) event.setCanceled(true);
 	}
-	
+
 	@Optional.Method(modid=tardis.common.integration.other.IC2.modname)
 	@SubscribeEvent
 	public void handleLaserBlockBreak(ic2.api.event.ExplosionEvent event)
