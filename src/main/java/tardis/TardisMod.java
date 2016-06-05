@@ -27,7 +27,6 @@ import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IConfigHandlerMod;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
@@ -101,7 +100,7 @@ import tardis.common.tileents.extensions.chameleon.tardis.NewTardisCham;
 import tardis.common.tileents.extensions.chameleon.tardis.PostboxTardisCham;
 import thaumcraft.api.ItemApi;
 
-@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.994", dependencies = "required-after:FML; required-after:darkcore@[0.4,0.49]; after:CoFHCore; after:appliedenergistics2; after:Waila; before:DragonAPI")
+@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.995", dependencies = "required-after:FML; required-after:darkcore@[0.4,0.49]; after:CoFHCore; after:appliedenergistics2; after:Waila; before:DragonAPI")
 public class TardisMod implements IConfigHandlerMod
 {
 	@Instance
@@ -163,9 +162,9 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock									glassSimulacrumBlock;
 	public static AbstractBlock									brickSimulacrumBlock;
 	public static AbstractBlock									plankSimulacrumBlock;
-	
+
 	public static AbstractBlock									compressedBlock;
-	
+
 	public static AbstractBlock									decoSimulacrumBlock;
 	public static LabBlock										labBlock;
 
@@ -199,7 +198,7 @@ public class TardisMod implements IConfigHandlerMod
 		DarkcoreMod.registerCreativeTab(modName, tab);
 
 		refreshConfigs();
-		
+
 		consoleBiome = new BiomeGenConsoleRoom(Configs.consoleBiomeID);
 //		BiomeDictionary.registerBiomeType(consoleBiome, BiomeDictionary.Type.PLAINS);
 		DimensionManager.registerProviderType(Configs.providerID, TardisWorldProvider.class, Configs.tardisLoaded);
@@ -294,10 +293,10 @@ public class TardisMod implements IConfigHandlerMod
 		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
 		shieldBlock = new ShieldBlock().register();
 		compressedBlock = new CompressedBlock().register();
-		
-		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock, 
-												   tardisConsoleBlock, tardisEngineBlock, componentBlock, 
-												   internalDoorBlock, decoBlock, decoTransBlock, 
+
+		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock,
+												   tardisConsoleBlock, tardisEngineBlock, componentBlock,
+												   internalDoorBlock, decoBlock, decoTransBlock,
 												   interiorDirtBlock, schemaBlock, schemaCoreBlock,
 												   schemaComponentBlock, slabBlock, landingPad,
 												   labBlock, gravityLift, forcefield, battery,
