@@ -1,15 +1,27 @@
 package tardis.common.tileents.components;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+
+import appeng.api.exceptions.FailedConnection;
+import appeng.api.networking.GridFlags;
+import appeng.api.networking.GridNotification;
+import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridBlock;
+import appeng.api.networking.IGridConnection;
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
+import appeng.api.util.AECableType;
+import appeng.api.util.AEColor;
+import appeng.api.util.DimensionalCoord;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
 import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -26,18 +38,6 @@ import tardis.common.integration.ae.ITMGrid;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.CoreTileEntity;
-import appeng.api.networking.GridFlags;
-import appeng.api.networking.GridNotification;
-import appeng.api.networking.IGrid;
-import appeng.api.networking.IGridBlock;
-import appeng.api.networking.IGridConnection;
-import appeng.api.networking.IGridHost;
-import appeng.api.networking.IGridNode;
-import appeng.api.util.AECableType;
-import appeng.api.util.AEColor;
-import appeng.api.util.DimensionalCoord;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 @Optional.Interface(iface="tardis.common.integration.ae.ITMGrid",modid="appliedenergistics2"),
@@ -51,6 +51,7 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 	private boolean linkedToCore = false;
 	private boolean linkedToOther = false;
 	private SimpleCoordStore otherGrid;
+	private String errState;
 
 	private ArrayList<IGridConnection> connections = new ArrayList<IGridConnection>();
 
@@ -141,8 +142,7 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 		CoreTileEntity core = getCore();
 		if(core != null)
 		{
-			linkedToCore = true;
-			addConnection(core, ForgeDirection.UNKNOWN);
+			linkedToCore = addConnection(core, ForgeDirection.UNKNOWN);
 		}
 	}
 
@@ -192,6 +192,7 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 				if(!doesConnectionExist(node, otherNode))
 				{
 					IGridConnection con = AEHelper.aeAPI.createGridConnection(node, otherNode);
+					errState = null;
 					addConnection(con);
 					if(otherHost instanceof ITMGrid)
 						((ITMGrid)otherHost).addConnection(con);
@@ -199,6 +200,10 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 					return true;
 				}
 			}
+		}
+		catch(FailedConnection e)
+		{
+			errState = "An error occured while connecting. Try granting default build permission (on a biometric card)";
 		}
 		catch(Exception c)
 		{
@@ -421,6 +426,8 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 	{
 		if(ServerHelper.isServer())
 		{
+			if(errState != null)
+				ServerHelper.sendString(ent, errState);
 			if(otherGrid == null)
 				ServerHelper.sendString(ent, "Direct connection: None");
 			else
