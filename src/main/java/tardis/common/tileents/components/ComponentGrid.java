@@ -203,7 +203,7 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 		}
 		catch(FailedConnection e)
 		{
-			errState = "An error occured while connecting. Try granting default build permission (on a biometric card)";
+			errState = "An error occured while connecting. Try granting default build permission (on a blank biometric card)";
 		}
 		catch(Exception c)
 		{
