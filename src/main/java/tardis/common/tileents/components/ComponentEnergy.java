@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import cofh.api.energy.IEnergyHandler;
+import cofh.api.energy.IEnergyReceiver;
 import cpw.mods.fml.common.Optional;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.tile.IEnergySink;
@@ -93,9 +94,9 @@ public class ComponentEnergy extends AbstractComponent implements IEnergyHandler
 				//max = Math.min(max, b/2);
 				max = 0;
 			TileEntity te = w.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
-			if((te instanceof IEnergyHandler) && !(te instanceof ComponentTileEntity))
+			if((te instanceof IEnergyReceiver) && !(te instanceof ComponentTileEntity))
 			{
-				IEnergyHandler ieh = (IEnergyHandler)te;
+				IEnergyReceiver ieh = (IEnergyReceiver)te;
 				if(ieh.canConnectEnergy(dir.getOpposite()))
 				{
 					int am = extractEnergy(dir,max,true);
