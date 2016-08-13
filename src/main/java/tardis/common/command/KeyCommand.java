@@ -1,11 +1,10 @@
 package tardis.common.command;
 
+import java.util.List;
+
 import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
-import java.util.List;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,12 +14,6 @@ import tardis.common.items.KeyItem;
 
 public class KeyCommand extends AbstractCommand
 {
-
-	@Override
-	public int compareTo(Object arg0)
-	{
-		return 0;
-	}
 
 	@Override
 	public String getCommandName()
