@@ -187,7 +187,7 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 		IGridNode otherNode = otherHost.getGridNode(dir);
 		try
 		{
-			if(otherNode != null)
+			if((otherNode != null) && (node != null))
 			{
 				if(!doesConnectionExist(node, otherNode))
 				{

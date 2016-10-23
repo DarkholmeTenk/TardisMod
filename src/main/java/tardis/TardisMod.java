@@ -30,6 +30,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import tardis.common.TardisProxy;
+import tardis.common.blocks.AdvancedLabBlock;
 import tardis.common.blocks.BatteryBlock;
 import tardis.common.blocks.ColorableBlock;
 import tardis.common.blocks.ColorableOpenRoundelBlock;
@@ -100,7 +101,7 @@ import tardis.common.tileents.extensions.chameleon.tardis.NewTardisCham;
 import tardis.common.tileents.extensions.chameleon.tardis.PostboxTardisCham;
 import thaumcraft.api.ItemApi;
 
-@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.995", dependencies = "required-after:FML; required-after:darkcore@[0.4,0.49]; after:CoFHCore; after:appliedenergistics2; after:Waila; before:DragonAPI")
+@Mod(modid = "TardisMod", name = "Tardis Mod", version = "0.995", dependencies = "required-after:FML; required-after:darkcore@[0.45,0.49]; after:CoFHCore; after:appliedenergistics2; after:Waila; before:DragonAPI")
 public class TardisMod implements IConfigHandlerMod
 {
 	@Instance
@@ -149,6 +150,7 @@ public class TardisMod implements IConfigHandlerMod
 	public static AbstractBlock									summonerBlock;
 	public static AbstractBlock									magicDoorBlock;
 	public static AbstractBlock									shieldBlock;
+	public static AbstractBlock									advLab;
 
 	public static AbstractBlock									colorableWallBlock;
 	public static AbstractBlock									colorableFloorBlock;
@@ -293,6 +295,7 @@ public class TardisMod implements IConfigHandlerMod
 		decoSimulacrumBlock = new CraftableSimBlock(decoBlock).register();
 		shieldBlock = new ShieldBlock().register();
 		compressedBlock = new CompressedBlock().register();
+		advLab = new AdvancedLabBlock().register();
 
 		AbstractBlock[] unbreakableTardisBlocks = {tardisBlock, tardisTopBlock, tardisCoreBlock,
 												   tardisConsoleBlock, tardisEngineBlock, componentBlock,

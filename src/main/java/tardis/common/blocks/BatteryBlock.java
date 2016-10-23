@@ -1,21 +1,20 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
-
 import java.util.EnumSet;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.TardisMod;
+import tardis.common.recipes.LabRecipeRegistry;
 import tardis.common.tileents.BatteryTileEntity;
-import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import tardis.common.tileents.extensions.LabFlag;
 import tardis.common.tileents.extensions.LabRecipe;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class BatteryBlock extends AbstractScrewableBlockContainer
 {
@@ -69,7 +68,7 @@ public class BatteryBlock extends AbstractScrewableBlockContainer
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1),
 				'd', CraftingComponentType.DALEKANIUM.getIS(1),
 				'k', getIS(1,0)));
-		LabTileEntity.addRecipe(new LabRecipe(getIS(1,1), getIS(1,2), EnumSet.of(LabFlag.INFLIGHT),200));
+		LabRecipeRegistry.addRecipe(new LabRecipe("tm.battery3",getIS(1,1), getIS(1,2), EnumSet.of(LabFlag.INFLIGHT),200));
 	}
 
 	@Override

@@ -1,15 +1,14 @@
 package tardis.common.blocks;
 
+import java.util.EnumSet;
+import java.util.Random;
+
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
-import java.util.EnumSet;
-import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,8 +31,8 @@ import tardis.api.TardisPermission;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.dimension.TardisDataStore;
+import tardis.common.recipes.LabRecipeRegistry;
 import tardis.common.tileents.CoreTileEntity;
-import tardis.common.tileents.LabTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import tardis.common.tileents.extensions.LabFlag;
 import tardis.common.tileents.extensions.LabRecipe;
@@ -57,7 +56,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 	public void initRecipes()
 	{
 		if(Configs.numDirtRecipe > 0)
-			LabTileEntity.addRecipe(new LabRecipe(
+			LabRecipeRegistry.addRecipe(new LabRecipe("tm.magicdirt",
 					new ItemStack[] { new ItemStack(Blocks.dirt,64),
 							CraftingComponentType.KONTRON.getIS(1),
 							CraftingComponentType.CHRONOSTEEL.getIS(1),
@@ -111,7 +110,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 		{
 			if(b instanceof InteriorDirtBlock)
 				return;
-			
+
 			CoreTileEntity core = Helper.getTardisCore(w);
 			if((core != null) && ((core.tt % getNewTickRate(b.tickRate(w))) == 0))
 			{
@@ -122,7 +121,7 @@ public class InteriorDirtBlock extends AbstractBlock implements IScrewablePrecis
 					if(rand.nextDouble() <= Configs.dirtBoneChance)
 						ItemDye.applyBonemeal(is, w, x, y+1, z, pl);
 					int i=1;
-					if(w.getBlock(x, y+1, z) == b  && (b instanceof IGrowable || b instanceof IPlantable))
+					if((w.getBlock(x, y+1, z) == b)  && ((b instanceof IGrowable) || (b instanceof IPlantable)))
 					{
 						for(i=1;w.getBlock(x, y+i, z)==b;i++);
 						b.updateTick(w, x, (y+i)-1, z, rand);

@@ -1,31 +1,49 @@
 package tardis.common.tileents.extensions;
 
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.util.EnumSet;
 
+import io.darkcraft.darkcore.mod.handlers.containers.ItemStackContainer;
+import io.darkcraft.darkcore.mod.handlers.containers.ItemStackContainer.IEntityItemInitialiser;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import tardis.api.IArtronEnergyProvider;
 
 public class LabRecipe
 {
+	public final String id;
 	public final ItemStack[] source;
 	public final ItemStack[] dest;
+	public final ItemStackContainer displayIS;
 	public final EnumSet<LabFlag> flags;
 	public final int energyCost;
 
-	public LabRecipe(ItemStack _source, ItemStack _dest, EnumSet<LabFlag> _flags, int _enCost)
+	public LabRecipe(String id, ItemStack _source, ItemStack _dest, EnumSet<LabFlag> _flags, int _enCost)
 	{
-		this(new ItemStack[]{_source}, new ItemStack[]{_dest}, _flags, _enCost);
+		this(id, new ItemStack[]{_source}, new ItemStack[]{_dest}, _flags, _enCost);
 	}
 
-	public LabRecipe(ItemStack[] _source, ItemStack[] _dest, EnumSet<LabFlag> _flags, int _enCost)
+	public LabRecipe(String _id, ItemStack[] _source, ItemStack[] _dest, EnumSet<LabFlag> _flags, int _enCost)
 	{
+		id = _id;
 		source = _source;
 		dest = _dest;
 		flags = _flags;
 		energyCost = _enCost;
+		ItemStack output = null;
+		for(ItemStack is : dest)
+			if(is != null)
+				output = is;
+		displayIS = ItemStackContainer.getContainer(new IEntityItemInitialiser(){
+			@Override
+			public void initEI(EntityItem ei)
+			{
+				ei.hoverStart = 0;
+				ei.rotationYaw = 0;
+			}
+		});
+		displayIS.setIS(output);
 	}
 
 	public boolean isValid()

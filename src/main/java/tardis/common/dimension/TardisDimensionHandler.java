@@ -1,10 +1,5 @@
 package tardis.common.dimension;
 
-import io.darkcraft.darkcore.mod.config.ConfigFile;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +8,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import io.darkcraft.darkcore.mod.config.ConfigFile;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
@@ -23,7 +23,6 @@ import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import tardis.common.tileents.extensions.upgrades.DimensionUpgrade;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class TardisDimensionHandler
 {
@@ -154,6 +153,7 @@ public class TardisDimensionHandler
 
 	private boolean addDimension(World w)
 	{
+		if(w == null) return false;
 		String name = WorldHelper.getDimensionName(w);
 		if((name == null) || name.isEmpty())
 		{
@@ -166,6 +166,7 @@ public class TardisDimensionHandler
 
 	private synchronized boolean addDimension(World w, int id)
 	{
+		if(w == null) return false;
 		if(Helper.isTardisWorld(w)) return false;
 		if(dimensionIDs.contains(id)) return true;
 		try

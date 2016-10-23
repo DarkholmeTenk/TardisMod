@@ -1,9 +1,9 @@
 package tardis.common.items;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
-
 import java.util.EnumSet;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -13,11 +13,10 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import tardis.Configs;
 import tardis.TardisMod;
-import tardis.common.tileents.LabTileEntity;
+import tardis.common.recipes.LabRecipeRegistry;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import tardis.common.tileents.extensions.LabFlag;
 import tardis.common.tileents.extensions.LabRecipe;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class CraftingComponentItem extends AbstractItem
 {
@@ -53,31 +52,31 @@ public class CraftingComponentItem extends AbstractItem
 					'd', Items.diamond,
 					'e', Items.ender_eye));
 
-		LabRecipe currentRecipe = new LabRecipe(
+		LabRecipe currentRecipe = new LabRecipe("tm.chronosteel",
 				new ItemStack[] { new ItemStack(Items.iron_ingot)},
 				new ItemStack[]{CraftingComponentType.CHRONOSTEEL.getIS(1)},
 				EnumSet.of(LabFlag.INFLIGHT),
 				100);
-		LabTileEntity.addRecipe(currentRecipe);
-		currentRecipe = new LabRecipe(
+		LabRecipeRegistry.addRecipe(currentRecipe);
+		currentRecipe = new LabRecipe("tm.dalekanium",
 				new ItemStack[] { new ItemStack(Items.gold_ingot) },
 				new ItemStack[] { CraftingComponentType.DALEKANIUM.getIS(1) },
 				EnumSet.noneOf(LabFlag.class),
 				100);
-		LabTileEntity.addRecipe(currentRecipe);
-		currentRecipe = new LabRecipe(
+		LabRecipeRegistry.addRecipe(currentRecipe);
+		currentRecipe = new LabRecipe("tm.kontron",
 				new ItemStack[] { new ItemStack(Items.diamond), new ItemStack(Items.ender_pearl) },
 				new ItemStack[] { CraftingComponentType.KONTRON.getIS(1) },
 				EnumSet.noneOf(LabFlag.class),
 				100);
-		LabTileEntity.addRecipe(currentRecipe);
+		LabRecipeRegistry.addRecipe(currentRecipe);
 
 		GameRegistry.addRecipe(new ShapedOreRecipe(CraftingComponentType.UPGRADE.getIS(1), false, "gcg", "gig", "gcg",
 				'g', "nuggetGold",
 				'i', "ingotIron",
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 
-		LabTileEntity.addRecipe(new LabRecipe(
+		LabRecipeRegistry.addRecipe(new LabRecipe("tm.upgrade",
 				new ItemStack[] { new ItemStack(TardisMod.upgradeItem,1,0), CraftingComponentType.CHRONOSTEEL.getIS(1) },
 				new ItemStack[] { CraftingComponentType.UPGRADE.getIS(1) },
 				EnumSet.noneOf(LabFlag.class),

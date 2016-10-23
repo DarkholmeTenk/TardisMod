@@ -1,14 +1,13 @@
 package tardis.common.tileents;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -20,19 +19,12 @@ import tardis.Configs;
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
+import tardis.common.recipes.LabRecipeRegistry;
 import tardis.common.tileents.extensions.LabRecipe;
 
 public class LabTileEntity extends AbstractTileEntity implements ISidedInventory, IActivatable
 {
 	private static final int[][] sideAccessibility = new int[][] { new int[] {5,6,7,8,9},new int[]{0,1,2,3,4}, new int[]{0,1,2,3,4,5,6,7,8,9}};
-	private static ArrayList<LabRecipe> recipes = new ArrayList<LabRecipe>();
-	public static void addRecipe(LabRecipe toAdd)
-	{
-		if((toAdd != null) && toAdd.isValid())
-		{
-			recipes.add(toAdd);
-		}
-	}
 
 	private boolean wasWorking = false;
 	private Boolean powered = null;
@@ -60,7 +52,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 
 		//Copy all the recipes into a new array list
 		ArrayList<LabRecipe> matching = new ArrayList<LabRecipe>();
-		matching.addAll(recipes);
+		matching.addAll(LabRecipeRegistry.getRecipes());
 		Iterator<LabRecipe> iter = matching.iterator();
 		while(iter.hasNext()) //Loop through all the current recipes
 		{
@@ -87,7 +79,7 @@ public class LabTileEntity extends AbstractTileEntity implements ISidedInventory
 	private LabRecipe getMatchedRecipe()
 	{
 		ItemStack[] inputSlots = getInputSlots();
-		for(LabRecipe rec : recipes) //Find the first recipe matched by the input items
+		for(LabRecipe rec : LabRecipeRegistry.getRecipes()) //Find the first recipe matched by the input items
 		{
 			if(rec.isSatisfied(inputSlots))
 			{
