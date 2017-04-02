@@ -1,24 +1,23 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import tardis.TardisMod;
-import tardis.common.core.helpers.Helper;
-import tardis.common.tileents.SchemaCoreTileEntity;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.TardisMod;
+import tardis.common.tileents.SchemaCoreTileEntity;
 
 public class SchemaCoreBlock extends AbstractBlockContainer
 {
 	private final boolean visible;
 	private IIcon blankIcon;
-	
+
 	public SchemaCoreBlock(boolean vis)
 	{
 		super(TardisMod.modName);
@@ -35,7 +34,7 @@ public class SchemaCoreBlock extends AbstractBlockContainer
 	public void initData()
 	{
 		setBlockName("SchemaCore");
-		
+
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class SchemaCoreBlock extends AbstractBlockContainer
 	{
 		return visible;
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister register)
@@ -57,7 +56,7 @@ public class SchemaCoreBlock extends AbstractBlockContainer
 		super.registerBlockIcons(register);
 		blankIcon = register.registerIcon("tardismod:blank");
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int s, int d)
@@ -66,7 +65,7 @@ public class SchemaCoreBlock extends AbstractBlockContainer
 			return super.getIcon(s, d);
 		return blankIcon;
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean shouldSideBeRendered(IBlockAccess w, int x, int y, int z, int s)

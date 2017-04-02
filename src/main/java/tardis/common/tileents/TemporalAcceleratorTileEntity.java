@@ -1,13 +1,13 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.blocks.TemporalAcceleratorBlock;
@@ -29,12 +29,12 @@ public class TemporalAcceleratorTileEntity extends AbstractTileEntity {
 		Block b = w.getBlock(x, y + 1, z);
 		if (b == null)
 			return;
-		
+
 		if ((tt % getNewTickRate(b.tickRate(w))) == 0) {
 			CoreTileEntity core = Helper.getTardisCore(w);
 			if ((core != null)) {
 				if (w instanceof WorldServer) {
-					
+
 					if (b instanceof TemporalAcceleratorBlock)
 						return;
 					if (TardisMod.unbreakableBlocks.contains(b))
@@ -50,7 +50,7 @@ public class TemporalAcceleratorTileEntity extends AbstractTileEntity {
 			}
 		}
 	}
-	
+
 	public double getNewTickRate(int old)
 	{
 		return MathHelper.ceil((old * Configs.tempAccTickMult));

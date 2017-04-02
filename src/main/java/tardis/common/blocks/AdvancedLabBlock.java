@@ -1,11 +1,15 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import tardis.TardisMod;
 import tardis.client.renderer.tileents.AdvancedLabRenderer;
 import tardis.common.tileents.AdvancedLab;
@@ -53,12 +57,14 @@ public class AdvancedLabBlock extends AbstractScrewableBlockContainer
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public AbstractBlockRenderer getRenderer()
 	{
 		return new AdvancedLabRenderer();
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean useRendererForItem()
 	{
 		return true;

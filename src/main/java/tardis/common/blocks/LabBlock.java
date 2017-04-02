@@ -1,20 +1,21 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import tardis.TardisMod;
-import tardis.common.tileents.LabTileEntity;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.TardisMod;
+import tardis.common.tileents.LabTileEntity;
 
 public class LabBlock extends AbstractBlockContainer
 {
@@ -22,7 +23,7 @@ public class LabBlock extends AbstractBlockContainer
 	{
 		super(false,TardisMod.modName);
 	}
-	
+
 	@Override
 	public TileEntity createNewTileEntity(World w, int m)
 	{
@@ -46,14 +47,14 @@ public class LabBlock extends AbstractBlockContainer
 				'o', Items.gold_ingot,
 				'r', Items.redstone));
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess iblockaccess, int i, int j, int k, int l)
 	{
 	   return false;
 	}
-	
+
 	@Override
 	public boolean renderAsNormalBlock()
     {
@@ -65,7 +66,7 @@ public class LabBlock extends AbstractBlockContainer
 	{
 	   return false;
 	}
-	
+
 	@Override
 	public void breakBlock(World w, int x, int y, int z, Block b, int m)
 	{
@@ -80,7 +81,7 @@ public class LabBlock extends AbstractBlockContainer
 	{
 		return LabTileEntity.class;
 	}
-	
+
 	@Override
     public boolean hasComparatorInputOverride()
     {
@@ -94,7 +95,7 @@ public class LabBlock extends AbstractBlockContainer
     	for(ItemStack is : ((LabTileEntity) world.getTileEntity(x, y, z)).getInputSlots())
     		if(is != null)
     			power++;
-    	
+
     	world.scheduleBlockUpdate(x+1, y, z, Blocks.powered_comparator, 20);
     	world.scheduleBlockUpdate(x-1, y, z, Blocks.powered_comparator, 20);
     	world.scheduleBlockUpdate(x, y, z+1, Blocks.powered_comparator, 20);
