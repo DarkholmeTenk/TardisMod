@@ -9,7 +9,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 
 import tardis.Configs;
-import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.blocks.TemporalAcceleratorBlock;
 import tardis.common.core.helpers.Helper;
 
@@ -37,7 +37,7 @@ public class TemporalAcceleratorTileEntity extends AbstractTileEntity {
 
 					if (b instanceof TemporalAcceleratorBlock)
 						return;
-					if (TardisMod.unbreakableBlocks.contains(b))
+					if (TMRegistry.unbreakableBlocks.contains(b))
 						return;
 					b.updateTick(w, x, y + 1, z, rand);
 

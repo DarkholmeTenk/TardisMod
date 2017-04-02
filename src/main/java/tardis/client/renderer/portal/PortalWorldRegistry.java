@@ -1,10 +1,11 @@
 package tardis.client.renderer.portal;
 
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-
 import java.util.WeakHashMap;
 
 import net.minecraft.client.renderer.WorldRenderer;
+
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+
 import tardis.common.tileents.MagicDoorTileEntity;
 
 public class PortalWorldRegistry

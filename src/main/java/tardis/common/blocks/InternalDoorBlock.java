@@ -1,10 +1,5 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -20,11 +15,18 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.ILinkable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
+import tardis.common.TMRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
@@ -112,7 +114,7 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 			if(held != null)
 			{
 				Item base = held.getItem();
-				if(base != TardisMod.screwItem) return false;
+				if(base != TMRegistry.screwItem) return false;
 				ScrewdriverHelper help = ScrewdriverHelperFactory.get(held);
 				if((help != null))
 				{
@@ -229,7 +231,7 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 	public void onNeighborBlockChange(World w, int x, int y, int z, Block bID)
 	{
 		//super.onNeighborBlockChange(w, x, y, z, bID);
-		//if(bID != TardisMod.schemaComponentBlock)
+		//if(bID != TMRegistry.schemaComponentBlock)
 		//	manageConnected(w,x,y,z,w.getBlockMetadata(x, y, z)%4);
 	}
 
@@ -244,7 +246,7 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 	private static boolean isValid(World w, int x, int y, int z, boolean newState)
 	{
 		Block b = w.getBlock(x, y, z);
-		boolean isDoorBit = ((b == TardisMod.internalDoorBlock) || SchemaComponentBlock.isDoorConnector(w,x,y,z));
+		boolean isDoorBit = ((b == TMRegistry.internalDoorBlock) || SchemaComponentBlock.isDoorConnector(w,x,y,z));
 		return isDoorBit == newState;
 	}
 
@@ -255,12 +257,12 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 
 	public static boolean hasConnector(World w, int x, int y, int z)
 	{
-		if(w.getBlock(x, y, z) == TardisMod.internalDoorBlock)
+		if(w.getBlock(x, y, z) == TMRegistry.internalDoorBlock)
 		{
 			int facing = w.getBlockMetadata(x, y, z) % 4;
 			int connectedDoorX = x + dx(facing);
 			int connectedDoorZ = z + dz(facing);
-			if(w.getBlock(connectedDoorX, y, connectedDoorZ) == TardisMod.internalDoorBlock)
+			if(w.getBlock(connectedDoorX, y, connectedDoorZ) == TMRegistry.internalDoorBlock)
 				if((w.getBlockMetadata(connectedDoorX, y, connectedDoorZ) % 4) == opposingFace(facing))
 					return true;
 		}
@@ -315,7 +317,7 @@ public class InternalDoorBlock extends AbstractBlock implements ILinkable
 			if(((other.getBlock() == this) || (linkMap.get(other) == link)) && (link.getBlock() == this))
 			{
 				linkMap.put(link, other);
-				link.setBlock(TardisMod.magicDoorBlock, link.getMetadata(), 3);
+				link.setBlock(TMRegistry.magicDoorBlock, link.getMetadata(), 3);
 			}
 			if(linkMap.get(other) == link)
 			{

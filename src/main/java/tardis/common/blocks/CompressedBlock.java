@@ -1,9 +1,11 @@
 package tardis.common.blocks;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.tileents.extensions.CraftingComponentType;

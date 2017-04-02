@@ -1,15 +1,17 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.tileents.GravityLiftTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class GravityLiftBlock extends AbstractBlockContainer
 {

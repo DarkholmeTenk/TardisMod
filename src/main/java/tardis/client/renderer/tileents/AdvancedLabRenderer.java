@@ -5,11 +5,6 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
-import io.darkcraft.darkcore.mod.datastore.Colour;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.RenderHelper;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -20,7 +15,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
-import tardis.TardisMod;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
+import io.darkcraft.darkcore.mod.datastore.Colour;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.RenderHelper;
+
+import tardis.common.TMRegistry;
 import tardis.common.recipes.LabRecipeRegistry;
 import tardis.common.tileents.AdvancedLab;
 import tardis.common.tileents.extensions.LabFlag;
@@ -37,7 +39,7 @@ public class AdvancedLabRenderer extends AbstractObjRenderer
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.advLab;
+		return TMRegistry.advLab;
 	}
 
 	private void renderEI(float yOff, int num, EntityItem ei)

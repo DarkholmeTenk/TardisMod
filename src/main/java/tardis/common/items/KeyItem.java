@@ -1,9 +1,5 @@
 package tardis.common.items;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
-import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,14 +10,20 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.TardisPermission;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class KeyItem extends AbstractItem
 {
@@ -131,9 +133,9 @@ public class KeyItem extends AbstractItem
 		if (Configs.keyCraftable)
 		{
 			if (Configs.keyReqKontron)
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " ik", " ii", 'i', Items.iron_ingot, 'k', CraftingComponentType.KONTRON.getIS(1)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TMRegistry.keyItem, 1), true, " i ", " ik", " ii", 'i', Items.iron_ingot, 'k', CraftingComponentType.KONTRON.getIS(1)));
 			else
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.keyItem, 1), true, " i ", " i ", " ii", 'i', Items.iron_ingot));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TMRegistry.keyItem, 1), true, " i ", " i ", " ii", 'i', Items.iron_ingot));
 		}
 	}
 

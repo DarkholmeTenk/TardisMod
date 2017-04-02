@@ -8,16 +8,19 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import io.darkcraft.darkcore.mod.config.ConfigFile;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.world.WorldEvent.Load;
+
+import io.darkcraft.darkcore.mod.config.ConfigFile;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.helpers.Helper;
@@ -261,7 +264,7 @@ public class TardisDimensionHandler
 
 		mainLoop: for (Integer dim : dimensionIDs)
 		{
-			if (TardisMod.dimensionUpgradeItems.containsKey(dim))
+			if (TMRegistry.dimensionUpgradeItems.containsKey(dim))
 			{
 				if (ds == null) continue;
 				for (AbstractUpgrade up : ds.upgrades)

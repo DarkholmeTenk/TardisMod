@@ -1,19 +1,21 @@
 package tardis.common.dimension.damage;
 
-import io.darkcraft.darkcore.mod.config.ConfigFile;
-import io.darkcraft.darkcore.mod.datastore.Pair;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.SoundHelper;
-
 import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import io.darkcraft.darkcore.mod.config.ConfigFile;
+import io.darkcraft.darkcore.mod.datastore.Pair;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+
 import tardis.TardisMod;
 import tardis.api.TardisUpgradeMode;
+import tardis.common.TMRegistry;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
@@ -73,9 +75,9 @@ public class TardisDamageSystem
 		repairComps = new Pair[numBreakables];
 		repairCompNames = new String[numBreakables];
 
-		Pair<Item, Integer> kontronPair = new Pair(TardisMod.craftingComponentItem, CraftingComponentType.KONTRON.ordinal());
-		Pair<Item, Integer> dalek = new Pair(TardisMod.craftingComponentItem, CraftingComponentType.DALEKANIUM.ordinal());
-		Pair<Item, Integer> chrono = new Pair(TardisMod.craftingComponentItem, CraftingComponentType.CHRONOSTEEL.ordinal());
+		Pair<Item, Integer> kontronPair = new Pair(TMRegistry.craftingComponentItem, CraftingComponentType.KONTRON.ordinal());
+		Pair<Item, Integer> dalek = new Pair(TMRegistry.craftingComponentItem, CraftingComponentType.DALEKANIUM.ordinal());
+		Pair<Item, Integer> chrono = new Pair(TMRegistry.craftingComponentItem, CraftingComponentType.CHRONOSTEEL.ordinal());
 		repairComps[0] = kontronPair;
 		repairComps[1] = dalek;
 		repairComps[2] = dalek;

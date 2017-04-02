@@ -1,7 +1,9 @@
 package tardis.common.network.packet;
 
-import io.darkcraft.darkcore.mod.interfaces.IDataPacketHandler;
 import net.minecraft.nbt.NBTTagCompound;
+
+import io.darkcraft.darkcore.mod.interfaces.IDataPacketHandler;
+
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
 
 public class ScrewdriverHelperPacketHandler implements IDataPacketHandler

@@ -1,17 +1,19 @@
 package tardis.common.tileents;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IActivatable;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+
 import tardis.Configs;
-import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.tileents.extensions.LabFlag;
@@ -124,7 +126,7 @@ public class BatteryTileEntity extends AbstractTileEntity implements IArtronEner
 		if (mode.equals(ScrewdriverMode.Dismantle) && ServerHelper.isServer())
 		{
 			int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-			ItemStack is = new ItemStack(TardisMod.battery, 1, meta);
+			ItemStack is = new ItemStack(TMRegistry.battery, 1, meta);
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			is.stackTagCompound = nbt;

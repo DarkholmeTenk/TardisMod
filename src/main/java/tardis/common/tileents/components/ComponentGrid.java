@@ -4,6 +4,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
+import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
+
 import appeng.api.exceptions.FailedConnection;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.GridNotification;
@@ -17,21 +31,9 @@ import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-import io.darkcraft.darkcore.mod.interfaces.IActivatable;
-import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.integration.ae.AEHelper;
 import tardis.common.integration.ae.ITMGrid;
@@ -324,7 +326,7 @@ public class ComponentGrid extends AbstractComponent implements ITMGrid, IGridBl
 	@Override
 	public ItemStack getMachineRepresentation()
 	{
-		return new ItemStack(TardisMod.componentBlock);
+		return new ItemStack(TMRegistry.componentBlock);
 	}
 
 	private void breakOGConnection()

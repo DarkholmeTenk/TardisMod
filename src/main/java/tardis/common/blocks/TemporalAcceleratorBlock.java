@@ -2,11 +2,6 @@ package tardis.common.blocks;
 
 import java.util.EnumSet;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,11 +9,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IScrewablePrecise;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.dimension.TardisDataStore;
@@ -53,9 +56,9 @@ public class TemporalAcceleratorBlock extends AbstractBlockContainer implements 
 		if(Configs.numDirtRecipe > 0)
 			LabRecipeRegistry.addRecipe(new LabRecipe("tm.magicblock",
 					new ItemStack[] {
-							new ItemStack(TardisMod.interiorDirtBlock,Configs.numDirtRecipe),
-							new ItemStack(TardisMod.compressedBlock,2,0),
-							new ItemStack(TardisMod.compressedBlock,2,1),
+							new ItemStack(TMRegistry.interiorDirtBlock,Configs.numDirtRecipe),
+							new ItemStack(TMRegistry.compressedBlock,2,0),
+							new ItemStack(TMRegistry.compressedBlock,2,1),
 							CraftingComponentType.KONTRON.getIS(1)},
 					new ItemStack[] { getIS(1, 0) },
 					EnumSet.of(LabFlag.INFLIGHT),

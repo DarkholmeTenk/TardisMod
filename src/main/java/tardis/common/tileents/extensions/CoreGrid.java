@@ -4,8 +4,7 @@ import java.util.EnumSet;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
-import tardis.common.core.helpers.Helper;
-import tardis.common.tileents.CoreTileEntity;
+
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.GridNotification;
 import appeng.api.networking.IGrid;
@@ -13,6 +12,8 @@ import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
 import appeng.api.util.AEColor;
 import appeng.api.util.DimensionalCoord;
+import tardis.common.core.helpers.Helper;
+import tardis.common.tileents.CoreTileEntity;
 
 public class CoreGrid implements IGridBlock
 {

@@ -2,14 +2,16 @@ package tardis.common.command;
 
 import java.util.List;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import tardis.TardisMod;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
+import tardis.common.TMRegistry;
 import tardis.common.items.KeyItem;
 
 public class KeyCommand extends AbstractCommand
@@ -57,7 +59,7 @@ public class KeyCommand extends AbstractCommand
 			EntityPlayerMP fromPlayer = ServerHelper.getPlayer(from);
 			if(fromPlayer != null)
 			{
-				ItemStack key = new ItemStack(TardisMod.keyItem,1);
+				ItemStack key = new ItemStack(TMRegistry.keyItem,1);
 				KeyItem.setOwnerName(key, to);
 				WorldHelper.giveItemStack(fromPlayer, key);
 			}

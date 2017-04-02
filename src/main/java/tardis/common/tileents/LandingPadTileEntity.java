@@ -1,12 +1,14 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import tardis.TardisMod;
+
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import tardis.api.IArtronEnergyProvider;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 
@@ -20,7 +22,7 @@ public class LandingPadTileEntity extends ComponentTileEntity
 		if(ServerHelper.isClient())
 			return;
 		super.dismantle(pl);
-		WorldHelper.giveItemStack(pl, new ItemStack(TardisMod.landingPad,1));
+		WorldHelper.giveItemStack(pl, new ItemStack(TMRegistry.landingPad,1));
 		worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 	}
 

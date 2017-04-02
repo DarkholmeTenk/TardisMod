@@ -1,16 +1,17 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import tardis.TardisMod;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
+import tardis.common.TMRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
@@ -90,7 +91,7 @@ public class RepairCoreCommand extends AbstractCommand
 			TardisDataStore ds = Helper.getDataStore(worldID);
 			if((tce == null) && (world.provider instanceof TardisWorldProvider))
 			{
-				world.setBlock(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, TardisMod.tardisCoreBlock);
+				world.setBlock(Helper.tardisCoreX, Helper.tardisCoreY, Helper.tardisCoreZ, TMRegistry.tardisCoreBlock);
 				tce = Helper.getTardisCore(world);
 			}
 			//TardisOutput.print("TRCC", "Repairing: setting owner to "+ newOwner + ","+tce.worldObj.isRemote);

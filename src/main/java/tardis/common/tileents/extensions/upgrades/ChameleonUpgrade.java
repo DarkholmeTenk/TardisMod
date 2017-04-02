@@ -4,7 +4,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
+
 import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
 
 public class ChameleonUpgrade extends AbstractUpgrade
@@ -35,7 +37,7 @@ public class ChameleonUpgrade extends AbstractUpgrade
 	@Override
 	public ItemStack getIS()
 	{
-		return new ItemStack(TardisMod.chameleonUpgradeItem, 1, TardisMod.tardisChameleonReg.getIndex(chameleon));
+		return new ItemStack(TMRegistry.chameleonUpgradeItem, 1, TardisMod.tardisChameleonReg.getIndex(chameleon));
 	}
 
 	@Override

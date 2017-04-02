@@ -1,9 +1,11 @@
 package tardis.common.blocks;
 
+import net.minecraft.block.Block;
+
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
-import net.minecraft.block.Block;
-import tardis.TardisMod;
+
+import tardis.common.TMRegistry;
 
 public class DecoItemBlock extends AbstractItemBlock
 {
@@ -16,7 +18,7 @@ public class DecoItemBlock extends AbstractItemBlock
 	@Override
 	protected AbstractBlock getBlock()
 	{
-		return TardisMod.decoBlock;
+		return TMRegistry.decoBlock;
 	}
 
 }

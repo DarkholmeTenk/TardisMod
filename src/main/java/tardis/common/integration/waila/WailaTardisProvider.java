@@ -2,13 +2,14 @@ package tardis.common.integration.waila;
 
 import java.util.List;
 
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import tardis.TardisMod;
+
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.TardisTileEntity;
 
 public class WailaTardisProvider extends AbstractWailaProvider
@@ -30,9 +31,9 @@ public class WailaTardisProvider extends AbstractWailaProvider
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config)
 	{
 		TileEntity te = null;
-		if(accessor.getBlock() == TardisMod.tardisBlock)
+		if(accessor.getBlock() == TMRegistry.tardisBlock)
 			te = accessor.getTileEntity();
-		else if(accessor.getBlock() == TardisMod.tardisTopBlock)
+		else if(accessor.getBlock() == TMRegistry.tardisTopBlock)
 		{
 			World w = accessor.getWorld();
 			MovingObjectPosition p = accessor.getPosition();

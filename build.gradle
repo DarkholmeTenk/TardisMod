@@ -46,7 +46,7 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-	compile "io.darkcraft:darkcore:0.45:source"
+	compile "io.darkcraft:darkcore:0.46:source"
 	compile "thaumcraft:thaumcraft:1.7.10:source"
 	compile "appeng:appeng:1.7.10:source"
 	compile "cofh:cofhcore:3.0.0RC7-211"

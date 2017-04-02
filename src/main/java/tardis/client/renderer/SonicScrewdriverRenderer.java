@@ -1,9 +1,9 @@
 package tardis.client.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
-
-import org.lwjgl.opengl.GL11;
 
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;

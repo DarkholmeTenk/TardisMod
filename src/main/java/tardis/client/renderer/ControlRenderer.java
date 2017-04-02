@@ -1,11 +1,11 @@
 package tardis.client.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
 
 import tardis.api.IControlMatrix;
 import tardis.client.renderer.model.console.ButtonModel;

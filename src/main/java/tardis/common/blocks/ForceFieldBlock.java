@@ -1,7 +1,5 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -11,15 +9,19 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+
+import cpw.mods.fml.common.registry.GameRegistry;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.tileents.extensions.CraftingComponentType;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ForceFieldBlock extends AbstractBlock
 {
-	public ForceFieldBlock(boolean visible)
+	public ForceFieldBlock()
 	{
-		super(visible,TardisMod.modName);
+		super(Configs.visibleForceField,TardisMod.modName);
 		setCreativeTab(TardisMod.cTab);
 	}
 

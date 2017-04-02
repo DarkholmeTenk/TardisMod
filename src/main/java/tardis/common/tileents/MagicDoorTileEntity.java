@@ -1,11 +1,5 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.datastore.Pair;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.interfaces.IActivatable;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,10 +9,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import tardis.TardisMod;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.Pair;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
+
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.dimension.TardisDataStore;
@@ -33,7 +34,7 @@ public class MagicDoorTileEntity extends AbstractTileEntity implements IScrewabl
 	{
 		super.init();
 		if((otherDoor == null) && ServerHelper.isServer())
-			setOtherDoor(TardisMod.internalDoorBlock.linkMap.remove(coords));
+			setOtherDoor(TMRegistry.internalDoorBlock.linkMap.remove(coords));
 		recheckDoors(false);
 	}
 

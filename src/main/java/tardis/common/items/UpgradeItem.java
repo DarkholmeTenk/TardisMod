@@ -1,7 +1,5 @@
 package tardis.common.items;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
-
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,9 +7,12 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.TardisMod;
 import tardis.common.tileents.extensions.CraftingComponentType;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class UpgradeItem extends AbstractItem
 {

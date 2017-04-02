@@ -5,9 +5,11 @@ import net.minecraft.block.BlockStairs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.IBlockAccess;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.Configs;
 import tardis.TardisMod;
-import cpw.mods.fml.common.registry.GameRegistry;
+import tardis.common.TMRegistry;
 
 public class StairBlock extends BlockStairs
 {
@@ -15,7 +17,7 @@ public class StairBlock extends BlockStairs
 
 	public StairBlock()
 	{
-		super(TardisMod.colorableFloorBlock,15);
+		super(TMRegistry.colorableFloorBlock,15);
 		setHardness(-1.0f);
 		setCreativeTab(TardisMod.tab);
 		setBlockName("StairBlock");

@@ -1,15 +1,17 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-
 import java.io.File;
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
 import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
@@ -101,7 +103,7 @@ public class SchemaSaveCommand extends AbstractCommandNew
 				boolean f =false;
 				for(int i = 0;(i<4) && !f;i++)
 				{
-					if(pl.worldObj.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
+					if(pl.worldObj.getBlock(x, y-i, z) == TMRegistry.schemaCoreBlock)
 					{
 						f = true;
 						y = y-i;

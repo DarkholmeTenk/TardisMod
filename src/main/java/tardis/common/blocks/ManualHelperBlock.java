@@ -1,12 +1,15 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+
 import tardis.TardisMod;
 import tardis.api.IRotatableBlock;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.ManualTileEntity;
 
 public class ManualHelperBlock extends AbstractBlock implements IRotatableBlock
@@ -59,7 +62,7 @@ public class ManualHelperBlock extends AbstractBlock implements IRotatableBlock
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess w, int s, int x, int y, int z, int mX, int mY, int mZ)
 	{
-		return TardisMod.manualBlock.shouldSideBeRendered(w, s, x, y, z, mX, mY, mZ);
+		return TMRegistry.manualBlock.shouldSideBeRendered(w, s, x, y, z, mX, mY, mZ);
 	}
 
 	@Override

@@ -3,13 +3,14 @@ package tardis.common.tileents.extensions.chameleon.tardis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import tardis.TardisMod;
 import tardis.client.TardisClientProxy;
 import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
 import tardis.common.tileents.TardisTileEntity;
 import tardis.common.tileents.extensions.chameleon.IChameleon;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class AbstractTardisChameleon implements IChameleon
 {

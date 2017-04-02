@@ -1,16 +1,17 @@
 package tardis.client.renderer.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
 
-import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.MagicDoorTileEntity;
 
 public class MagicDoorTileEntityRenderer extends AbstractObjRenderer
@@ -22,7 +23,7 @@ public class MagicDoorTileEntityRenderer extends AbstractObjRenderer
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.magicDoorBlock;
+		return TMRegistry.magicDoorBlock;
 	}
 
 	private void renderFace(Tessellator tess, double mX, double MX, double mY, double MY, double mU, double MU, double mV, double MV, double z)

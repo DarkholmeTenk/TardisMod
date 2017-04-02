@@ -4,6 +4,7 @@ import io.darkcraft.darkcore.mod.config.CType;
 import io.darkcraft.darkcore.mod.config.ConfigFile;
 import io.darkcraft.darkcore.mod.config.ConfigItem;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+
 import tardis.common.core.TardisOutput;
 
 public class Configs
@@ -75,7 +76,7 @@ public class Configs
 	public static int			nanogeneCost				= 1;
 	public static int			nanogeneHealAmount			= 2;
 	public static boolean		nanogeneFeed				= true;
-	
+
 	public static int			restorationFieldTimer 		= 120;
 	public static int			restorationFieldPercentage 	= 70;
 	public static int			restorationFieldCost 		= 5;
@@ -103,7 +104,7 @@ public class Configs
 		nanogeneCost = roundelConfig.getInt("Nanogene - Cost", 1, "The amount of Artron energy used up each time a nanogene heals");
 		nanogeneHealAmount = roundelConfig.getInt("Nanogene - Heal amount", 2, "The amount of health a nanogene can restore per pulse");
 		nanogeneFeed = roundelConfig.getBoolean("Nanogene - Feeds", true, "Whether nanogenes should also feed players as well as heal");
-		
+
 		restorationFieldTimer = roundelConfig.getInt("Restoration Field - Timer", 120, "The number of ticks between each restoration field pulse");
 		restorationFieldPercentage = roundelConfig.getInt("Restoration Field - Repair percentage", 70, "What percentage of the tool will be repaired (1 - 100)");
 		restorationFieldCost = roundelConfig.getInt("Restoration Field - Cost", 5, "The amount of Artron energy used up each time a tool gets healed by 1 point");
@@ -150,7 +151,7 @@ public class Configs
 
 	public static double		dirtTickMult			= 1;
 	public static double		dirtBoneChance			= 0.3;
-	
+
 	public static double		tempAccTickMult			= 0.2;
 
 	public static int			decoratorRange			= 6;
@@ -224,7 +225,7 @@ public class Configs
 		String dimIds = mechConfig.getString("Dimension ID's locked by upgrades", "", "Put all the dimension ID's you want to lock using an engine upgrade here, seperating each ID with a comma", "Like this:1,2,3,4").trim();
 		dimUpgradesIds = dimIds.split(",");
 
-		
+
 	}
 
 	/*

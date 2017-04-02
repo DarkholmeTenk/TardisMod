@@ -1,7 +1,5 @@
 package tardis.common.core;
 
-import io.darkcraft.darkcore.mod.config.ConfigHandler;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,6 +13,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
+import io.darkcraft.darkcore.mod.config.ConfigHandler;
 
 import tardis.TardisMod;
 import tardis.common.core.schema.PartBlueprint;

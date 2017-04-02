@@ -1,10 +1,11 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
-
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+
 import tardis.Configs;
 import tardis.common.core.TardisOutput;
 

@@ -1,16 +1,17 @@
 package tardis.client.renderer.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 
-import tardis.TardisMod;
 import tardis.client.renderer.model.StickModel;
 import tardis.client.renderer.model.TardisBlockModel;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.components.TardisTEComponent;
@@ -31,7 +32,7 @@ public class ComponentRenderer extends AbstractBlockRenderer
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.componentBlock;
+		return TMRegistry.componentBlock;
 	}
 
 	private void renderStick(ResourceLocation tn, double x, double y, double r, double p, double yaw)

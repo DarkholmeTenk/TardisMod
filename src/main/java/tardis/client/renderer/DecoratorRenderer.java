@@ -1,9 +1,8 @@
 package tardis.client.renderer;
 
-import io.darkcraft.darkcore.mod.datastore.Pair;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.util.HashMap;
+
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -16,7 +15,8 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.datastore.Pair;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import tardis.common.items.extensions.DecoratorToolTypes;
 

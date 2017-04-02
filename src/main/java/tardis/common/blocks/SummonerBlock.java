@@ -3,9 +3,10 @@ package tardis.common.blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.TardisMod;
 import tardis.common.tileents.SummonerTileEntity;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class SummonerBlock extends AbstractScrewableBlockContainer
 {

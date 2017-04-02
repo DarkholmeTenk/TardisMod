@@ -1,18 +1,21 @@
 package tardis.common.core.helpers;
 
-import io.darkcraft.darkcore.mod.DarkcoreMod;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.network.DataPacket;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+
+import io.darkcraft.darkcore.mod.DarkcoreMod;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.network.DataPacket;
+
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.ILinkable;
 import tardis.api.ScrewdriverMode;
+import tardis.common.TMRegistry;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.items.SonicScrewdriverItem;
 import tardis.common.items.extensions.ScrewTypeRegister;
@@ -99,7 +102,7 @@ public class ScrewdriverHelper
 	{
 		if(itemstack != null)
 			return itemstack;
-		itemstack = new ItemStack(TardisMod.screwItem, 1);
+		itemstack = new ItemStack(TMRegistry.screwItem, 1);
 		itemstack.stackTagCompound = new NBTTagCompound();
 		writeToNBT(itemstack.stackTagCompound);
 		if(displayName != null)

@@ -1,9 +1,5 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,10 +9,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import tardis.Configs;
-import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.ScrewdriverHelper;
 
 public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewable
@@ -73,7 +74,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			{
 				if((yCoord + distance) > maxDist)
 					maxDist = distance;
-				if(worldObj.getBlock(xCoord, yCoord+distance, zCoord)==TardisMod.forcefield)
+				if(worldObj.getBlock(xCoord, yCoord+distance, zCoord)==TMRegistry.forcefield)
 				{
 					distances.add(yCoord + distance);
 					distance += 3;
@@ -225,7 +226,7 @@ public class GravityLiftTileEntity extends AbstractTileEntity implements IScrewa
 			int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 			if(meta == 1)
 			{
-				WorldHelper.giveItemStack(player, new ItemStack(TardisMod.gravityLift,1,1));
+				WorldHelper.giveItemStack(player, new ItemStack(TMRegistry.gravityLift,1,1));
 				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 				return true;
 			}

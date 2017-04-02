@@ -1,7 +1,5 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
-
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -13,10 +11,14 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import tardis.TardisMod;
-import tardis.common.tileents.TardisTileEntity;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.TardisMod;
+import tardis.common.TMRegistry;
+import tardis.common.tileents.TardisTileEntity;
 
 public class TardisBlock extends AbstractBlockContainer
 {
@@ -93,14 +95,14 @@ public class TardisBlock extends AbstractBlockContainer
 
 		int dir = MathHelper.floor_double(((entity.rotationYaw * 4.0F) / 360.0F) + 0.5D) & 3;
 		world.setBlockMetadataWithNotify(x, y, z, dir, 3);
-		world.setBlock(x, y+1, z, TardisMod.tardisTopBlock, dir, 3);
+		world.setBlock(x, y+1, z, TMRegistry.tardisTopBlock, dir, 3);
 	}
 
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta)
 	{
 		super.onBlockDestroyedByPlayer(world, x, y, z, meta);
-		if(world.getBlock(x, y+1,z) == TardisMod.tardisTopBlock)
+		if(world.getBlock(x, y+1,z) == TMRegistry.tardisTopBlock)
 			world.setBlockToAir(x, y+1, z);
 	}
 

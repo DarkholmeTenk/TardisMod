@@ -2,9 +2,11 @@ package tardis.common.items;
 
 import java.util.EnumSet;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+
 import tardis.TardisMod;
 import tardis.common.recipes.LabRecipeRegistry;
 import tardis.common.tileents.extensions.LabFlag;

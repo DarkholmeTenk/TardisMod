@@ -1,7 +1,5 @@
 package tardis.client;
 
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
@@ -15,7 +13,13 @@ import net.minecraft.util.StringUtils;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.MinecraftForgeClient;
-import tardis.TardisMod;
+
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
+import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.common.event.FMLInterModComms;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import tardis.client.renderer.DecoratorRenderer;
 import tardis.client.renderer.ManualItemRenderer;
 import tardis.client.renderer.SonicScrewdriverRenderer;
@@ -31,6 +35,7 @@ import tardis.client.renderer.tileents.LandingPadRenderer;
 import tardis.client.renderer.tileents.MagicDoorTileEntityRenderer;
 import tardis.client.renderer.tileents.ManualRenderer;
 import tardis.client.renderer.tileents.TardisRenderer;
+import tardis.common.TMRegistry;
 import tardis.common.TardisProxy;
 import tardis.common.core.TardisOutput;
 import tardis.common.items.extensions.ScrewTypeRegister;
@@ -47,10 +52,6 @@ import tardis.common.tileents.SummonerTileEntity;
 import tardis.common.tileents.TardisTileEntity;
 import tardis.common.tileents.extensions.DummyRoundelTE;
 import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.event.FMLInterModComms;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class TardisClientProxy extends TardisProxy
 {
@@ -94,13 +95,13 @@ public class TardisClientProxy extends TardisProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(ManualTileEntity.class, new ManualRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(SummonerTileEntity.class, summonerRenderer = new SummonerRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(MagicDoorTileEntity.class, new MagicDoorTileEntityRenderer());
-		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.labBlock), new LabRenderer());
-		MinecraftForgeClient.registerItemRenderer(TardisMod.screwItem, screwRenderer = new SonicScrewdriverRenderer());
-		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.battery), new BatteryRenderer());
-		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.tardisBlock), tardisRenderer);
-		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TardisMod.summonerBlock), summonerRenderer);
-		MinecraftForgeClient.registerItemRenderer(TardisMod.manualItem, new ManualItemRenderer());
-		MinecraftForgeClient.registerItemRenderer(TardisMod.decoTool, new DecoratorRenderer());
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TMRegistry.labBlock), new LabRenderer());
+		MinecraftForgeClient.registerItemRenderer(TMRegistry.screwItem, screwRenderer = new SonicScrewdriverRenderer());
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TMRegistry.battery), new BatteryRenderer());
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TMRegistry.tardisBlock), tardisRenderer);
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(TMRegistry.summonerBlock), summonerRenderer);
+		MinecraftForgeClient.registerItemRenderer(TMRegistry.manualItem, new ManualItemRenderer());
+		MinecraftForgeClient.registerItemRenderer(TMRegistry.decoTool, new DecoratorRenderer());
 		ScrewTypeRegister.registerClientResources();
 	}
 

@@ -1,7 +1,9 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import net.minecraft.world.IBlockAccess;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+
 import tardis.Configs;
 import tardis.TardisMod;
 

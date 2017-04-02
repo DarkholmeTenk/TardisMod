@@ -1,14 +1,5 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.SoundHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
-import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
-import io.darkcraft.darkcore.mod.interfaces.IExplodable;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,14 +17,25 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
+import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import tardis.Configs;
 import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleon;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader, IBlockUpdateDetector, IExplodable
 {
@@ -407,8 +409,8 @@ public class TardisTileEntity extends AbstractTileEntity implements IChunkLoader
 	@Override
 	public void blockUpdated(Block neighbourBlockID)
 	{
-		if((!takingOff) && (worldObj.getBlock(xCoord, yCoord+1, zCoord) != TardisMod.tardisTopBlock))
-			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.tardisTopBlock, worldObj.getBlockMetadata(xCoord, yCoord, zCoord),3);
+		if((!takingOff) && (worldObj.getBlock(xCoord, yCoord+1, zCoord) != TMRegistry.tardisTopBlock))
+			worldObj.setBlock(xCoord, yCoord, zCoord, TMRegistry.tardisTopBlock, worldObj.getBlockMetadata(xCoord, yCoord, zCoord),3);
 	}
 
 	@Override

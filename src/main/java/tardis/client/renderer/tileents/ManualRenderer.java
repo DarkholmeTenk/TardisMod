@@ -1,10 +1,9 @@
 package tardis.client.renderer.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
-
 import java.util.HashMap;
 import java.util.List;
+
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
@@ -13,9 +12,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
 
-import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.ManualTileEntity;
 import tardis.common.tileents.extensions.ManualPageTree;
 
@@ -29,7 +29,7 @@ public class ManualRenderer extends AbstractObjRenderer
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.manualBlock;
+		return TMRegistry.manualBlock;
 	}
 
 	private ResourceLocation getRL(String s)

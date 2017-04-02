@@ -10,6 +10,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractBlockContainer;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.Configs;
 import tardis.TardisMod;
 import tardis.common.tileents.SchemaCoreTileEntity;
 
@@ -18,10 +19,10 @@ public class SchemaCoreBlock extends AbstractBlockContainer
 	private final boolean visible;
 	private IIcon blankIcon;
 
-	public SchemaCoreBlock(boolean vis)
+	public SchemaCoreBlock()
 	{
 		super(TardisMod.modName);
-		visible = vis;
+		visible = Configs.visibleSchema;
 	}
 
 	@Override

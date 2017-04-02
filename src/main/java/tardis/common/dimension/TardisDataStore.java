@@ -2,13 +2,6 @@ package tardis.common.dimension;
 
 import java.util.HashMap;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.SoundHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,11 +9,21 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractWorldDataStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.tileents.ConsoleTileEntity;
@@ -130,7 +133,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 		if (w != null)
 		{
 			Block b = w.getBlock(exteriorX, exteriorY, exteriorZ);
-			if (b == TardisMod.tardisBlock)
+			if (b == TMRegistry.tardisBlock)
 				return true;
 			else
 				System.out.println("Ext not tb :" + b.toString()+":"+exteriorX+","+exteriorY+","+exteriorZ);

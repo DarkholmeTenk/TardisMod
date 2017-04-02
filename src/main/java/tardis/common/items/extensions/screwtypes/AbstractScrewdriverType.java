@@ -1,9 +1,10 @@
 package tardis.common.items.extensions.screwtypes;
 
 import net.minecraft.nbt.NBTTagCompound;
-import tardis.common.core.helpers.ScrewdriverHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.common.core.helpers.ScrewdriverHelper;
 
 public abstract class AbstractScrewdriverType implements Comparable<AbstractScrewdriverType>
 {

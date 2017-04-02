@@ -1,8 +1,7 @@
 package tardis.client.renderer.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
@@ -12,9 +11,11 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
 
-import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.BatteryTileEntity;
 
 public class BatteryRenderer extends AbstractObjRenderer implements IItemRenderer
@@ -38,13 +39,13 @@ public class BatteryRenderer extends AbstractObjRenderer implements IItemRendere
 				offsets[i] = Math.sin(Math.PI *(((double)i) / 180));
 		}
 	}
-	
+
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.battery;
+		return TMRegistry.battery;
 	}
-	
+
 	private int pr(int in)
 	{
 		switch(in)
@@ -57,7 +58,7 @@ public class BatteryRenderer extends AbstractObjRenderer implements IItemRendere
 			default : return 1;
 		}
 	}
-	
+
 	private void magicFunct(double angle, int mode, int ringNum)
 	{
 		double baseSC = 0.85;
@@ -67,7 +68,7 @@ public class BatteryRenderer extends AbstractObjRenderer implements IItemRendere
 			for(int i = 0; i <= ringNum; i++)
 			{
 				GL11.glPushMatrix();
-				if(i%2 == 0)
+				if((i%2) == 0)
 					GL11.glRotated(angle * pr(i), 1, 0, 0);
 				else
 					GL11.glRotated(angle * pr(i), 0, 0, 1);
@@ -96,7 +97,7 @@ public class BatteryRenderer extends AbstractObjRenderer implements IItemRendere
 			for(int i = ringNum;i >= 0;i--)
 				GL11.glPopMatrix();
 		}
-		else if(mode == 1 || mode == 2)
+		else if((mode == 1) || (mode == 2))
 			GL11.glPopMatrix();
 	}
 
@@ -140,7 +141,7 @@ public class BatteryRenderer extends AbstractObjRenderer implements IItemRendere
 	{
 		return true;
 	}
-	
+
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data)
 	{

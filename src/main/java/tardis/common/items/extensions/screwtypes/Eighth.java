@@ -1,11 +1,11 @@
 package tardis.common.items.extensions.screwtypes;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
-
-import org.lwjgl.opengl.GL11;
 
 import tardis.common.core.helpers.ScrewdriverHelper;
 

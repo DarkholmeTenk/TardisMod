@@ -1,11 +1,13 @@
 package tardis.common.tileents.components;
 
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+
 import tardis.Configs;
 import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ComponentTileEntity;

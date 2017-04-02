@@ -3,7 +3,8 @@ package tardis.common.tileents.extensions.upgrades;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import tardis.TardisMod;
+
+import tardis.common.TMRegistry;
 import tardis.common.dimension.damage.TardisDamageType;
 
 public class DamReduceMissedControl extends AbstractDamReduce
@@ -26,7 +27,7 @@ public class DamReduceMissedControl extends AbstractDamReduce
 	@Override
 	public ItemStack getWorkingIS()
 	{
-		ItemStack is = new ItemStack(TardisMod.upgradeItem,1,3);
+		ItemStack is = new ItemStack(TMRegistry.upgradeItem,1,3);
 		is.stackTagCompound = new NBTTagCompound();
 		writeToNBT(is.stackTagCompound);
 		return is;

@@ -1,7 +1,8 @@
 package tardis.common.integration.waila;
 
-import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.nbt.NBTTagCompound;
+
+import mcp.mobius.waila.api.IWailaDataAccessor;
 
 public class WailaArtronProvider extends AbstractWailaProvider {
 

@@ -1,10 +1,5 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +8,12 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommand;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import tardis.TardisMod;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.helpers.Helper;

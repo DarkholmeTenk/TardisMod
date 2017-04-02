@@ -1,24 +1,25 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import tardis.TardisMod;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import tardis.api.IControlMatrix;
 import tardis.client.renderer.tileents.ManualRenderer;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.tileents.extensions.ManualPage;
 import tardis.common.tileents.extensions.ManualPageTree;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ManualTileEntity extends AbstractTileEntity implements IControlMatrix
 {
@@ -60,7 +61,7 @@ public class ManualTileEntity extends AbstractTileEntity implements IControlMatr
 				{
 					if((i == 0) && (j == 0))
 						continue;
-					worldObj.setBlock(xCoord+(dX()?i:0), yCoord+j, zCoord+(!dX()?i:0), TardisMod.manualHelperBlock,meta(),3);
+					worldObj.setBlock(xCoord+(dX()?i:0), yCoord+j, zCoord+(!dX()?i:0), TMRegistry.manualHelperBlock,meta(),3);
 				}
 			}
 		}

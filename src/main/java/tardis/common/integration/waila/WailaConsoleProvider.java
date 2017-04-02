@@ -1,10 +1,11 @@
 package tardis.common.integration.waila;
 
-import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import tardis.TardisMod;
+
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.ConsoleTileEntity;
@@ -52,7 +53,7 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 	private boolean isConsole(IWailaDataAccessor accessor)
 	{
 		Block b = accessor.getBlock();
-		if(b == TardisMod.schemaComponentBlock)
+		if(b == TMRegistry.schemaComponentBlock)
 		{
 			int metaData = accessor.getMetadata();
 			return ((metaData==3) || (metaData == 6));

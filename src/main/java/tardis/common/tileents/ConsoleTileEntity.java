@@ -1,13 +1,5 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.MessageHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-import io.darkcraft.darkcore.mod.interfaces.IExplodable;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,11 +15,23 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.MessageHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
+import tardis.common.TMRegistry;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.flight.FlightConfiguration;
@@ -39,8 +43,6 @@ import tardis.common.dimension.SaveSlotNamesDataStore;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.items.NameTagItem;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ConsoleTileEntity extends AbstractTileEntity implements IControlMatrix, IExplodable
 {
@@ -632,7 +634,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				helper.setOwner(core.getOwner());
 				helper.setSchema(schemaCategoryString, schemaChooserString);
 				ItemStack toGive = helper.getItemStack();
-				TardisMod.screwItem.notifyMode(helper, pl, false);
+				TMRegistry.screwItem.notifyMode(helper, pl, false);
 				WorldHelper.giveItemStack(pl, toGive);
 			}
 			else

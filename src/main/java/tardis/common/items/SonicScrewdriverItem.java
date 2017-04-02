@@ -1,15 +1,10 @@
 package tardis.common.items;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.SoundHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import mrtjp.projectred.api.IScrewdriver;
+import com.google.common.collect.Multimap;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -23,6 +18,20 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
+import buildcraft.api.tools.IToolWrench;
+import cofh.api.block.IDismantleable;
+import cofh.api.item.IToolHammer;
+import cofh.api.tileentity.IReconfigurableFacing;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Optional;
+import mrtjp.projectred.api.IScrewdriver;
 import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.IScrewablePrecise;
@@ -30,6 +39,7 @@ import tardis.api.ITDismantleable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
@@ -38,15 +48,6 @@ import tardis.common.tileents.ComponentTileEntity;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.TardisTileEntity;
-import buildcraft.api.tools.IToolWrench;
-import cofh.api.block.IDismantleable;
-import cofh.api.item.IToolHammer;
-import cofh.api.tileentity.IReconfigurableFacing;
-
-import com.google.common.collect.Multimap;
-
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface="buildcraft.api.tools.IToolWrench",modid="BuildCraftAPI|core"),
@@ -110,7 +111,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 	{
 		if (is != null)
 		{
-			if (is.getItem() == TardisMod.screwItem) return true;
+			if (is.getItem() == TMRegistry.screwItem) return true;
 		}
 		return false;
 	}
@@ -191,12 +192,12 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		}
 		else if(mode == ScrewdriverMode.Reconfigure)
 		{
-			if (b == TardisMod.colorableRoundelBlock)
+			if (b == TMRegistry.colorableRoundelBlock)
 			{
 				TardisDataStore ds = Helper.getDataStore(pos.world);
 				if ((ds == null) || ds.hasPermission(pl, TardisPermission.ROUNDEL))
 				{
-					pos.getWorldObj().setBlock(pos.x, pos.y, pos.z, TardisMod.colorableOpenRoundelBlock, m, 3);
+					pos.getWorldObj().setBlock(pos.x, pos.y, pos.z, TMRegistry.colorableOpenRoundelBlock, m, 3);
 					toolUsed(is, pl, pos.x, pos.y, pos.z);
 					return true;
 				}

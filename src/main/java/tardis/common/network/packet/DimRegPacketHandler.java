@@ -1,8 +1,10 @@
 package tardis.common.network.packet;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IDataPacketHandler;
-import net.minecraft.nbt.NBTTagCompound;
+
 import tardis.TardisMod;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;

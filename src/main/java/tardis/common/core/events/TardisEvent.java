@@ -1,8 +1,8 @@
 package tardis.common.core.events;
 
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.lang.ref.WeakReference;
+
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.CoreTileEntity;

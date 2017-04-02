@@ -1,14 +1,16 @@
 package tardis.common.tileents.extensions.upgrades;
 
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import tardis.TardisMod;
-import tardis.common.dimension.damage.TardisDamageType;
+
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.common.TMRegistry;
+import tardis.common.dimension.damage.TardisDamageType;
 
 public abstract class AbstractDamReduce extends AbstractUpgrade
 {
@@ -55,7 +57,7 @@ public abstract class AbstractDamReduce extends AbstractUpgrade
 	{
 		if(health <= 0)
 		{
-			ItemStack is = new ItemStack(TardisMod.upgradeItem,1,0);
+			ItemStack is = new ItemStack(TMRegistry.upgradeItem,1,0);
 			return is;
 		}
 		else

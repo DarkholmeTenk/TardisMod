@@ -2,8 +2,6 @@ package tardis.common.items;
 
 import java.util.EnumSet;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -11,8 +9,13 @@ import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.Configs;
 import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.recipes.LabRecipeRegistry;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import tardis.common.tileents.extensions.LabFlag;
@@ -77,7 +80,7 @@ public class CraftingComponentItem extends AbstractItem
 				'c', CraftingComponentType.CHRONOSTEEL.getIS(1)));
 
 		LabRecipeRegistry.addRecipe(new LabRecipe("tm.upgrade",
-				new ItemStack[] { new ItemStack(TardisMod.upgradeItem,1,0), CraftingComponentType.CHRONOSTEEL.getIS(1) },
+				new ItemStack[] { new ItemStack(TMRegistry.upgradeItem,1,0), CraftingComponentType.CHRONOSTEEL.getIS(1) },
 				new ItemStack[] { CraftingComponentType.UPGRADE.getIS(1) },
 				EnumSet.noneOf(LabFlag.class),
 				100));

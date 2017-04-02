@@ -6,10 +6,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.TardisMod;
 import tardis.common.tileents.LandingPadTileEntity;
 import tardis.common.tileents.extensions.CraftingComponentType;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class LandingPadBlock extends AbstractScrewableBlockContainer
 {

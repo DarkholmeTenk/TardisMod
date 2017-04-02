@@ -8,12 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import io.darkcraft.darkcore.mod.DarkcoreMod;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-import io.darkcraft.darkcore.mod.network.DataPacket;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,9 +18,18 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import io.darkcraft.darkcore.mod.DarkcoreMod;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.network.DataPacket;
+
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
+import tardis.common.TMRegistry;
 import tardis.common.core.TardisDimensionRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.events.TardisLandingEvent;
@@ -87,11 +90,11 @@ public class Helper
 			TardisOutput.print("TH", "Generating tardis error: " + e.getMessage());
 			e.printStackTrace();
 		}
-		if (tardisWorld.getBlock(tardisCoreX, tardisCoreY, tardisCoreZ) != TardisMod.tardisCoreBlock)
+		if (tardisWorld.getBlock(tardisCoreX, tardisCoreY, tardisCoreZ) != TMRegistry.tardisCoreBlock)
 		{
-			tardisWorld.setBlock(tardisCoreX, tardisCoreY, tardisCoreZ, TardisMod.tardisCoreBlock);
-			tardisWorld.setBlock(tardisCoreX, tardisCoreY - 2, tardisCoreZ, TardisMod.tardisConsoleBlock);
-			tardisWorld.setBlock(tardisCoreX, tardisCoreY - 5, tardisCoreZ, TardisMod.tardisEngineBlock);
+			tardisWorld.setBlock(tardisCoreX, tardisCoreY, tardisCoreZ, TMRegistry.tardisCoreBlock);
+			tardisWorld.setBlock(tardisCoreX, tardisCoreY - 2, tardisCoreZ, TMRegistry.tardisConsoleBlock);
+			tardisWorld.setBlock(tardisCoreX, tardisCoreY - 5, tardisCoreZ, TMRegistry.tardisEngineBlock);
 		}
 		CoreTileEntity te = getTardisCore(dimID);
 		TardisDataStore ds = getDataStore(dimID);
@@ -241,8 +244,8 @@ public class Helper
 
 		if (place != null)
 		{
-			w.setBlock(place.x, place.y, place.z, TardisMod.tardisBlock, 0, 3);
-			w.setBlock(place.x, place.y + 1, place.z, TardisMod.tardisTopBlock, 0, 3);
+			w.setBlock(place.x, place.y, place.z, TMRegistry.tardisBlock, 0, 3);
+			w.setBlock(place.x, place.y + 1, place.z, TMRegistry.tardisTopBlock, 0, 3);
 			TileEntity te = w.getTileEntity(place.x, place.y, place.z);
 			if (te instanceof TardisTileEntity) return (TardisTileEntity) te;
 		}
@@ -258,21 +261,21 @@ public class Helper
 			for (int z = -1; z <= 1; z++)
 			{
 				if ((x == 0) && (z == 0)) continue;
-				if (w.getBlock(x, y, z) != TardisMod.schemaComponentBlock) w.setBlock(x, y, z, TardisMod.schemaComponentBlock, 3, 3);
+				if (w.getBlock(x, y, z) != TMRegistry.schemaComponentBlock) w.setBlock(x, y, z, TMRegistry.schemaComponentBlock, 3, 3);
 			}
 		}
-		if (w.getBlock(0, y + 1, 0) != TardisMod.schemaComponentBlock) w.setBlock(0, y + 1, 0, TardisMod.schemaComponentBlock, 6, 3);
-		if (w.getBlock(0, tardisCoreY + 1, 0) != TardisMod.schemaComponentBlock) w.setBlock(0, tardisCoreY + 1, 0, TardisMod.schemaComponentBlock, 8, 3);
-		if (w.getBlock(0, tardisCoreY - 5, 0) != TardisMod.tardisEngineBlock) w.setBlock(0, tardisCoreY - 5, 0, TardisMod.tardisEngineBlock);
+		if (w.getBlock(0, y + 1, 0) != TMRegistry.schemaComponentBlock) w.setBlock(0, y + 1, 0, TMRegistry.schemaComponentBlock, 6, 3);
+		if (w.getBlock(0, tardisCoreY + 1, 0) != TMRegistry.schemaComponentBlock) w.setBlock(0, tardisCoreY + 1, 0, TMRegistry.schemaComponentBlock, 8, 3);
+		if (w.getBlock(0, tardisCoreY - 5, 0) != TMRegistry.tardisEngineBlock) w.setBlock(0, tardisCoreY - 5, 0, TMRegistry.tardisEngineBlock);
 	}
 
 	public static boolean isBlockRemovable(Block blockID)
 	{
-		if (blockID == TardisMod.tardisCoreBlock)
+		if (blockID == TMRegistry.tardisCoreBlock)
 			return false;
-		else if (blockID == TardisMod.tardisConsoleBlock)
+		else if (blockID == TMRegistry.tardisConsoleBlock)
 			return false;
-		else if (blockID == TardisMod.tardisEngineBlock)
+		else if (blockID == TMRegistry.tardisEngineBlock)
 		;
 		return true;
 	}
@@ -436,7 +439,7 @@ public class Helper
 		if(tardisWorld instanceof World)
 		{
 			World w = (World) tardisWorld;
-			w.setBlock(tardisCoreX, tardisCoreY - 2, tardisCoreZ, TardisMod.tardisConsoleBlock);
+			w.setBlock(tardisCoreX, tardisCoreY - 2, tardisCoreZ, TMRegistry.tardisConsoleBlock);
 		}
 		te = tardisWorld.getTileEntity(tardisCoreX, tardisCoreY - 2, tardisCoreZ);
 		if(te instanceof ConsoleTileEntity)

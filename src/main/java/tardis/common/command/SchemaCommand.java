@@ -1,10 +1,10 @@
 package tardis.common.command;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
-
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
 
 public class SchemaCommand extends AbstractCommandNew
 {

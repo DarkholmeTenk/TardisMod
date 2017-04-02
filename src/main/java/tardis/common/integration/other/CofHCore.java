@@ -1,8 +1,9 @@
 package tardis.common.integration.other;
 
+import net.minecraft.item.ItemStack;
+
 import cofh.api.energy.IEnergyContainerItem;
 import cpw.mods.fml.common.Loader;
-import net.minecraft.item.ItemStack;
 
 public class CofHCore
 {

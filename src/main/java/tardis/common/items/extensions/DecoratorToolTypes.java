@@ -1,25 +1,27 @@
 package tardis.common.items.extensions;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.BlockIterator;
 import io.darkcraft.darkcore.mod.interfaces.IBlockIteratorCondition;
 import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-import tardis.TardisMod;
+
+import tardis.common.TMRegistry;
 
 public enum DecoratorToolTypes
 {
-	WALL("Wall",TardisMod.colorableWallBlock),
-	FLOOR("Floor",TardisMod.colorableFloorBlock),
-	BRICK("Brick",TardisMod.colorableBrickBlock),
-	PLANK("Plank",TardisMod.colorablePlankBlock),
-	GLASS("Glass",TardisMod.decoTransBlock,0),
-	ROUNDEL("Roundel",TardisMod.colorableRoundelBlock),
-	WALKWAY("Walkway",TardisMod.decoBlock,0),
-	WALKWAYTRANS("Walkway2",TardisMod.decoBlock,2,false),
-	WALKWAYTRANSA("Open Walkway",TardisMod.decoTransBlock,1);
+	WALL("Wall",TMRegistry.colorableWallBlock),
+	FLOOR("Floor",TMRegistry.colorableFloorBlock),
+	BRICK("Brick",TMRegistry.colorableBrickBlock),
+	PLANK("Plank",TMRegistry.colorablePlankBlock),
+	GLASS("Glass",TMRegistry.decoTransBlock,0),
+	ROUNDEL("Roundel",TMRegistry.colorableRoundelBlock),
+	WALKWAY("Walkway",TMRegistry.decoBlock,0),
+	WALKWAYTRANS("Walkway2",TMRegistry.decoBlock,2,false),
+	WALKWAYTRANSA("Open Walkway",TMRegistry.decoTransBlock,1);
 
 	private final String name;
 	private final Block b;

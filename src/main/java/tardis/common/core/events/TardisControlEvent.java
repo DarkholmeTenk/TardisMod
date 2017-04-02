@@ -1,8 +1,9 @@
 package tardis.common.core.events;
 
 import net.minecraft.entity.player.EntityPlayer;
-import tardis.api.IControlMatrix;
+
 import cpw.mods.fml.common.eventhandler.Cancelable;
+import tardis.api.IControlMatrix;
 
 @Cancelable
 public class TardisControlEvent extends TardisModEvent

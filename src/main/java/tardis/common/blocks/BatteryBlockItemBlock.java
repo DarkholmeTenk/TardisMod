@@ -1,15 +1,16 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
-
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import tardis.TardisMod;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+
+import tardis.common.TMRegistry;
 
 public class BatteryBlockItemBlock extends AbstractItemBlock
 {
@@ -22,9 +23,9 @@ public class BatteryBlockItemBlock extends AbstractItemBlock
 	@Override
 	protected AbstractBlock getBlock()
 	{
-		return TardisMod.battery;
+		return TMRegistry.battery;
 	}
-	
+
 	@Override
 	public void addInfo(ItemStack is, EntityPlayer player, List infoList)
 	{

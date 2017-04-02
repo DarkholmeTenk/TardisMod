@@ -1,18 +1,5 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.SoundHelper;
-import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-import io.darkcraft.darkcore.mod.interfaces.IActivatable;
-import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
-import io.darkcraft.darkcore.mod.interfaces.IExplodable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,12 +24,33 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.PlayerHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+import io.darkcraft.darkcore.mod.helpers.TeleportHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
+import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
+
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
+import appeng.api.util.AECableType;
+import appeng.api.util.DimensionalCoord;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
+import tardis.common.TMRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.events.TardisLandingEvent;
 import tardis.common.core.events.TardisTakeoffEvent;
@@ -58,12 +66,6 @@ import tardis.common.items.KeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CoreGrid;
 import tardis.common.tileents.extensions.LabFlag;
-import appeng.api.networking.IGridHost;
-import appeng.api.networking.IGridNode;
-import appeng.api.util.AECableType;
-import appeng.api.util.DimensionalCoord;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class CoreTileEntity extends AbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider, IExplodable
 {
@@ -899,7 +901,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		World w = gDS().getExteriorWorld();
 		if (w != null)
 		{
-			if (w.getBlock(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ) == TardisMod.tardisBlock)
+			if (w.getBlock(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ) == TMRegistry.tardisBlock)
 			{
 				w.setBlockToAir(gDS().exteriorX, gDS().exteriorY, gDS().exteriorZ);
 				w.setBlockToAir(gDS().exteriorX, gDS().exteriorY + 1, gDS().exteriorZ);
@@ -930,8 +932,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		posArr = getModifiedControls(con, posArr);
 		World w = WorldHelper.getWorld(gDS().desiredDim);
 		MinecraftForge.EVENT_BUS.post(new TardisLandingEvent(this,new SimpleCoordStore(w,posArr[0],posArr[1],posArr[2])));
-		w.setBlock(posArr[0], posArr[1], posArr[2], TardisMod.tardisBlock, facing, 3);
-		w.setBlock(posArr[0], posArr[1] + 1, posArr[2], TardisMod.tardisTopBlock, facing, 3);
+		w.setBlock(posArr[0], posArr[1], posArr[2], TMRegistry.tardisBlock, facing, 3);
+		w.setBlock(posArr[0], posArr[1] + 1, posArr[2], TMRegistry.tardisTopBlock, facing, 3);
 
 		gDS().setExterior(w, posArr[0], posArr[1], posArr[2]);
 		oldExteriorWorld = 0;

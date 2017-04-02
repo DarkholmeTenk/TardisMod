@@ -15,6 +15,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.LabTileEntity;
 
 public class LabBlock extends AbstractBlockContainer
@@ -41,7 +42,7 @@ public class LabBlock extends AbstractBlockContainer
 	@Override
 	public void initRecipes()
 	{
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TardisMod.labBlock,1,0),true, "igi","ioi","iri",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(TMRegistry.labBlock,1,0),true, "igi","ioi","iri",
 				'i', Items.iron_ingot,
 				'g', Blocks.glass,
 				'o', Items.gold_ingot,

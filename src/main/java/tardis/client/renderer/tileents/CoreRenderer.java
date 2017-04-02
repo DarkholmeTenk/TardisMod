@@ -1,17 +1,18 @@
 package tardis.client.renderer.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 
-import tardis.TardisMod;
 import tardis.client.renderer.model.RotorModel;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.CoreTileEntity;
 
 public class CoreRenderer extends AbstractBlockRenderer
@@ -41,7 +42,7 @@ public class CoreRenderer extends AbstractBlockRenderer
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.tardisCoreBlock;
+		return TMRegistry.tardisCoreBlock;
 	}
 
 	private void renderRotor(Tessellator tess, CoreTileEntity core)

@@ -1,7 +1,7 @@
 package tardis.client.renderer;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
@@ -11,9 +11,10 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
 
-import tardis.TardisMod;
+import tardis.common.TMRegistry;
 
 public class SummonerRenderer extends AbstractObjRenderer implements IItemRenderer
 {
@@ -28,7 +29,7 @@ public class SummonerRenderer extends AbstractObjRenderer implements IItemRender
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.summonerBlock;
+		return TMRegistry.summonerBlock;
 	}
 
 	@Override

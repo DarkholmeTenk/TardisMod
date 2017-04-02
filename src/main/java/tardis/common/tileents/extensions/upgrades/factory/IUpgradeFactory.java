@@ -1,8 +1,9 @@
 package tardis.common.tileents.extensions.upgrades.factory;
 
-import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 
 public interface IUpgradeFactory
 {

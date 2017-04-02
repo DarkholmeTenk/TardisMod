@@ -1,12 +1,5 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-import io.darkcraft.darkcore.mod.interfaces.IExplodable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -19,12 +12,21 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.Explosion;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IExplodable;
+
 import tardis.TardisMod;
 import tardis.api.IControlMatrix;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
+import tardis.common.TMRegistry;
 import tardis.common.core.HitPosition;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.flight.FlightConfiguration;
@@ -135,11 +137,11 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	private void verifyEngineBlocks()
 	{
 		if (worldObj.getBlock(xCoord, yCoord - 1, zCoord) == Blocks.air)
-			worldObj.setBlock(xCoord, yCoord - 1, zCoord, TardisMod.schemaComponentBlock, 7, 3);
+			worldObj.setBlock(xCoord, yCoord - 1, zCoord, TMRegistry.schemaComponentBlock, 7, 3);
 		if (worldObj.getBlock(xCoord, yCoord + 1, zCoord) == Blocks.air)
-			worldObj.setBlock(xCoord, yCoord + 1, zCoord, TardisMod.schemaComponentBlock, 7, 3);
+			worldObj.setBlock(xCoord, yCoord + 1, zCoord, TMRegistry.schemaComponentBlock, 7, 3);
 		if (worldObj.getBlock(xCoord, yCoord + 2, zCoord) == Blocks.air)
-			worldObj.setBlock(xCoord, yCoord + 2, zCoord, TardisMod.schemaComponentBlock, 7, 3);
+			worldObj.setBlock(xCoord, yCoord + 2, zCoord, TMRegistry.schemaComponentBlock, 7, 3);
 	}
 
 	public int getControlFromHit(HitPosition hit)
@@ -379,7 +381,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 				if (screwHelper != null)
 				{
 					ItemStack toGive = screwHelper.getItemStack();
-					TardisMod.screwItem.notifyMode(screwHelper, pl, false);
+					TMRegistry.screwItem.notifyMode(screwHelper, pl, false);
 					screwHelper = null;
 					WorldHelper.giveItemStack(pl, toGive);
 				}

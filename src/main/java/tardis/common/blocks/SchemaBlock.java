@@ -1,19 +1,22 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import net.minecraft.world.IBlockAccess;
-import tardis.TardisMod;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.Configs;
+import tardis.TardisMod;
 
 public class SchemaBlock extends AbstractBlock
 {
 	private final boolean visible;
 
-	public SchemaBlock(boolean vis)
+	public SchemaBlock()
 	{
-		super(vis,TardisMod.modName);
-		visible = vis;
+		super(Configs.visibleForceField, TardisMod.modName);
+		visible = Configs.visibleForceField;
 	}
 
 	@Override

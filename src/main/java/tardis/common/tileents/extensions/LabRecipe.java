@@ -2,12 +2,14 @@ package tardis.common.tileents.extensions;
 
 import java.util.EnumSet;
 
-import io.darkcraft.darkcore.mod.handlers.containers.ItemStackContainer;
-import io.darkcraft.darkcore.mod.handlers.containers.ItemStackContainer.IEntityItemInitialiser;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import io.darkcraft.darkcore.mod.handlers.containers.ItemStackContainer;
+import io.darkcraft.darkcore.mod.handlers.containers.ItemStackContainer.IEntityItemInitialiser;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import tardis.api.IArtronEnergyProvider;
 
 public class LabRecipe

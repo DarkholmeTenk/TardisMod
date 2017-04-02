@@ -1,9 +1,5 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -12,8 +8,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
 import tardis.Configs;
 import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
@@ -112,7 +114,7 @@ public class SchemaComponentBlock extends AbstractBlock
 
 	public static boolean isDoorConnector(World w,int x, int y, int z)
 	{
-		if((w.getBlock(x,y,z) == TardisMod.schemaComponentBlock) && (w.getBlockMetadata(x, y, z) <= 1))
+		if((w.getBlock(x,y,z) == TMRegistry.schemaComponentBlock) && (w.getBlockMetadata(x, y, z) <= 1))
 			return true;
 		return false;
 	}
@@ -142,11 +144,11 @@ public class SchemaComponentBlock extends AbstractBlock
     		boolean found = false;
     		for(int i = 1;(i<10) && (found == false);i++)
     		{
-    			if(w.getBlock(x, y-i, z) == TardisMod.schemaCoreBlock)
+    			if(w.getBlock(x, y-i, z) == TMRegistry.schemaCoreBlock)
     			{
-    				if(TardisMod.screwItem.handleBlock(new SimpleCoordStore(w,x,y-i,z), pl))
+    				if(TMRegistry.screwItem.handleBlock(new SimpleCoordStore(w,x,y-i,z), pl))
     				{
-    					TardisMod.screwItem.toolUsed(null, pl, x, y, z);
+    					TMRegistry.screwItem.toolUsed(null, pl, x, y, z);
     					return true;
     				}
     				else

@@ -5,8 +5,9 @@ import java.util.HashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import tardis.TardisMod;
+
 import tardis.api.TardisUpgradeMode;
+import tardis.common.TMRegistry;
 import tardis.common.dimension.TardisDataStore;
 
 public class LevelUpgrade extends AbstractUpgrade
@@ -45,7 +46,7 @@ public class LevelUpgrade extends AbstractUpgrade
 			case ENERGY: o = 7; break;
 			case REGEN: o = 8; break;
 		}
-		return new ItemStack(TardisMod.upgradeItem,1,o);
+		return new ItemStack(TMRegistry.upgradeItem,1,o);
 	}
 
 	@Override

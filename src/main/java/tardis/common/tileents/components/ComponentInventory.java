@@ -1,9 +1,11 @@
 package tardis.common.tileents.components;
 
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;
 

@@ -1,7 +1,8 @@
 package tardis.common.blocks;
 
-import io.darkcraft.darkcore.mod.impl.DefaultItemBlock;
 import net.minecraft.block.Block;
+
+import io.darkcraft.darkcore.mod.impl.DefaultItemBlock;
 
 public class InternalDoorItemBlock extends DefaultItemBlock
 {

@@ -1,8 +1,8 @@
 package tardis.client.renderer.portal;
 
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-
 import java.util.List;
+
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -15,7 +15,7 @@ import net.minecraft.world.WorldSettings;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 
 public class PortalWorld extends World
 {

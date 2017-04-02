@@ -1,7 +1,8 @@
 package tardis.common.tileents.extensions;
 
-import io.darkcraft.darkcore.mod.datastore.UVStore;
 import net.minecraft.util.ResourceLocation;
+
+import io.darkcraft.darkcore.mod.datastore.UVStore;
 
 public enum LabFlag
 {

@@ -1,11 +1,5 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.interfaces.IActivatable;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,11 +12,18 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
+
 import tardis.Configs;
-import tardis.TardisMod;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
+import tardis.common.TMRegistry;
 import tardis.common.blocks.SchemaComponentBlock;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.flight.FlightConfiguration;
@@ -290,7 +291,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 		{
 			SimpleCoordStore scs = dds.scs;
 			Block b = scs.getBlock();
-			if(b == TardisMod.magicDoorBlock)
+			if(b == TMRegistry.magicDoorBlock)
 			{
 				MagicDoorTileEntity te = (MagicDoorTileEntity) scs.getTileEntity();
 				if(te.isValidLink())
@@ -319,7 +320,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			foundPair = other != null;
 			if(!foundPair && isRoomBeingRemoved)
 			{
-				if(scs.getBlock() != TardisMod.internalDoorBlock)
+				if(scs.getBlock() != TMRegistry.internalDoorBlock)
 				{
 					if(pb == null)
 						pb = Helper.loadSchema(name);
@@ -346,11 +347,11 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 				repCol = pb.repairBlock(worldObj, xCoord, yCoord, zCoord, (door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable, facing);
 			else
 			{
-				repCol = (worldObj.getBlock((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable) == TardisMod.internalDoorBlock);
+				repCol = (worldObj.getBlock((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable) == TMRegistry.internalDoorBlock);
 				repCol = repCol || SchemaComponentBlock.isDoorConnector(worldObj, (door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable);
 				if(repCol)
 					worldObj.setBlockToAir((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable);
-				repCol = repCol || (worldObj.getBlock((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable) == TardisMod.magicDoorBlock);
+				repCol = repCol || (worldObj.getBlock((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable) == TMRegistry.magicDoorBlock);
 			}
 			repRow = repRow || repCol;
 		}
@@ -361,7 +362,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 				repCol = pb.repairBlock(worldObj, xCoord, yCoord, zCoord, (door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable, facing);
 			else
 			{
-				repCol = (worldObj.getBlock((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable) == TardisMod.internalDoorBlock);
+				repCol = (worldObj.getBlock((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable) == TMRegistry.internalDoorBlock);
 				repCol = repCol || SchemaComponentBlock.isDoorConnector(worldObj, (door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable);
 				if(repCol)
 					worldObj.setBlockToAir((door.facing%2)==0?stable:o, y, (door.facing%2)==0?o:stable);
@@ -410,7 +411,7 @@ public class SchemaCoreTileEntity extends AbstractTileEntity implements IScrewab
 			setDoorArray();
 		for(DoorDS dds : doors)
 		{
-			if(dds.scs.equals(pos) && (dds.scs.getBlock() != TardisMod.magicDoorBlock))
+			if(dds.scs.equals(pos) && (dds.scs.getBlock() != TMRegistry.magicDoorBlock))
 				return true;
 		}
 		return false;

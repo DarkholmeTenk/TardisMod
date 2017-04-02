@@ -1,16 +1,18 @@
 package tardis.common.tileents.extensions.upgrades;
 
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import tardis.api.TardisUpgradeMode;
 import tardis.client.renderer.model.StickModel;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.TardisDamageType;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class AbstractUpgrade
 {

@@ -1,7 +1,8 @@
 package tardis.common.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import net.minecraft.nbt.NBTTagCompound;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 
 public class TardisDebugTileEntity extends AbstractTileEntity
 {

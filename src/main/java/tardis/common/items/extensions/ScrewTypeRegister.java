@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import net.minecraft.nbt.NBTTagCompound;
-import tardis.TardisMod;
-import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.TardisMod;
+import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
 
 public class ScrewTypeRegister
 {

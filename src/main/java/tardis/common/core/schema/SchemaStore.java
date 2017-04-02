@@ -9,10 +9,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import tardis.TardisMod;
+
+import cpw.mods.fml.common.registry.GameData;
+import tardis.common.TMRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.tileents.SchemaCoreTileEntity;
-import cpw.mods.fml.common.registry.GameData;
 
 public class SchemaStore
 {
@@ -48,9 +49,9 @@ public class SchemaStore
 		if (bannedIDs == null)
 		{
 			bannedIDs = new HashSet<Block>();
-			bannedIDs.add(TardisMod.tardisCoreBlock);
-			bannedIDs.add(TardisMod.tardisConsoleBlock);
-			bannedIDs.add(TardisMod.tardisEngineBlock);
+			bannedIDs.add(TMRegistry.tardisCoreBlock);
+			bannedIDs.add(TMRegistry.tardisConsoleBlock);
+			bannedIDs.add(TMRegistry.tardisEngineBlock);
 		}
 	}
 
@@ -61,21 +62,21 @@ public class SchemaStore
 
 	public void loadToWorld(World w, int meta, int x, int y, int z)
 	{
-		if ((block == TardisMod.decoBlock) && (meta == 6))
+		if ((block == TMRegistry.decoBlock) && (meta == 6))
 		{
-			block = TardisMod.decoTransBlock;
+			block = TMRegistry.decoTransBlock;
 			meta = blockMeta = 0;
 		}
-		if (block == TardisMod.decoBlock)
+		if (block == TMRegistry.decoBlock)
 		{
 			switch(meta)
 			{
 				case 1: meta = 0; break;
-				case 2: block = TardisMod.colorableRoundelBlock; meta = 3; break;
-				case 4: block = TardisMod.colorableRoundelBlock; meta = 15; break;
-				case 3: block = TardisMod.colorableWallBlock; meta = 15; break;
-				case 5: block = TardisMod.colorableFloorBlock; meta = 15; break;
-				case 7: block = TardisMod.colorableWallBlock; meta = 3; break;
+				case 2: block = TMRegistry.colorableRoundelBlock; meta = 3; break;
+				case 4: block = TMRegistry.colorableRoundelBlock; meta = 15; break;
+				case 3: block = TMRegistry.colorableWallBlock; meta = 15; break;
+				case 5: block = TMRegistry.colorableFloorBlock; meta = 15; break;
+				case 7: block = TMRegistry.colorableWallBlock; meta = 3; break;
 			}
 		}
 
@@ -100,9 +101,9 @@ public class SchemaStore
 		if (bannedIDs == null)
 		{
 			bannedIDs = new HashSet<Block>();
-			bannedIDs.add(TardisMod.tardisCoreBlock);
-			bannedIDs.add(TardisMod.tardisConsoleBlock);
-			bannedIDs.add(TardisMod.tardisEngineBlock);
+			bannedIDs.add(TMRegistry.tardisCoreBlock);
+			bannedIDs.add(TMRegistry.tardisConsoleBlock);
+			bannedIDs.add(TMRegistry.tardisEngineBlock);
 		}
 
 		if ((w.getBlock(x, y, z) == Blocks.air) || bannedIDs.contains(w.getBlock(x, y, z))) return null;
@@ -178,14 +179,14 @@ public class SchemaStore
 				return blockCache.get(name);
 			else
 			{
-				if (name.equals("TardisMod:tile.TardisMod.DecoBlockDark")) return TardisMod.decoBlock;
+				if (name.equals("TMRegistry.tile.TardisMod.DecoBlockDark")) return TMRegistry.decoBlock;
 				Iterator<Block> blockIter = GameData.getBlockRegistry().iterator();
 				while (blockIter.hasNext())
 				{
 					b = blockIter.next();
 					if (b.getUnlocalizedName().equals(name))
 					{
-						if ((name == TardisMod.decoBlock.getUnlocalizedName()) && (b != TardisMod.decoBlock)) continue;
+						if ((name == TMRegistry.decoBlock.getUnlocalizedName()) && (b != TMRegistry.decoBlock)) continue;
 						blockCache.put(name, b);
 						return b;
 					}

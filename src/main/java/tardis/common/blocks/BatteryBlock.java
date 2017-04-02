@@ -2,13 +2,15 @@ package tardis.common.blocks;
 
 import java.util.EnumSet;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractItemBlock;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.TardisMod;
 import tardis.common.recipes.LabRecipeRegistry;
 import tardis.common.tileents.BatteryTileEntity;

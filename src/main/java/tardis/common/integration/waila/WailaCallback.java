@@ -1,9 +1,10 @@
 package tardis.common.integration.waila;
 
+import net.minecraft.block.Block;
+
 import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.api.IWailaRegistrar;
-import net.minecraft.block.Block;
-import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.blocks.BatteryBlock;
 import tardis.common.blocks.EngineBlock;
 import tardis.common.blocks.SchemaComponentBlock;
@@ -37,22 +38,22 @@ public class WailaCallback {
 
 	public static AbstractWailaProvider getProvider(Block b, int meta)
 	{
-		if(b == TardisMod.schemaComponentBlock)
+		if(b == TMRegistry.schemaComponentBlock)
 		{
 			if((meta == 3) || (meta == 6))
 				return consoleProv;
 			else if(meta == 7)
 				return engineProv;
 		}
-		else if(b == TardisMod.tardisConsoleBlock)
+		else if(b == TMRegistry.tardisConsoleBlock)
 			return consoleProv;
-		else if(b == TardisMod.tardisEngineBlock)
+		else if(b == TMRegistry.tardisEngineBlock)
 			return engineProv;
-		else if(b == TardisMod.battery)
+		else if(b == TMRegistry.battery)
 			return artronProv;
-		else if(b == TardisMod.tardisBlock)
+		else if(b == TMRegistry.tardisBlock)
 			return tardisProv;
-		else if(b == TardisMod.tardisTopBlock)
+		else if(b == TMRegistry.tardisTopBlock)
 			return tardisProv;
 		return null;
 	}

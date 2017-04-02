@@ -1,10 +1,11 @@
 package tardis.common.integration.waila;
 
-import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import tardis.TardisMod;
+
+import mcp.mobius.waila.api.IWailaDataAccessor;
 import tardis.api.TardisPermission;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.EngineTileEntity;
@@ -52,7 +53,7 @@ public class WailaEngineProvider extends AbstractWailaProvider
 
 	private boolean isEngine(IWailaDataAccessor accessor)
 	{
-		if((accessor.getBlock()== TardisMod.tardisEngineBlock) || ((accessor.getBlock()==TardisMod.schemaComponentBlock) && (accessor.getMetadata() == 7)))
+		if((accessor.getBlock()== TMRegistry.tardisEngineBlock) || ((accessor.getBlock()==TMRegistry.schemaComponentBlock) && (accessor.getMetadata() == 7)))
 			return true;
 		return false;
 	}

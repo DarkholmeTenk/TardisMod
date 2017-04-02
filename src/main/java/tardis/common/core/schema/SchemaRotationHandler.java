@@ -3,6 +3,7 @@ package tardis.common.core.schema;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.init.Blocks;
+
 import tardis.api.IRotatableBlock;
 import tardis.common.core.TardisOutput;
 

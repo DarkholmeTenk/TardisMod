@@ -1,17 +1,5 @@
 package tardis.common.tileents;
 
-import ic2.api.energy.tile.IEnergySink;
-import ic2.api.energy.tile.IEnergySource;
-import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-import io.darkcraft.darkcore.mod.interfaces.IActivatable;
-import io.darkcraft.darkcore.mod.interfaces.IActivatablePrecise;
-import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
-import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
-
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
@@ -27,12 +15,30 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.interfaces.IActivatable;
+import io.darkcraft.darkcore.mod.interfaces.IActivatablePrecise;
+import io.darkcraft.darkcore.mod.interfaces.IBlockUpdateDetector;
+import io.darkcraft.darkcore.mod.interfaces.IChunkLoader;
+
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
+import appeng.api.util.AECableType;
+import cofh.api.energy.IEnergyHandler;
+import cpw.mods.fml.common.Optional;
+import ic2.api.energy.tile.IEnergySink;
+import ic2.api.energy.tile.IEnergySource;
 import tardis.Configs;
-import tardis.TardisMod;
 import tardis.api.IArtronEnergyProvider;
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
 import tardis.common.dimension.TardisDataStore;
@@ -49,11 +55,6 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectSource;
 import thaumcraft.api.aspects.IEssentiaTransport;
-import appeng.api.networking.IGridHost;
-import appeng.api.networking.IGridNode;
-import appeng.api.util.AECableType;
-import cofh.api.energy.IEnergyHandler;
-import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList(value={
 		@Optional.Interface(iface="cofh.api.energy.IEnergyHandler",modid=CofHCore.modname),
@@ -123,7 +124,7 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			int i = 0;
 			for (Integer compVal : comps.keySet())
 			{
-				ItemStack is = new ItemStack(TardisMod.componentItem, 1, compVal);
+				ItemStack is = new ItemStack(TMRegistry.componentItem, 1, compVal);
 				retIS[i] = is;
 				i++;
 			}
@@ -203,15 +204,15 @@ public class ComponentTileEntity extends AbstractTileEntity implements IActivata
 			for (ItemStack is : contained)
 				WorldHelper.giveItemStack(pl, is);
 		}
-		if(b == TardisMod.componentBlock)
+		if(b == TMRegistry.componentBlock)
 		{
 			int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.decoBlock, d == 0 ? 2 : 4, 3);
+			worldObj.setBlock(xCoord, yCoord, zCoord, TMRegistry.decoBlock, d == 0 ? 2 : 4, 3);
 		}
-		else if(b == TardisMod.colorableOpenRoundelBlock)
+		else if(b == TMRegistry.colorableOpenRoundelBlock)
 		{
 			int d = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-			worldObj.setBlock(xCoord, yCoord, zCoord, TardisMod.colorableRoundelBlock, d, 3);
+			worldObj.setBlock(xCoord, yCoord, zCoord, TMRegistry.colorableRoundelBlock, d, 3);
 		}
 	}
 

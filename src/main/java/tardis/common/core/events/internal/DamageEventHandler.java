@@ -1,9 +1,12 @@
 package tardis.common.core.events.internal;
 
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
+
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import tardis.api.IControlMatrix;
 import tardis.common.core.events.TardisControlEvent;
 import tardis.common.core.events.TardisTakeoffEvent;
@@ -13,7 +16,6 @@ import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class DamageEventHandler
 {

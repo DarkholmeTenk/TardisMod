@@ -1,16 +1,17 @@
 package tardis.client.renderer.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
 
-import tardis.TardisMod;
+import tardis.common.TMRegistry;
 
 public class ClosedRoundelRenderer extends AbstractObjRenderer
 {
@@ -26,7 +27,7 @@ public class ClosedRoundelRenderer extends AbstractObjRenderer
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.colorableRoundelBlock;
+		return TMRegistry.colorableRoundelBlock;
 	}
 
 	@Override

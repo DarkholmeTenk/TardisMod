@@ -1,8 +1,5 @@
 package tardis.common.dimension;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.Vec3;
@@ -10,6 +7,11 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.client.IRenderHandler;
+
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import tardis.common.core.helpers.Helper;
 
 public class TardisWorldProvider extends WorldProvider

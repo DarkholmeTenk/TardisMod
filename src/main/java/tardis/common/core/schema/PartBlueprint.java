@@ -1,8 +1,5 @@
 package tardis.common.core.schema;
 
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -17,7 +14,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.interfaces.IColorableBlock;
+
 import tardis.TardisMod;
+import tardis.common.TMRegistry;
 import tardis.common.core.TardisOutput;
 import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
@@ -43,7 +45,7 @@ public class PartBlueprint
 			SchemaCoreNotFoundException
 	{
 		myName = name;
-		if (world.getBlock(x, y, z) == TardisMod.schemaCoreBlock)
+		if (world.getBlock(x, y, z) == TMRegistry.schemaCoreBlock)
 		{
 			getBounds(world, x, y, z);
 			getDoor(world, x, y, z);
@@ -59,7 +61,7 @@ public class PartBlueprint
 
 	private void getBounds(World world, int x, int y, int z)
 	{
-		Block schemaBlock = TardisMod.schemaBlock;
+		Block schemaBlock = TMRegistry.schemaBlock;
 		int tmp = 1;
 		boolean cont = true;
 		boolean[] scanning = new boolean[] { true, true, true, true };
@@ -146,12 +148,12 @@ public class PartBlueprint
 				int xL = -bounds[0];
 
 				for (int yL = 0; yL <= bounds[4]; yL++)
-					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+					if (world.getBlock(x + xL, y + yL, z + zL) == TMRegistry.internalDoorBlock)
 						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 0);
 
 				xL = bounds[2];
 				for (int yL = 0; yL <= bounds[4]; yL++)
-					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+					if (world.getBlock(x + xL, y + yL, z + zL) == TMRegistry.internalDoorBlock)
 						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 2);
 			}
 
@@ -159,12 +161,12 @@ public class PartBlueprint
 			{
 				int zL = -bounds[1];
 				for (int yL = 0; yL <= bounds[4]; yL++)
-					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+					if (world.getBlock(x + xL, y + yL, z + zL) == TMRegistry.internalDoorBlock)
 						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 1);
 
 				zL = bounds[3];
 				for (int yL = 0; yL <= bounds[4]; yL++)
-					if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+					if (world.getBlock(x + xL, y + yL, z + zL) == TMRegistry.internalDoorBlock)
 						handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 3);
 			}
 			initialized = true;
@@ -193,12 +195,12 @@ public class PartBlueprint
 			int xL = -bounds[0];
 
 			for (int yL = 0; yL <= bounds[4]; yL++)
-				if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+				if (world.getBlock(x + xL, y + yL, z + zL) == TMRegistry.internalDoorBlock)
 					handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 0);
 
 			xL = bounds[2];
 			for (int yL = 0; yL <= bounds[4]; yL++)
-				if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+				if (world.getBlock(x + xL, y + yL, z + zL) == TMRegistry.internalDoorBlock)
 					handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 2);
 		}
 
@@ -206,12 +208,12 @@ public class PartBlueprint
 		{
 			int zL = -bounds[1];
 			for (int yL = 0; yL <= bounds[4]; yL++)
-				if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+				if (world.getBlock(x + xL, y + yL, z + zL) == TMRegistry.internalDoorBlock)
 					handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 1);
 
 			zL = bounds[3];
 			for (int yL = 0; yL <= bounds[4]; yL++)
-				if (world.getBlock(x + xL, y + yL, z + zL) == TardisMod.internalDoorBlock)
+				if (world.getBlock(x + xL, y + yL, z + zL) == TMRegistry.internalDoorBlock)
 					handleDoor(world, x + xL, y + yL, z + zL, xL, yL, zL, 3);
 		}
 		initialized = true;

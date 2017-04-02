@@ -1,7 +1,8 @@
 package tardis.common.tileents.extensions;
 
 import net.minecraft.item.ItemStack;
-import tardis.TardisMod;
+
+import tardis.common.TMRegistry;
 import tardis.common.core.TardisOutput;
 
 public enum CraftingComponentType {
@@ -19,6 +20,6 @@ public enum CraftingComponentType {
 	public ItemStack getIS(int amount)
 	{
 		TardisOutput.print("CCT", "Getting IS for :" + name + " returning " + ordinal(),TardisOutput.Priority.OLDDEBUG);
-		return new ItemStack(TardisMod.craftingComponentItem,amount,ordinal());
+		return new ItemStack(TMRegistry.craftingComponentItem,amount,ordinal());
 	}
 }

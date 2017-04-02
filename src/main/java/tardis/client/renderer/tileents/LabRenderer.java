@@ -1,7 +1,7 @@
 package tardis.client.renderer.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
@@ -11,10 +11,11 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractObjRenderer;
 
-import tardis.TardisMod;
 import tardis.client.renderer.model.StickModel;
+import tardis.common.TMRegistry;
 import tardis.common.tileents.LabTileEntity;
 
 public class LabRenderer extends AbstractObjRenderer implements IItemRenderer
@@ -37,7 +38,7 @@ public class LabRenderer extends AbstractObjRenderer implements IItemRenderer
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.labBlock;
+		return TMRegistry.labBlock;
 	}
 
 	private void renderStick(LabTileEntity lab, double rot)

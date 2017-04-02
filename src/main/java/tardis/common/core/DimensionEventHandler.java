@@ -4,16 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import cpw.mods.fml.common.Optional;
-import cpw.mods.fml.common.eventhandler.Event.Result;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
-import cpw.mods.fml.relauncher.Side;
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.SoundHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.IMob;
@@ -26,10 +16,23 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.SoundHelper;
+
+import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.common.eventhandler.Event.Result;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+import cpw.mods.fml.relauncher.Side;
 import tardis.Configs;
 import tardis.TardisMod;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.core.helpers.ScrewdriverHelperFactory;
@@ -239,7 +242,7 @@ public class DimensionEventHandler
 		ItemStack is = pl.getHeldItem();
 		if(is == null) return;
 		Item i = is.getItem();
-		if(i == TardisMod.decoTool) event.setCanceled(true);
+		if(i == TMRegistry.decoTool) event.setCanceled(true);
 	}
 
 	@Optional.Method(modid=tardis.common.integration.other.IC2.modname)
@@ -248,7 +251,7 @@ public class DimensionEventHandler
 	{
 		Block bl = event.world.getBlock(event.x, event.y, event.z);
 			if(bl instanceof AbstractBlock)
-				if(TardisMod.unbreakableBlocks.contains(bl)) event.setCanceled(true);
+				if(TMRegistry.unbreakableBlocks.contains(bl)) event.setCanceled(true);
 	}
 
 	@Optional.Method(modid=tardis.common.integration.other.IC2.modname)

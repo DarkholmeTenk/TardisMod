@@ -1,6 +1,7 @@
 package tardis.common.tileents.components;
 
 import net.minecraft.nbt.NBTTagCompound;
+
 import tardis.common.tileents.ComponentTileEntity;
 
 public interface ITardisComponent

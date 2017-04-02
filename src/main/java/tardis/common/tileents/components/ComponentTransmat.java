@@ -1,8 +1,10 @@
 package tardis.common.tileents.components;
 
-import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
+
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+
 import tardis.api.IScrewable;
 import tardis.api.ScrewdriverMode;
 import tardis.api.TardisPermission;

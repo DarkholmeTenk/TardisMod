@@ -1,7 +1,8 @@
 package tardis.common;
 
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import net.minecraft.world.World;
+
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 
 public class TardisProxy
 {

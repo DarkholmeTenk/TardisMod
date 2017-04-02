@@ -2,9 +2,10 @@ package tardis.common.core;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import tardis.TardisMod;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.common.TMRegistry;
 
 public class CreativeTab extends CreativeTabs {
 
@@ -17,7 +18,7 @@ public class CreativeTab extends CreativeTabs {
 	@SideOnly(Side.CLIENT)
 	public Item getTabIconItem()
 	{
-		return TardisMod.screwItem;
+		return TMRegistry.screwItem;
 	}
 
 }

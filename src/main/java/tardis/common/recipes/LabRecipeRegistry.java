@@ -6,10 +6,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import gnu.trove.map.hash.THashMap;
+import net.minecraft.nbt.NBTTagCompound;
+
 import io.darkcraft.darkcore.mod.nbt.NBTHelper;
 import io.darkcraft.darkcore.mod.nbt.impl.PrimMapper;
-import net.minecraft.nbt.NBTTagCompound;
+
+import gnu.trove.map.hash.THashMap;
 import tardis.common.tileents.extensions.LabRecipe;
 
 public class LabRecipeRegistry
@@ -24,11 +26,11 @@ public class LabRecipeRegistry
 			public boolean handleSubclasses(){ return true; }
 
 			@Override
-			public void writeToNBT(NBTTagCompound nbt, String id, Object t)
+			public void writeToNBT(NBTTagCompound nbt, String id, LabRecipe t)
 			{
 				if(!(t instanceof LabRecipe))
 					return;
-				nbt.setString("id", ((LabRecipe)t).id);
+				nbt.setString("id", t.id);
 			}
 
 			@Override

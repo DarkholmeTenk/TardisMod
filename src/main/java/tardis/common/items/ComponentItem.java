@@ -1,11 +1,14 @@
 package tardis.common.items;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import io.darkcraft.darkcore.mod.abstracts.AbstractItem;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import tardis.TardisMod;
 import tardis.common.core.TardisOutput;
 import tardis.common.integration.ae.AEHelper;
@@ -14,7 +17,6 @@ import tardis.common.integration.other.IC2;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CraftingComponentType;
 import thaumcraft.api.ItemApi;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ComponentItem extends AbstractItem
 {

@@ -1,8 +1,8 @@
 package tardis.common.core.flight;
 
-import io.darkcraft.darkcore.mod.config.ConfigFile;
-
 import java.util.List;
+
+import io.darkcraft.darkcore.mod.config.ConfigFile;
 
 import tardis.TardisMod;
 

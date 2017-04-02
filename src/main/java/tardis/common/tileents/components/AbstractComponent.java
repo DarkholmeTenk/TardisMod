@@ -1,10 +1,11 @@
 package tardis.common.tileents.components;
 
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
-
 import java.util.Random;
 
 import net.minecraft.nbt.NBTTagCompound;
+
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+
 import tardis.api.IArtronEnergyProvider;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ComponentTileEntity;

@@ -3,7 +3,8 @@ package tardis.common.tileents.extensions.upgrades;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import tardis.TardisMod;
+
+import tardis.common.TMRegistry;
 
 public class DimensionUpgrade extends AbstractUpgrade {
 
@@ -33,7 +34,7 @@ public class DimensionUpgrade extends AbstractUpgrade {
 
 	@Override
 	public ItemStack getIS() {
-		return new ItemStack(TardisMod.dimensionUpgradeItems.get(dimID), 1);
+		return new ItemStack(TMRegistry.dimensionUpgradeItems.get(dimID), 1);
 	}
 
 	@Override

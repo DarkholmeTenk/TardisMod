@@ -1,17 +1,18 @@
 package tardis.client.renderer.tileents;
 
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
-import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
-import org.lwjgl.opengl.GL11;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
+import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 
-import tardis.TardisMod;
 import tardis.api.TardisFunction;
 import tardis.client.renderer.ControlRenderer;
 import tardis.client.renderer.model.ConsoleModel;
+import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
@@ -24,7 +25,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 	@Override
 	public AbstractBlock getBlock()
 	{
-		return TardisMod.tardisConsoleBlock;
+		return TMRegistry.tardisConsoleBlock;
 	}
 
 	private void renderDimControls(Tessellator tess, ConsoleTileEntity tce)

@@ -1,8 +1,9 @@
 package tardis.common.dimension.damage;
 
+import net.minecraft.world.Explosion;
+
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
-import net.minecraft.world.Explosion;
 
 public class ExplosionDamageHelper
 {
