@@ -161,24 +161,6 @@ public class TMRegistry
 
 	public static void initRecipes()
 	{
-		keyItem.initRecipes();
-		componentItem.initRecipes();
-		manualItem.initRecipes();
-		labBlock.initRecipes();
-		landingPad.initRecipes();
-		forcefield.initRecipes();
-		gravityLift.initRecipes();
-		battery.initRecipes();
-		interiorDirtBlock.initRecipes();
-		craftingComponentItem.initRecipes();
-		summonerBlock.initRecipes();
-		upgradeItem.initRecipes();
-		nameTag.initRecipes();
-		decoTool.initRecipes();
-		chameleonUpgradeItem.initRecipes();
-		shieldBlock.initRecipes();
 		CraftableSimBlock.initStaticRecipes();
-		temporalAccelerator.initRecipes();
-		compressedBlock.initRecipes();
 	}
 }
