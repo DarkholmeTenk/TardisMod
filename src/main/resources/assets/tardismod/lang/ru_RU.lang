@@ -1,0 +1,112 @@
+tile.TardisMod.DecoBlock.name=Декоративный блок
+tile.TardisMod.Tardis.name=TARDIS
+
+tile.TardisMod.DecoBlock.Wall.name=Стена
+tile.TardisMod.DecoBlock.Floor.name=Дорожка
+tile.TardisMod.DecoGlass.Walkway.name=Открытая Дорожка
+tile.TardisMod.DecoGlass.Glass.name=Стекло
+
+tile.TardisMod.Component.Roundel.name=Открытый Рондель
+tile.TardisMod.Component.CorridorRoundel.name=Открытый Белый Рондель
+
+tile.TardisMod.Schema.name=Граница Схемы
+
+tile.TardisMod.SchemaComponent.DoorConnector.name=Дверь
+tile.TardisMod.SchemaComponent.DoorConnectorHidden.name=Дверь
+tile.TardisMod.SchemaComponent.ControlPanel.name=Комната Контроля
+tile.TardisMod.SchemaComponent.ConsoleBlock.name=Консоль
+tile.TardisMod.SchemaComponent.TardisDoorBottom.name=Дверь
+tile.TardisMod.SchemaComponent.TardisDoorTop.name=Дверь
+tile.TardisMod.SchemaComponent.ConsoleTop.name=Консоль
+tile.TardisMod.SchemaCore.name=Схема Ядра
+
+tile.TardisMod.Slab.Console.name=Консоль Плита
+tile.TardisMod.Slab.Glass.name=Стеклянная Плита
+tile.TardisMod.Slab.Walkway.name=Дорожка
+tile.TardisMod.Slab.Corridor.name=Коридор Плита
+
+tile.TardisMod.TardisTop.name=TARDIS
+tile.TardisMod.InternalDoor.InternalDoor.name=Дверь
+tile.TardisMod.InternalDoor.InternalDoorPrimary.name=Основная Дверь
+tile.TardisMod.ConsoleBlock.name=Консоль
+tile.TardisMod.TardisCore.name=Ротор Времени
+tile.TardisMod.SchemaComponent.TimeRotor.name=Ротор Времени
+tile.TardisMod.StairBlock.name=Лестница
+tile.TardisMod.TardisEngineBlock.name=Временной Двигатель
+tile.TardisMod.SchemaComponent.Engine.name=Временной Двигатель
+tile.TardisMod.Lab.name=Временная Лаборатория
+tile.TardisMod.LandingPad.name=TARDIS Посадочная площадка
+tile.TardisMod.TardisDirt.name=Временная Земля
+tile.TardisMod.TemporalAccelerator.name=Временной Ускоритель
+tile.TardisMod.Block.Dalekanium.name=Далеканиумный Блок
+tile.TardisMod.Block.Chronosteel.name=Хроностальной блок
+tile.TardisMod.Summoner.name=Вызвать TARDIS
+tile.TardisMod.Manual.name=Мануал
+tile.TardisMod.ManualHelper.name=Мануал Помощь
+tile.TardisMod.ShieldBlock.name=TARDIS Матрица Профилактики
+
+tile.TardisMod.GravityLift.Normal.name=Твердый Гравитационный Лифт
+tile.TardisMod.GravityLift.Craftable.name=Гравитационный Лифт
+tile.TardisMod.ForceField.Normal.name=Твердое Силовое Поле
+tile.TardisMod.ForceField.Craftable.name=Силовое Поле
+
+tile.TardisMod.Battery.Basic.name=Основная Артрон Батарея
+tile.TardisMod.Battery.Advanced.name=Расширенная Артрон Батарея
+tile.TardisMod.Battery.Temporal.name=Временная Артрон Батарея
+
+tile.TardisMod.ColorableWall.name=Твердый Блок
+tile.TardisMod.ColorableFloor.name=Плоский Блок
+tile.TardisMod.ColorableBrick.name=Твердый Кирпич
+tile.TardisMod.ColorablePlank.name=Твердая Планка
+tile.TardisMod.ColorableRoundel.name=Рондель
+tile.TardisMod.ColorableOpenRoundel.name=Открытый Рондель
+
+tile.TardisMod.ColorableWall.Simulacrum.name=Твердый Блок (c)
+tile.TardisMod.ColorableFloor.Simulacrum.name=Плоский Блок (c)
+tile.TardisMod.ColorableBrick.Simulacrum.name=Твердый Кирпич (c)
+tile.TardisMod.ColorablePlank.Simulacrum.name=Твердая Планка (c)
+tile.TardisMod.DecoGlass.Simulacrum.Glass.name=Стекло (c)
+tile.TardisMod.DecoBlock.Simulacrum.Wall.name=Стена (c)
+tile.TardisMod.DecoBlock.Simulacrum.Floor.name=Дорожка (c)
+tile.TardisMod.DecoGlass.Simulacrum.Walkway.name=Открытая Дорожка (c)
+
+item.TardisMod.SonicScrewdriver.name=Звуковая Отвертка
+item.TardisMod.TardisKey.name=Ключь от TARDIS
+
+item.TardisMod.Component.Transmat.name=TARDIS ИК - Трансмат
+item.TardisMod.Component.Mass-Energy.name=TARDIS ИК - ME Кабель
+item.TardisMod.Component.Inv.name=TARDIS ИК - Проводник Вещей
+item.TardisMod.Component.Fluid.name=TARDIS ИК - Проводник Жидкости
+item.TardisMod.Component.RF.name=TARDIS ИК - Проводник Энергии
+item.TardisMod.Component.Peripheral.name=TARDIS ИК - Computercraft (Незаконченное)
+item.TardisMod.Component.ChunkLoader.name=TARDIS ИК - Чанк Лодер
+item.TardisMod.Component.Nanogene.name=Nanogene Канистра
+item.TardisMod.Component.RestorationField.name=Восстановление поля
+item.TardisMod.Component.Aspects.name=TARDIS ИК - Эссенции
+
+item.TardisMod.ManualItem.name=Ручной Мануал
+item.TardisMod.NameTag.name=Временной Именной Тег
+item.TardisMod.Decorator.name=TARDIS оформитель
+
+item.TardisMod.CraftingComponent.IngotDalek.name=Далеканиумный Слиток
+item.TardisMod.CraftingComponent.IngotChronosteel.name=Хроностальной Слиток
+item.TardisMod.CraftingComponent.CrystalKontron.name=Контрон Кристалл
+item.TardisMod.CraftingComponent.Upgrade.name=Апгрейд(Заготовка)
+
+item.TardisMod.UpgradeItem.broken.name=Сломанный Апгерйд
+item.TardisMod.UpgradeItem.protExpl.name=Апгрейд - Взрыво Защита
+item.TardisMod.UpgradeItem.protComb.name=Апгрейд - Боевая Защита
+item.TardisMod.UpgradeItem.protMiss.name=Апгрейд - Пропущенный рычаг Защита
+item.TardisMod.UpgradeItem.speed.name=Апгрейд - Скорость-Lvl
+item.TardisMod.UpgradeItem.shield.name=Апгрейд - Щит-Lvl
+item.TardisMod.UpgradeItem.room.name=Апгрейд - Макс. Комнат-Lvl
+item.TardisMod.UpgradeItem.energy.name=Апгрейд - Энергия-Lvl
+item.TardisMod.UpgradeItem.energyRegen.name=Апгрейд - Энергия Регенерация-Lvl
+item.TardisMod.ChameleonUpgrade.name=Апгрейд - Хамелеон
+
+TardisCham.Default.name=Старая Полицейска бутка
+TardisCham.New.name=Новая Полицейска бутка
+TardisCham.Post.name=Почтовый ящик
+
+itemGroup.TardisModTab=Tardis Mod
+itemGroup.TardisModCraftableTab=Tardis Mod - Стол Крафта
