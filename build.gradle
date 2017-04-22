@@ -24,6 +24,9 @@ repositories {
 
 apply plugin: 'forge'
 
+targetCompatibility=1.8
+sourceCompatibility=1.8
+
 version = "1.7.10-0.995"
 group= "tardis" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "tardismod"

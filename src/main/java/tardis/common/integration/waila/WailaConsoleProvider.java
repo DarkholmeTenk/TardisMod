@@ -5,6 +5,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
 import mcp.mobius.waila.api.IWailaDataAccessor;
+import tardis.client.renderer.tileents.ConsoleRenderer;
 import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.store.TwoIntStore;
@@ -72,7 +73,10 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 			{
 				MovingObjectPosition pos = accessor.getPosition();
 				if(pos.hitVec.yCoord <= (con.yCoord+1.5))
+				{
+					ConsoleRenderer.hp = con.getHP(pos.blockX,pos.blockY,pos.blockZ,pos.hitVec, accessor.getPlayer());
 					return con.getControlFromHit(pos.blockX,pos.blockY,pos.blockZ,pos.hitVec, accessor.getPlayer());
+				}
 			}
 		}
 		return -1;

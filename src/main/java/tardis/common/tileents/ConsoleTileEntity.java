@@ -3,6 +3,7 @@ package tardis.common.tileents;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Optional;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -43,6 +44,15 @@ import tardis.common.dimension.SaveSlotNamesDataStore;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.items.NameTagItem;
+import tardis.core.console.panel.ConsolePanel;
+import tardis.core.console.panel.interfaces.NavPanels.NavPanelDims;
+import tardis.core.console.panel.interfaces.NavPanels.NavPanelFacing;
+import tardis.core.console.panel.interfaces.NavPanels.NavPanelX;
+import tardis.core.console.panel.interfaces.NavPanels.NavPanelY;
+import tardis.core.console.panel.interfaces.NavPanels.NavPanelZ;
+import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnGround;
+import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnPad;
+import tardis.core.console.panel.types.normal.NormalPanelX;
 
 public class ConsoleTileEntity extends AbstractTileEntity implements IControlMatrix, IExplodable
 {
@@ -63,7 +73,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	private boolean								attemptToLand			= false;
 
 	private boolean								saveCoords				= false;
-	private HashMap<Integer, ControlStateStore>	states					= new HashMap<Integer, ControlStateStore>();
+	private HashMap<Integer, ControlStateStore>	states					= new HashMap<>();
 	private ControlStateStore					currentLanding;
 	private ControlStateStore					lastLanding	;
 
@@ -90,7 +100,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public String								schemaChooserString		= "";
 	public String								schemaCategoryString	= "";
 	private float								dimControlState			= 0;
-	private LinkedList<Integer>					unstableQueue			= new LinkedList<Integer>();
+	private LinkedList<Integer>					unstableQueue			= new LinkedList<>();
 
 	private SaveSlotNamesDataStore	ssnds;
 
@@ -206,6 +216,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		float delta = activatedDelta(hitAway, j, distanceAway, (float) ((pl.posY + pl.eyeHeight) - yCoord));
 		float hitX = activatedX(hitAway, distanceAway, delta);
 		float hitZ = activatedZ(hitSide, distanceSide, delta);
+		if((side == 3) || (side == 0))
+			hitZ = 3 - hitZ;
 		if (((hitZ < 1) && ((1 - hitX) >= hitZ)) || ((hitZ > 2) && ((1 - hitX) > (3 - hitZ))))
 			return null;
 		return new HitPosition(hitX, hitZ, side);
@@ -222,13 +234,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return xP - (delta * (xP - xH));
 	}
 
-	/*
-	 * private float activatedY(float yH, float yP, float delta)
-	 * {
-	 * return (float) (yP - (delta * (yP - yH)));
-	 * }
-	 */
-
 	private float activatedZ(float zH, float zP, float delta)
 	{
 		return zP - (delta * (zP - zH));
@@ -236,157 +241,11 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public int getControlFromHit(HitPosition hit)
 	{
-		CoreTileEntity core = Helper.getTardisCore(this);
-		if (core == null)
-			return -1;
-		if (hit.within(0, 0.985, 0.420, 1.124, 0.521)) // Screwdriver
-			return 6;
-		if (hit.within(2, 1.214, 0.657, 1.338, 0.760))
-			return 7;
-		if (hit.within(0, 0.779, 0.431, 0.901, 0.525))
-			return 5;
-		if (hit.within(0, 1.651, 0.271, 1.883, 0.400))// Gauge1
-			return 0;
-		if (hit.within(0, 1.375, 0.271, 1.615, 0.400))
-			return 1;
-		if (hit.within(0, 1.517, 0.138, 1.750, 0.265))
-			return 8;
-		if (hit.within(0, 1.210, 0.138, 1.441, 0.265))
-			return 9;
-		if (hit.within(0, 1.10, 0.271, 1.335, 0.400))
-			return 2;
-		if (hit.within(0, 0.865, 0.55, 1.327, 0.868))
-			return 3;
-		if (hit.within(0, 1.725, 0.585, 2.05, 0.846))
-			return 4;
-		if (hit.within(3, 2.156, 0.654, 2.540, 0.924))
-			return 100;
-		if (hit.within(3, 1.727, 0.626, 2.019, 0.826))
-			return 10;
-		if (hit.within(3, 1.361, 0.626, 1.634, 0.826))
-			return 11;
-		if (hit.within(3, 0.981, 0.626, 1.210, 0.826))
-			return 16;
-		if (hit.within(3, 1.513, 0.178, 1.681, 0.461))
-			return 12;
-		if (hit.within(3, 1.303, 0.178, 1.486, 0.461))
-			return 13;
-		if (hit.within(3, 1.694, 0.227, 1.951, 0.408))
-			return 14;
-		if (hit.within(3, 1.039, 0.257, 1.238, 0.417))
-			return 15;
-		// if(hit.within(1, 1.145, 0.207, 1.259, 0.443))
-		if (hit.within(1, 1.026, 0.207, 1.169, 0.443))
-			return 20;
-		if (hit.within(1, 1.221, 0.207, 1.379, 0.443))
-			return 21;
-		if (hit.within(1, 1.426, 0.207, 1.564, 0.443))
-			return 26;
-		if (hit.within(1, 1.638, 0.207, 1.769, 0.443))
-			return 22;
-		if (hit.within(1, 1.827, 0.207, 1.969, 0.443))
-			return 23;
-		if (hit.within(1, 0.650, 0.664, 0.943, 0.856)) // Z Wheel 1
-			return 24;
-		if (hit.within(1, 1.264, 0.664, 1.545, 0.856)) // Z Wheel 2
-			return 25;
-		if (hit.within(2, 1.730, 0.147, 1.859, 0.470))
-			return 30;
-		if (hit.within(2, 1.581, 0.147, 1.710, 0.470))
-			return 31;
-		if (hit.within(2, 1.430, 0.147, 1.558, 0.470))
-			return 32;
-		if (hit.within(2, 1.284, 0.147, 1.415, 0.470))
-			return 33;
-		if (hit.within(2, 1.116, 0.266, 1.248, 0.360))
-			return 34;
-		if (hit.within(1, 0.985, 0.664, 1.230, 0.856)) // Flight Primer
-			return 40;
-		if (hit.within(2, 0.553, 0.629, 0.838, 0.924)) // Flight Regulator
-			return 41;
-		if (hit.within(0, 2.110, 0.562, 2.441, 0.872)) // Flight Takeoff
-			return 42;
-		if (hit.within(0, 0.523, 0.687, 0.651, 0.783))
-			return 43;
-		if (hit.within(2, 2.251, 0.728, 2.371, 0.816))
-			return 50;
-		if (hit.within(2, 2.251, 0.822, 2.371, 0.902))
-			return 51;
-		if (hit.within(2, 0.290, 0.825, 0.441, 0.915))
-			return 52;
-		if (hit.within(0, 1.760, 0.172, 1.914, 0.265))
-			return 53;
-		if (hit.within(1, 1.013, 0.493, 1.194, 0.624) && core.hasFunction(TardisFunction.SENSORS))
-			return 54;
-		if (hit.within(3, 0.701, 0.703, 0.823, 0.792))
-			return 55;
-		if (hit.within(3, 0.701, 0.807, 0.823, 0.903) && core.hasFunction(TardisFunction.STABILISE))
-			return 56;
-		if (hit.within(2, 2.249, 0.515, 2.377, 0.608))
-			return 57;
-		if (hit.within(2, 2.249, 0.622, 2.377, 0.710))
-			return 58;
-		if (hit.within(2, 0.971, 0.598, 1.138, 0.941))
-			return 60;
-		if (hit.within(3, 2.557, 0.806, 2.683, 0.896)) // Delete rooms button
-			return 901;
-		if (hit.within(1, 2.369, 0.801, 2.491, 0.894)) // Load/Save Switch
-			return 900;
-		if (hit.within(1, 2.377, 0.703, 2.498, 0.800))
-			return 902;
-		if (hit.within(1, 2.375, 0.610, 2.497, 0.701))
-			return 903;
-		if (hit.within(2, 0.967, 0.266, 1.100, 0.360))
-			return 904;
-		if (hit.within(1, 1.700, 0.513, 2.355, 0.898))
-		{
-			int jx = (int) ((5 * (hit.posZ - 1.700)) / (2.355 - 1.700));
-			int ix = (int) ((4 * (hit.posY - 0.513)) / (0.898 - 0.513));
-			int control = 1000 + (5 * ix) + jx;
-			return control;
-		}
-		if (hit.within(3, 0.533, 0.706, 0.669, 0.909))
-			return 1020;
-		if (hit.within(3, 0.370, 0.706, 0.492, 0.909))
-			return 1021;
-		if (hit.within(3, 0.592, 0.478, 0.927, 0.595))
-			return 1022;
-		if (hit.within(3, 2.103, 0.478, 2.408, 0.595))
-			return 1023;
-		if (hit.within(2, 0.771, 0.439, 1.049, 0.546))
-			return 1024;
-		if (hit.within(2, 1.037, 0.499, 1.311, 0.595))
-			return 1025;
-		if (hit.within(2, 1.116, 0.367, 1.245, 0.471))
-			return 1026;
-		if (hit.within(1, 1.275, 0.542, 1.537, 0.619))
-			return 1027;
-		if (hit.within(1, 0.669, 0.542, 0.937, 0.619))
-			return 1028;
-		if (hit.within(1, 0.669, 0.435, 0.937, 0.520))
-			return 1029;
-		if (hit.within(0, 1.421, 0.521, 1.550, 0.615))
-			return 1030;
-		if (hit.within(0, 1.421, 0.623, 1.550, 0.718))
-			return 1031;
-		if (hit.within(0, 1.421, 0.730, 1.550, 0.822))
-			return 1032;
 		return -1;
 	}
 
 	public int getControlFromHit(int blockX, int blockY, int blockZ, Vec3 hit, EntityPlayer pl)
 	{
-		/*
-		 * int blockX = (int) Math.floor(hit.xCoord) - xCoord;
-		 * int blockZ = (int) Math.floor(hit.zCoord) - zCoord;
-		 * int blockY = (int) Math.floor(hit.yCoord);
-		 * if(blockY == hit.yCoord)
-		 * blockY--;
-		 * if((hit.xCoord - xCoord) == 2)
-		 * blockX = 1;
-		 * if((hit.zCoord - zCoord) == 2)
-		 * blockZ = 1;
-		 */
 		float i = (float) (hit.xCoord - blockX - xCoord);
 		float j = (float) (hit.yCoord - blockY);
 		float k = (float) (hit.zCoord - blockZ - zCoord);
@@ -402,6 +261,18 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 				return controlHit;
 		}
 		return -1;
+	}
+
+	public HitPosition getHP(int blockX, int blockY, int blockZ, Vec3 hit, EntityPlayer pl)
+	{
+		float i = (float) (hit.xCoord - blockX - xCoord);
+		float j = (float) (hit.yCoord - blockY);
+		float k = (float) (hit.zCoord - blockZ - zCoord);
+		// TardisOutput.print("TConTE", String.format("x: %d, y %d, z %d : %f, %f, %f",blockX,blockY,blockZ,i,j,k));
+		HitPosition hitPos = null;
+		for (int cnt = 0; (cnt < 4) && (hitPos == null); cnt++)
+			hitPos = activateSide(pl, blockX, blockY, blockZ, i, j, k, cnt);
+		return hitPos;
 	}
 
 	public boolean randomiseControls(CoreTileEntity core)
@@ -900,6 +771,37 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		int controlTwo = control[1] * (int) Math.pow(2, control[5] + 1);
 		int controlThree = (71 * control[6]) + (control[2] * 6) + control[3];
 		return controlOne + controlTwo + controlThree;
+	}
+
+	public ConsolePanel[] getPanels()
+	{
+		ConsolePanel a = new NormalPanelX();
+		return new ConsolePanel[]{a, null, null, null};
+	}
+
+	public <T> Optional<T> getPanel(Class<T> clazz)
+	{
+		for(ConsolePanel panel : getPanels())
+			if((panel != null) && clazz.isInstance(panel))
+				return Optional.of((T) panel);
+		return Optional.empty();
+	}
+
+	public boolean hasPanels(Class<?>... classes)
+	{
+		for(Class<?> clazz : classes)
+		{
+			if(!getPanel(clazz).isPresent())
+				return false;
+		}
+		return true;
+	}
+
+	public boolean hasAllFlightPanels()
+	{
+		return hasPanels(
+				NavPanelX.class, NavPanelY.class, NavPanelZ.class, NavPanelFacing.class, NavPanelDims.class,
+				OptPanelLandOnGround.class, OptPanelLandOnPad.class);
 	}
 
 	public int getDimFromControls()

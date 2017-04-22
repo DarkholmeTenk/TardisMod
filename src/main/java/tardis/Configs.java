@@ -240,6 +240,7 @@ public class Configs
 	public static TardisOutput.Priority	priorityLevel			= TardisOutput.Priority.INFO;
 	public static int					providerID				= 54;
 	public static int					consoleBiomeID			= 42;
+	public static boolean				consoleDebug			= true;
 
 
 	private static void refreshModConfig()
@@ -253,8 +254,7 @@ public class Configs
 		exteriorGenChunksPT = MathHelper.clamp(modConfig.getInt("exterior chunk gen per pulse", 1, "Number of chunks for the exterior to generate per pulse"), 1, 20);
 		exteriorGenChunksTR = MathHelper.clamp(modConfig.getInt("exterior chunk gen ticks per pulse", 4, "Number of ticks between chunk generation pulses"), 1, 20);
 		consoleBiomeID = modConfig.getInt("Console Room Dimension ID", 42, "The id of the biome which is used in the console room");
-
-
+		consoleDebug = modConfig.getBoolean("Console debugging", false, "Whether or not debug stuff is displayed on the console");
 	}
 
 	/*
