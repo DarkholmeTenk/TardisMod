@@ -10,14 +10,14 @@ import com.google.common.base.Strings;
 import net.minecraft.util.StatCollector;
 
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
+import io.darkcraft.darkcore.mod.helpers.MathHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.Configs;
 import tardis.client.renderer.tileents.ConsoleRenderer;
 import tardis.common.core.HitPosition.HitRegion;
-import tardis.common.tileents.ConsoleTileEntity;
-import tardis.common.tileents.CoreTileEntity;
+import tardis.core.TardisInfo;
 import tardis.core.console.enums.ConsolePermissions;
 
 public abstract class AbstractControl
@@ -37,6 +37,8 @@ public abstract class AbstractControl
 	private final String manualText;
 	private final boolean manualIncludeValue;
 
+	private TardisInfo info;
+
 	private AbstractControl(EnumSet<ConsolePermissions> requiredPermission, boolean canBeUnstable, boolean isFlightControl,
 			double xPos, double yPos, double xSize, double ySize, double xScale, double yScale, double zScale, double xAngle, double angle,
 			String manualText, boolean manualIncludeValue)
@@ -46,24 +48,29 @@ public abstract class AbstractControl
 		this.isFlightControl = isFlightControl;
 		x = xPos;
 		y = yPos;
-		this.xSize = xSize;
-		this.ySize = ySize;
+		this.xSize = rotate(angle, xSize, false) + rotate(angle, ySize, true);
+		this.ySize = (rotate(angle, ySize, false) + (rotate(angle, xSize, true))) / 1.414;
 		this.xScale = xScale;
 		this.yScale = yScale;
 		this.zScale = zScale;
 		this.xAngle = xAngle;
 		this.angle = angle;
-		hitRegion = new HitRegion(xPos-(xSize/2), yPos-(ySize/2), xPos+(xSize/2), yPos+(ySize/2));
+		hitRegion = new HitRegion(xPos-(this.xSize/2), yPos-(this.ySize/2), xPos+(this.xSize/2), yPos+(this.ySize/2));
 		this.manualText = manualText;
 		this.manualIncludeValue = manualIncludeValue;
 		if(canBeUnstable && isFlightControl)
 			throw new RuntimeException("Control: " + this + " cannot be both unstable and flight control!");
 	}
 
+	private static double rotate(double angle, double hypotenuse, boolean sine)
+	{
+		return hypotenuse * (sine ? MathHelper.sin(angle) : MathHelper.cos(angle));
+	}
+
 	public AbstractControl(ControlBuilder<?> builder, double regularX, double regularY, double xAngle)
 	{
 		this(builder.requiredPermissions, builder.canBeUnstable, builder.isFlightControl, builder.x, builder.y,
-				regularX*builder.xScale, (regularY*builder.yScale) / 1.414,
+				regularX*builder.zScale, (regularY*builder.xScale),
 				builder.xScale, builder.yScale, builder.zScale, xAngle, builder.angle,
 				builder.manualText, builder.manualIncludeValue);
 	}
@@ -83,6 +90,16 @@ public abstract class AbstractControl
 		return canBeUnstable;
 	}
 
+	public final void setInfo(TardisInfo info)
+	{
+		this.info = info;
+	}
+
+	public final TardisInfo getInfo()
+	{
+		return info;
+	}
+
 	public final boolean activate(PlayerContainer player, boolean sneaking)
 	{
 		if(isCurrentlyUnstable)
@@ -92,11 +109,11 @@ public abstract class AbstractControl
 		}
 		else
 		{
-			return activateControl(null, null, player, sneaking);
+			return activateControl(info, player, sneaking);
 		}
 	}
 
-	protected abstract boolean activateControl(CoreTileEntity tardis, ConsoleTileEntity console, PlayerContainer player, boolean sneaking);
+	protected abstract boolean activateControl(TardisInfo info, PlayerContainer player, boolean sneaking);
 
 	@SideOnly(Side.CLIENT)
 	public final void renderControl()
@@ -105,14 +122,18 @@ public abstract class AbstractControl
 		{
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glPushMatrix();
-			if(getHitRegion().contains(0, ConsoleRenderer.hp))
+			if(getHitRegion().contains(ConsoleRenderer.hp))
 				GL11.glColor3f(1, 0, 0);
+			else
+				GL11.glColor3f(0, 0, 1);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glBegin(GL11.GL_LINE_LOOP);
-			GL11.glVertex3d(hitRegion.yMin+0.5, hitRegion.yMin-1, hitRegion.zMin-1.5);
-			GL11.glVertex3d(hitRegion.yMax+0.5, hitRegion.yMax-1, hitRegion.zMin-1.5);
-			GL11.glVertex3d(hitRegion.yMax+0.5, hitRegion.yMax-1, hitRegion.zMax-1.5);
-			GL11.glVertex3d(hitRegion.yMin+0.5, hitRegion.yMin-1, hitRegion.zMax-1.5);
+			double xO = 0.5;
+			double yO = -1;
+			GL11.glVertex3d(hitRegion.yMin+xO, hitRegion.yMin+yO, hitRegion.zMin-1.5);
+			GL11.glVertex3d(hitRegion.yMax+xO, hitRegion.yMax+yO, hitRegion.zMin-1.5);
+			GL11.glVertex3d(hitRegion.yMax+xO, hitRegion.yMax+yO, hitRegion.zMax-1.5);
+			GL11.glVertex3d(hitRegion.yMin+xO, hitRegion.yMin+yO, hitRegion.zMax-1.5);
 			GL11.glEnd();
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();

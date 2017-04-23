@@ -4,54 +4,30 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.util.ResourceLocation;
 
-import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.RenderHelper;
-import io.darkcraft.darkcore.mod.nbt.NBTProperty;
 import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.client.renderer.model.console.LeverBaseModel;
 import tardis.client.renderer.model.console.LeverModel;
-import tardis.common.tileents.ConsoleTileEntity;
-import tardis.common.tileents.CoreTileEntity;
 
 @NBTSerialisable
-public class ControlLever extends AbstractControl
+public class ControlLever extends AbstractControlInt
 {
 	private static LeverModel lever = new LeverModel();
 	private static LeverBaseModel leverBase = new LeverBaseModel();
 
-	private static final double regularXSize = 1;
-	private static final double regularYSize = 1;
-
-	private final int min;
-	private final int max;
-
-	@NBTProperty
-	private int value;
+	private static final double regularXSize = 0.8;
+	private static final double regularYSize = 0.45;
 
 	private ControlLever(ControlLeverBuilder builder)
 	{
 		super(builder, regularXSize, regularYSize, 45);
-		min = builder.min;
-		max = builder.max;
-		value = builder.defaultVal;
 	}
 
 	@Override
-	protected boolean activateControl(CoreTileEntity tardis, ConsoleTileEntity console, PlayerContainer player, boolean sneaking)
-	{
-		setValue(getValue() + (sneaking ? -1 : 1));
-		return true;
-	}
-
-	public int getValue()
-	{
-		return value;
-	}
-
 	public void setValue(int value)
 	{
 		this.value = MathHelper.clamp(value, min, max);
@@ -73,17 +49,11 @@ public class ControlLever extends AbstractControl
 		GL11.glPopMatrix();
 	}
 
-	public static class ControlLeverBuilder extends ControlBuilder<ControlLever>
+	public static class ControlLeverBuilder extends ControlIntBuilder<ControlLever>
 	{
-		private int min;
-		private int max;
-		private int defaultVal;
-
 		public ControlLeverBuilder(int min, int max, int defaultVal)
 		{
-			this.min = min;
-			this.max = max;
-			this.defaultVal = defaultVal;
+			super(min, max, defaultVal);
 		}
 
 		@Override

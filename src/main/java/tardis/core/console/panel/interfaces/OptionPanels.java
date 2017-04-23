@@ -11,4 +11,14 @@ public class OptionPanels
 	{
 		public boolean shouldLandOnLandingPad();
 	}
+
+	public static interface OptPanelRelativeCoords
+	{
+		public boolean areCoordinatesRelative();
+	}
+
+	public static interface OptPanelUncoordinated
+	{
+		public boolean shouldBeUncoordinated();
+	}
 }

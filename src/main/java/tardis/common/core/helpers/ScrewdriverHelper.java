@@ -9,6 +9,9 @@ import net.minecraft.tileentity.TileEntity;
 import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.nbt.NBTMethod;
+import io.darkcraft.darkcore.mod.nbt.NBTMethod.Type;
+import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 import io.darkcraft.darkcore.mod.network.DataPacket;
 
 import tardis.Configs;
@@ -23,6 +26,7 @@ import tardis.common.items.extensions.screwtypes.AbstractScrewdriverType;
 import tardis.common.network.TardisPacketHandler;
 import tardis.common.tileents.CoreTileEntity;
 
+@NBTSerialisable
 public class ScrewdriverHelper
 {
 	public final int id;
@@ -110,6 +114,7 @@ public class ScrewdriverHelper
 		return itemstack;
 	}
 
+	@NBTMethod(Type.READ)
 	public void readFromNBT(NBTTagCompound nbt)
 	{
 		if(nbt == null) return;
@@ -123,6 +128,7 @@ public class ScrewdriverHelper
 		type = ScrewTypeRegister.get(nbt);
 	}
 
+	@NBTMethod(Type.WRITE)
 	public void writeToNBT(NBTTagCompound nbt)
 	{
 		nbt.setInteger("uuid", id);

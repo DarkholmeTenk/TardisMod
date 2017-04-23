@@ -119,16 +119,16 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private LockState					lockState			= LockState.Open;
 	private int							lastLockSound		= Integer.MIN_VALUE;
 
-	private HashSet<SimpleCoordStore>	roomSet				= new HashSet<SimpleCoordStore>();
+	private HashSet<SimpleCoordStore>	roomSet				= new HashSet<>();
 	private String						ownerName;
-	private ArrayList<Integer>			modders				= new ArrayList<Integer>();
+	private ArrayList<Integer>			modders				= new ArrayList<>();
 
 	private static ChunkCoordIntPair[]	loadable			= null;
 	private boolean						forcedFlight		= false;
 
 	private boolean						fast				= false;
 
-	private ArrayList<SimpleCoordStore>	gridLinks			= new ArrayList<SimpleCoordStore>();
+	private ArrayList<SimpleCoordStore>	gridLinks			= new ArrayList<>();
 
 	private static final int			takeOffTicks		= 20 * 11;
 	private static final int			landSlowTicks		= 20 * 22;
@@ -832,7 +832,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	{
 		ConsoleTileEntity con = getConsole();
 		if(con == null) return false;
-		con.setUncoordinated(true);
+		//con.setUncoordinated(true);
 		con.setDesiredDim(ds.exteriorWorld);
 		if(takeOff(player))
 		{
@@ -1388,7 +1388,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	public DimensionalCoord[] getGridLinks(SimpleCoordStore asker)
 	{
 		if (gridLinks.size() == 0) return null;
-		ArrayList<DimensionalCoord> coords = new ArrayList<DimensionalCoord>(gridLinks.size() - 1);
+		ArrayList<DimensionalCoord> coords = new ArrayList<>(gridLinks.size() - 1);
 		Iterator<SimpleCoordStore> iter = gridLinks.iterator();
 		while (iter.hasNext())
 		{
@@ -1644,7 +1644,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			pl.addChatMessage(new ChatComponentText("Cannot use exterior scanners while in flight"));
 			return;
 		}
-		List<String> string = new ArrayList<String>();
+		List<String> string = new ArrayList<>();
 		TardisTileEntity ext = gDS().getExterior();
 		if (ext == null) return;
 		World w = ext.getWorldObj();

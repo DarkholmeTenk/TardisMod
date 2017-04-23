@@ -45,6 +45,7 @@ import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.items.NameTagItem;
 import tardis.core.console.panel.ConsolePanel;
+import tardis.core.console.panel.interfaces.NavPanels;
 import tardis.core.console.panel.interfaces.NavPanels.NavPanelDims;
 import tardis.core.console.panel.interfaces.NavPanels.NavPanelFacing;
 import tardis.core.console.panel.interfaces.NavPanels.NavPanelX;
@@ -52,7 +53,9 @@ import tardis.core.console.panel.interfaces.NavPanels.NavPanelY;
 import tardis.core.console.panel.interfaces.NavPanels.NavPanelZ;
 import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnGround;
 import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnPad;
+import tardis.core.console.panel.interfaces.OptionPanels.OptPanelRelativeCoords;
 import tardis.core.console.panel.types.normal.NormalPanelX;
+import tardis.core.console.panel.types.normal.NormalPanelY;
 
 public class ConsoleTileEntity extends AbstractTileEntity implements IControlMatrix, IExplodable
 {
@@ -277,28 +280,10 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public boolean randomiseControls(CoreTileEntity core)
 	{
-		if (core == null)
-			return false;
-		if (!core.inFlight() || !core.inCoordinatedFlight())
-		{
-			int[][] controlArrays = new int[][] { xControls, zControls };
-			for (int[] controlArray : controlArrays)
-			{
-				controlArray[0] = worldObj.rand.nextInt(13) - 6;
-				controlArray[1] = worldObj.rand.nextInt(13) - 6;
-				controlArray[2] = worldObj.rand.nextInt(13) - 6;
-				controlArray[3] = worldObj.rand.nextInt(13) - 6;
-				controlArray[6] = worldObj.rand.nextInt(13) - 6;
-				controlArray[4] = worldObj.rand.nextInt(6);
-				controlArray[5] = worldObj.rand.nextInt(7);
-				clampControls(controlArray);
-			}
-			yControls[0] = worldObj.rand.nextInt(4);
-			yControls[1] = worldObj.rand.nextInt(4);
-			yControls[2] = worldObj.rand.nextInt(4);
-			yControls[3] = worldObj.rand.nextInt(4);
-		}
-		return false;
+		for(ConsolePanel panel : getPanels())
+			if(panel instanceof NavPanels)
+				((NavPanels)panel).randomizeDestination();
+		return true;
 	}
 
 	public boolean activate(EntityPlayer pl, int blockX, int blockY, int blockZ, float i, float j, float k)
@@ -776,7 +761,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 	public ConsolePanel[] getPanels()
 	{
 		ConsolePanel a = new NormalPanelX();
-		return new ConsolePanel[]{a, null, null, null};
+		ConsolePanel b = new NormalPanelY();
+		return new ConsolePanel[]{a, b, null, null};
 	}
 
 	public <T> Optional<T> getPanel(Class<T> clazz)
@@ -1234,10 +1220,8 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public boolean getRelativeCoords()
 	{
-		return relativeCoords;
+		return getPanel(OptPanelRelativeCoords.class).map(p->p.areCoordinatesRelative()).orElse(false);
 	}
-
-
 
 	@Override
 	public ScrewdriverHelper getScrewHelper(int slot)
@@ -1248,16 +1232,6 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			case 1: return backScrewHelper;
 			default: return null;
 		}
-	}
-
-	public boolean shouldLand()
-	{
-		return !uncoordinated;
-	}
-
-	public void setUncoordinated(boolean un)
-	{
-		uncoordinated = un;
 	}
 
 	@Override
@@ -1412,5 +1386,10 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		TardisDataStore ds = Helper.getDataStore(this);
 		if(ds != null)
 			ExplosionDamageHelper.damage(ds.damage, pos, explosion, 0.6);
+	}
+
+	public boolean shouldLand()
+	{
+		return true; //TODO: Remove
 	}
 }

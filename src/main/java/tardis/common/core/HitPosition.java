@@ -84,5 +84,12 @@ public class HitPosition
 				return false;
 			return pos.within(side, zMin, yMin, zMax, yMax);
 		}
+
+		public boolean contains(HitPosition pos)
+		{
+			if(pos == null)
+				return false;
+			return contains(pos.side, pos);
+		}
 	}
 }

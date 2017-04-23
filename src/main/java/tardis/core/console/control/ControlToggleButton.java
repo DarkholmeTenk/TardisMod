@@ -1,26 +1,37 @@
 package tardis.core.console.control;
 
+import org.lwjgl.opengl.GL11;
+
+import net.minecraft.util.ResourceLocation;
+
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
+import io.darkcraft.darkcore.mod.helpers.RenderHelper;
 import io.darkcraft.darkcore.mod.nbt.NBTProperty;
 import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
-import tardis.common.tileents.ConsoleTileEntity;
-import tardis.common.tileents.CoreTileEntity;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import tardis.client.renderer.model.console.ButtonModel;
+import tardis.client.renderer.model.console.SonicScrewdriverHolderModel;
+import tardis.core.TardisInfo;
 
 @NBTSerialisable
 public class ControlToggleButton extends AbstractControl
 {
+	private static final ButtonModel button = new ButtonModel();
+	private static final SonicScrewdriverHolderModel holder = new SonicScrewdriverHolderModel();
+
 	@NBTProperty
 	private boolean pressed;
 
 	public ControlToggleButton(ControlToggleButtonBuilder builder)
 	{
-		super(builder, 1, 1, 45);
+		super(builder, 0.3, 0.3, 45);
 		pressed = builder.defaultPressed;
 	}
 
 	@Override
-	protected boolean activateControl(CoreTileEntity tardis, ConsoleTileEntity console, PlayerContainer player, boolean sneaking)
+	protected boolean activateControl(TardisInfo info, PlayerContainer player, boolean sneaking)
 	{
 		pressed = !pressed;
 		return true;
@@ -37,10 +48,18 @@ public class ControlToggleButton extends AbstractControl
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void render()
 	{
-		// TODO Auto-generated method stub
-
+		GL11.glPushMatrix();
+		RenderHelper.bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriverHolder.png"));
+		holder.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
+		GL11.glPopMatrix();
+		GL11.glPushMatrix();
+		GL11.glTranslated(-0.03125, -0.0015 + (getPressed() ? 0.06 : 0), -0.03125);
+		RenderHelper.bindTexture(new ResourceLocation("tardismod","textures/models/PushLever.png"));
+		button.render(null,0F,0F,0F,0F,0F,0.0625F);
+		GL11.glPopMatrix();
 	}
 
 	public static class ControlToggleButtonBuilder extends ControlBuilder<ControlToggleButton>

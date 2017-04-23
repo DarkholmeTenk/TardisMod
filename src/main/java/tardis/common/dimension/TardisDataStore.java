@@ -34,6 +34,7 @@ import tardis.common.tileents.extensions.chameleon.tardis.AbstractTardisChameleo
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import tardis.common.tileents.extensions.upgrades.ChameleonUpgrade;
 import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
+import tardis.core.TardisInfo;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 
@@ -53,7 +54,7 @@ public class TardisDataStore extends AbstractWorldDataStore
 
 	private volatile double									tardisXP		= 0;
 	private volatile int									tardisLevel		= 0;
-	private volatile HashMap<TardisUpgradeMode, Integer>	upgradeLevels	= new HashMap<TardisUpgradeMode, Integer>();
+	private volatile HashMap<TardisUpgradeMode, Integer>	upgradeLevels	= new HashMap<>();
 	private volatile int									rfStored;
 	private ItemStack[]										items			= new ItemStack[Configs.numInvs];
 	private FluidStack[]									fluids			= new FluidStack[Configs.numTanks];
@@ -68,6 +69,8 @@ public class TardisDataStore extends AbstractWorldDataStore
 	private HashMap<Integer, Integer>						permissionList	= new HashMap();
 	public AbstractUpgrade[]								upgrades		= new AbstractUpgrade[8];
 	private int tt = 0;
+
+	private final TardisInfo info = TardisInfo.get(this);
 
 	public TardisDataStore(String n)
 	{
