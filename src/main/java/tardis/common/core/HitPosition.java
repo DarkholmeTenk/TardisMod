@@ -1,5 +1,7 @@
 package tardis.common.core;
 
+import java.util.Objects;
+
 import io.darkcraft.darkcore.mod.nbt.NBTConstructor;
 import io.darkcraft.darkcore.mod.nbt.NBTProperty;
 import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
@@ -90,6 +92,23 @@ public class HitPosition
 			if(pos == null)
 				return false;
 			return contains(pos.side, pos);
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return Objects.hash(zMin, zMax, yMin, yMax);
+		}
+
+		@Override
+		public boolean equals(Object o)
+		{
+			if(this == o)
+				return true;
+			if(!(o instanceof HitRegion))
+				return false;
+			HitRegion hr = (HitRegion) o;
+			return (zMin == hr.zMin) && (zMax == hr.zMax) && (yMin == hr.yMin) && (yMax == hr.yMax);
 		}
 	}
 }

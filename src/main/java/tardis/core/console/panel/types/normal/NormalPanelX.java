@@ -1,5 +1,7 @@
 package tardis.core.console.panel.types.normal;
 
+import static tardis.core.console.enums.ManualConstants.MNL_CONTROL_X;
+
 import tardis.core.console.control.AbstractControl.ControlBuilder;
 import tardis.core.console.control.ControlLever;
 import tardis.core.console.control.ControlLever.ControlLeverBuilder;
@@ -17,7 +19,8 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 				new ControlLeverBuilder(-6,6,-6)
 					.isFlightControl()
 					.requiresPermission(ConsolePermissions.FLIGHT)
-					.withScale(0.3, 0.3, 0.3);
+					.withScale(0.3, 0.3, 0.3)
+					.withManualText(MNL_CONTROL_X);
 		addControl(levers[0] = regularLeverBuilder.atPosition(0.8, 0.4).build());
 		addControl(levers[1] = regularLeverBuilder.atPosition(1.1, 0.4).withAngle(15).build());
 		addControl(levers[2] = regularLeverBuilder.atPosition(1.4, 0.4).withAngle(30).build());
@@ -31,7 +34,8 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 		ControlBuilder<ControlWheel> regularWheelBuilder = new ControlWheelBuilder(-6,6,0)
 				.isFlightControl()
 				.requiresPermission(ConsolePermissions.FLIGHT)
-				.withScale(0.5, 0.5, 0.5);
+				.withScale(0.5, 0.5, 0.5)
+				.withManualText(MNL_CONTROL_X);
 		addControl(wheels[0] = regularWheelBuilder.atPosition(0.6, 0.75).build());
 		addControl(wheels[1] = regularWheelBuilder.atPosition(1.1, 0.75).build());
 	}

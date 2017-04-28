@@ -3,6 +3,7 @@ package tardis.common.tileents;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +20,7 @@ import net.minecraft.world.World;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.helpers.DCReflectionHelper;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.MessageHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
@@ -45,14 +47,9 @@ import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.items.NameTagItem;
 import tardis.core.console.panel.ConsolePanel;
+import tardis.core.console.panel.group.AbstractPanelGroup;
+import tardis.core.console.panel.group.NavGroup;
 import tardis.core.console.panel.interfaces.NavPanels;
-import tardis.core.console.panel.interfaces.NavPanels.NavPanelDims;
-import tardis.core.console.panel.interfaces.NavPanels.NavPanelFacing;
-import tardis.core.console.panel.interfaces.NavPanels.NavPanelX;
-import tardis.core.console.panel.interfaces.NavPanels.NavPanelY;
-import tardis.core.console.panel.interfaces.NavPanels.NavPanelZ;
-import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnGround;
-import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnPad;
 import tardis.core.console.panel.interfaces.OptionPanels.OptPanelRelativeCoords;
 import tardis.core.console.panel.types.normal.NormalPanelX;
 import tardis.core.console.panel.types.normal.NormalPanelY;
@@ -758,11 +755,16 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 		return controlOne + controlTwo + controlThree;
 	}
 
+	private ConsolePanel[] panels = new ConsolePanel[]{new NormalPanelX(), new NormalPanelY(), null,null};
 	public ConsolePanel[] getPanels()
 	{
-		ConsolePanel a = new NormalPanelX();
-		ConsolePanel b = new NormalPanelY();
-		return new ConsolePanel[]{a, b, null, null};
+		return panels;
+	}
+
+	private final Map<Class<? extends AbstractPanelGroup>, Optional<AbstractPanelGroup>> groups = new HashMap<>();
+	public void panelsChanged()
+	{
+		groups.clear();
 	}
 
 	public <T> Optional<T> getPanel(Class<T> clazz)
@@ -771,6 +773,17 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 			if((panel != null) && clazz.isInstance(panel))
 				return Optional.of((T) panel);
 		return Optional.empty();
+	}
+
+	public <T extends AbstractPanelGroup> Optional<T> getPanelGroup(Class<T> clazz)
+	{
+		groups.computeIfAbsent(clazz, c->{
+			T t = DCReflectionHelper.newInstance(clazz);
+			if((t != null) && t.fillIn(this))
+				return Optional.of(t);
+			return Optional.empty();
+		});
+		return (Optional<T>) groups.get(clazz);
 	}
 
 	public boolean hasPanels(Class<?>... classes)
@@ -785,9 +798,7 @@ public class ConsoleTileEntity extends AbstractTileEntity implements IControlMat
 
 	public boolean hasAllFlightPanels()
 	{
-		return hasPanels(
-				NavPanelX.class, NavPanelY.class, NavPanelZ.class, NavPanelFacing.class, NavPanelDims.class,
-				OptPanelLandOnGround.class, OptPanelLandOnPad.class);
+		return getPanelGroup(NavGroup.class).isPresent();
 	}
 
 	public int getDimFromControls()

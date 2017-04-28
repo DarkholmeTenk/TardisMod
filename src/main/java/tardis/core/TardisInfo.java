@@ -13,6 +13,7 @@ import tardis.common.dimension.TardisDataStore;
 import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.CoreTileEntity;
 import tardis.common.tileents.EngineTileEntity;
+import tardis.core.console.panel.group.AbstractPanelGroup;
 
 public class TardisInfo
 {
@@ -48,6 +49,11 @@ public class TardisInfo
 	public <T> Optional<T> getPanel(Class<T> clazz)
 	{
 		return getConsole().getPanel(clazz);
+	}
+
+	public <T extends AbstractPanelGroup> Optional<T> getPanelGroup(Class<T> clazz)
+	{
+		return getConsole().getPanelGroup(clazz);
 	}
 
 	public EngineTileEntity getEngine()

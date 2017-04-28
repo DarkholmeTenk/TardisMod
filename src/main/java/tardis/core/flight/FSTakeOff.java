@@ -16,11 +16,7 @@ public class FSTakeOff extends FSAbstract
 	}
 
 	@Override
-	protected void tick()
-	{
-		// TODO Auto-generated method stub
-
-	}
+	protected void tick(){}
 
 	@Override
 	protected FSAbstract getNextState()
