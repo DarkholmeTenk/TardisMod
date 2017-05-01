@@ -5,9 +5,11 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.IModelCustom;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
+import io.darkcraft.darkcore.mod.helpers.RenderHelper;
 
 import tardis.client.renderer.ControlRenderer;
 import tardis.client.renderer.model.ConsoleModel;
@@ -20,6 +22,11 @@ import tardis.core.console.panel.ConsolePanel;
 
 public class ConsoleRenderer extends AbstractBlockRenderer
 {
+	private static final IModelCustom newModel = RenderHelper.getModel(new ResourceLocation("tardismod", "models/console/console.obj"));
+	private static final ResourceLocation baseTexture = new ResourceLocation("tardismod", "models/console/console.png");
+	private static final ResourceLocation panelTexture = new ResourceLocation("tardismod", "models/console/console_face.png");
+	private static final ResourceLocation emptyTexture = new ResourceLocation("tardismod", "models/console/console_empty.png");
+
 	public static HitPosition hp = null;
 	ConsoleModel model = new ConsoleModel();
 	ControlRenderer compRender;
@@ -158,39 +165,53 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 	{
 		if(compRender == null)
 			compRender = new ControlRenderer(func_147498_b(),field_147501_a.field_147553_e);
-
+		ConsoleTileEntity tce = null;
+		if((te != null) && (te instanceof ConsoleTileEntity))
+			tce = (ConsoleTileEntity) te;
 
 		GL11.glPushMatrix();
-		//This line actually rotates the renderer.
-		GL11.glTranslatef(0.5F, 0, 0.5F);
-		GL11.glRotatef(180F, 0F, 0, 1F);
-		GL11.glTranslatef(0F, -0.5F, 0F);
-		bindTexture(new ResourceLocation("tardismod","textures/models/TardisConsole.png"));
 		//GL11.glColor4f(1F, 1F, 1F, tte.getTransparency());
 		GL11.glPushMatrix();
-		GL11.glTranslatef(0, -0.5F, 0);
-		model.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		GL11.glPopMatrix();
-		if((te != null) && (te instanceof ConsoleTileEntity))
+		GL11.glScaled(0.5, 0.5, 0.5);
+		GL11.glTranslated(1, -1, 1);
+		bindTexture(baseTexture);
+		newModel.renderOnly("Cube_Base");
+		if(tce != null)
 		{
-			ConsoleTileEntity tce = (ConsoleTileEntity)te;
+			ConsolePanel[] panels = tce.getPanels();
+			for(int i = 0; (i < 4) && (i < panels.length); i++)
+			{
+				GL11.glPushMatrix();
+				GL11.glRotated(90*(i), 0, 1, 0);
+				if(panels[i] != null)
+				{
+					bindTexture(panelTexture);
+					newModel.renderOnly("Face_FilledFace");
+				}
+				else
+				{
+					bindTexture(emptyTexture);
+					newModel.renderOnly("Inset_EmptyFace");
+				}
+				GL11.glPopMatrix();
+			}
+		}
+		GL11.glPopMatrix();
+		if(tce != null)
+		{
+			GL11.glRotated(180, 1, 0, 0);
+			GL11.glRotated(180, 0, 1, 0);
+			GL11.glTranslated(-0.5, -0.5, 0.5);
 			CoreTileEntity core = Helper.getTardisCore(te);
-//			renderFrontPanel(tess,tce,core);
-//			renderRightPanel(tess,tce,core);
-//			renderBackPanel( tess,tce,core);
-//			renderLeftPanel( tess,tce,core);
-//			renderFlightControls(tess,tce);
 			ConsolePanel[] panels = tce.getPanels();
 			for(int i = 0; (i < 4) && (i < panels.length); i++)
 			{
 				ConsolePanel panel = panels[i];
+				GL11.glPushMatrix();
+				GL11.glRotated(90*(i-2), 0, 1, 0);
 				if(panel != null)
-				{
-					GL11.glPushMatrix();
-					GL11.glRotated(90*(i-2), 0, 1, 0);
 					panel.render();
-					GL11.glPopMatrix();
-				}
+				GL11.glPopMatrix();
 			}
 			if(hp != null)
 			{
