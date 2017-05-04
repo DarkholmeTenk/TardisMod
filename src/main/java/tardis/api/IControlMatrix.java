@@ -2,19 +2,15 @@ package tardis.api;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import tardis.common.core.helpers.ScrewdriverHelper;
+import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
+
+import tardis.common.core.HitPosition;
+import tardis.core.console.control.AbstractControl;
 
 public interface IControlMatrix
 {
-	public double getControlState(int controlID,boolean wobble);
+	public AbstractControl getControl(PlayerContainer player, HitPosition position);
 
-	public double getControlState(int controlID);
-
-	public double getControlHighlight(int controlID);
-
-	public double[] getColorRatio(int controlID);
-
-	public void activateControl(EntityPlayer player, int controlID);
-
-	public ScrewdriverHelper getScrewHelper(int slot);
+	public HitPosition getHitPosition(EntityPlayer pl, int blockX, int blockY, int blockZ,
+														float i, float j, float k, int side);
 }

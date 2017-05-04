@@ -11,7 +11,6 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 import io.darkcraft.darkcore.mod.helpers.RenderHelper;
 
-import tardis.client.renderer.ControlRenderer;
 import tardis.client.renderer.model.ConsoleModel;
 import tardis.common.TMRegistry;
 import tardis.common.core.HitPosition;
@@ -29,7 +28,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 
 	public static HitPosition hp = null;
 	ConsoleModel model = new ConsoleModel();
-	ControlRenderer compRender;
+//	ControlRenderer compRender;
 
 	@Override
 	public AbstractBlock getBlock()
@@ -161,10 +160,10 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 //	}
 
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
-		if(compRender == null)
-			compRender = new ControlRenderer(func_147498_b(),field_147501_a.field_147553_e);
+//		if(compRender == null)
+//			compRender = new ControlRenderer(func_147498_b(),field_147501_a.field_147553_e);
 		ConsoleTileEntity tce = null;
 		if((te != null) && (te instanceof ConsoleTileEntity))
 			tce = (ConsoleTileEntity) te;
@@ -210,7 +209,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 				GL11.glPushMatrix();
 				GL11.glRotated(90*(i-2), 0, 1, 0);
 				if(panel != null)
-					panel.render();
+					panel.render(ptt);
 				GL11.glPopMatrix();
 			}
 			if(hp != null)
@@ -218,7 +217,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 				GL11.glPushMatrix();
 				GL11.glRotated(90*(hp.side-1), 0, 1, 0);
 				GL11.glTranslated(1.5-hp.posZ, -1+hp.posY, 0.5+hp.posY);
-				compRender.renderLight(tess, tce, 1, 0, 0, 0, -45 - (15 * hp.side), 0, 0, 0.2, 0.2, 0.2);
+//				compRender.renderLight(tess, tce, 1, 0, 0, 0, -45 - (15 * hp.side), 0, 0, 0.2, 0.2, 0.2);
 				GL11.glPopMatrix();
 			}
 		}

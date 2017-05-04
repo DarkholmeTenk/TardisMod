@@ -24,9 +24,9 @@ public class ControlToggleButton extends AbstractControl
 	@NBTProperty
 	private boolean pressed;
 
-	public ControlToggleButton(ControlToggleButtonBuilder builder)
+	public ControlToggleButton(ControlToggleButtonBuilder builder, ControlHolder holder)
 	{
-		super(builder, 0.3, 0.3, 45);
+		super(builder, 0.3, 0.3, 0, holder);
 		pressed = builder.defaultPressed;
 	}
 
@@ -49,7 +49,7 @@ public class ControlToggleButton extends AbstractControl
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void render()
+	public void render(float ptt)
 	{
 		GL11.glPushMatrix();
 		RenderHelper.bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriverHolder.png"));
@@ -72,9 +72,9 @@ public class ControlToggleButton extends AbstractControl
 		}
 
 		@Override
-		public ControlToggleButton build()
+		public ControlToggleButton build(ControlHolder holder)
 		{
-			return new ControlToggleButton(this);
+			return new ControlToggleButton(this, holder);
 		}
 	}
 }

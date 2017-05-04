@@ -16,7 +16,6 @@ import tardis.common.core.TardisOutput;
 import tardis.common.core.exception.schema.SchemaCoreNotFoundException;
 import tardis.common.core.exception.schema.SchemaDoorNotFoundException;
 import tardis.common.core.schema.PartBlueprint;
-import tardis.common.tileents.ConsoleTileEntity;
 
 public class SchemaSaveCommand extends AbstractCommandNew
 {
@@ -46,7 +45,7 @@ public class SchemaSaveCommand extends AbstractCommandNew
 			PartBlueprint bp = new PartBlueprint(w, name, x,y,z);
 			File saveFile = TardisMod.schemaHandler.getSchemaFile(name);
 			bp.saveTo(saveFile);
-			ConsoleTileEntity.refreshCategories();
+//			ConsoleTileEntity.refreshCategories();
 			return true;
 		}
 		catch(SchemaCoreNotFoundException e)

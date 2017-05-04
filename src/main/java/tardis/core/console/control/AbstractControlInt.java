@@ -3,6 +3,7 @@ package tardis.core.console.control;
 import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.nbt.NBTProperty;
+import io.darkcraft.darkcore.mod.nbt.NBTProperty.SerialisableType;
 
 import tardis.core.TardisInfo;
 
@@ -14,9 +15,14 @@ public abstract class AbstractControlInt extends AbstractControl
 	@NBTProperty
 	protected int value;
 
-	protected AbstractControlInt(ControlIntBuilder builder, double regularXSize, double regularYSize, int angle)
+	@NBTProperty(SerialisableType.TRANSMIT)
+	protected int lastValue;
+	@NBTProperty(SerialisableType.TRANSMIT)
+	protected int valueChangeTT;
+
+	protected AbstractControlInt(ControlIntBuilder builder, double regularXSize, double regularYSize, int angle, ControlHolder holder)
 	{
-		super(builder, regularXSize, regularYSize, angle);
+		super(builder, regularXSize, regularYSize, angle, holder);
 		min = builder.min;
 		max = builder.max;
 		value = builder.defaultVal;
@@ -27,7 +33,11 @@ public abstract class AbstractControlInt extends AbstractControl
 		return value;
 	}
 
-	public abstract void setValue(int value);
+	public void setValue(int value)
+	{
+		lastValue = this.value;
+		valueChangeTT = tt;
+	}
 
 	public final void randomize()
 	{

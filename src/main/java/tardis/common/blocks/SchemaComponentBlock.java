@@ -167,7 +167,7 @@ public class SchemaComponentBlock extends AbstractBlock
 		    {
 	    		ConsoleTileEntity console = Helper.getTardisConsole(w);
 				if(console != null)
-					return console.activate(pl, x, y, z, t, j, k);
+					return console.activate(pl, x, y, z, t, j, k, s);
 		    }
 	    	return true;
     	}

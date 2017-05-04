@@ -1,6 +1,5 @@
 package tardis.common.integration.waila;
 
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -9,6 +8,7 @@ import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.EngineTileEntity;
+import tardis.core.console.control.AbstractControl;
 
 public class WailaEngineProvider extends AbstractWailaProvider
 {
@@ -77,22 +77,22 @@ public class WailaEngineProvider extends AbstractWailaProvider
 	}
 
 	@Override
-	public int getControlHit(IWailaDataAccessor accessor)
+	public AbstractControl getControlHit(IWailaDataAccessor accessor)
 	{
-		if(isEngine(accessor))
-		{
-			World w = accessor.getWorld();
-			if(w == null)
-				return -1;
-			EngineTileEntity e = Helper.getTardisEngine(w);
-			if(e != null)
-			{
-				MovingObjectPosition pos = accessor.getPosition();
-				if(pos.hitVec.yCoord <= (e.yCoord+1.5))
-					return e.getControlFromHit(pos.blockX,pos.blockY,pos.blockZ,pos.hitVec, accessor.getPlayer());
-			}
-		}
-		return -1;
+//		if(isEngine(accessor))
+//		{
+//			World w = accessor.getWorld();
+//			if(w == null)
+//				return -1;
+//			EngineTileEntity e = Helper.getTardisEngine(w);
+//			if(e != null)
+//			{
+//				MovingObjectPosition pos = accessor.getPosition();
+//				if(pos.hitVec.yCoord <= (e.yCoord+1.5))
+//					return e.getControlFromHit(pos.blockX,pos.blockY,pos.blockZ,pos.hitVec, accessor.getPlayer());
+//			}
+//		}
+		return null;
 	}
 
 }

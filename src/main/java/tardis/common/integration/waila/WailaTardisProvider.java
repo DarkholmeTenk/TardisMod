@@ -11,6 +11,7 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import tardis.common.TMRegistry;
 import tardis.common.tileents.TardisTileEntity;
+import tardis.core.console.control.AbstractControl;
 
 public class WailaTardisProvider extends AbstractWailaProvider
 {
@@ -62,10 +63,10 @@ public class WailaTardisProvider extends AbstractWailaProvider
 	}
 
 	@Override
-	public int getControlHit(IWailaDataAccessor accessor)
+	public AbstractControl getControlHit(IWailaDataAccessor accessor)
 	{
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 }

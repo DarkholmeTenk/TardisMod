@@ -13,7 +13,7 @@ public class LandGroundModifier implements IFlightModifier
 	@Override
 	public int[] getModifiedControls(CoreTileEntity core, ConsoleTileEntity console, World w, int[] pos)
 	{
-		if(!console.getLandOnGroundFromControls()) return pos;
+//		if(!console.getLandOnGroundFromControls()) return pos;
 		if (WorldHelper.softBlock(w, pos[0], pos[1] - 1, pos[2]))
 		{
 			int newY = pos[1] - 2;

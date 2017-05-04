@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.Explosion;
 
@@ -21,8 +19,6 @@ import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IExplodable;
 
 import tardis.TardisMod;
-import tardis.api.IControlMatrix;
-import tardis.api.ScrewdriverMode;
 import tardis.api.TardisFunction;
 import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
@@ -39,7 +35,7 @@ import tardis.common.dimension.damage.TardisDamageSystem;
 import tardis.common.tileents.extensions.upgrades.AbstractUpgrade;
 import tardis.common.tileents.extensions.upgrades.factory.UpgradeFactory;
 
-public class EngineTileEntity extends AbstractTileEntity implements IControlMatrix, IExplodable
+public class EngineTileEntity extends AbstractTileEntity implements IExplodable
 {
 	private String[]			currentUsers;
 	private int					currentUserID;
@@ -313,210 +309,210 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 
 	private static final String hasPerm = " has permission to ";
 	private static final String hasNoPerm = " does not have permission to ";
-	@Override
-	public void activateControl(EntityPlayer pl, int control)
-	{
-		if(ServerHelper.isClient()) return;
-		int prevLastButton = lastButton;
-		lastButton = control;
-		lastButtonTT = tt;
-		TardisOutput.print("TETE", "Control activated:" + control);
-		CoreTileEntity core = Helper.getTardisCore(worldObj);
-		TardisDataStore ds = Helper.getDataStore(worldObj);
-		if ((core != null) && (ds != null))
-		{
-			if ((control == 4) || (control == 5))
-			{
-				currentUserID += control == 4 ? 1 : -1;
-				setUsername();
-			}
-			else if ((control >= 10) && (control < 20))
-			{
-				if (ds.unspentLevelPoints() > 0)
-				{
-					if (ds.hasPermission(pl, TardisPermission.POINTS))
-					{
-						TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 10);
-						TardisOutput.print("TETE", "Setting mode to " + mode.name);
-						if (mode != null)
-						{
-							if ((preparingToUpgrade == mode) && pl.isSneaking())
-							{
-								preparingToUpgrade = null;
-								preparingToUpgradeTT = -1;
-								ds.upgradeLevel(mode, 1);
-								core.sendUpdate();
-							}
-							else if (preparingToUpgrade == null)
-							{
-								preparingToUpgrade = mode;
-								preparingToUpgradeTT = tt;
-								pl.addChatMessage(new ChatComponentText(
-										"[ENGINE] Sneak and activate the button again to upgrade " + mode.name));
-							}
-						}
-					}
-					else
-					{
-						pl.addChatMessage(CoreTileEntity.cannotModifyMessage);
-					}
-				}
-			}
-			else if ((control >= 20) && (control < 30))
-			{
-				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 20);
-				if (mode != null)
-				{
-					int level = ds.getLevel(mode);
-					int tlevel = ds.getLevel(mode, true);
-					pl.addChatMessage(new ChatComponentText("[ENGINE] " + mode.name + " lvl: " + level + "(" + tlevel + ")/"
-							+ ds.maxUnspentLevelPoints()));
-				}
-			}
-			else if (control == 30)
-				pl.addChatMessage(new ChatComponentText("[ENGINE] Unspent level points: " + ds.unspentLevelPoints() + "/"
-						+ ds.maxUnspentLevelPoints()));
-			else if (control == 39)
-			{
-				if (screwHelper != null)
-				{
-					ItemStack toGive = screwHelper.getItemStack();
-					TMRegistry.screwItem.notifyMode(screwHelper, pl, false);
-					screwHelper = null;
-					WorldHelper.giveItemStack(pl, toGive);
-				}
-				else
-				{
-					ScrewdriverHelper helper = ScrewdriverHelperFactory.get(pl.getHeldItem());
-					if (helper != null)
-					{
-						screwHelper = helper;
-						helper.setOwner(core.getOwner());
-						helper.clear();
-						InventoryPlayer inv = pl.inventory;
-						inv.mainInventory[inv.currentItem] = null;
-					}
-				}
-			}
-			else if ((control >= 40) && (control < 50))
-			{
-				if (screwHelper != null)
-				{
-					if (ds.hasPermission(pl, TardisPermission.PERMISSIONS))
-						screwHelper.togglePermission(ScrewdriverMode.get(control - 40));
-					else
-						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
-				}
-
-			}
-			else if ((control >= 50) && (control < 60))
-			{
-				if (screwHelper != null)
-				{
-					ScrewdriverMode m = ScrewdriverMode.get(control - 50);
-					String modeString = m.name();
-					String s = "Sonic screwdriver ";
-					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
-					{
-						s += screwHelper.hasPermission(m) ? "has" : "does not have";
-						s += " " + modeString + " permission";
-					}
-					else
-					{
-						s += "does not have " + modeString + " functionality";
-					}
-					ServerHelper.sendString(pl, "ENGINE", s);
-				}
-			}
-			else if (control == 60)
-				internalOnly = !internalOnly;
-			else if ((control == 71) || (control == 72))
-			{
-				if ((availableConsoleRooms == null) || (availableConsoleRooms.length == 1))
-					updateConsoleRooms();
-				consoleSettingControl = MathHelper.cycle(consoleSettingControl + (control == 71 ? -1 : 1), 0,
-						availableConsoleRooms.length - 1);
-				consoleSettingString = availableConsoleRooms[consoleSettingControl];
-			}
-			else if (control == 73)
-			{
-				if (ds.hasPermission(pl, TardisPermission.ROOMS))
-				{
-					if ((prevLastButton != 73) && pl.isSneaking())
-						lastButton = -1;
-					else if ((prevLastButton == 73) && !pl.isSneaking())
-						lastButton = -1;
-					else if (prevLastButton != 73)
-					{
-						ServerHelper
-								.sendString(pl, "ENGINE",
-										"Warning: Changing console rooms may replace blocks. Please right click, then sneak-right click this button to proceed");
-					}
-					else
-					{
-						core.loadConsoleRoom(sanitiseConsole(consoleSettingString));
-					}
-				}
-				else
-				{
-					lastButton = -1;
-					ServerHelper.sendString(pl, "ENGINE", CoreTileEntity.cannotModifyMessage.getFormattedText());
-				}
-			}
-			else if((control >= 80) && (control < 90))
-			{
-				TardisPermission p = TardisPermission.get(control - 80);
-				if(ds.togglePermission(pl, currentPerson, p))
-					core.sendUpdate();
-				else
-					ServerHelper.sendString(pl, CoreTileEntity.cannotModifyPermissions);
-			}
-			else if((control >= 90) && (control < 100))
-			{
-				TardisPermission p = TardisPermission.get(control - 90);
-				ServerHelper.sendString(pl, currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name);
-			}
-			else if(control == 100)
-			{
-				if(ds.hasPermission(pl, TardisPermission.POINTS))
-					isEngineOpen = !isEngineOpen;
-			}
-			else if((control == 130) && ds.hasFunction(TardisFunction.SPAWNPROT))
-			{
-				int dir = pl.isSneaking() ? -16 : 16;
-				protectedRadius += dir;
-				protectedRadius = MathHelper.clamp(protectedRadius, 0, maxProtectedRadius);
-			}
-			else if((control == 131) && (screwHelper != null))
-			{
-				screwHelper.cycleScrewdriverType();
-			}
-			else if(control == 132)
-			{
-				ds.setSpaceProjection(!ds.getSpaceProjection());
-			}
-			else if(isEngineOpen)
-			{
-				if((control >= 101) && (control <= 108))
-				{
-					if(ds.hasPermission(pl, TardisPermission.POINTS))
-					{
-						int slot = control - 101;
-						if(!addUpgrade(slot, pl, ds))
-							removeUpgrade(slot, pl, ds);
-						core.sendUpdate();
-					}
-					else
-						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
-				}
-				if((control >= 110) && (control <= 119))
-				{
-					int component = control - 110;
-					ds.damage.repairComponent(pl, component);
-				}
-			}
-		}
-	}
+//	@Override
+//	public void activateControl(EntityPlayer pl, int control)
+//	{
+//		if(ServerHelper.isClient()) return;
+//		int prevLastButton = lastButton;
+//		lastButton = control;
+//		lastButtonTT = tt;
+//		TardisOutput.print("TETE", "Control activated:" + control);
+//		CoreTileEntity core = Helper.getTardisCore(worldObj);
+//		TardisDataStore ds = Helper.getDataStore(worldObj);
+//		if ((core != null) && (ds != null))
+//		{
+//			if ((control == 4) || (control == 5))
+//			{
+//				currentUserID += control == 4 ? 1 : -1;
+//				setUsername();
+//			}
+//			else if ((control >= 10) && (control < 20))
+//			{
+//				if (ds.unspentLevelPoints() > 0)
+//				{
+//					if (ds.hasPermission(pl, TardisPermission.POINTS))
+//					{
+//						TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 10);
+//						TardisOutput.print("TETE", "Setting mode to " + mode.name);
+//						if (mode != null)
+//						{
+//							if ((preparingToUpgrade == mode) && pl.isSneaking())
+//							{
+//								preparingToUpgrade = null;
+//								preparingToUpgradeTT = -1;
+//								ds.upgradeLevel(mode, 1);
+//								core.sendUpdate();
+//							}
+//							else if (preparingToUpgrade == null)
+//							{
+//								preparingToUpgrade = mode;
+//								preparingToUpgradeTT = tt;
+//								pl.addChatMessage(new ChatComponentText(
+//										"[ENGINE] Sneak and activate the button again to upgrade " + mode.name));
+//							}
+//						}
+//					}
+//					else
+//					{
+//						pl.addChatMessage(CoreTileEntity.cannotModifyMessage);
+//					}
+//				}
+//			}
+//			else if ((control >= 20) && (control < 30))
+//			{
+//				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(control - 20);
+//				if (mode != null)
+//				{
+//					int level = ds.getLevel(mode);
+//					int tlevel = ds.getLevel(mode, true);
+//					pl.addChatMessage(new ChatComponentText("[ENGINE] " + mode.name + " lvl: " + level + "(" + tlevel + ")/"
+//							+ ds.maxUnspentLevelPoints()));
+//				}
+//			}
+//			else if (control == 30)
+//				pl.addChatMessage(new ChatComponentText("[ENGINE] Unspent level points: " + ds.unspentLevelPoints() + "/"
+//						+ ds.maxUnspentLevelPoints()));
+//			else if (control == 39)
+//			{
+//				if (screwHelper != null)
+//				{
+//					ItemStack toGive = screwHelper.getItemStack();
+//					TMRegistry.screwItem.notifyMode(screwHelper, pl, false);
+//					screwHelper = null;
+//					WorldHelper.giveItemStack(pl, toGive);
+//				}
+//				else
+//				{
+//					ScrewdriverHelper helper = ScrewdriverHelperFactory.get(pl.getHeldItem());
+//					if (helper != null)
+//					{
+//						screwHelper = helper;
+//						helper.setOwner(core.getOwner());
+//						helper.clear();
+//						InventoryPlayer inv = pl.inventory;
+//						inv.mainInventory[inv.currentItem] = null;
+//					}
+//				}
+//			}
+//			else if ((control >= 40) && (control < 50))
+//			{
+//				if (screwHelper != null)
+//				{
+//					if (ds.hasPermission(pl, TardisPermission.PERMISSIONS))
+//						screwHelper.togglePermission(ScrewdriverMode.get(control - 40));
+//					else
+//						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
+//				}
+//
+//			}
+//			else if ((control >= 50) && (control < 60))
+//			{
+//				if (screwHelper != null)
+//				{
+//					ScrewdriverMode m = ScrewdriverMode.get(control - 50);
+//					String modeString = m.name();
+//					String s = "Sonic screwdriver ";
+//					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
+//					{
+//						s += screwHelper.hasPermission(m) ? "has" : "does not have";
+//						s += " " + modeString + " permission";
+//					}
+//					else
+//					{
+//						s += "does not have " + modeString + " functionality";
+//					}
+//					ServerHelper.sendString(pl, "ENGINE", s);
+//				}
+//			}
+//			else if (control == 60)
+//				internalOnly = !internalOnly;
+//			else if ((control == 71) || (control == 72))
+//			{
+//				if ((availableConsoleRooms == null) || (availableConsoleRooms.length == 1))
+//					updateConsoleRooms();
+//				consoleSettingControl = MathHelper.cycle(consoleSettingControl + (control == 71 ? -1 : 1), 0,
+//						availableConsoleRooms.length - 1);
+//				consoleSettingString = availableConsoleRooms[consoleSettingControl];
+//			}
+//			else if (control == 73)
+//			{
+//				if (ds.hasPermission(pl, TardisPermission.ROOMS))
+//				{
+//					if ((prevLastButton != 73) && pl.isSneaking())
+//						lastButton = -1;
+//					else if ((prevLastButton == 73) && !pl.isSneaking())
+//						lastButton = -1;
+//					else if (prevLastButton != 73)
+//					{
+//						ServerHelper
+//								.sendString(pl, "ENGINE",
+//										"Warning: Changing console rooms may replace blocks. Please right click, then sneak-right click this button to proceed");
+//					}
+//					else
+//					{
+//						core.loadConsoleRoom(sanitiseConsole(consoleSettingString));
+//					}
+//				}
+//				else
+//				{
+//					lastButton = -1;
+//					ServerHelper.sendString(pl, "ENGINE", CoreTileEntity.cannotModifyMessage.getFormattedText());
+//				}
+//			}
+//			else if((control >= 80) && (control < 90))
+//			{
+//				TardisPermission p = TardisPermission.get(control - 80);
+//				if(ds.togglePermission(pl, currentPerson, p))
+//					core.sendUpdate();
+//				else
+//					ServerHelper.sendString(pl, CoreTileEntity.cannotModifyPermissions);
+//			}
+//			else if((control >= 90) && (control < 100))
+//			{
+//				TardisPermission p = TardisPermission.get(control - 90);
+//				ServerHelper.sendString(pl, currentPerson + (ds.hasPermission(currentPerson, p) ? hasPerm : hasNoPerm) + p.name);
+//			}
+//			else if(control == 100)
+//			{
+//				if(ds.hasPermission(pl, TardisPermission.POINTS))
+//					isEngineOpen = !isEngineOpen;
+//			}
+//			else if((control == 130) && ds.hasFunction(TardisFunction.SPAWNPROT))
+//			{
+//				int dir = pl.isSneaking() ? -16 : 16;
+//				protectedRadius += dir;
+//				protectedRadius = MathHelper.clamp(protectedRadius, 0, maxProtectedRadius);
+//			}
+//			else if((control == 131) && (screwHelper != null))
+//			{
+//				screwHelper.cycleScrewdriverType();
+//			}
+//			else if(control == 132)
+//			{
+//				ds.setSpaceProjection(!ds.getSpaceProjection());
+//			}
+//			else if(isEngineOpen)
+//			{
+//				if((control >= 101) && (control <= 108))
+//				{
+//					if(ds.hasPermission(pl, TardisPermission.POINTS))
+//					{
+//						int slot = control - 101;
+//						if(!addUpgrade(slot, pl, ds))
+//							removeUpgrade(slot, pl, ds);
+//						core.sendUpdate();
+//					}
+//					else
+//						ServerHelper.sendString(pl, CoreTileEntity.cannotModifyMessage);
+//				}
+//				if((control >= 110) && (control <= 119))
+//				{
+//					int component = control - 110;
+//					ds.damage.repairComponent(pl, component);
+//				}
+//			}
+//		}
+//	}
 
 	private boolean addUpgrade(int slot, EntityPlayer pl, TardisDataStore ds)
 	{
@@ -557,86 +553,86 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 			ds.markDirty();
 		}
 	}
-
-	@Override
-	public double getControlState(int controlID, boolean wobble)
-	{
-		double maxWobble = 0.025;
-		double count = 20;
-		int maxRand = 10;
-		double wobbleAmount = 0;
-		if (wobble)
-		{
-			wobbleAmount = (((tt + rand.nextInt(maxRand)) % count) / count);
-			wobbleAmount = Math.abs(wobbleAmount - 0.5) * maxWobble * 2;
-		}
-		return getControlState(controlID) + wobbleAmount;
-	}
-
-	@Override
-	public double getControlState(int cID)
-	{
-		if (ServerHelper.isServer())
-			return 0;
-		CoreTileEntity core = Helper.getTardisCore(worldObj);
-		TardisDataStore ds = Helper.getDataStore(worldObj);
-		if ((core != null) && (ds != null))
-		{
-			if ((cID == 4) || (cID == 5) || ((cID >= 10) && (cID < 20)) || ((cID >= 71) && (cID <= 73)) || (cID == 131))
-				return (lastButton == cID) ? 1.0 : 0;
-			if ((cID >= 20) && (cID < 30))
-			{
-				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(cID - 20);
-				if ((mode != null) && (ds.maxUnspentLevelPoints() > 0))
-					return ((double) ds.getLevel(mode,true)) / ((double) ds.maxUnspentLevelPoints());
-				return 0;
-			}
-			if (cID == 30)
-			{
-				if (ds.maxUnspentLevelPoints() > 0)
-					return ((double) ds.unspentLevelPoints()) / ((double) ds.maxUnspentLevelPoints());
-				return 0;
-			}
-			if ((cID >= 40) && (cID < 60))
-			{
-				if (screwHelper == null)
-					return 0;
-				int mID = cID >= 50 ? cID - 50 : cID - 40;
-				ScrewdriverMode m = ScrewdriverMode.get(mID);
-				if (cID < 50)
-					return screwHelper.hasPermission(m) ? 1 : 0;
-				else
-				{
-					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
-					{
-						double v = screwHelper.hasPermission(m) ? 1 : 0.2;
-						return v;
-					}
-					return 0.2;
-				}
-			}
-			if (cID == 60)
-				return internalOnly ? 1 : 0;
-			if ((cID >= 80) && (cID < 90))
-			{
-				TardisPermission p = TardisPermission.get(cID-80);
-				return ds.hasPermission(currentPerson, p) ? 1 : 0;
-			}
-			if((cID >= 90) && (cID < 100))
-			{
-				TardisPermission p = TardisPermission.get(cID-90);
-				return ds.hasPermission(currentPerson, p) ? 1 : 0;
-			}
-			if(cID == 100)
-				return 1 - visibility;
-			if(cID == 130)
-				return protectedRadius / (double) maxProtectedRadius;
-			if(cID == 132){
-				return ds.getSpaceProjection() ? 1 : 0;
-			}
-		}
-		return (float) (((tt + cID) % 40) / 39.0);
-	}
+//
+//	@Override
+//	public double getControlState(int controlID, boolean wobble)
+//	{
+//		double maxWobble = 0.025;
+//		double count = 20;
+//		int maxRand = 10;
+//		double wobbleAmount = 0;
+//		if (wobble)
+//		{
+//			wobbleAmount = (((tt + rand.nextInt(maxRand)) % count) / count);
+//			wobbleAmount = Math.abs(wobbleAmount - 0.5) * maxWobble * 2;
+//		}
+//		return getControlState(controlID) + wobbleAmount;
+//	}
+//
+//	@Override
+//	public double getControlState(int cID)
+//	{
+//		if (ServerHelper.isServer())
+//			return 0;
+//		CoreTileEntity core = Helper.getTardisCore(worldObj);
+//		TardisDataStore ds = Helper.getDataStore(worldObj);
+//		if ((core != null) && (ds != null))
+//		{
+//			if ((cID == 4) || (cID == 5) || ((cID >= 10) && (cID < 20)) || ((cID >= 71) && (cID <= 73)) || (cID == 131))
+//				return (lastButton == cID) ? 1.0 : 0;
+//			if ((cID >= 20) && (cID < 30))
+//			{
+//				TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(cID - 20);
+//				if ((mode != null) && (ds.maxUnspentLevelPoints() > 0))
+//					return ((double) ds.getLevel(mode,true)) / ((double) ds.maxUnspentLevelPoints());
+//				return 0;
+//			}
+//			if (cID == 30)
+//			{
+//				if (ds.maxUnspentLevelPoints() > 0)
+//					return ((double) ds.unspentLevelPoints()) / ((double) ds.maxUnspentLevelPoints());
+//				return 0;
+//			}
+//			if ((cID >= 40) && (cID < 60))
+//			{
+//				if (screwHelper == null)
+//					return 0;
+//				int mID = cID >= 50 ? cID - 50 : cID - 40;
+//				ScrewdriverMode m = ScrewdriverMode.get(mID);
+//				if (cID < 50)
+//					return screwHelper.hasPermission(m) ? 1 : 0;
+//				else
+//				{
+//					if ((m.requiredFunction == null) || core.hasFunction(m.requiredFunction))
+//					{
+//						double v = screwHelper.hasPermission(m) ? 1 : 0.2;
+//						return v;
+//					}
+//					return 0.2;
+//				}
+//			}
+//			if (cID == 60)
+//				return internalOnly ? 1 : 0;
+//			if ((cID >= 80) && (cID < 90))
+//			{
+//				TardisPermission p = TardisPermission.get(cID-80);
+//				return ds.hasPermission(currentPerson, p) ? 1 : 0;
+//			}
+//			if((cID >= 90) && (cID < 100))
+//			{
+//				TardisPermission p = TardisPermission.get(cID-90);
+//				return ds.hasPermission(currentPerson, p) ? 1 : 0;
+//			}
+//			if(cID == 100)
+//				return 1 - visibility;
+//			if(cID == 130)
+//				return protectedRadius / (double) maxProtectedRadius;
+//			if(cID == 132){
+//				return ds.getSpaceProjection() ? 1 : 0;
+//			}
+//		}
+//		return (float) (((tt + cID) % 40) / 39.0);
+//	}
 
 	public String getConsoleSetting()
 	{
@@ -651,7 +647,7 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 	public static void refreshAvailableConsoleRooms()
 	{
 		String[] rooms = TardisMod.schemaHandler.getSchemas(true);
-		ArrayList<String> validRooms = new ArrayList<String>(rooms.length);
+		ArrayList<String> validRooms = new ArrayList<>(rooms.length);
 		for (String room : rooms)
 		{
 			if (room.startsWith("tardisConsole"))
@@ -670,41 +666,41 @@ public class EngineTileEntity extends AbstractTileEntity implements IControlMatr
 		// return c.substring(13);
 	}
 
-	private static double[] colors = new double[] { 0.2, 0.3, 0.9 };
-	@Override
-	public double[] getColorRatio(int controlID)
-	{
-		double[] retVal = { 0, 0, 0 };
-		if (controlID == 6)
-			retVal = new double[] { 0.2, 0.3, 0.9 };
-		if ((controlID >= 50) && (controlID < 60))
-		{
-			ScrewdriverMode m = ScrewdriverMode.get(controlID - 50);
-			return m.c;
-		}
-		if((controlID >= 90) && (controlID < 100))
-			retVal = colors;
-		return retVal;
-	}
-
-	@Override
-	public double getControlHighlight(int controlID)
-	{
-		if ((controlID >= 10) && (controlID < 20))
-		{
-			TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(controlID - 10);
-			if (mode != null)
-				return preparingToUpgrade == mode ? 1 : -1;
-		}
-		return -1;
-	}
-
-
-	@Override
-	public ScrewdriverHelper getScrewHelper(int slot)
-	{
-		return screwHelper;
-	}
+//	private static double[] colors = new double[] { 0.2, 0.3, 0.9 };
+//	@Override
+//	public double[] getColorRatio(int controlID)
+//	{
+//		double[] retVal = { 0, 0, 0 };
+//		if (controlID == 6)
+//			retVal = new double[] { 0.2, 0.3, 0.9 };
+//		if ((controlID >= 50) && (controlID < 60))
+//		{
+//			ScrewdriverMode m = ScrewdriverMode.get(controlID - 50);
+//			return m.c;
+//		}
+//		if((controlID >= 90) && (controlID < 100))
+//			retVal = colors;
+//		return retVal;
+//	}
+//
+//	@Override
+//	public double getControlHighlight(int controlID)
+//	{
+//		if ((controlID >= 10) && (controlID < 20))
+//		{
+//			TardisUpgradeMode mode = TardisUpgradeMode.getUpgradeMode(controlID - 10);
+//			if (mode != null)
+//				return preparingToUpgrade == mode ? 1 : -1;
+//		}
+//		return -1;
+//	}
+//
+//
+//	@Override
+//	public ScrewdriverHelper getScrewHelper(int slot)
+//	{
+//		return screwHelper;
+//	}
 
 	@Override
 	public void explode(SimpleCoordStore pos, Explosion explosion)

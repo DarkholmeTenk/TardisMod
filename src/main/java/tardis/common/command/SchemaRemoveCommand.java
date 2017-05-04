@@ -8,7 +8,6 @@ import net.minecraft.command.ICommandSender;
 import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
 
 import tardis.TardisMod;
-import tardis.common.tileents.ConsoleTileEntity;
 
 public class SchemaRemoveCommand extends AbstractCommandNew
 {
@@ -38,7 +37,7 @@ public class SchemaRemoveCommand extends AbstractCommandNew
 				{
 					schema.delete();
 					sendString(icommandsender,"Removed schematic " + name);
-					ConsoleTileEntity.refreshCategories();
+//					ConsoleTileEntity.refreshCategories();
 				}
 				else
 					sendString(icommandsender,"Schema does not exist");

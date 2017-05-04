@@ -73,13 +73,13 @@ public class DamageEventHandler
 		int cid = event.control;
 		if(!core.inFlight())
 		{
-			if(con.isMovementControl(cid) || ((cid >= 40) && (cid <= 42)) || (cid == 902) || (cid == 903) || (cid >= 1000))
-				event.setCanceled(true);
+//			if(con.isMovementControl(cid) || ((cid >= 40) && (cid <= 42)) || (cid == 902) || (cid == 903) || (cid >= 1000))
+//				event.setCanceled(true);
 		}
 		else
 		{
-			if(con.isMovementControl(cid) || ((cid >= 40) && (cid <= 41)) || (cid == 902) || (cid == 903))
-				event.setCanceled(true);
+//			if(con.isMovementControl(cid) || ((cid >= 40) && (cid <= 41)) || (cid == 902) || (cid == 903))
+//				event.setCanceled(true);
 		}
 		if((cid != -1) && event.isCanceled())
 			ServerHelper.sendString(pl, "The control refuses to move due to damage");

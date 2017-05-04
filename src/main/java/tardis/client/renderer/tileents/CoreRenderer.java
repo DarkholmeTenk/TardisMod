@@ -161,7 +161,7 @@ public class CoreRenderer extends AbstractBlockRenderer
 	}
 
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
 		if(te instanceof CoreTileEntity)
 		{

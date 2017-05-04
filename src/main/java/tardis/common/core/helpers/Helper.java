@@ -105,8 +105,8 @@ public class Helper
 			{
 				ds.linkToExterior(exterior);
 				ConsoleTileEntity con = te.getConsole();
-				if(con != null)
-					con.setControls(exterior, true);
+//				if(con != null)
+//					con.setControls(exterior, true);
 			}
 		}
 	}
@@ -173,7 +173,7 @@ public class Helper
 			te.linkToDimension(dimID);
 			te.land(true);
 			ConsoleTileEntity con = getTardisConsole(dimID);
-			if (con != null) con.setControls(te, true);
+//			if (con != null) con.setControls(te, true);
 		}
 		return true;
 	}
@@ -192,7 +192,7 @@ public class Helper
 			ConsoleTileEntity con = getTardisConsole(dim);
 			MinecraftForge.EVENT_BUS.post(new TardisLandingEvent(oldCore, new SimpleCoordStore(te)));
 			oldCore.attemptToLand();
-			if (con != null) con.setControls(te, true);
+//			if (con != null) con.setControls(te, true);
 			return true;
 		}
 		else

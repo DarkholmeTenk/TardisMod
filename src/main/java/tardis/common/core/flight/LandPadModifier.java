@@ -13,7 +13,7 @@ public class LandPadModifier implements IFlightModifier
 	@Override
 	public int[] getModifiedControls(CoreTileEntity core, ConsoleTileEntity console, World w, int[] current)
 	{
-		if(!console.getLandOnPadFromControls()) return current;
+//		if(!console.getLandOnPadFromControls()) return current;
 		int[] check = { 0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, -6, 6, -7, 7, -8, 8 };
 		for (int i = 0; i < check.length; i++)
 		{

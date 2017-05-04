@@ -3,51 +3,72 @@ package tardis.common.network.packet;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 
+import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
-import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.helpers.WorldHelper;
+import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
+import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.interfaces.IDataPacketHandler;
+import io.darkcraft.darkcore.mod.nbt.Mapper;
+import io.darkcraft.darkcore.mod.nbt.NBTConstructor;
+import io.darkcraft.darkcore.mod.nbt.NBTHelper;
+import io.darkcraft.darkcore.mod.nbt.NBTProperty;
+import io.darkcraft.darkcore.mod.nbt.NBTProperty.SerialisableType;
+import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
+import io.darkcraft.darkcore.mod.network.DataPacket;
 
 import tardis.api.IControlMatrix;
-import tardis.common.core.events.TardisControlEvent;
+import tardis.common.core.HitPosition;
+import tardis.common.network.TardisPacketHandler;
+import tardis.core.console.control.AbstractControl;
 
 public class ControlPacketHandler implements IDataPacketHandler
 {
+	public static void sendPacket(HitPosition hp, TileEntity te, PlayerContainer pc)
+	{
+		HitDataStore ds = new HitDataStore(hp, new SimpleCoordStore(te), pc);
+		DarkcoreMod.networkChannel.sendToServer(new DataPacket(mapper.writeToNBT(ds), TardisPacketHandler.controlFlag));
+	}
+
 	@Override
 	public void handleData(NBTTagCompound data)
 	{
-		if(data != null)
+		HitDataStore hds = mapper.createFromNBT(data);
+		TileEntity baseTE = hds.te.getTileEntity();
+		AbstractTileEntity te = baseTE instanceof AbstractTileEntity ? (AbstractTileEntity) baseTE : null;
+		EntityPlayer pl = hds.pc.getEntity();
+		if((pl == null) || (te == null))
+			return;
+		if(te instanceof IControlMatrix)
 		{
-			String playerName = data.getString("pl");
-			EntityPlayer player = ServerHelper.getPlayer(playerName);
-			if(player != null)
-			{
-				int dim = data.getInteger("dim");
-				int x = data.getInteger("x");
-				int y = data.getInteger("y");
-				int z = data.getInteger("z");
-				World w = WorldHelper.getWorld(dim);
-				if(w != null)
+			AbstractControl control = ((IControlMatrix)te).getControl(hds.pc, hds.hp);
+			if(control != null)
+				if(control.activate(hds.pc, pl.isSneaking()))
 				{
-					TileEntity te = w.getTileEntity(x, y, z);
-					if(te instanceof IControlMatrix)
-					{
-						IControlMatrix matrix = (IControlMatrix)te;
-						int controlID = data.getInteger("cID");
-						TardisControlEvent event = new TardisControlEvent(matrix,controlID,player);
-						MinecraftForge.EVENT_BUS.post(event);
-						if(!event.isCanceled())
-						{
-							matrix.activateControl(player, controlID);
-							if(te instanceof AbstractTileEntity)
-								((AbstractTileEntity)te).queueUpdate();
-						}
-					}
+					te.queueUpdate();
+					te.markDirty();
 				}
-			}
+		}
+
+	}
+
+	private final static Mapper<HitDataStore> mapper = NBTHelper.getMapper(HitDataStore.class, SerialisableType.TRANSMIT);
+	@NBTSerialisable
+	public static class HitDataStore
+	{
+		@NBTProperty
+		private final HitPosition hp;
+		@NBTProperty
+		private final SimpleCoordStore te;
+		@NBTProperty
+		private final PlayerContainer pc;
+
+		@NBTConstructor({"hp", "te", "pc"})
+		public HitDataStore(HitPosition hp, SimpleCoordStore te, PlayerContainer pc)
+		{
+			this.hp = hp;
+			this.te = te;
+			this.pc = pc;
 		}
 	}
 }

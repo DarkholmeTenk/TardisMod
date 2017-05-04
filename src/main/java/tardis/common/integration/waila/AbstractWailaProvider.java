@@ -9,11 +9,12 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import tardis.common.core.store.TwoIntStore;
+import tardis.core.console.control.AbstractControl;
 
 public abstract class AbstractWailaProvider implements IWailaDataProvider
 {
-	protected HashMap<TwoIntStore,String> controlNames = new HashMap<TwoIntStore,String>();
-	protected HashMap<TwoIntStore,String> controlText = new HashMap<TwoIntStore,String>();
+	protected HashMap<TwoIntStore,String> controlNames = new HashMap<>();
+	protected HashMap<TwoIntStore,String> controlText = new HashMap<>();
 
 	public void addControl(TwoIntStore key, String name, String extra)
 	{
@@ -47,34 +48,35 @@ public abstract class AbstractWailaProvider implements IWailaDataProvider
 	@Override
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config)
 	{
-		int control = getControlHit(accessor);
-		if(control != -1)
+		AbstractControl control = getControlHit(accessor);
+		if(control != null)
 		{
 			boolean f = false;
-			for(TwoIntStore store : controlNames.keySet())
-				if(store.within(control))
-				{
-					f = true;
-					currenttip.add("Control: "+controlNames.get(store));
-					break;
-				}
-			String[] extra = extraInfo(accessor,control);
-			if(extra != null)
-				for(String extraString : extra)
-					currenttip.add(extraString);
-			if(accessor instanceof DummyWailaAccessor) //If we're using the handheld manual
-				for(TwoIntStore store : controlText.keySet())
-					if(store.within(control))
-					{
-						currenttip.add("");
-						currenttip.add("- " + controlText.get(store));
-						break;
-					}
+			control.addManualText(currenttip);
+//			for(TwoIntStore store : controlNames.keySet())
+//				if(store.within(control))
+//				{
+//					f = true;
+//					currenttip.add("Control: "+controlNames.get(store));
+//					break;
+//				}
+//			String[] extra = extraInfo(accessor,control);
+//			if(extra != null)
+//				for(String extraString : extra)
+//					currenttip.add(extraString);
+//			if(accessor instanceof DummyWailaAccessor) //If we're using the handheld manual
+//				for(TwoIntStore store : controlText.keySet())
+//					if(store.within(control))
+//					{
+//						currenttip.add("");
+//						currenttip.add("- " + controlText.get(store));
+//						break;
+//					}
 		}
 		return currenttip;
 	}
 	public abstract String[] extraInfo(IWailaDataAccessor accessor, int control);
 
-	public abstract int getControlHit(IWailaDataAccessor accessor);
+	public abstract AbstractControl getControlHit(IWailaDataAccessor accessor);
 
 }

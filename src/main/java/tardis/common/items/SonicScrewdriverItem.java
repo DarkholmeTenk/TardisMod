@@ -122,7 +122,7 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 		ScrewdriverMode mode = helper.getMode();
 		if (!(override || helper.isModeValid(player, mode)))
 			helper.switchMode(player);
-		ArrayList<Object> list = new ArrayList<Object>();
+		ArrayList<Object> list = new ArrayList<>();
 		addModeInfo(mode, helper, list);
 		for (Object o : list)
 		{
@@ -298,12 +298,12 @@ public class SonicScrewdriverItem extends AbstractItem implements IToolHammer, I
 				ConsoleTileEntity con = core.getConsole();
 				if ((con != null) && !core.inFlight())
 				{
-					if (con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX + 1), (int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))
-					{
-						if (core.takeOff(true, player)) ServerHelper.sendString(player, screwName, "TARDIS inbound");
-					}
-					else
-						ServerHelper.sendString(player, screwName, "TARDIS recall failed");
+//					if (con.setControls(WorldHelper.getWorldID(player.worldObj), (int) Math.floor(player.posX + 1), (int) Math.floor(player.posY), (int) Math.floor(player.posZ), false))
+//					{
+//						if (core.takeOff(true, player)) ServerHelper.sendString(player, screwName, "TARDIS inbound");
+//					}
+//					else
+//						ServerHelper.sendString(player, screwName, "TARDIS recall failed");
 				}
 			}
 			else

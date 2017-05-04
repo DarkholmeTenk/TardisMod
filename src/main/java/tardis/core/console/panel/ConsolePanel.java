@@ -7,6 +7,7 @@ import java.util.Set;
 import io.darkcraft.darkcore.mod.datastore.PropertyMap;
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.nbt.NBTProperty;
+import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -14,8 +15,11 @@ import tardis.common.core.HitPosition;
 import tardis.common.core.HitPosition.HitRegion;
 import tardis.core.TardisInfo;
 import tardis.core.console.control.AbstractControl;
+import tardis.core.console.control.AbstractControl.ControlBuilder;
+import tardis.core.console.control.ControlHolder;
 
-public class ConsolePanel
+@NBTSerialisable
+public class ConsolePanel implements ControlHolder
 {
 	@NBTProperty
 	private final PropertyMap<HitRegion, AbstractControl> controlMap = new PropertyMap<>(c->c.getHitRegion());
@@ -28,11 +32,13 @@ public class ConsolePanel
 
 	}
 
-	protected void addControl(AbstractControl control)
+	protected <T extends AbstractControl> T addControl(ControlBuilder<T> builder)
 	{
+		T control = builder.build(this);
 		controlMap.add(control);
 		if(control.canBeUnstable())
 			unstableControls.add(control);
+		return control;
 	}
 
 	public void activate(PlayerContainer player, HitPosition position)
@@ -63,9 +69,39 @@ public class ConsolePanel
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void render()
+	public void render(float ptt)
 	{
 		for(AbstractControl control : controlMap.values())
-			control.renderControl();
+			control.renderControl(ptt);
+	}
+
+	@Override
+	public double yScale()
+	{
+		return 1.414;
+	}
+
+	@Override
+	public double xAngle()
+	{
+		return 45;
+	}
+
+	public AbstractControl getControl(PlayerContainer player, HitPosition position)
+	{
+		for(Entry<HitRegion, AbstractControl> entry : controlMap.entrySet())
+		{
+			if(entry.getKey().contains(position.side, position))
+			{
+				return entry.getValue();
+			}
+		}
+		return null;
+	}
+
+	public void tick()
+	{
+		for(AbstractControl control : controlMap.values())
+			control.tick();
 	}
 }

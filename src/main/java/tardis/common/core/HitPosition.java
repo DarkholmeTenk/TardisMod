@@ -65,13 +65,19 @@ public class HitPosition
 		return "[Hit s:" + side + " ["+posZ+","+posY+"]]";
 	}
 
+	@NBTSerialisable
 	public static class HitRegion
 	{
+		@NBTProperty
 		public final double zMin;
+		@NBTProperty
 		public final double zMax;
+		@NBTProperty
 		public final double yMin;
+		@NBTProperty
 		public final double yMax;
 
+		@NBTConstructor({"zMin", "yMin", "zMax", "yMax"})
 		public HitRegion(double zMin, double yMin, double zMax, double yMax)
 		{
 			this.zMin = zMin;

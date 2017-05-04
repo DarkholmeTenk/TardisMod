@@ -1,7 +1,6 @@
 package tardis.common.tileents;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -52,7 +51,6 @@ import tardis.api.TardisPermission;
 import tardis.api.TardisUpgradeMode;
 import tardis.common.TMRegistry;
 import tardis.common.core.TardisOutput;
-import tardis.common.core.events.TardisLandingEvent;
 import tardis.common.core.events.TardisTakeoffEvent;
 import tardis.common.core.flight.FlightConfiguration;
 import tardis.common.core.flight.IFlightModifier;
@@ -60,7 +58,6 @@ import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.TardisDimensionHandler;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
-import tardis.common.dimension.damage.TardisDamageType;
 import tardis.common.integration.ae.AEHelper;
 import tardis.common.items.KeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
@@ -107,7 +104,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private int								desX					= 0;
 	private int								desY					= 0;
 	private int								desZ					= 0;
-	private Integer[]						desLocs					= null;
+	private Integer[]						desLocs					= new Integer[]{0,0,0,0};
 	private String							desDimName				= "Overworld";
 	private int								screenAngle				= 0;
 
@@ -177,85 +174,85 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void calculateFlightDistances()
 	{
-		SimpleCoordStore newStart = null;
-		TardisTileEntity ext = gDS().getExterior();
-		if (ext != null)
-		{
-			newStart = new SimpleCoordStore(ext);
-		}
-		else if ((sourceLocation != null) && (destLocation != null))
-		{
-			if(distanceToTravel > 0)
-			{
-				SimpleDoubleCoordStore sdcs = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true);
-				if(sdcs != null)
-					newStart = sdcs.floor();
-			}
-		}
-		if (newStart != null)
-		{
-			ConsoleTileEntity con = getConsole();
-			if (con != null)
-			{
-				fast = (con.shouldLand() && isFastLanding());
-				sourceLocation = newStart;
-				destLocation = con.getCoordsFromControls(newStart);
-				distanceToTravel = sourceLocation.distance(destLocation);
-				distanceTravelled = 0;
-			}
-		}
-		else
-			fast = true;
+//		SimpleCoordStore newStart = null;
+//		TardisTileEntity ext = gDS().getExterior();
+//		if (ext != null)
+//		{
+//			newStart = new SimpleCoordStore(ext);
+//		}
+//		else if ((sourceLocation != null) && (destLocation != null))
+//		{
+//			if(distanceToTravel > 0)
+//			{
+//				SimpleDoubleCoordStore sdcs = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true);
+//				if(sdcs != null)
+//					newStart = sdcs.floor();
+//			}
+//		}
+//		if (newStart != null)
+//		{
+//			ConsoleTileEntity con = getConsole();
+//			if (con != null)
+//			{
+//				fast = (con.shouldLand() && isFastLanding());
+//				sourceLocation = newStart;
+//				destLocation = con.getCoordsFromControls(newStart);
+//				distanceToTravel = sourceLocation.distance(destLocation);
+//				distanceTravelled = 0;
+//			}
+//		}
+//		else
+//			fast = true;
 	}
 
 	private void nextFlightState()
 	{
-		ConsoleTileEntity con = getConsole();
-		if (con == null) return;
-		if (flightState == FlightState.TAKINGOFF)
-		{
-			removeOldBox();
-			if ((fast && con.shouldLand()) || forcedFlight)
-			{
-				placeBox();
-				flightState = FlightState.LANDING;
-			}
-			else
-			{
-				if (con.shouldLand())
-					flightState = FlightState.FLIGHT;
-				else
-				{
-					calculateFlightDistances();
-					flightState = FlightState.DRIFT;
-				}
-			}
-		}
-		else if (flightState == FlightState.DRIFT)
-		{
-			calculateFlightDistances();
-			if (con.shouldLand() && !fast)
-				flightState = FlightState.FLIGHT;
-			else
-			{
-				placeBox();
-				flightState = FlightState.LANDING;
-			}
-		}
-		else if (flightState == FlightState.FLIGHT)
-		{
-			if (con.shouldLand())
-			{
-				placeBox();
-				flightState = FlightState.LANDING;
-			}
-			else
-			{
-				flightState = FlightState.DRIFT;
-			}
-		}
-		else if (flightState == FlightState.LANDING) land();
-		flightTimer = 0;
+//		ConsoleTileEntity con = getConsole();
+//		if (con == null) return;
+//		if (flightState == FlightState.TAKINGOFF)
+//		{
+//			removeOldBox();
+//			if ((fast && con.shouldLand()) || forcedFlight)
+//			{
+//				placeBox();
+//				flightState = FlightState.LANDING;
+//			}
+//			else
+//			{
+//				if (con.shouldLand())
+//					flightState = FlightState.FLIGHT;
+//				else
+//				{
+//					calculateFlightDistances();
+//					flightState = FlightState.DRIFT;
+//				}
+//			}
+//		}
+//		else if (flightState == FlightState.DRIFT)
+//		{
+//			calculateFlightDistances();
+//			if (con.shouldLand() && !fast)
+//				flightState = FlightState.FLIGHT;
+//			else
+//			{
+//				placeBox();
+//				flightState = FlightState.LANDING;
+//			}
+//		}
+//		else if (flightState == FlightState.FLIGHT)
+//		{
+//			if (con.shouldLand())
+//			{
+//				placeBox();
+//				flightState = FlightState.LANDING;
+//			}
+//			else
+//			{
+//				flightState = FlightState.DRIFT;
+//			}
+//		}
+//		else if (flightState == FlightState.LANDING) land();
+//		flightTimer = 0;
 	}
 
 	private void handleSound()
@@ -278,66 +275,66 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private void flightTick()
 	{
-		if ((currentBlockSpeed == 0) || (maxBlockSpeed == 0))
-		{
-			currentBlockSpeed = 1;
-			updateMaxBlockSpeed();
-		}
-		ConsoleTileEntity con = getConsole();
-		if (con == null) return;
-		totalFlightTimer++;
-		if(ServerHelper.isServer())
-			handleSound();
-		flightTimer++;
-		if ((flightState == FlightState.DRIFT) || (flightState == FlightState.FLIGHT))
-		{
-			flightTicks++;
-			if(!con.isStable())
-				unstableTicks++;
-			else
-				flightButtonTimer = 0;
-		}
-		if ((flightState == FlightState.TAKINGOFF) && (flightTimer >= takeOffTicks)) nextFlightState();
-		if ((flightState == FlightState.LANDING) && (flightTimer >= (fast ? landFastTicks : landSlowTicks))) nextFlightState();
-		if (((flightState == FlightState.DRIFT) && con.shouldLand()) || ((flightState == FlightState.FLIGHT) && !con.shouldLand())) nextFlightState();
-		if ((flightState == FlightState.FLIGHT) && (distanceTravelled >= distanceToTravel)) nextFlightState();
-
-		if (flightState == FlightState.FLIGHT)
-		{
-			if (((flightTimer % 20) == 0) && (currentBlockSpeed < maxBlockSpeed) && takeArtronEnergy(FlightConfiguration.energyPerSpeed, false))
-			{
-				currentBlockSpeed++;
-				sendUpdate();
-			}
-			distanceTravelled += MathHelper.clamp(currentBlockSpeed, 1, maxBlockSpeed);
-		}
-		if (isUnstable(con))
-		{
-			int buttonTime = getButtonTime();
-			if ((flightButtonTimer++ % buttonTime) == 0)
-			{
-				if(ServerHelper.isServer())
-				{
-					if (con.unstableControlPressed() && (flightButtonTimer > 0))
-					{
-						instability = MathHelper.clamp(MathHelper.floor(instability - (0.5 * getSpeed(false))), 0, 100);
-						gDS().addXP(getSpeed(false) + 4);
-					}
-					else if (flightButtonTimer > 0)
-					{
-						ds.damage.damage(TardisDamageType.MISSEDCONTROL, 5+rand.nextInt(5));
-						instability = MathHelper.clamp(MathHelper.floor(instability + getSpeed(false)), 0, 100);
-						if (shouldExplode()) explode = true;
-					}
-				}
-				con.getNextUnstableControl();
-			}
-		}
-		else if (flightButtonTimer != 0)
-		{
-			con.clearUnstableControl();
-			flightButtonTimer = 0;
-		}
+//		if ((currentBlockSpeed == 0) || (maxBlockSpeed == 0))
+//		{
+//			currentBlockSpeed = 1;
+//			updateMaxBlockSpeed();
+//		}
+//		ConsoleTileEntity con = getConsole();
+//		if (con == null) return;
+//		totalFlightTimer++;
+//		if(ServerHelper.isServer())
+//			handleSound();
+//		flightTimer++;
+//		if ((flightState == FlightState.DRIFT) || (flightState == FlightState.FLIGHT))
+//		{
+//			flightTicks++;
+//			if(!con.isStable())
+//				unstableTicks++;
+//			else
+//				flightButtonTimer = 0;
+//		}
+//		if ((flightState == FlightState.TAKINGOFF) && (flightTimer >= takeOffTicks)) nextFlightState();
+//		if ((flightState == FlightState.LANDING) && (flightTimer >= (fast ? landFastTicks : landSlowTicks))) nextFlightState();
+//		if (((flightState == FlightState.DRIFT) && con.shouldLand()) || ((flightState == FlightState.FLIGHT) && !con.shouldLand())) nextFlightState();
+//		if ((flightState == FlightState.FLIGHT) && (distanceTravelled >= distanceToTravel)) nextFlightState();
+//
+//		if (flightState == FlightState.FLIGHT)
+//		{
+//			if (((flightTimer % 20) == 0) && (currentBlockSpeed < maxBlockSpeed) && takeArtronEnergy(FlightConfiguration.energyPerSpeed, false))
+//			{
+//				currentBlockSpeed++;
+//				sendUpdate();
+//			}
+//			distanceTravelled += MathHelper.clamp(currentBlockSpeed, 1, maxBlockSpeed);
+//		}
+//		if (isUnstable(con))
+//		{
+//			int buttonTime = getButtonTime();
+//			if ((flightButtonTimer++ % buttonTime) == 0)
+//			{
+//				if(ServerHelper.isServer())
+//				{
+//					if (con.unstableControlPressed() && (flightButtonTimer > 0))
+//					{
+//						instability = MathHelper.clamp(MathHelper.floor(instability - (0.5 * getSpeed(false))), 0, 100);
+//						gDS().addXP(getSpeed(false) + 4);
+//					}
+//					else if (flightButtonTimer > 0)
+//					{
+//						ds.damage.damage(TardisDamageType.MISSEDCONTROL, 5+rand.nextInt(5));
+//						instability = MathHelper.clamp(MathHelper.floor(instability + getSpeed(false)), 0, 100);
+//						if (shouldExplode()) explode = true;
+//					}
+//				}
+//				con.getNextUnstableControl();
+//			}
+//		}
+//		else if (flightButtonTimer != 0)
+//		{
+//			con.clearUnstableControl();
+//			flightButtonTimer = 0;
+//		}
 	}
 
 	private void safetyTick()
@@ -712,20 +709,20 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public boolean isMoving()
 	{
-		ConsoleTileEntity con = getConsole();
-		if (con == null) return false;
-		int dim = gDS().desiredDim;
-		if (gDS().exteriorWorld == 10000)
-		{
-			if (oldExteriorWorld != dim) return true;
-		}
-		else if (dim != gDS().exteriorWorld) return true;
-		int[] posArr = new int[] { con.getXFromControls(gDS().exteriorX), con.getYFromControls(gDS().exteriorY), con.getZFromControls(gDS().exteriorZ) };
-		posArr = getModifiedControls(con, posArr);
-		TardisOutput.print("TCTE", "Moving to :" + Arrays.toString(posArr) + " from " + gDS().exteriorX + "," + gDS().exteriorY + "," + gDS().exteriorZ);
-		if (Math.abs(posArr[0] - gDS().exteriorX) > FlightConfiguration.maxMoveForFast) return true;
-		if (Math.abs(posArr[1] - gDS().exteriorY) > FlightConfiguration.maxMoveForFast) return true;
-		if (Math.abs(posArr[2] - gDS().exteriorZ) > FlightConfiguration.maxMoveForFast) return true;
+//		ConsoleTileEntity con = getConsole();
+//		if (con == null) return false;
+//		int dim = gDS().desiredDim;
+//		if (gDS().exteriorWorld == 10000)
+//		{
+//			if (oldExteriorWorld != dim) return true;
+//		}
+//		else if (dim != gDS().exteriorWorld) return true;
+//		int[] posArr = new int[] { con.getXFromControls(gDS().exteriorX), con.getYFromControls(gDS().exteriorY), con.getZFromControls(gDS().exteriorZ) };
+//		posArr = getModifiedControls(con, posArr);
+//		TardisOutput.print("TCTE", "Moving to :" + Arrays.toString(posArr) + " from " + gDS().exteriorX + "," + gDS().exteriorY + "," + gDS().exteriorZ);
+//		if (Math.abs(posArr[0] - gDS().exteriorX) > FlightConfiguration.maxMoveForFast) return true;
+//		if (Math.abs(posArr[1] - gDS().exteriorY) > FlightConfiguration.maxMoveForFast) return true;
+//		if (Math.abs(posArr[2] - gDS().exteriorZ) > FlightConfiguration.maxMoveForFast) return true;
 		return false;
 	}
 
@@ -738,9 +735,9 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	private Integer getConsoleDim()
 	{
-		ConsoleTileEntity con = getConsole();
-		if (con != null)
-			return con.getDimFromControls();
+//		ConsoleTileEntity con = getConsole();
+//		if (con != null)
+//			return con.getDimFromControls();
 		return null;
 	}
 
@@ -790,7 +787,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					currentBlockSpeed = 1;
 					updateMaxBlockSpeed();
 					TardisTileEntity te = gDS().getExterior();
-					fast = (te == null) || (con.shouldLand() && isFastLanding());
+//					fast = (te == null) || (con.shouldLand() && isFastLanding());
 					oldExteriorWorld = gDS().exteriorWorld;
 					if (te != null)
 					{
@@ -833,7 +830,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		ConsoleTileEntity con = getConsole();
 		if(con == null) return false;
 		//con.setUncoordinated(true);
-		con.setDesiredDim(ds.exteriorWorld);
+//		con.setDesiredDim(ds.exteriorWorld);
 		if(takeOff(player))
 		{
 			setStableFlight(true);
@@ -867,7 +864,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 		int shuntMax = 10;
 		int xShunt = getShunt(shuntMin, shuntMax);
 		int zShunt = getShunt(shuntMin, shuntMax);
-		con.setControls(dim, x+xShunt, y, z+zShunt, true);
+//		con.setControls(dim, x+xShunt, y, z+zShunt, true);
 		setStableFlight(true);
 		return takeOff(true, pl);
 	}
@@ -887,7 +884,8 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 
 	public boolean isUnstable(ConsoleTileEntity con)
 	{
-		return inAbortableFlight() && ((con == null) || con.unstableFlight()) && !forcedFlight && !stableFlight;
+		return false;
+//		return inAbortableFlight() && ((con == null) || con.unstableFlight()) && !forcedFlight && !stableFlight;
 	}
 
 	public void setStableFlight(boolean b)
@@ -921,21 +919,22 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			return;
 		}
 		int[] posArr;
-		if ((distanceToTravel == 0) || (distanceTravelled >= distanceToTravel) || (sourceLocation == null) || (destLocation == null) || forcedFlight || fast)
-			posArr = new int[] { con.getXFromControls(gDS().exteriorX) + getUnstableOffset(), con.getYFromControls(gDS().exteriorY), con.getZFromControls(gDS().exteriorZ) + getUnstableOffset() };
-		else
-		{
-			SimpleCoordStore newPos = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true).round();
-			posArr = new int[] { newPos.x + getUnstableOffset(), newPos.y + getUnstableOffset(), newPos.z + getUnstableOffset() };
-		}
-		int facing = con.getFacingFromControls();
-		posArr = getModifiedControls(con, posArr);
+//		if ((distanceToTravel == 0) || (distanceTravelled >= distanceToTravel) || (sourceLocation == null) || (destLocation == null) || forcedFlight || fast)
+//			posArr = new int[] { con.getXFromControls(gDS().exteriorX) + getUnstableOffset(), con.getYFromControls(gDS().exteriorY), con.getZFromControls(gDS().exteriorZ) + getUnstableOffset() };
+//		else
+//		{
+//			SimpleCoordStore newPos = sourceLocation.travelTo(destLocation, distanceTravelled / distanceToTravel, true).round();
+//			posArr = new int[] { newPos.x + getUnstableOffset(), newPos.y + getUnstableOffset(), newPos.z + getUnstableOffset() };
+//		}
+//		int facing = con.getFacingFromControls();
+		int facing = 1;
+//		posArr = getModifiedControls(con, posArr);
 		World w = WorldHelper.getWorld(gDS().desiredDim);
-		MinecraftForge.EVENT_BUS.post(new TardisLandingEvent(this,new SimpleCoordStore(w,posArr[0],posArr[1],posArr[2])));
-		w.setBlock(posArr[0], posArr[1], posArr[2], TMRegistry.tardisBlock, facing, 3);
-		w.setBlock(posArr[0], posArr[1] + 1, posArr[2], TMRegistry.tardisTopBlock, facing, 3);
-
-		gDS().setExterior(w, posArr[0], posArr[1], posArr[2]);
+//		MinecraftForge.EVENT_BUS.post(new TardisLandingEvent(this,new SimpleCoordStore(w,posArr[0],posArr[1],posArr[2])));
+//		w.setBlock(posArr[0], posArr[1], posArr[2], TMRegistry.tardisBlock, facing, 3);
+//		w.setBlock(posArr[0], posArr[1] + 1, posArr[2], TMRegistry.tardisTopBlock, facing, 3);
+//
+//		gDS().setExterior(w, posArr[0], posArr[1], posArr[2]);
 		oldExteriorWorld = 0;
 		TardisTileEntity tardis = gDS().getExterior();
 		if (tardis != null)
@@ -981,7 +980,7 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 					for (Entity e : inside)
 						if (e instanceof EntityLivingBase) enterTardis((EntityLivingBase) e);
 				}
-				if (con != null) con.land();
+//				if (con != null) con.land();
 				sendUpdate();
 			}
 		}
@@ -1510,45 +1509,45 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private static final Integer[] nullArray = new Integer[]{0,0,0,0};
 	private Integer[] getDestinationLocations()
 	{
-		if(ServerHelper.isServer())
-		{
-			ConsoleTileEntity console = getConsole();
-			if(console == null) return nullArray;
-			int dD = console.getDimFromControls();
-			int dX = console.getXFromControls(gDS().exteriorX);
-			int dY = console.getYFromControls(gDS().exteriorY);
-			int dZ = console.getZFromControls(gDS().exteriorZ);
-			if(sourceLocation != null)
-			{
-				dX = console.getXFromControls(sourceLocation.x);
-				dY = console.getYFromControls(sourceLocation.y);
-				dZ = console.getZFromControls(sourceLocation.z);
-			}
-			if ((dD == desDim) && (dX == desX) && (dY == desY) && (dZ == desZ) && (desLocs != null))
-				return desLocs;
-			int instability = MathHelper.clamp(20 - (2 * gDS().getLevel()), 3, 20);
-			if(desLocs == null) desLocs = new Integer[]{null,null,null,null};
-			desLocs[0] = dD;
-			if(!hasFunction(TardisFunction.CLARITY))
-			{
-				if ((dX != desX) || (desLocs[1] == null)) desLocs[1] = (dX + (rand.nextInt(2 * instability) - instability));
-				if ((dY != desY) || (desLocs[2] == null)) desLocs[2] = (dY + (rand.nextInt(2 * instability) - instability));
-				if ((dZ != desZ) || (desLocs[3] == null)) desLocs[3] = (dZ + (rand.nextInt(2 * instability) - instability));
-			}
-			else
-			{
-				if ((dX != desX) || (desLocs[1] == null)) desLocs[1] = dX;
-				if ((dY != desY) || (desLocs[2] == null)) desLocs[2] = dY;
-				if ((dZ != desZ) || (desLocs[3] == null)) desLocs[3] = dZ;
-			}
-			desDim = dD;
-			desX = dX;
-			desY = dY;
-			desZ = dZ;
-			return desLocs;
-		}
-		else if(desLocs != null)
-			return desLocs;
+//		if(ServerHelper.isServer())
+//		{
+//			ConsoleTileEntity console = getConsole();
+//			if(console == null) return nullArray;
+//			int dD = console.getDimFromControls();
+//			int dX = console.getXFromControls(gDS().exteriorX);
+//			int dY = console.getYFromControls(gDS().exteriorY);
+//			int dZ = console.getZFromControls(gDS().exteriorZ);
+//			if(sourceLocation != null)
+//			{
+//				dX = console.getXFromControls(sourceLocation.x);
+//				dY = console.getYFromControls(sourceLocation.y);
+//				dZ = console.getZFromControls(sourceLocation.z);
+//			}
+//			if ((dD == desDim) && (dX == desX) && (dY == desY) && (dZ == desZ) && (desLocs != null))
+//				return desLocs;
+//			int instability = MathHelper.clamp(20 - (2 * gDS().getLevel()), 3, 20);
+//			if(desLocs == null) desLocs = new Integer[]{null,null,null,null};
+//			desLocs[0] = dD;
+//			if(!hasFunction(TardisFunction.CLARITY))
+//			{
+//				if ((dX != desX) || (desLocs[1] == null)) desLocs[1] = (dX + (rand.nextInt(2 * instability) - instability));
+//				if ((dY != desY) || (desLocs[2] == null)) desLocs[2] = (dY + (rand.nextInt(2 * instability) - instability));
+//				if ((dZ != desZ) || (desLocs[3] == null)) desLocs[3] = (dZ + (rand.nextInt(2 * instability) - instability));
+//			}
+//			else
+//			{
+//				if ((dX != desX) || (desLocs[1] == null)) desLocs[1] = dX;
+//				if ((dY != desY) || (desLocs[2] == null)) desLocs[2] = dY;
+//				if ((dZ != desZ) || (desLocs[3] == null)) desLocs[3] = dZ;
+//			}
+//			desDim = dD;
+//			desX = dX;
+//			desY = dY;
+//			desZ = dZ;
+//			return desLocs;
+//		}
+//		else if(desLocs != null)
+//			return desLocs;
 		return nullArray;
 	}
 

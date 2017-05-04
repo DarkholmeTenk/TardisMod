@@ -10,6 +10,7 @@ import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
 import tardis.common.core.store.TwoIntStore;
 import tardis.common.tileents.ConsoleTileEntity;
+import tardis.core.console.control.AbstractControl;
 
 public class WailaConsoleProvider extends AbstractWailaProvider
 {
@@ -63,7 +64,7 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 	}
 
 	@Override
-	public int getControlHit(IWailaDataAccessor accessor)
+	public AbstractControl getControlHit(IWailaDataAccessor accessor)
 	{
 		if(isConsole(accessor))
 		{
@@ -79,7 +80,7 @@ public class WailaConsoleProvider extends AbstractWailaProvider
 				}
 			}
 		}
-		return -1;
+		return null;
 	}
 
 	@Override

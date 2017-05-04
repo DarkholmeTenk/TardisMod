@@ -13,7 +13,7 @@ import tardis.core.console.panel.interfaces.NavPanels.NavPanelX;
 
 public class NormalPanelX extends ConsolePanel implements NavPanelX
 {
-	private ControlLever[] levers = new ControlLever[5];
+	private ControlLever[] levers = new ControlLever[6];
 	{
 		ControlBuilder<ControlLever> regularLeverBuilder =
 				new ControlLeverBuilder(-6,6,-6)
@@ -21,12 +21,12 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 					.requiresPermission(ConsolePermissions.FLIGHT)
 					.withScale(0.3, 0.3, 0.3)
 					.withManualText(MNL_CONTROL_X);
-		addControl(levers[0] = regularLeverBuilder.atPosition(0.8, 0.4).build());
-		addControl(levers[1] = regularLeverBuilder.atPosition(1.1, 0.4).withAngle(15).build());
-		addControl(levers[2] = regularLeverBuilder.atPosition(1.4, 0.4).withAngle(30).build());
-		addControl(levers[3] = regularLeverBuilder.atPosition(1.7, 0.4).withAngle(45).build());
-		addControl(levers[4] = regularLeverBuilder.atPosition(2.0, 0.6).withAngle(90).build());
-		addControl(levers[4] = regularLeverBuilder.atPosition(2.3, 0.8).withAngle(0).withScale(0.2, 0.6, 0.6).build());
+		levers[0] = addControl(regularLeverBuilder.atPosition(0.8, 0.4));
+		levers[1] = addControl(regularLeverBuilder.atPosition(1.1, 0.4).withAngle(15));
+		levers[2] = addControl(regularLeverBuilder.atPosition(1.4, 0.4).withAngle(30));
+		levers[3] = addControl(regularLeverBuilder.atPosition(1.7, 0.4).withAngle(45));
+		levers[4] = addControl(regularLeverBuilder.atPosition(2.0, 0.6).withAngle(90));
+		levers[5] = addControl(regularLeverBuilder.atPosition(2.3, 0.8).withAngle(0).withScale(0.2, 0.6, 0.6));
 	}
 
 	private ControlWheel[] wheels = new ControlWheel[2];
@@ -36,8 +36,8 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 				.requiresPermission(ConsolePermissions.FLIGHT)
 				.withScale(0.5, 0.5, 0.5)
 				.withManualText(MNL_CONTROL_X);
-		addControl(wheels[0] = regularWheelBuilder.atPosition(0.6, 0.75).build());
-		addControl(wheels[1] = regularWheelBuilder.atPosition(1.1, 0.75).build());
+		wheels[0] = addControl(regularWheelBuilder.atPosition(0.6, 0.75));
+		wheels[0] = addControl(regularWheelBuilder.atPosition(1.1, 0.75));
 	}
 
 	@Override

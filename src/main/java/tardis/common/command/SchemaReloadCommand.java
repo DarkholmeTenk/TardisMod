@@ -11,7 +11,6 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractCommandNew;
 
 import tardis.TardisMod;
 import tardis.common.core.helpers.Helper;
-import tardis.common.tileents.ConsoleTileEntity;
 import tardis.common.tileents.EngineTileEntity;
 import tardis.common.tileents.SchemaCoreTileEntity;
 
@@ -65,7 +64,7 @@ public class SchemaReloadCommand extends AbstractCommandNew
 				}
 			}
 		}
-		ConsoleTileEntity.refreshCategories();
+//		ConsoleTileEntity.refreshCategories();
 		EngineTileEntity.refreshAvailableConsoleRooms();
 		sendString(sen,"Schemas reloaded");
 		return true;

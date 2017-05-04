@@ -3,6 +3,7 @@ package tardis.common.integration.waila;
 import net.minecraft.nbt.NBTTagCompound;
 
 import mcp.mobius.waila.api.IWailaDataAccessor;
+import tardis.core.console.control.AbstractControl;
 
 public class WailaArtronProvider extends AbstractWailaProvider {
 
@@ -26,9 +27,9 @@ public class WailaArtronProvider extends AbstractWailaProvider {
 	}
 
 	@Override
-	public int getControlHit(IWailaDataAccessor accessor) {
+	public AbstractControl getControlHit(IWailaDataAccessor accessor) {
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 }

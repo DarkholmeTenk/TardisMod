@@ -13,15 +13,13 @@ import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import tardis.api.IControlMatrix;
 import tardis.client.renderer.tileents.ManualRenderer;
 import tardis.common.TMRegistry;
 import tardis.common.core.helpers.Helper;
-import tardis.common.core.helpers.ScrewdriverHelper;
 import tardis.common.tileents.extensions.ManualPage;
 import tardis.common.tileents.extensions.ManualPageTree;
 
-public class ManualTileEntity extends AbstractTileEntity implements IControlMatrix
+public class ManualTileEntity extends AbstractTileEntity
 {
 	private ManualPage selected = ManualPage.MAIN;
 
@@ -126,13 +124,13 @@ public class ManualTileEntity extends AbstractTileEntity implements IControlMatr
 		}
 		return false;
 	}
-
-	@Override
-	public void activateControl(EntityPlayer player, int controlID)
-	{
-		selected = ManualPage.get(controlID);
-		sendUpdate();
-	}
+//
+//	@Override
+//	public void activateControl(EntityPlayer player, int controlID)
+//	{
+//		selected = ManualPage.get(controlID);
+//		sendUpdate();
+//	}
 
 	@Override
 	public void writeTransmittable(NBTTagCompound nbt)
@@ -156,18 +154,18 @@ public class ManualTileEntity extends AbstractTileEntity implements IControlMatr
 			return AxisAlignedBB.getBoundingBox(xCoord, yCoord-1, zCoord-2, xCoord+1, yCoord+1, zCoord+3);
     }
 
-	@Override
-	public double getControlState(int controlID, boolean wobble){return 0;}
-
-	@Override
-	public double getControlState(int controlID){return 0;}
-
-	@Override
-	public double getControlHighlight(int controlID){return 0;}
-
-	@Override
-	public ScrewdriverHelper getScrewHelper(int slot){return null;}
-
-	@Override
-	public double[] getColorRatio(int controlID){return null;}
+//	@Override
+//	public double getControlState(int controlID, boolean wobble){return 0;}
+//
+//	@Override
+//	public double getControlState(int controlID){return 0;}
+//
+//	@Override
+//	public double getControlHighlight(int controlID){return 0;}
+//
+//	@Override
+//	public ScrewdriverHelper getScrewHelper(int slot){return null;}
+//
+//	@Override
+//	public double[] getColorRatio(int controlID){return null;}
 }

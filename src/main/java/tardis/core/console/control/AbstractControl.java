@@ -11,6 +11,9 @@ import net.minecraft.util.StatCollector;
 
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.nbt.NBTProperty;
+import io.darkcraft.darkcore.mod.nbt.NBTProperty.SerialisableType;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -39,9 +42,12 @@ public abstract class AbstractControl
 
 	private TardisInfo info;
 
+	@NBTProperty(SerialisableType.TRANSMIT)
+	protected int tt;
+
 	private AbstractControl(EnumSet<ConsolePermissions> requiredPermission, boolean canBeUnstable, boolean isFlightControl,
 			double xPos, double yPos, double xSize, double ySize, double xScale, double yScale, double zScale, double xAngle, double angle,
-			String manualText, boolean manualIncludeValue)
+			String manualText, boolean manualIncludeValue, ControlHolder holder)
 	{
 		this.requiredPermission = requiredPermission;
 		this.canBeUnstable = canBeUnstable;
@@ -49,11 +55,11 @@ public abstract class AbstractControl
 		x = xPos;
 		y = yPos;
 		this.xSize = rotate(angle, xSize, false) + rotate(angle, ySize, true);
-		this.ySize = (rotate(angle, ySize, false) + (rotate(angle, xSize, true))) / 1.414;
+		this.ySize = (rotate(angle, ySize, false) + (rotate(angle, xSize, true))) / holder.yScale();
 		this.xScale = xScale;
 		this.yScale = yScale;
 		this.zScale = zScale;
-		this.xAngle = xAngle;
+		this.xAngle = xAngle + holder.xAngle();
 		this.angle = angle;
 		hitRegion = new HitRegion(xPos-(this.xSize/2), yPos-(this.ySize/2), xPos+(this.xSize/2), yPos+(this.ySize/2));
 		this.manualText = manualText;
@@ -67,12 +73,12 @@ public abstract class AbstractControl
 		return hypotenuse * (sine ? MathHelper.sin(angle) : MathHelper.cos(angle));
 	}
 
-	public AbstractControl(ControlBuilder<?> builder, double regularX, double regularY, double xAngle)
+	public AbstractControl(ControlBuilder<?> builder, double regularX, double regularY, double xAngle, ControlHolder holder)
 	{
 		this(builder.requiredPermissions, builder.canBeUnstable, builder.isFlightControl, builder.x, builder.y,
 				regularX*builder.zScale, (regularY*builder.xScale),
 				builder.xScale, builder.yScale, builder.zScale, xAngle, builder.angle,
-				builder.manualText, builder.manualIncludeValue);
+				builder.manualText, builder.manualIncludeValue, holder);
 	}
 
 	public final EnumSet<ConsolePermissions> getRequiredPermissions()
@@ -102,6 +108,7 @@ public abstract class AbstractControl
 
 	public final boolean activate(PlayerContainer player, boolean sneaking)
 	{
+		System.out.println("Button pressed " + ServerHelper.isServer() + "- " + this);
 		if(isCurrentlyUnstable)
 		{
 			isCurrentlyUnstable = false;
@@ -116,7 +123,7 @@ public abstract class AbstractControl
 	protected abstract boolean activateControl(TardisInfo info, PlayerContainer player, boolean sneaking);
 
 	@SideOnly(Side.CLIENT)
-	public final void renderControl()
+	public final void renderControl(float ptt)
 	{
 		if(Configs.consoleDebug)
 		{
@@ -143,7 +150,7 @@ public abstract class AbstractControl
 		GL11.glRotated(xAngle, 0, 0, 1);
 		GL11.glRotated(angle, 0, 1, 0);
 		GL11.glScaled(xScale, yScale, zScale);
-		render();
+		render(ptt);
 		GL11.glPopMatrix();
 	}
 
@@ -157,8 +164,16 @@ public abstract class AbstractControl
 
 	protected void addValueToManual(List<String> currentText) {};
 
+	public final void tick()
+	{
+		tt++;
+		tickControl();
+	}
+
+	protected void tickControl(){}
+
 	@SideOnly(Side.CLIENT)
-	public abstract void render();
+	public abstract void render(float ptt);
 
 	public abstract static class ControlBuilder<T extends AbstractControl>
 	{
@@ -227,6 +242,6 @@ public abstract class AbstractControl
 			return this;
 		}
 
-		public abstract T build();
+		public abstract T build(ControlHolder holder);
 	}
 }

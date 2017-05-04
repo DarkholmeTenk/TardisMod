@@ -14,9 +14,9 @@ public class NormalPanelY extends ConsolePanel implements NavPanelY, OptPanelLan
 		ControlBuilder<ControlToggleButton> builder = new ControlToggleButtonBuilder(true)
 				.atPosition(0.75, 0.5)
 				.withScale(0.2, 0.2, 0.2);
-		addControl(builder.build());
-		addControl(builder.atPosition(2.5, 0.6).withScale(0.3, 0.3, 0.3).withAngle(30).build());
-		addControl(builder.atPosition(1.5, 0.6).withScale(0.6, 0.6, 0.6).withAngle(45).build());
+		addControl(builder);
+		addControl(builder.atPosition(2.5, 0.6).withScale(0.3, 0.3, 0.3).withAngle(30));
+		addControl(builder.atPosition(1.5, 0.6).withScale(0.6, 0.6, 0.6).withAngle(45));
 	}
 
 	@Override
