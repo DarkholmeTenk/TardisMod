@@ -28,29 +28,31 @@ public class ControlWheel extends AbstractControlInt
 	@Override
 	public void setValue(int value)
 	{
-		super.setValue(value);
 		this.value = MathHelper.cycle(value, min, max);
 	}
 
-	private static final int ticksToUpdate = 10;
-	private double getClientRendering(float ptt)
+	private static final float updateDist = 0.3f;
+	private final float edgeRounding = Math.max(1, (max - min) / 8f);
+	@Override
+	protected float getState(float ptt)
 	{
-		if((value == lastValue) || (valueChangeTT == 0))
+		if(value == lastValue)
 			return value;
-		if((tt - valueChangeTT) < ticksToUpdate)
-		{
-			float perc = ((tt+ptt) - valueChangeTT) / ticksToUpdate;
-			if((lastValue == max) && (value == min))
-				return MathHelper.interpolate(min, min-1, perc);
-			if((lastValue == min) && (value == max))
-				return MathHelper.interpolate(max, max+1, perc);
-			return MathHelper.interpolate(value, lastValue, perc);
-		}
+		float last;
+		if((value < (min + edgeRounding)) && (lastValue > (max - edgeRounding)))
+			last = min- (max-lastValue) - 1;
+		else if((value > (max  - edgeRounding)) && (lastValue < (min + edgeRounding)))
+			last = max + (lastValue - min) + 1;
 		else
-		{
-			valueChangeTT = 0;
+			last = lastValue;
+		if((ptt == 1) && (Math.abs(value-last) < updateDist))
 			return value;
-		}
+		float speed = Math.max(updateDist, Math.abs(value - lastValue) * 0.3f);
+		if(value > last)
+			return MathHelper.interpolate(Math.min(last + speed, value), lastValue, ptt);
+		else if(value < last)
+			return MathHelper.interpolate(Math.max(last - speed, value), lastValue, ptt);
+		return value;
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class ControlWheel extends AbstractControlInt
 	public void render(float ptt)
 	{
 		GL11.glPushMatrix();
-		GL11.glRotated(((getClientRendering(ptt) - min)/((1.0+max)-min))*360, 0, 1, 0);
+		GL11.glRotated(((getState(ptt) - min)/((1.0+max)-min))*360, 0, 1, 0);
 		GL11.glTranslated(-0.03125, 0, -0.03125);
 		RenderHelper.bindTexture(new ResourceLocation("tardismod","textures/models/TardisValveWheel.png"));
 		wheel.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);

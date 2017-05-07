@@ -16,8 +16,6 @@ public interface NavPanels
 		public int getCurrentY();
 
 		public boolean setCurrentY(int newY);
-
-		public boolean landOnGround();
 	}
 
 	public static interface NavPanelZ extends NavPanels

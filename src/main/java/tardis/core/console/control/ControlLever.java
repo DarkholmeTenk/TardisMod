@@ -30,25 +30,23 @@ public class ControlLever extends AbstractControlInt
 	@Override
 	public void setValue(int value)
 	{
-		super.setValue(value);
 		this.value = MathHelper.clamp(value, min, max);
 	}
 
-	private static final int ticksToUpdate = 10;
-	private double getClientRendering(float ptt)
+	private static final float updateDist = 0.1f;
+	@Override
+	protected float getState(float ptt)
 	{
-		if((value == lastValue) || (valueChangeTT == 0))
+		if(value == lastValue)
 			return value;
-		if((tt - valueChangeTT) < ticksToUpdate)
-		{
-			float perc = ((tt+ptt) - valueChangeTT) / ticksToUpdate;
-			return MathHelper.interpolate(value, lastValue, perc);
-		}
-		else
-		{
-			valueChangeTT = 0;
+		if((ptt == 1) && (Math.abs(value-lastValue) < updateDist))
 			return value;
-		}
+		float speed = Math.max(updateDist, Math.abs(value - lastValue) * 0.3f);
+		if(value > lastValue)
+			return MathHelper.interpolate(Math.min(lastValue + speed, value), lastValue, ptt);
+		else if(value < lastValue)
+			return MathHelper.interpolate(Math.max(lastValue - speed, value), lastValue, ptt);
+		return value;
 	}
 
 	@Override
@@ -56,7 +54,7 @@ public class ControlLever extends AbstractControlInt
 	public void render(float ptt)
 	{
 		GL11.glPushMatrix();
-		GL11.glRotated((((getClientRendering(ptt) - min)/((double)max-min))*140) - 70, 1, 0, 0);
+		GL11.glRotated((((getState(ptt) - min)/((double)max-min))*140) - 70, 1, 0, 0);
 		RenderHelper.bindTexture(new ResourceLocation("tardismod","textures/models/TardisConsoleLever.png"));
 		lever.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
 		GL11.glPopMatrix();

@@ -12,8 +12,6 @@ import net.minecraft.util.StatCollector;
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
-import io.darkcraft.darkcore.mod.nbt.NBTProperty;
-import io.darkcraft.darkcore.mod.nbt.NBTProperty.SerialisableType;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -42,7 +40,6 @@ public abstract class AbstractControl
 
 	private TardisInfo info;
 
-	@NBTProperty(SerialisableType.TRANSMIT)
 	protected int tt;
 
 	private AbstractControl(EnumSet<ConsolePermissions> requiredPermission, boolean canBeUnstable, boolean isFlightControl,
@@ -134,6 +131,7 @@ public abstract class AbstractControl
 			else
 				GL11.glColor3f(0, 0, 1);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glDepthFunc(GL11.GL_ALWAYS);
 			GL11.glBegin(GL11.GL_LINE_LOOP);
 			double xO = 0.5;
 			double yO = -1;
@@ -207,7 +205,7 @@ public abstract class AbstractControl
 		public ControlBuilder<T> isFlightControl()
 		{
 			this.isFlightControl = true;
-			return this;
+			return requiresPermission(ConsolePermissions.FLIGHT);
 		}
 
 		public ControlBuilder<T> canBeUnstable()

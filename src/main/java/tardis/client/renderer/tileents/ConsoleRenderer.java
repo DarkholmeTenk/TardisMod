@@ -12,6 +12,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 import io.darkcraft.darkcore.mod.helpers.RenderHelper;
 
 import tardis.client.renderer.model.ConsoleModel;
+import tardis.client.renderer.model.console.ButtonModel;
 import tardis.common.TMRegistry;
 import tardis.common.core.HitPosition;
 import tardis.common.core.helpers.Helper;
@@ -21,6 +22,7 @@ import tardis.core.console.panel.ConsolePanel;
 
 public class ConsoleRenderer extends AbstractBlockRenderer
 {
+	private static ButtonModel button = new ButtonModel();
 	private static final IModelCustom newModel = RenderHelper.getModel(new ResourceLocation("tardismod", "models/console/console.obj"));
 	private static final ResourceLocation baseTexture = new ResourceLocation("tardismod", "models/console/console.png");
 	private static final ResourceLocation panelTexture = new ResourceLocation("tardismod", "models/console/console_face.png");
@@ -212,16 +214,24 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 					panel.render(ptt);
 				GL11.glPopMatrix();
 			}
-			if(hp != null)
-			{
-				GL11.glPushMatrix();
-				GL11.glRotated(90*(hp.side-1), 0, 1, 0);
-				GL11.glTranslated(1.5-hp.posZ, -1+hp.posY, 0.5+hp.posY);
-//				compRender.renderLight(tess, tce, 1, 0, 0, 0, -45 - (15 * hp.side), 0, 0, 0.2, 0.2, 0.2);
-				GL11.glPopMatrix();
-			}
 		}
 		GL11.glPopMatrix();
+		if(hp != null)
+		{
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glPushMatrix();
+			GL11.glTranslated(0.5, 0, 0.5);
+			GL11.glRotated(90*(2-hp.side), 0, 1, 0);
+			GL11.glPointSize(2.0f);
+			GL11.glDepthFunc(GL11.GL_ALWAYS);
+			GL11.glColor3f(0, 1, 0);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glBegin(GL11.GL_POINTS);
+			GL11.glVertex3d(-0.5-hp.posY, 1.5-hp.posY, -1.5+hp.posZ);
+			GL11.glEnd();
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+		}
 	}
 
 }

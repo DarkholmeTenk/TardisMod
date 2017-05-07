@@ -18,7 +18,6 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 		ControlBuilder<ControlLever> regularLeverBuilder =
 				new ControlLeverBuilder(-6,6,-6)
 					.isFlightControl()
-					.requiresPermission(ConsolePermissions.FLIGHT)
 					.withScale(0.3, 0.3, 0.3)
 					.withManualText(MNL_CONTROL_X);
 		levers[0] = addControl(regularLeverBuilder.atPosition(0.8, 0.4));

@@ -1,8 +1,13 @@
 package tardis.core.console.panel.types.normal;
 
+import static tardis.core.console.enums.ManualConstants.MNL_CONTROL_Y;
+
 import tardis.core.console.control.AbstractControl.ControlBuilder;
+import tardis.core.console.control.ControlLever;
+import tardis.core.console.control.ControlLever.ControlLeverBuilder;
 import tardis.core.console.control.ControlToggleButton;
 import tardis.core.console.control.ControlToggleButton.ControlToggleButtonBuilder;
+import tardis.core.console.enums.ManualConstants;
 import tardis.core.console.panel.ConsolePanel;
 import tardis.core.console.panel.interfaces.NavPanels.NavPanelY;
 import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnGround;
@@ -10,55 +15,66 @@ import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnPad;
 
 public class NormalPanelY extends ConsolePanel implements NavPanelY, OptPanelLandOnGround, OptPanelLandOnPad
 {
+	private final ControlLever[] levers = new ControlLever[4];
 	{
-		ControlBuilder<ControlToggleButton> builder = new ControlToggleButtonBuilder(true)
-				.atPosition(0.75, 0.5)
-				.withScale(0.2, 0.2, 0.2);
-		addControl(builder);
-		addControl(builder.atPosition(2.5, 0.6).withScale(0.3, 0.3, 0.3).withAngle(30));
-		addControl(builder.atPosition(1.5, 0.6).withScale(0.6, 0.6, 0.6).withAngle(45));
+		ControlBuilder<ControlLever> builder = new ControlLeverBuilder(0,4,0)
+				.isFlightControl()
+				.withScale(0.2, 0.3, 0.3)
+				.withAngle(90)
+				.withManualText(MNL_CONTROL_Y);
+		levers[0] = addControl(builder.atPosition(1.2, 0.6));
+		levers[1] = addControl(builder.atPosition(1.3, 0.6));
+		levers[2] = addControl(builder.atPosition(1.4, 0.6));
+		levers[3] = addControl(builder.atPosition(1.5, 0.6));
 	}
+
+	private final ControlToggleButton landOnGround = addControl(new ControlToggleButtonBuilder(true)
+			.isFlightControl()
+			.withScale(0.25, 0.25, 0.25)
+			.withManualText(ManualConstants.MNL_OPTION_LAND_ON_GROUND)
+			.atPosition(1.2, 0.3));
+	private final ControlToggleButton landOnPad = addControl(new ControlToggleButtonBuilder(true)
+			.isFlightControl()
+			.withScale(0.25, 0.25, 0.25)
+			.withManualText(ManualConstants.MNL_OPTION_LAND_ON_PAD)
+			.atPosition(1.2, 0.3));
 
 	@Override
 	public void randomizeDestination()
 	{
-		// TODO Auto-generated method stub
-
+		for(ControlLever lever : levers)
+			lever.randomize();
 	}
 
 	@Override
 	public boolean shouldLandOnLandingPad()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return landOnPad.getPressed();
 	}
 
 	@Override
 	public boolean shouldLandOnGround()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return landOnGround.getPressed();
 	}
 
 	@Override
 	public int getCurrentY()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return
+				  (levers[0].getValue() << 6)
+				+ (levers[1].getValue() << 4)
+				+ (levers[2].getValue() << 2)
+				+ (levers[3].getValue());
 	}
 
 	@Override
 	public boolean setCurrentY(int newY)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		levers[0].setValue((newY >> 6) & 3);
+		levers[1].setValue((newY >> 4) & 3);
+		levers[2].setValue((newY >> 2) & 3);
+		levers[3].setValue((newY >> 0) & 3);
+		return true;
 	}
-
-	@Override
-	public boolean landOnGround()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

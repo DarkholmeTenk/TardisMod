@@ -1,11 +1,16 @@
 package tardis.core.console.panel;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import io.darkcraft.darkcore.mod.datastore.PropertyMap;
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
+import io.darkcraft.darkcore.mod.nbt.NBTMethod;
+import io.darkcraft.darkcore.mod.nbt.NBTMethod.Type;
 import io.darkcraft.darkcore.mod.nbt.NBTProperty;
 import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
@@ -23,6 +28,8 @@ public class ConsolePanel implements ControlHolder
 {
 	@NBTProperty
 	private final PropertyMap<HitRegion, AbstractControl> controlMap = new PropertyMap<>(c->c.getHitRegion());
+
+	private final HashSet<AbstractControl> controls = new HashSet<>();
 	private Set<AbstractControl> unstableControls = new LinkedHashSet<>();
 
 	private TardisInfo info;
@@ -38,6 +45,7 @@ public class ConsolePanel implements ControlHolder
 		controlMap.add(control);
 		if(control.canBeUnstable())
 			unstableControls.add(control);
+		controls.add(control);
 		return control;
 	}
 
@@ -103,5 +111,13 @@ public class ConsolePanel implements ControlHolder
 	{
 		for(AbstractControl control : controlMap.values())
 			control.tick();
+	}
+
+	@NBTMethod(Type.READ)
+	public void reset(NBTTagCompound nbt)
+	{
+		for(AbstractControl c : controls)
+			if(!controlMap.containsKey(c.getHitRegion()))
+				controlMap.add(c);
 	}
 }

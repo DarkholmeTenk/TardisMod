@@ -2,8 +2,8 @@ package tardis.core.console.control;
 
 import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.nbt.NBTProperty;
-import io.darkcraft.darkcore.mod.nbt.NBTProperty.SerialisableType;
 
 import tardis.core.TardisInfo;
 
@@ -15,10 +15,7 @@ public abstract class AbstractControlInt extends AbstractControl
 	@NBTProperty
 	protected int value;
 
-	@NBTProperty(SerialisableType.TRANSMIT)
-	protected int lastValue;
-	@NBTProperty(SerialisableType.TRANSMIT)
-	protected int valueChangeTT;
+	protected float lastValue;
 
 	protected AbstractControlInt(ControlIntBuilder builder, double regularXSize, double regularYSize, int angle, ControlHolder holder)
 	{
@@ -33,11 +30,7 @@ public abstract class AbstractControlInt extends AbstractControl
 		return value;
 	}
 
-	public void setValue(int value)
-	{
-		lastValue = this.value;
-		valueChangeTT = tt;
-	}
+	public abstract void setValue(int value);
 
 	public final void randomize()
 	{
@@ -47,9 +40,19 @@ public abstract class AbstractControlInt extends AbstractControl
 	@Override
 	protected boolean activateControl(TardisInfo info, PlayerContainer player, boolean sneaking)
 	{
-		setValue(getValue() + (sneaking ? -1 : 1));
-		return true;
+		int ov = getValue();
+		setValue(ov + (sneaking ? -1 : 1));
+		return ov != getValue();
 	}
+
+	@Override
+	protected void tickControl()
+	{
+		if(ServerHelper.isClient())
+			lastValue = tt == 1 ? value : getState(1);
+	}
+
+	protected abstract float getState(float ptt);
 
 	public abstract static class ControlIntBuilder<T extends AbstractControlInt> extends ControlBuilder<T>
 	{
