@@ -56,54 +56,49 @@ public class ConsoleTileEntity extends AbstractTileEntitySer implements IControl
 
 	private HitPosition activateSide(EntityPlayer pl, int blockX, int blockY, int blockZ, float i, float j, float k, int side)
 	{
-		float distanceAway = ((side == 0) || (side == 2)) ? (float) (Math.abs(pl.posX - 0.5) - 0.5) : (float) (Math
-				.abs(pl.posZ - 0.5) - 0.5);
-		float distanceSide = ((side == 0) || (side == 2)) ? (float) (pl.posZ + 1) : (float) (pl.posX + 1);
+		boolean even = (side & 1) == 0;
+		float plPosX = (float) pl.posX;
+		float plPosY = (float) pl.posY;
+		float plPosZ = (float) pl.posZ;
+		float distanceAway = (Math.abs((even ? plPosX : plPosZ) - 0.5f) - 0.5f);
+		float distanceSide = (even ? plPosZ : plPosX) +1;
 		float hitAway;
-		if ((blockX != 0) || (blockZ != 0))
+		hitAway = (side == 0 ? (blockX + i) - 1 : (side == 2 ?-blockX-i : (side == 1 ?
+				(blockZ + k) - 1 : -blockZ - k)));
+		if(((side == 0) && (plPosX < 1))
+				|| ((side == 2) && (plPosX > 0))
+				|| (((side == 1) && (plPosZ < 1))
+				|| ((side == 3) && (plPosZ > 0))))
+			return null;
+		if((blockX == 0) && (blockZ == 0))
 		{
-			if ((side == 0) && (blockX < 1))
-				return null;
-			if ((side == 1) && (blockZ < 1))
-				return null;
-			if ((side == 2) && (blockX > -1))
-				return null;
-			if ((side == 3) && (blockZ > -1))
-				return null;
-			hitAway = (side == 0 ? i : (side == 2 ? 1 - i : (side == 1 ? k : 1 - k)));
-		}
-		else
-		{
-			if ((side == 0) && (i < 0.9))
-				return null;
-			if ((side == 2) && (i > 0.1))
-				return null;
-			if ((side == 3) && (k > 0.1))
-				return null;
-			if ((side == 1) && (k < 0.9))
+			hitAway = (side == 0 ? i : (side == 2 ?1-i : (side == 1 ? k : 1 - k)));
+			if (((side == 0) && (i < 0.9))
+					|| ((side == 2) && (i > 0.1))
+					|| ((side == 3) && (k > 0.1))
+					|| ((side == 1) && (k < 0.9)))
 				return null;
 			j = j + 1;
-			hitAway = (side == 0 ? i : (side == 2 ? 1 - i : (side == 1 ? k : 1 - k))) - 1;
+			hitAway --;
 		}
-		float hitSide;
-		if ((side == 0) || (side == 2))
-			hitSide = blockZ + 1 + k;
-		else
-			hitSide = blockX + 1 + i;
+		float hitSide = 1 + (even ? blockZ + k : blockX + i);
 
-		float delta = activatedDelta(hitAway, j, distanceAway, (float) ((pl.posY + pl.eyeHeight) - yCoord));
+		float delta = activatedDelta(hitAway, j, distanceAway, (plPosY) - yCoord);
 		float hitX = activatedX(hitAway, distanceAway, delta);
 		float hitZ = activatedZ(hitSide, distanceSide, delta);
 		if((side == 3) || (side == 0))
 			hitZ = 3 - hitZ;
-		if (((hitZ < 1) && ((1 - hitX) >= hitZ)) || ((hitZ > 2) && ((1 - hitX) > (3 - hitZ))))
+		HitPosition hp = new HitPosition(hitX, hitZ, side);
+		if((hp.posZ < (1-hp.posY)) || ((hp.posZ-2) > (hp.posY)) || (hp.posY > 1) || (hp.posY < 0))
 			return null;
-		return new HitPosition(hitX, hitZ, side);
+		return hp;
 	}
 
 	private float activatedDelta(float xH, float yH, float xP, float yP)
 	{
 		float delta = (float) ((1.5 - xP - yP) / ((-xP + yH + xH) - yP));
+//		if(Math.random() < 0.005)
+//			System.out.format("xH: %1.2f yH: %1.2f xP: %1.2f yP: %1.2f d: %1.2f%n", xH, yH, xP, yP, delta);
 		return delta;
 	}
 
