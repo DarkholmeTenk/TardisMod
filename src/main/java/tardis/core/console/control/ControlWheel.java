@@ -47,7 +47,7 @@ public class ControlWheel extends AbstractControlInt
 			last = lastValue;
 		if((ptt == 1) && (Math.abs(value-last) < updateDist))
 			return value;
-		float speed = Math.max(updateDist, Math.abs(value - lastValue) * 0.3f);
+		float speed = Math.max(updateDist, Math.abs(value - last) * 0.3f);
 		if(value > last)
 			return MathHelper.interpolate(Math.min(last + speed, value), lastValue, ptt);
 		else if(value < last)
