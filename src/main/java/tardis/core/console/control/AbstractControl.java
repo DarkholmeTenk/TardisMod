@@ -38,7 +38,7 @@ public abstract class AbstractControl
 	private final String manualText;
 	private final boolean manualIncludeValue;
 
-	private TardisInfo info;
+	private final ControlHolder holder;
 
 	protected int tt;
 
@@ -58,6 +58,7 @@ public abstract class AbstractControl
 		this.zScale = zScale;
 		this.xAngle = xAngle + holder.xAngle();
 		this.angle = angle;
+		this.holder = holder;
 		hitRegion = new HitRegion(xPos-(this.xSize/2), yPos-(this.ySize/2), xPos+(this.xSize/2), yPos+(this.ySize/2));
 		this.manualText = manualText;
 		this.manualIncludeValue = manualIncludeValue;
@@ -93,14 +94,9 @@ public abstract class AbstractControl
 		return canBeUnstable;
 	}
 
-	public final void setInfo(TardisInfo info)
-	{
-		this.info = info;
-	}
-
 	public final TardisInfo getInfo()
 	{
-		return info;
+		return holder.getTardisInfo();
 	}
 
 	public final boolean activate(PlayerContainer player, boolean sneaking)
@@ -113,7 +109,7 @@ public abstract class AbstractControl
 		}
 		else
 		{
-			return activateControl(info, player, sneaking);
+			return activateControl(getInfo(), player, sneaking);
 		}
 	}
 
@@ -126,7 +122,7 @@ public abstract class AbstractControl
 		{
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glPushMatrix();
-			if(getHitRegion().contains(ConsoleRenderer.hp))
+			if(getHitRegion().contains(holder.getSide(), ConsoleRenderer.hp))
 				GL11.glColor3f(1, 0, 0);
 			else
 				GL11.glColor3f(0, 0, 1);
@@ -169,6 +165,11 @@ public abstract class AbstractControl
 	}
 
 	protected void tickControl(){}
+
+	protected void markDirty()
+	{
+		holder.markDirty();
+	}
 
 	@SideOnly(Side.CLIENT)
 	public abstract void render(float ptt);

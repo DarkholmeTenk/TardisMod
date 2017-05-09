@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
 
+import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
 import io.darkcraft.darkcore.mod.datastore.PropertyMap;
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.nbt.NBTMethod;
@@ -16,6 +17,7 @@ import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import tardis.api.IControlMatrix;
 import tardis.common.core.HitPosition;
 import tardis.common.core.HitPosition.HitRegion;
 import tardis.core.TardisInfo;
@@ -33,6 +35,8 @@ public class ConsolePanel implements ControlHolder
 	private Set<AbstractControl> unstableControls = new LinkedHashSet<>();
 
 	private TardisInfo info;
+	private IControlMatrix matrix;
+	private int side;
 
 	public ConsolePanel()
 	{
@@ -64,16 +68,23 @@ public class ConsolePanel implements ControlHolder
 		}
 	}
 
-	public void setTardisInfo(TardisInfo info)
+	public void setTardisInfo(TardisInfo info, IControlMatrix matrix, int side)
 	{
 		this.info = info;
-		for(AbstractControl control : controlMap.values())
-			control.setInfo(info);
+		this.matrix = matrix;
+		this.side = side;
 	}
 
+	@Override
 	public TardisInfo getTardisInfo()
 	{
 		return info;
+	}
+
+	@Override
+	public int getSide()
+	{
+		return side;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -119,5 +130,12 @@ public class ConsolePanel implements ControlHolder
 		for(AbstractControl c : controls)
 			if(!controlMap.containsKey(c.getHitRegion()))
 				controlMap.add(c);
+	}
+
+	@Override
+	public void markDirty()
+	{
+		if(matrix instanceof AbstractTileEntity)
+			((AbstractTileEntity) matrix).queueUpdate();
 	}
 }

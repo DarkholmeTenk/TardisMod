@@ -2,7 +2,10 @@ package tardis.core.console.panel.types.normal;
 
 import static tardis.core.console.enums.ManualConstants.MNL_CONTROL_X;
 
+import java.util.Optional;
+
 import tardis.core.console.control.AbstractControl.ControlBuilder;
+import tardis.core.console.control.ControlGauge.ControlGaugeBuilder;
 import tardis.core.console.control.ControlLever;
 import tardis.core.console.control.ControlLever.ControlLeverBuilder;
 import tardis.core.console.control.ControlWheel;
@@ -26,6 +29,8 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 		levers[3] = addControl(regularLeverBuilder.atPosition(1.7, 0.4).withAngle(45));
 		levers[4] = addControl(regularLeverBuilder.atPosition(2.0, 0.6).withAngle(90));
 		levers[5] = addControl(regularLeverBuilder.atPosition(2.3, 0.8).withAngle(0).withScale(0.2, 0.6, 0.6));
+		addControl(new ControlGaugeBuilder(-6, 6, ()->Optional.of((double)levers[0].getValue()))
+					.atPosition(1.7,0.8));
 	}
 
 	private ControlWheel[] wheels = new ControlWheel[2];

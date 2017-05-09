@@ -17,6 +17,8 @@ import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.helpers.DCReflectionHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.interfaces.IExplodable;
+import io.darkcraft.darkcore.mod.nbt.NBTMethod;
+import io.darkcraft.darkcore.mod.nbt.NBTMethod.Type;
 import io.darkcraft.darkcore.mod.nbt.NBTProperty;
 import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
@@ -28,6 +30,7 @@ import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
 import tardis.common.dimension.damage.ExplosionDamageHelper;
 import tardis.common.network.packet.ControlPacketHandler;
+import tardis.core.TardisInfo;
 import tardis.core.console.control.AbstractControl;
 import tardis.core.console.panel.ConsolePanel;
 import tardis.core.console.panel.group.AbstractPanelGroup;
@@ -246,5 +249,15 @@ public class ConsoleTileEntity extends AbstractTileEntitySer implements IControl
 		for (int cnt = 0; (cnt < 4) && (hit == null); cnt++)
 			hit = activateSide(pl, blockX, blockY, blockZ, i, j, k, cnt);
 		return hit;
+	}
+
+	@NBTMethod(Type.READ)
+	public void restoreAfterLoad()
+	{
+		TardisInfo info = TardisInfo.get(this);
+		ConsolePanel[] panels = getPanels();
+		for(int i = 0; (i < 4) && (i < panels.length); i++)
+			if(panels[i] != null)
+				panels[i].setTardisInfo(info, this, i);
 	}
 }
