@@ -37,7 +37,7 @@ public class ControlGauge extends AbstractControl
 
 	public ControlGauge(ControlBuilder<?> builder, ControlHolder holder, double min, double max, Supplier<Optional<Double>> method)
 	{
-		super(builder, 0.2, 0.1, 0, holder);
+		super(builder, 0.32, 0.26, 0, holder);
 		this.min = min;
 		this.max = max;
 		dist = (max - min);
@@ -83,6 +83,7 @@ public class ControlGauge extends AbstractControl
 	{
 		GL11.glRotated(90, 1, 0, 0);
 		GL11.glRotated(90, 0, 0, -1);
+		GL11.glTranslated(-0.155, -0.125, -0.05);
 		GL11.glPushMatrix();
 		GL11.glPushMatrix();
 		RenderHelper.bindTexture(gaugeDisplayTex);
