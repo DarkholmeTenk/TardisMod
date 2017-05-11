@@ -46,7 +46,6 @@ public class FSFlightDestination extends FSFlight
 	@Override
 	protected SimpleCoordStore getCurrentCoords()
 	{
-		//TODO: Sort out destination
 		return takeoffLocation;
 	}
 }

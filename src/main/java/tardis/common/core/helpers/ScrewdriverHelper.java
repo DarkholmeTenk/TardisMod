@@ -9,8 +9,10 @@ import net.minecraft.tileentity.TileEntity;
 import io.darkcraft.darkcore.mod.DarkcoreMod;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.nbt.NBTConstructor;
 import io.darkcraft.darkcore.mod.nbt.NBTMethod;
 import io.darkcraft.darkcore.mod.nbt.NBTMethod.Type;
+import io.darkcraft.darkcore.mod.nbt.NBTProperty;
 import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 import io.darkcraft.darkcore.mod.network.DataPacket;
 
@@ -29,6 +31,7 @@ import tardis.common.tileents.CoreTileEntity;
 @NBTSerialisable
 public class ScrewdriverHelper
 {
+	@NBTProperty(name="uuid")
 	public final int id;
 	protected ItemStack itemstack;
 	private int perms;
@@ -50,6 +53,12 @@ public class ScrewdriverHelper
 
 	{
 		resetPermissions(true);
+	}
+
+	@NBTConstructor("uuid")
+	private static ScrewdriverHelper get(int uuid)
+	{
+		return ScrewdriverHelperFactory.get(uuid);
 	}
 
 	protected ScrewdriverHelper(NBTTagCompound nbt, int _id)

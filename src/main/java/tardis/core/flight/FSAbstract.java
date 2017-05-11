@@ -56,4 +56,9 @@ public abstract class FSAbstract
 	protected abstract void tick();
 
 	protected abstract FSAbstract getNextState();
+
+	public boolean canUseFlightControls()
+	{
+		return false;
+	}
 }

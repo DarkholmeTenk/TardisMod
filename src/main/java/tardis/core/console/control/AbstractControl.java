@@ -2,6 +2,7 @@ package tardis.core.console.control;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.lwjgl.opengl.GL11;
 
@@ -16,6 +17,7 @@ import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.Configs;
+import tardis.api.TardisFunction;
 import tardis.client.renderer.tileents.ConsoleRenderer;
 import tardis.common.core.HitPosition.HitRegion;
 import tardis.core.TardisInfo;
@@ -23,6 +25,7 @@ import tardis.core.console.enums.ConsolePermissions;
 
 public abstract class AbstractControl
 {
+	private final TardisFunction requiredFunction;
 	private final EnumSet<ConsolePermissions> requiredPermission;
 
 	private final boolean canBeUnstable;
@@ -44,7 +47,7 @@ public abstract class AbstractControl
 
 	private AbstractControl(EnumSet<ConsolePermissions> requiredPermission, boolean canBeUnstable, boolean isFlightControl,
 			double xPos, double yPos, double xSize, double ySize, double xScale, double yScale, double zScale, double xAngle, double angle,
-			String manualText, boolean manualIncludeValue, ControlHolder holder)
+			String manualText, boolean manualIncludeValue, TardisFunction requiredFunction, ControlHolder holder)
 	{
 		this.requiredPermission = requiredPermission;
 		this.canBeUnstable = canBeUnstable;
@@ -62,6 +65,7 @@ public abstract class AbstractControl
 		hitRegion = new HitRegion(xPos-(this.xSize/2), yPos-(this.ySize/2), xPos+(this.xSize/2), yPos+(this.ySize/2));
 		this.manualText = manualText;
 		this.manualIncludeValue = manualIncludeValue;
+		this.requiredFunction = requiredFunction;
 		if(canBeUnstable && isFlightControl)
 			throw new RuntimeException("Control: " + this + " cannot be both unstable and flight control!");
 	}
@@ -76,7 +80,7 @@ public abstract class AbstractControl
 		this(builder.requiredPermissions, builder.canBeUnstable, builder.isFlightControl, builder.x, builder.y,
 				regularX*builder.zScale, (regularY*builder.xScale),
 				builder.xScale, builder.yScale, builder.zScale, xAngle, builder.angle,
-				builder.manualText, builder.manualIncludeValue, holder);
+				builder.manualText, builder.manualIncludeValue, builder.required, holder);
 	}
 
 	public final EnumSet<ConsolePermissions> getRequiredPermissions()
@@ -99,9 +103,20 @@ public abstract class AbstractControl
 		return holder.getTardisInfo();
 	}
 
+	public final boolean isVisible()
+	{
+		if(requiredFunction == null)
+			return true;
+		TardisInfo info = getInfo();
+		if(info != null)
+			return info.getDataStore().hasFunction(requiredFunction);
+		return false;
+	}
+
 	public final boolean activate(PlayerContainer player, boolean sneaking)
 	{
-		System.out.println("Button pressed " + ServerHelper.isServer() + "- " + this);
+		if(!isVisible())
+			return false;
 		if(isCurrentlyUnstable)
 		{
 			isCurrentlyUnstable = false;
@@ -109,6 +124,12 @@ public abstract class AbstractControl
 		}
 		else
 		{
+			if(Optional.ofNullable(getInfo())
+					.map(i->i.getCore())
+					.map(c->c.getFlightState())
+					.map(fs->fs.canUseFlightControls())
+					.orElse(false))
+				return false;
 			return activateControl(getInfo(), player, sneaking);
 		}
 	}
@@ -139,13 +160,38 @@ public abstract class AbstractControl
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();
 		}
+		if(!isVisible())
+			return;
 		GL11.glPushMatrix();
 		GL11.glTranslated(y+0.5, y-1, x-1.5);
 		GL11.glRotated(xAngle, 0, 0, 1);
 		GL11.glRotated(angle, 0, 1, 0);
 		GL11.glScaled(xScale, yScale, zScale);
 		render(ptt);
+		if(isCurrentlyUnstable)
+		{
+			GL11.glDepthFunc(GL11.GL_LEQUAL);
+			GL11.glColor3f(1, 1, 1);
+		}
 		GL11.glPopMatrix();
+	}
+
+	protected final void setHighlight()
+	{
+		if(isCurrentlyUnstable)
+		{
+			GL11.glDepthFunc(GL11.GL_ALWAYS);
+			GL11.glColor3f(0.2f, 0.4f, 1f);
+		}
+	}
+
+	protected final void resetHighlight()
+	{
+		if(isCurrentlyUnstable)
+		{
+			GL11.glDepthFunc(GL11.GL_LEQUAL);
+			GL11.glColor3f(1, 1, 1);
+		}
 	}
 
 	public final void addManualText(List<String> currentText)
@@ -162,9 +208,12 @@ public abstract class AbstractControl
 	{
 		tt++;
 		tickControl();
+		if(ServerHelper.isClient())
+			tickControlClient();
 	}
 
 	protected void tickControl(){}
+	protected void tickControlClient(){}
 
 	protected void markDirty()
 	{
@@ -186,6 +235,7 @@ public abstract class AbstractControl
 		private double angle = 0;
 		private String manualText = "";
 		private boolean manualIncludeValue = true;
+		private TardisFunction required;
 
 		protected ControlBuilder(){}
 
@@ -193,6 +243,12 @@ public abstract class AbstractControl
 		{
 			this.x = x;
 			this.y = y;
+			return this;
+		}
+
+		public ControlBuilder<T> requiresFunction(TardisFunction function)
+		{
+			this.required = function;
 			return this;
 		}
 

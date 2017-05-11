@@ -21,12 +21,13 @@ public class ControlToggleButton extends AbstractControl
 	private static final ButtonModel button = new ButtonModel();
 	private static final SonicScrewdriverHolderModel holder = new SonicScrewdriverHolderModel();
 
+	private double state;
 	@NBTProperty
 	private boolean pressed;
 
 	public ControlToggleButton(ControlToggleButtonBuilder builder, ControlHolder holder)
 	{
-		super(builder, 0.3, 0.3, 0, holder);
+		super(builder, 0.25, 0.25, 0, holder);
 		pressed = builder.defaultPressed;
 	}
 
@@ -35,6 +36,12 @@ public class ControlToggleButton extends AbstractControl
 	{
 		pressed = !pressed;
 		return true;
+	}
+
+	@Override
+	protected void tickControlClient()
+	{
+		state = getState(1);
 	}
 
 	public boolean getPressed()
@@ -47,6 +54,15 @@ public class ControlToggleButton extends AbstractControl
 		this.pressed = pressed;
 	}
 
+	private double getState(float ptt)
+	{
+		if(pressed && (state < 1))
+			return state + (Math.min(0.2, 1 - state) * ptt);
+		else if(!pressed && (state > 0))
+			return state - (Math.min(0.2, state) * ptt);
+		return pressed ? 1 : 0;
+	}
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void render(float ptt)
@@ -56,7 +72,7 @@ public class ControlToggleButton extends AbstractControl
 		holder.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
-		GL11.glTranslated(-0.03125, -0.0015 + (getPressed() ? 0.06 : 0), -0.03125);
+		GL11.glTranslated(-0.03125, -0.0015 + (getState(ptt) * 0.06), -0.03125);
 		RenderHelper.bindTexture(new ResourceLocation("tardismod","textures/models/PushLever.png"));
 		button.render(null,0F,0F,0F,0F,0F,0.0625F);
 		GL11.glPopMatrix();

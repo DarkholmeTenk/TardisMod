@@ -63,6 +63,7 @@ import tardis.common.items.KeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CoreGrid;
 import tardis.common.tileents.extensions.LabFlag;
+import tardis.core.flight.FSAbstract;
 
 public class CoreTileEntity extends AbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider, IExplodable
 {
@@ -837,6 +838,12 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 			return true;
 		}
 		return false;
+	}
+
+	public FSAbstract getFlightState()
+	{
+		//TODO
+		return null;
 	}
 
 	private int getShunt(int min, int max)

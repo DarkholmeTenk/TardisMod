@@ -23,4 +23,10 @@ public class FSFlightDrift extends FSFlight
 		return takeoffLocation;
 	}
 
+	@Override
+	public boolean canUseFlightControls()
+	{
+		return true;
+	}
+
 }

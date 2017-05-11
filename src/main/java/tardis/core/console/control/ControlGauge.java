@@ -1,6 +1,5 @@
 package tardis.core.console.control;
 
-import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -11,6 +10,7 @@ import net.minecraft.util.ResourceLocation;
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 import io.darkcraft.darkcore.mod.helpers.RenderHelper;
+import io.darkcraft.darkcore.mod.helpers.ServerHelper;
 import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
 import tardis.client.renderer.model.console.GaugeDisplayModel;
@@ -28,25 +28,30 @@ public class ControlGauge extends AbstractControl
 	private final double dist;
 	private final double min;
 	private final double max;
-	private final Supplier<Optional<Double>> method;
+	private final Supplier<Double> method;
+	private final String formatString;
 
 	private final Random r = new Random();
 
+	private double actual;
 	private double current;
 	private double last;
 
-	public ControlGauge(ControlBuilder<?> builder, ControlHolder holder, double min, double max, Supplier<Optional<Double>> method)
+	public ControlGauge(ControlGaugeBuilder builder, ControlHolder holder)
 	{
 		super(builder, 0.32, 0.26, 0, holder);
-		this.min = min;
-		this.max = max;
+		min = builder.min;
+		max = builder.max;
 		dist = (max - min);
-		this.method = method;
+		method = builder.method;
+		formatString = builder.formatString;
 	}
 
 	@Override
 	protected boolean activateControl(TardisInfo info, PlayerContainer player, boolean sneaking)
 	{
+		if(formatString != null)
+			ServerHelper.sendString(player.getEntity(), String.format(formatString, actual, min, max));
 		return false;
 	}
 
@@ -60,7 +65,12 @@ public class ControlGauge extends AbstractControl
 	protected void tickControl()
 	{
 		if((tt % 10) == 0)
-			current = MathHelper.clamp(method.get().orElse(min), min, max) + randomness();
+		{
+			Double valObj = method.get();
+			double val = valObj == null ? min : valObj;
+			actual = MathHelper.clamp(val, min, max);
+			current = actual + randomness();
+		}
 		last = MathHelper.clamp(getState(1), 0, 1);
 	}
 
@@ -103,18 +113,31 @@ public class ControlGauge extends AbstractControl
 	{
 		private final double min;
 		private final double max;
-		private final Supplier<Optional<Double>> method;
-		public ControlGaugeBuilder(double min, double max, Supplier<Optional<Double>> method)
+		private final Supplier<Double> method;
+		private String formatString = null;
+
+		public ControlGaugeBuilder(double min, double max, Supplier<Double> method)
 		{
 			this.min = min;
 			this.max = max;
 			this.method = method;
 		}
 
+		/**
+		 * Use a format string. Arguments are passed in as <code>value, min, max</code> use $ specifiers to select
+		 * individual arguments.<p/>
+		 * All values are doubles.
+		 */
+		public ControlGaugeBuilder withFormatString(String string)
+		{
+			formatString = string;
+			return this;
+		}
+
 		@Override
 		public ControlGauge build(ControlHolder holder)
 		{
-			return new ControlGauge(this, holder, min, max, method);
+			return new ControlGauge(this, holder);
 		}
 
 	}

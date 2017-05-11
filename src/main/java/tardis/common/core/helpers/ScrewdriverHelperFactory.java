@@ -46,6 +46,18 @@ public class ScrewdriverHelperFactory
 			return nbt.getInteger("uuid");
 	}
 
+	public static ScrewdriverHelper get(int uuid)
+	{
+		if(hMap().containsKey(uuid))
+			return hMap().get(uuid).b;
+		else
+		{
+			ScrewdriverHelper helper = new ScrewdriverHelper(new NBTTagCompound(), uuid);
+			hMap().put(uuid, new HalfMutablePair(t, helper));
+			return helper;
+		}
+	}
+
 	public static ScrewdriverHelper get(ItemStack is)
 	{
 		if(is == null) return null;

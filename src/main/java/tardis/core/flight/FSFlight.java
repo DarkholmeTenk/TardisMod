@@ -43,10 +43,13 @@ public abstract class FSFlight extends FSAbstract
 		if(uncoord == uncoordinated)
 			return reset();
 
+		FSFlight flight;
 		if(uncoord)
-			return new FSFlightDrift();
+			flight = new FSFlightDrift();
 		else
-			return new FSFlightDestination();
+			flight = new FSFlightDestination();
+		flight.takeoffLocation = takeoffLocation;
+		return flight;
 	}
 
 	protected abstract boolean shouldLand();

@@ -16,4 +16,9 @@ public class FSLanded extends FSAbstract
 		return this;
 	}
 
+	@Override
+	public boolean canUseFlightControls()
+	{
+		return true;
+	}
 }
