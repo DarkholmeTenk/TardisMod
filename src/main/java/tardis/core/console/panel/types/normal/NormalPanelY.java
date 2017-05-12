@@ -13,11 +13,12 @@ import tardis.core.console.control.ControlToggleButton;
 import tardis.core.console.control.ControlToggleButton.ControlToggleButtonBuilder;
 import tardis.core.console.enums.ManualConstants;
 import tardis.core.console.panel.ConsolePanel;
+import tardis.core.console.panel.interfaces.NavPanels.NavPanelDims;
 import tardis.core.console.panel.interfaces.NavPanels.NavPanelY;
 import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnGround;
 import tardis.core.console.panel.interfaces.OptionPanels.OptPanelLandOnPad;
 
-public class NormalPanelY extends ConsolePanel implements NavPanelY, OptPanelLandOnGround, OptPanelLandOnPad
+public class NormalPanelY extends ConsolePanel implements NavPanelY, OptPanelLandOnGround, OptPanelLandOnPad, NavPanelDims
 {
 	private final ControlLever[] levers = new ControlLever[4];
 	{
@@ -43,11 +44,11 @@ public class NormalPanelY extends ConsolePanel implements NavPanelY, OptPanelLan
 			.withManualText(ManualConstants.MNL_OPTION_LAND_ON_PAD)
 			.atPosition(1.0, 0.65));
 	private final ControlScrewdriverHolder holder = addControl(new ControlScrewdriverHolderBuilder(false)
-			.withScale(0.25, 0.25, 0.25)
-			.atPosition(1.6,0.55));
+			.withScale(0.5, 0.5, 0.5)
+			.atPosition(1.65,0.55));
 	private final ControlPushButton generate = addControl(new ControlPushButtonBuilder(()->holder.generateScrewdriver())
 			.withScale(0.25,0.25,0.25)
-			.atPosition(1.6, 0.65));
+			.atPosition(1.65, 0.65));
 
 	@Override
 	public void randomizeDestination()
@@ -86,5 +87,19 @@ public class NormalPanelY extends ConsolePanel implements NavPanelY, OptPanelLan
 		levers[2].setValue((newY >> 2) & 3);
 		levers[3].setValue((newY >> 0) & 3);
 		return true;
+	}
+
+	@Override
+	public int getDestinationDimID()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int setDestinationDimID()
+	{
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

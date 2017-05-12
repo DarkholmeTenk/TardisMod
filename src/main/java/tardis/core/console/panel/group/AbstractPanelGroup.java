@@ -1,5 +1,8 @@
 package tardis.core.console.panel.group;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
@@ -17,14 +20,19 @@ public abstract class AbstractPanelGroup
 		{
 			for(Field f : this.getClass().getDeclaredFields())
 			{
-				Panel p = f.getDeclaredAnnotation(Panel.class);
+				Panel p = f.getAnnotation(Panel.class);
 				if(p == null)
 					continue;
 				Class<?> c = f.getType();
 				Optional<?> value = console.getPanel(c);
+				if(!value.isPresent())
+				{
+					if(p.required())
+						return false;
+					continue;
+				}
 				Object o = value.get();
-				if((o == null) && p.required())
-					return false;
+				f.setAccessible(true);
 				f.set(this, o);
 			}
 		}
@@ -36,6 +44,7 @@ public abstract class AbstractPanelGroup
 		return true;
 	}
 
+	@Retention(RUNTIME)
 	public static @interface Panel
 	{
 		public boolean required() default true;

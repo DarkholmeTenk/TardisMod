@@ -1,5 +1,7 @@
 package tardis.core.console.control;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.util.ResourceLocation;
 
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
@@ -67,6 +69,7 @@ public class ControlScrewdriverHolder extends AbstractControl
 	public void render(float ptt)
 	{
 		RenderHelper.bindTexture(new ResourceLocation("tardismod", "textures/models/SonicScrewdriverHolder.png"));
+		GL11.glTranslated(0, -0.05, 0);
 		holder.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		if(helper != null)
 			helper.render();

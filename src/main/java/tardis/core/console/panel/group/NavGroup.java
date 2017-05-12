@@ -62,6 +62,13 @@ public class NavGroup extends AbstractPanelGroup
 		return z;
 	}
 
+	public void randomizeControls()
+	{
+		xPanel.randomizeDestination();
+		yPanel.randomizeDestination();
+		zPanel.randomizeDestination();
+	}
+
 	private boolean isRelativeCoords()
 	{
 		return relPanel != null ? relPanel.areCoordinatesRelative() : false;

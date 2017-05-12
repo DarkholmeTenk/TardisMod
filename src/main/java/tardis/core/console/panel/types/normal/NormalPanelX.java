@@ -11,6 +11,7 @@ import tardis.core.console.control.ControlWheel;
 import tardis.core.console.control.ControlWheel.ControlWheelBuilder;
 import tardis.core.console.enums.ConsolePermissions;
 import tardis.core.console.panel.ConsolePanel;
+import tardis.core.console.panel.group.NavGroup;
 import tardis.core.console.panel.interfaces.NavPanels.NavPanelX;
 
 public class NormalPanelX extends ConsolePanel implements NavPanelX
@@ -41,9 +42,12 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 				.withScale(0.5, 0.5, 0.5)
 				.withManualText(MNL_CONTROL_X);
 		wheels[0] = addControl(regularWheelBuilder.atPosition(0.6, 0.75));
-		wheels[0] = addControl(regularWheelBuilder.atPosition(1.1, 0.75));
+		wheels[1] = addControl(regularWheelBuilder.atPosition(1.1, 0.75));
 
-		addControl(new ControlPushButtonBuilder(()->System.out.println("TEST"))
+		addControl(new ControlPushButtonBuilder(()->{
+			getTardisInfo().getConsole().getPanelGroup(NavGroup.class).ifPresent(p->p.randomizeControls());
+			markDirty();
+		})
 						.atPosition(1.3, 0.15));
 	}
 

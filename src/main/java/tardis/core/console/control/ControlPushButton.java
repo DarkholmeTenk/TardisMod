@@ -1,71 +1,24 @@
 package tardis.core.console.control;
 
-import static io.darkcraft.darkcore.mod.nbt.NBTProperty.SerialisableType.TRANSMIT;
-
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.util.ResourceLocation;
 
-import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.helpers.RenderHelper;
-import io.darkcraft.darkcore.mod.nbt.NBTProperty;
-import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.client.renderer.model.console.ButtonModel;
 import tardis.client.renderer.model.console.SonicScrewdriverHolderModel;
-import tardis.core.TardisInfo;
 
-@NBTSerialisable
-public class ControlPushButton extends AbstractControl
+public class ControlPushButton extends ControlPush
 {
 	private static final ButtonModel button = new ButtonModel();
 	private static final SonicScrewdriverHolderModel holder = new SonicScrewdriverHolderModel();
 
-	private final Runnable function;
-
-	private int pressedTT;
-	private boolean wasPressed = false;
-	private double state = 0;
-	@NBTProperty(TRANSMIT)
-	private boolean pressed;
-
 	public ControlPushButton(ControlPushButtonBuilder builder, ControlHolder holder)
 	{
-		super(builder, 0.25, 0.25, 0, holder);
-		function = builder.function;
-	}
-
-	@Override
-	protected boolean activateControl(TardisInfo info, PlayerContainer player, boolean sneaking)
-	{
-		function.run();
-		pressed = true;
-		markDirty();
-		return true;
-	}
-
-	@Override
-	protected void tickControl()
-	{
-		state = getState(1);
-		if(pressed && wasPressed && (tt > (pressedTT + 8)))
-			wasPressed = pressed = false;
-		else if(pressed && !wasPressed)
-		{
-			wasPressed = true;
-			pressedTT = tt;
-		}
-	}
-
-	private double getState(float ptt)
-	{
-		if(pressed && (state < 1))
-			return (state + (Math.min(1-state, 0.25) * ptt));
-		else if(!pressed && (state > 0))
-			return (state - (Math.min(state, 0.25)*ptt));
-		return pressed ? 1 : 0;
+		super(builder, holder);
 	}
 
 	@Override
@@ -83,13 +36,11 @@ public class ControlPushButton extends AbstractControl
 		GL11.glPopMatrix();
 	}
 
-	public static class ControlPushButtonBuilder extends ControlBuilder<ControlPushButton>
+	public static class ControlPushButtonBuilder extends ControlPushBuilder<ControlPushButton>
 	{
-		private final Runnable function;
-
 		public ControlPushButtonBuilder(Runnable function)
 		{
-			this.function = function;
+			super(function);
 		}
 
 		@Override

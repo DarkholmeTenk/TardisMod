@@ -124,12 +124,15 @@ public abstract class AbstractControl
 		}
 		else
 		{
-			if(Optional.ofNullable(getInfo())
-					.map(i->i.getCore())
-					.map(c->c.getFlightState())
-					.map(fs->fs.canUseFlightControls())
-					.orElse(false))
-				return false;
+			if(isFlightControl)
+			{
+				if(Optional.ofNullable(getInfo())
+						.map(i->i.getCore())
+						.map(c->c.getFlightState())
+						.map(fs->fs.canUseFlightControls())
+						.orElse(false))
+					return false;
+			}
 			return activateControl(getInfo(), player, sneaking);
 		}
 	}

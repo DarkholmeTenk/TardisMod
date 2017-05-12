@@ -38,6 +38,7 @@ import tardis.core.console.panel.group.NavGroup;
 import tardis.core.console.panel.interfaces.OptionPanels.OptPanelRelativeCoords;
 import tardis.core.console.panel.types.normal.NormalPanelX;
 import tardis.core.console.panel.types.normal.NormalPanelY;
+import tardis.core.console.panel.types.normal.NormalPanelZ;
 
 @NBTSerialisable
 public class ConsoleTileEntity extends AbstractTileEntitySer implements IControlMatrix, IExplodable
@@ -47,6 +48,12 @@ public class ConsoleTileEntity extends AbstractTileEntitySer implements IControl
 	public ConsoleTileEntity(World w)
 	{
 		worldObj = w;
+	}
+
+	@Override
+	public void init()
+	{
+		restoreAfterLoad();
 	}
 
 	@Override
@@ -146,17 +153,21 @@ public class ConsoleTileEntity extends AbstractTileEntitySer implements IControl
 
 	public boolean activate(EntityPlayer pl, int blockX, int blockY, int blockZ, float i, float j, float k, int side)
 	{
-		if (ServerHelper.isServer())
+		if (ServerHelper.isServer(this))
+		{
 			return true;
+		}
 		HitPosition hit = getHitPosition(pl, blockX, blockY, blockZ, i, j, k, side);
 		ControlPacketHandler.sendPacket(hit, this, EntityContainerHandler.getPlayerContainer(pl));
 		return hit != null;
 	}
 
 	@NBTProperty
-	private ConsolePanel[] panels = new ConsolePanel[]{new NormalPanelX(), new NormalPanelY(), null,null};
+	private ConsolePanel[] panels = new ConsolePanel[]{new NormalPanelX(), new NormalPanelY(), new NormalPanelZ(),null};
 	public ConsolePanel[] getPanels()
 	{
+		if(ServerHelper.isServer(this) && (panels[2] == null))
+			setPanel(2,new NormalPanelZ());
 		return panels;
 	}
 
@@ -164,6 +175,13 @@ public class ConsoleTileEntity extends AbstractTileEntitySer implements IControl
 	public void panelsChanged()
 	{
 		groups.clear();
+	}
+
+	private void setPanel(int i, ConsolePanel panel)
+	{
+		panels[i] = panel;
+		panel.setTardisInfo(TardisInfo.get(this), this, i);
+		panelsChanged();
 	}
 
 	public <T> Optional<T> getPanel(Class<T> clazz)
