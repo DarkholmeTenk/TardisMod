@@ -13,13 +13,15 @@ import tardis.core.console.enums.ConsolePermissions;
 import tardis.core.console.panel.ConsolePanel;
 import tardis.core.console.panel.group.NavGroup;
 import tardis.core.console.panel.interfaces.NavPanels.NavPanelX;
+import tardis.core.console.panel.types.normal.navmap.NavMap;
+import tardis.core.console.panel.types.normal.navmap.RegularNavMap;
 
 public class NormalPanelX extends ConsolePanel implements NavPanelX
 {
 	private ControlLever[] levers = new ControlLever[6];
 	{
 		ControlBuilder<ControlLever> regularLeverBuilder =
-				new ControlLeverBuilder(-6,6,-6)
+				new ControlLeverBuilder(-6,6,0)
 					.isFlightControl()
 					.withScale(0.3, 0.3, 0.3)
 					.withManualText(MNL_CONTROL_X);
@@ -36,7 +38,7 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 
 	private ControlWheel[] wheels = new ControlWheel[2];
 	{
-		ControlBuilder<ControlWheel> regularWheelBuilder = new ControlWheelBuilder(-6,6,0)
+		ControlBuilder<ControlWheel> regularWheelBuilder = new ControlWheelBuilder(0,10,0)
 				.isFlightControl()
 				.requiresPermission(ConsolePermissions.FLIGHT)
 				.withScale(0.5, 0.5, 0.5)
@@ -51,18 +53,21 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 						.atPosition(1.3, 0.15));
 	}
 
+	private NavMap getNavMap()
+	{
+		return RegularNavMap.i;
+	}
+
 	@Override
 	public int getCurrentX()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return getNavMap().getVal(wheels, levers);
 	}
 
 	@Override
 	public boolean setCurrentX(int newX, int tolerance)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return getNavMap().setVal(newX, tolerance, wheels, levers);
 	}
 
 	@Override

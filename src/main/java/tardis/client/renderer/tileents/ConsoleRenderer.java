@@ -11,6 +11,7 @@ import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
 import io.darkcraft.darkcore.mod.helpers.RenderHelper;
 
+import tardis.client.renderer.gallifreyan.Word;
 import tardis.client.renderer.model.ConsoleModel;
 import tardis.client.renderer.model.console.ButtonModel;
 import tardis.common.TMRegistry;
@@ -161,6 +162,12 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 //		compRender.renderButton(tess, tce, 1026, 0.91, -0.58, -0.3, -45, 90, 0, 0.5, 0.5, 0.5);
 //	}
 
+	private final Word word1 = new Word("bashshsh");
+	private final Word word2 = new Word("elephant");
+	private final Word word3 = new Word("ohmygodhireddit");
+	private final Word word4 = new Word("shale");
+	private final Word word5 = new Word("tabefilokuaeiou");
+
 	@Override
 	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
@@ -183,7 +190,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 			for(int i = 0; (i < 4) && (i < panels.length); i++)
 			{
 				GL11.glPushMatrix();
-				GL11.glRotated(90*(i), 0, 1, 0);
+				GL11.glRotated(90*(i-1), 0, 1, 0);
 				if(panels[i] != null)
 				{
 					bindTexture(panelTexture);
@@ -197,6 +204,12 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 				GL11.glPopMatrix();
 			}
 		}
+		GL11.glTranslated(4, 4, 0);
+		word1.render();
+//		word2.render();
+//		word3.render();
+//		word4.render();
+//		word5.render();
 		GL11.glPopMatrix();
 		if(tce != null)
 		{

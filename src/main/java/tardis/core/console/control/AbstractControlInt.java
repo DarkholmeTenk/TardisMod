@@ -9,8 +9,8 @@ import tardis.core.TardisInfo;
 
 public abstract class AbstractControlInt extends AbstractControl
 {
-	protected final int min;
-	protected final int max;
+	public final int min;
+	public final int max;
 
 	@NBTProperty
 	protected int value;

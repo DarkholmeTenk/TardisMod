@@ -13,4 +13,6 @@ public interface ControlHolder
 	public TardisInfo getTardisInfo();
 
 	public int getSide();
+
+	public void activated(AbstractControl control);
 }

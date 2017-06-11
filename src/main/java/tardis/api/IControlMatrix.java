@@ -9,6 +9,8 @@ import tardis.core.console.control.AbstractControl;
 
 public interface IControlMatrix
 {
+	public void activatedWithoutControl(PlayerContainer player, HitPosition position);
+
 	public AbstractControl getControl(PlayerContainer player, HitPosition position);
 
 	public HitPosition getHitPosition(EntityPlayer pl, int blockX, int blockY, int blockZ,

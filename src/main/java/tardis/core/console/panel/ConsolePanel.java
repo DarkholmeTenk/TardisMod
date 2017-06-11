@@ -24,9 +24,12 @@ import tardis.core.TardisInfo;
 import tardis.core.console.control.AbstractControl;
 import tardis.core.console.control.AbstractControl.ControlBuilder;
 import tardis.core.console.control.ControlHolder;
+import tardis.core.console.control.ControlScrews;
+import tardis.core.console.control.ControlScrews.ControlScrewsBuilder;
+import tardis.core.console.enums.ManualConstants;
 
 @NBTSerialisable
-public class ConsolePanel implements ControlHolder
+public abstract class ConsolePanel implements ControlHolder
 {
 	@NBTProperty
 	private final PropertyMap<HitRegion, AbstractControl> controlMap = new PropertyMap<>(c->c.getHitRegion());
@@ -38,9 +41,19 @@ public class ConsolePanel implements ControlHolder
 	private IControlMatrix matrix;
 	private int side;
 
+	private final ControlScrews[] screws;
+
 	public ConsolePanel()
 	{
-
+		ControlBuilder<ControlScrews> builder = new ControlScrewsBuilder(true)
+				.withScale(0.2, 0.2, 0.2)
+				.withManualText(ManualConstants.MNL_SCREW);
+		screws = new ControlScrews[]{
+			addControl(builder.atPosition(0.1, 0.95)),
+			addControl(builder.atPosition(2.9, 0.95)),
+			addControl(builder.atPosition(1.05, 0.05)),
+			addControl(builder.atPosition(1.95, 0.05))
+		};
 	}
 
 	protected <T extends AbstractControl> T addControl(ControlBuilder<T> builder)
@@ -137,5 +150,20 @@ public class ConsolePanel implements ControlHolder
 	{
 		if(matrix instanceof AbstractTileEntity)
 			((AbstractTileEntity) matrix).queueUpdate();
+	}
+
+	@Override
+	public void activated(AbstractControl control)
+	{
+		if(control instanceof ControlScrews)
+		{
+			boolean screwed = false;
+			for(ControlScrews screw : screws)
+				screwed = screwed || screw.getPressed();
+			if(!screwed)
+			{
+				getTardisInfo().getConsole().removePanel(this);
+			}
+		}
 	}
 }

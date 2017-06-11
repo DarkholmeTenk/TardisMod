@@ -43,11 +43,15 @@ public class ControlPacketHandler implements IDataPacketHandler
 		{
 			AbstractControl control = ((IControlMatrix)te).getControl(hds.pc, hds.hp);
 			if(control != null)
+			{
 				if(control.activate(hds.pc, pl.isSneaking()))
 				{
 					te.queueUpdate();
 					te.markDirty();
 				}
+			}
+			else
+				((IControlMatrix)te).activatedWithoutControl(hds.pc, hds.hp);
 		}
 
 	}

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.Explosion;
@@ -16,6 +17,7 @@ import io.darkcraft.darkcore.mod.handlers.containers.EntityContainerHandler;
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
 import io.darkcraft.darkcore.mod.helpers.DCReflectionHelper;
 import io.darkcraft.darkcore.mod.helpers.ServerHelper;
+import io.darkcraft.darkcore.mod.helpers.WorldHelper;
 import io.darkcraft.darkcore.mod.interfaces.IExplodable;
 import io.darkcraft.darkcore.mod.nbt.NBTMethod;
 import io.darkcraft.darkcore.mod.nbt.NBTMethod.Type;
@@ -25,6 +27,7 @@ import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.api.IControlMatrix;
+import tardis.common.TMRegistry;
 import tardis.common.core.HitPosition;
 import tardis.common.core.helpers.Helper;
 import tardis.common.dimension.TardisDataStore;
@@ -171,10 +174,20 @@ public class ConsoleTileEntity extends AbstractTileEntitySer implements IControl
 		return panels;
 	}
 
+	public void removePanel(ConsolePanel consolePanel)
+	{
+		int side = consolePanel.getSide();
+		panels[side] = null;
+		ItemStack is = TMRegistry.consolePanelItem.getPanelItem(consolePanel);
+		WorldHelper.dropItemStack(is, coords().getCenter().translate(0, 1.5, 0));
+		panelsChanged();
+	}
+
 	private final Map<Class<? extends AbstractPanelGroup>, Optional<AbstractPanelGroup>> groups = new HashMap<>();
 	public void panelsChanged()
 	{
 		groups.clear();
+		queueUpdate();
 	}
 
 	private void setPanel(int i, ConsolePanel panel)
@@ -277,5 +290,20 @@ public class ConsoleTileEntity extends AbstractTileEntitySer implements IControl
 		for(int i = 0; (i < 4) && (i < panels.length); i++)
 			if(panels[i] != null)
 				panels[i].setTardisInfo(info, this, i);
+	}
+
+	@Override
+	public void activatedWithoutControl(PlayerContainer playerCont, HitPosition position)
+	{
+		int side = position.side;
+		EntityPlayer player = playerCont.getEntity();
+		if(panels[side] == null)
+		{
+			ConsolePanel newPanel = TMRegistry.consolePanelItem.getPanel(player.getHeldItem());
+			if(newPanel != null)
+			{
+				setPanel(side, newPanel);
+			}
+		}
 	}
 }

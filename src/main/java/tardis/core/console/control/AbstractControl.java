@@ -133,7 +133,12 @@ public abstract class AbstractControl
 						.orElse(false))
 					return false;
 			}
-			return activateControl(getInfo(), player, sneaking);
+			if(activateControl(getInfo(), player, sneaking))
+			{
+				holder.activated(this);
+				return true;
+			}
+			return false;
 		}
 	}
 

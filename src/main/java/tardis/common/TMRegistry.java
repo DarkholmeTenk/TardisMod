@@ -47,6 +47,7 @@ import tardis.common.blocks.TardisBlock;
 import tardis.common.blocks.TemporalAcceleratorBlock;
 import tardis.common.blocks.TopBlock;
 import tardis.common.items.ComponentItem;
+import tardis.common.items.ConsolePanelItem;
 import tardis.common.items.CraftingComponentItem;
 import tardis.common.items.DecoratingTool;
 import tardis.common.items.DimensionUpgradeItem;
@@ -128,8 +129,9 @@ public class TMRegistry
 	public static NameTagItem					nameTag;
 	public static DecoratingTool				decoTool;
 	public static UpgradeChameleonItem			chameleonUpgradeItem;
+	public static ConsolePanelItem				consolePanelItem;
 
-	public static Map<Integer, AbstractItem>	dimensionUpgradeItems	= new HashMap<Integer, AbstractItem>();
+	public static Map<Integer, AbstractItem>	dimensionUpgradeItems	= new HashMap<>();
 
 	public static void init()
 	{
