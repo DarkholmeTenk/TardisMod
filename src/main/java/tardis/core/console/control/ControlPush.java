@@ -7,21 +7,22 @@ import io.darkcraft.darkcore.mod.nbt.NBTProperty;
 import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
 import tardis.core.TardisInfo;
+import tardis.core.console.control.models.ModelButton;
 
 @NBTSerialisable
-public abstract class ControlPush extends AbstractControl
+public class ControlPush extends AbstractStatefulControl
 {
 	private final Runnable function;
 
 	private int pressedTT;
 	private boolean wasPressed = false;
-	private double state = 0;
+	private float state = 0;
 	@NBTProperty(TRANSMIT)
 	private boolean pressed;
 
 	public ControlPush(ControlPushBuilder builder, ControlHolder holder)
 	{
-		super(builder, 0.25, 0.25, 0, holder);
+		super(builder, holder);
 		function = builder.function;
 	}
 
@@ -47,22 +48,30 @@ public abstract class ControlPush extends AbstractControl
 		}
 	}
 
-	protected double getState(float ptt)
+	@Override
+	public float getState(float ptt)
 	{
 		if(pressed && (state < 1))
-			return (state + (Math.min(1-state, 0.25) * ptt));
+			return (state + (Math.min(1-state, 0.25f) * ptt));
 		else if(!pressed && (state > 0))
-			return (state - (Math.min(state, 0.25)*ptt));
+			return (state - (Math.min(state, 0.25f)*ptt));
 		return pressed ? 1 : 0;
 	}
 
-	public abstract static class ControlPushBuilder<T extends ControlPush> extends ControlBuilder<T>
+	public static class ControlPushBuilder extends StatefulControlBuilder<ControlPush>
 	{
 		private final Runnable function;
 
 		public ControlPushBuilder(Runnable function)
 		{
 			this.function = function;
+			withModel(ModelButton.i);
+		}
+
+		@Override
+		public ControlPush build(ControlHolder holder)
+		{
+			return new ControlPush(this, holder);
 		}
 	}
 }

@@ -7,7 +7,7 @@ import io.darkcraft.darkcore.mod.nbt.NBTProperty;
 
 import tardis.core.TardisInfo;
 
-public abstract class AbstractControlInt extends AbstractControl
+public abstract class AbstractControlInt extends AbstractStatefulControl
 {
 	public final int min;
 	public final int max;
@@ -17,9 +17,9 @@ public abstract class AbstractControlInt extends AbstractControl
 
 	protected float lastValue;
 
-	protected AbstractControlInt(ControlIntBuilder builder, double regularXSize, double regularYSize, int angle, ControlHolder holder)
+	protected AbstractControlInt(ControlIntBuilder builder, ControlHolder holder)
 	{
-		super(builder, regularXSize, regularYSize, angle, holder);
+		super(builder, holder);
 		min = builder.min;
 		max = builder.max;
 		value = builder.defaultVal;
@@ -52,9 +52,7 @@ public abstract class AbstractControlInt extends AbstractControl
 			lastValue = tt == 1 ? value : getState(1);
 	}
 
-	protected abstract float getState(float ptt);
-
-	public abstract static class ControlIntBuilder<T extends AbstractControlInt> extends ControlBuilder<T>
+	public abstract static class ControlIntBuilder<T extends AbstractControlInt> extends StatefulControlBuilder<T>
 	{
 		private int min;
 		private int max;

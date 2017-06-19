@@ -12,6 +12,7 @@ import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import tardis.client.renderer.model.console.ButtonModel;
+import tardis.common.items.SonicScrewdriverItem;
 import tardis.core.TardisInfo;
 
 @NBTSerialisable
@@ -32,6 +33,8 @@ public class ControlScrews extends AbstractControl
 	@Override
 	protected boolean activateControl(TardisInfo info, PlayerContainer player, boolean sneaking)
 	{
+		if(!SonicScrewdriverItem.isPlayerHoldingScrewdriver(player.getEntity()))
+			return false;
 		pressed = !pressed;
 		return true;
 	}

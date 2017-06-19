@@ -1,33 +1,22 @@
 package tardis.core.console.control;
 
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.util.ResourceLocation;
-
 import io.darkcraft.darkcore.mod.handlers.containers.PlayerContainer;
-import io.darkcraft.darkcore.mod.helpers.RenderHelper;
 import io.darkcraft.darkcore.mod.nbt.NBTProperty;
 import io.darkcraft.darkcore.mod.nbt.NBTSerialisable;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import tardis.client.renderer.model.console.ButtonModel;
-import tardis.client.renderer.model.console.SonicScrewdriverHolderModel;
 import tardis.core.TardisInfo;
+import tardis.core.console.control.models.ModelButton;
 
 @NBTSerialisable
-public class ControlToggleButton extends AbstractControl
+public class ControlToggleButton extends AbstractStatefulControl
 {
-	private static final ButtonModel button = new ButtonModel();
-	private static final SonicScrewdriverHolderModel holder = new SonicScrewdriverHolderModel();
-
-	private double state;
+	private float state;
 	@NBTProperty
 	private boolean pressed;
 
 	public ControlToggleButton(ControlToggleButtonBuilder builder, ControlHolder holder)
 	{
-		super(builder, 0.25, 0.25, 0, holder);
+		super(builder, holder);
 		pressed = builder.defaultPressed;
 	}
 
@@ -54,37 +43,24 @@ public class ControlToggleButton extends AbstractControl
 		this.pressed = pressed;
 	}
 
-	private double getState(float ptt)
+	@Override
+	public float getState(float ptt)
 	{
 		if(pressed && (state < 1))
-			return state + (Math.min(0.2, 1 - state) * ptt);
+			return state + (Math.min(0.2f, 1 - state) * ptt);
 		else if(!pressed && (state > 0))
-			return state - (Math.min(0.2, state) * ptt);
+			return state - (Math.min(0.2f, state) * ptt);
 		return pressed ? 1 : 0;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void render(float ptt)
-	{
-		GL11.glPushMatrix();
-		RenderHelper.bindTexture(new ResourceLocation("tardismod","textures/models/SonicScrewdriverHolder.png"));
-		holder.render(null, 0F, 0F, 0F, 0F, 0F, 0.0625F);
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslated(-0.03125, -0.0015 + (getState(ptt) * 0.06), -0.03125);
-		RenderHelper.bindTexture(new ResourceLocation("tardismod","textures/models/PushLever.png"));
-		button.render(null,0F,0F,0F,0F,0F,0.0625F);
-		GL11.glPopMatrix();
-	}
-
-	public static class ControlToggleButtonBuilder extends ControlBuilder<ControlToggleButton>
+	public static class ControlToggleButtonBuilder extends StatefulControlBuilder<ControlToggleButton>
 	{
 		private boolean defaultPressed;
 
 		public ControlToggleButtonBuilder(boolean defaultPressed)
 		{
 			this.defaultPressed = defaultPressed;
+			withModel(ModelButton.i);
 		}
 
 		@Override

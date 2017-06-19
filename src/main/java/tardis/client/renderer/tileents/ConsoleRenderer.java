@@ -162,8 +162,8 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 //		compRender.renderButton(tess, tce, 1026, 0.91, -0.58, -0.3, -45, 90, 0, 0.5, 0.5, 0.5);
 //	}
 
-	private final Word word1 = new Word("bashshsh");
-	private final Word word2 = new Word("elephant");
+	private final Word word1 = new Word("foxpotato");
+	private final Word word2 = new Word("darkholme");
 	private final Word word3 = new Word("ohmygodhireddit");
 	private final Word word4 = new Word("shale");
 	private final Word word5 = new Word("tabefilokuaeiou");
@@ -190,7 +190,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 			for(int i = 0; (i < 4) && (i < panels.length); i++)
 			{
 				GL11.glPushMatrix();
-				GL11.glRotated(90*(i-1), 0, 1, 0);
+				GL11.glRotated((90*(i))-90, 0, 1, 0);
 				if(panels[i] != null)
 				{
 					bindTexture(panelTexture);
@@ -205,7 +205,7 @@ public class ConsoleRenderer extends AbstractBlockRenderer
 			}
 		}
 		GL11.glTranslated(4, 4, 0);
-		word1.render();
+//		word1.render();
 //		word2.render();
 //		word3.render();
 //		word4.render();
