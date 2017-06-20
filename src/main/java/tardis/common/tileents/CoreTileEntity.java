@@ -1,9 +1,12 @@
 package tardis.common.tileents;
 
+import static tardis.core.console.screen.ScreenFunction.SCREENSAVER;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -25,6 +28,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractTileEntity;
+import io.darkcraft.darkcore.mod.client.TextRenderer;
 import io.darkcraft.darkcore.mod.datastore.SimpleCoordStore;
 import io.darkcraft.darkcore.mod.datastore.SimpleDoubleCoordStore;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
@@ -63,6 +67,9 @@ import tardis.common.items.KeyItem;
 import tardis.common.tileents.components.TardisTEComponent;
 import tardis.common.tileents.extensions.CoreGrid;
 import tardis.common.tileents.extensions.LabFlag;
+import tardis.core.TardisInfo;
+import tardis.core.console.panel.ConsolePanel;
+import tardis.core.console.screen.ScreenFunction.IScreenRenderer;
 import tardis.core.flight.FSAbstract;
 
 public class CoreTileEntity extends AbstractTileEntity implements IActivatable, IChunkLoader, IGridHost, IArtronEnergyProvider, IExplodable
@@ -1940,32 +1947,19 @@ public class CoreTileEntity extends AbstractTileEntity implements IActivatable, 
 	private static final String[] takeoff = new String[]{"Taking off"};
 	private static final String[] landing = new String[]{"Landing"};
 	private static final String[] drift = new String[]{"Drifting","in the","!TIME!","!VORTEX!"};
-	public String[] getScreenText()
+	public void renderScreen(TextRenderer r)
 	{
-		TardisDataStore ds = gDS();
-		String[] locs = getDestinationStrings(getDestinationLocations());
+		int panelSide;
 		if((screenAngle > 45) && (screenAngle < 135))
-			return new String[]{"","",locs[1]};
-		if((screenAngle >-135) && (screenAngle < -45))
-			return new String[]{"","",locs[3]};
-		if((screenAngle <= -135) || (screenAngle >= 135))
-			return new String[]{"","",locs[0],locs[2]};
-		if(flightState == FlightState.TAKINGOFF)
-			return takeoff;
-		if(flightState == FlightState.FLIGHT)
-		{
-			if((ds == null) || !ds.hasFunction(TardisFunction.CLARITY))
-				return new String[]{"Speed: "+currentBlockSpeed+"b/t",
-						String.format("Travel: %04.1f%%", (100*distanceTravelled)/distanceToTravel)};
-			else
-				return new String[]{"Speed: "+currentBlockSpeed+"b/t",
-					String.format("Travel: %04.1f%%", (100*distanceTravelled)/distanceToTravel),
-					String.format("ETA: %ds", MathHelper.ceil((distanceToTravel-distanceTravelled)/(currentBlockSpeed*20)))};
-		}
-		if(flightState == FlightState.DRIFT)
-			return drift;
-		if(flightState == FlightState.LANDING)
-			return landing;
-		return empty;
+			panelSide = 3;
+		else if((screenAngle >-135) && (screenAngle < -45))
+			panelSide = 1;
+		else if((screenAngle <= -135) || (screenAngle >= 135))
+			panelSide = 2;
+		else
+			panelSide = 0;
+		Optional<ConsolePanel> panel = getConsole().getPanel(panelSide);
+		IScreenRenderer screen = panel.map(p->p.getScreenFunction()).orElse(SCREENSAVER).renderer;
+		screen.render(r, TardisInfo.get(this), panel.orElse(null));
 	}
 }

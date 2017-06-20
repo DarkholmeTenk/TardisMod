@@ -1,7 +1,11 @@
 package tardis.core.console.panel.types.normal.navmap;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
 
+import tardis.core.console.control.ControlHolder;
 import tardis.core.console.control.ControlLever;
 import tardis.core.console.control.ControlWheel;
 
@@ -10,23 +14,21 @@ public class RegularNavMap implements NavMap
 	public static final RegularNavMap i = new RegularNavMap();
 	private RegularNavMap(){}
 
-	private static final int BASE_1 = 2;
-	private static final int BASE_2 = 4;
-	private static final int COEFF_1 = 2197;
-	private static final int COEFF_2 = 169;
-	private static final int COEFF_3 = 13;
-	private static final int COEFF_4 = 1;
+	private final static Cache<Class<? extends ControlHolder>, NavMapCoefficients> coeffCache =
+			CacheBuilder.newBuilder()
+				.maximumSize(20)
+				.build();
 
 	@Override
-	public int getVal(ControlWheel[] wheels, ControlLever[] levers)
+	public int getVal(Class<? extends ControlHolder> clazz, ControlWheel[] wheels, ControlLever[] levers)
 	{
-		int controlOne = levers[0].getValue() * (int) Math.pow(BASE_1, wheels[0].getValue() + 1);
-		int controlTwo = levers[1].getValue() * (int) Math.pow(BASE_2, wheels[1].getValue() + 1);
-		int controlThree =    (COEFF_1 * levers[2].getValue())
-							+ (COEFF_2 * levers[3].getValue())
-							+ (COEFF_3 * levers[4].getValue())
-							+ (COEFF_4 * levers[5].getValue());
-		return controlOne + controlTwo + controlThree;
+		NavMapCoefficients coeffs = getCoefficients(clazz, wheels, levers);
+		int sum = 0;
+		for(int i = 0; i < wheels.length; i++)
+			sum += (levers[i].getValue() * (int) Math.pow(coeffs.wheelBases[i], wheels[i].getValue() + 1));
+		for(int i = 0; i < (levers.length - wheels.length); i++)
+			sum += (levers[i+wheels.length].getValue() * coeffs.leverCoeffs[i]);
+		return sum;
 	}
 
 	private int closestWheel(int delta, ControlWheel wheel, ControlLever lever, int base, boolean set)
@@ -34,8 +36,11 @@ public class RegularNavMap implements NavMap
 		int c = 0;
 		int closestWheel = 0;
 		int closestLever = 0;
+		lLoop:
 		for (int i = lever.min; i <= lever.max; i++)
 		{
+			if((delta < 0) != (i < 0))
+				continue;
 			for (int j = wheel.min; j <= wheel.max; j++)
 			{
 				int val = i * (int) Math.pow(base, j + 1);
@@ -44,6 +49,8 @@ public class RegularNavMap implements NavMap
 					closestWheel = j;
 					closestLever = i;
 					c = val;
+					if(val == delta)
+						break lLoop;
 				}
 			}
 		}
@@ -55,13 +62,12 @@ public class RegularNavMap implements NavMap
 		return c;
 	}
 
-	private static final int[] coeffs = {COEFF_1, COEFF_2, COEFF_3, COEFF_4};
-	private int closestLevers(int delta, ControlLever[] levers, boolean set)
+	private int closestLevers(int delta, int[] coeffs, ControlLever[] levers, int s, boolean set)
 	{
 		int v = 0;
-		for(int i = 0; i < 4; i++)
+		for(int i = 0; i < (levers.length - s); i++)
 		{
-			ControlLever l = levers[i + 2];
+			ControlLever l = levers[i + s];
 			int coeff = coeffs[i];
 			int diff = delta - v;
 			int newSetting = MathHelper.clamp(MathHelper.round(diff / (double) coeff), l.min, l.max);
@@ -73,20 +79,48 @@ public class RegularNavMap implements NavMap
 	}
 
 	@Override
-	public boolean setVal(int dest, int tolerance, ControlWheel[] wheels, ControlLever[] levers)
+	public boolean setVal(int dest, int tolerance,
+			Class<? extends ControlHolder> clazz, ControlWheel[] wheels, ControlLever[] levers)
 	{
-		int cA = closestWheel(dest, wheels[0], levers[0], BASE_1, false);
-		int cB = closestWheel(dest - cA, wheels[0], levers[0], BASE_2, false);
-		int cL = closestLevers(dest - cA - cB, levers, false);
-		int nV = cA + cB + cL;
-		if(Math.abs(dest - nV) <= tolerance)
+		NavMapCoefficients coeffs = getCoefficients(clazz, wheels, levers);
+		int t = 0;
+		for(int i = 0; i < wheels.length; i++)
+			t += closestWheel(dest - t, wheels[i], levers[i], coeffs.wheelBases[i], false);
+		t += closestLevers(dest - t, coeffs.leverCoeffs, levers, wheels.length, false);
+		if(Math.abs(dest - t) <= tolerance)
 		{
-			closestWheel(dest, wheels[0], levers[0], BASE_1, true);
-			closestWheel(dest - cA, wheels[1], levers[1], BASE_2, true);
-			closestLevers(dest - cA - cB, levers, true);
+			t = 0;
+			for(int i = 0; i < wheels.length; i++)
+				t += closestWheel(dest - t, wheels[i], levers[i], coeffs.wheelBases[i], true);
+			t += closestLevers(dest - t, coeffs.leverCoeffs, levers, wheels.length, true);
 			return true;
 		}
 		return false;
 	}
 
+	public static NavMapCoefficients getCoefficients(Class<? extends ControlHolder> clazz,
+			ControlWheel[] wheels, ControlLever[] levers)
+	{
+		return coeffCache.asMap().computeIfAbsent(clazz, a->{
+			NavMapCoefficients coeffs = new NavMapCoefficients();
+			coeffs.wheelBases = new int[wheels.length];
+			int b = 1;
+			for(int i = wheels.length - 1; i >= 0; i--)
+				coeffs.wheelBases[i] = b+=2;
+			coeffs.leverCoeffs = new int[levers.length - wheels.length];
+			coeffs.leverCoeffs[coeffs.leverCoeffs.length-1] = 1;
+			for(int i = coeffs.leverCoeffs.length-2; i >= 0; i--)
+			{
+				ControlLever prevLever = levers[i+wheels.length+1];
+				coeffs.leverCoeffs[i] = coeffs.leverCoeffs[i+1] * ((1+prevLever.max) - prevLever.min);
+			}
+			return coeffs;
+		});
+	}
+
+	private static class NavMapCoefficients
+	{
+		private int[] wheelBases;
+		private int[] leverCoeffs;
+	}
 }

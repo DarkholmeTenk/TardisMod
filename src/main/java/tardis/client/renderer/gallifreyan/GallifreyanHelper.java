@@ -8,7 +8,7 @@ public class GallifreyanHelper
 {
 	private static float getLW()
 	{
-		return 3;
+		return 1.5f;
 	}
 
 	public static void arc(double x, double y, double r, double startAngle, double endAngle)

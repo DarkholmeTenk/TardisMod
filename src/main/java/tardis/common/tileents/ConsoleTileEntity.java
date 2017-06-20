@@ -169,8 +169,6 @@ public class ConsoleTileEntity extends AbstractTileEntitySer implements IControl
 	private ConsolePanel[] panels = new ConsolePanel[]{new NormalPanelX(), new NormalPanelY(), new NormalPanelZ(),null};
 	public ConsolePanel[] getPanels()
 	{
-		if(ServerHelper.isServer(this) && (panels[2] == null))
-			setPanel(2,new NormalPanelZ());
 		return panels;
 	}
 
@@ -195,6 +193,11 @@ public class ConsoleTileEntity extends AbstractTileEntitySer implements IControl
 		panels[i] = panel;
 		panel.setTardisInfo(TardisInfo.get(this), this, i);
 		panelsChanged();
+	}
+
+	public Optional<ConsolePanel> getPanel(int panelSide)
+	{
+		return Optional.ofNullable(panels[panelSide]);
 	}
 
 	public <T> Optional<T> getPanel(Class<T> clazz)

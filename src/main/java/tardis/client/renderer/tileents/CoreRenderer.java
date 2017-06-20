@@ -10,6 +10,8 @@ import net.minecraftforge.client.model.IModelCustom;
 
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlock;
 import io.darkcraft.darkcore.mod.abstracts.AbstractBlockRenderer;
+import io.darkcraft.darkcore.mod.client.TextRenderer;
+import io.darkcraft.darkcore.mod.helpers.RenderHelper;
 
 import tardis.client.renderer.model.RotorModel;
 import tardis.common.TMRegistry;
@@ -28,6 +30,7 @@ public class CoreRenderer extends AbstractBlockRenderer
 	ResourceLocation capTex = new ResourceLocation("tardismod","textures/models/cap.png");
 	ResourceLocation angTex = new ResourceLocation("tardismod","textures/models/ang.png");
 	ResourceLocation scrTex = new ResourceLocation("tardismod","textures/models/screen.png");
+	private TextRenderer tr;
 
 	public CoreRenderer()
 	{
@@ -107,6 +110,8 @@ public class CoreRenderer extends AbstractBlockRenderer
 
 	private void renderScreen(Tessellator tess, CoreTileEntity te)
 	{
+		if(tr == null)
+			tr = RenderHelper.getTextRenderer(75, 50);
 		GL11.glPushMatrix();
 		int angle = te.getScreenAngle();
 		GL11.glTranslated(0.5, -0.5, 0.5);
@@ -122,12 +127,7 @@ public class CoreRenderer extends AbstractBlockRenderer
 		double scale = 0.02;
 		GL11.glScaled(scale, scale, scale);
 		GL11.glDepthMask(false);
-		String[] strings = te.getScreenText();
-		for(String s : strings)
-		{
-			fr.drawString(s, 0, 0, 16579836);
-			GL11.glTranslated(0, 10, 0);
-		}
+		te.renderScreen(tr);
 		GL11.glDepthMask(true);
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();

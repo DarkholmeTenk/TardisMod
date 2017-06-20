@@ -63,13 +63,13 @@ public class NormalPanelX extends ConsolePanel implements NavPanelX
 	@Override
 	public int getCurrentX()
 	{
-		return getNavMap().getVal(wheels, levers);
+		return getNavMap().getVal(NormalPanelX.class, wheels, levers);
 	}
 
 	@Override
 	public boolean setCurrentX(int newX, int tolerance)
 	{
-		return getNavMap().setVal(newX, tolerance, wheels, levers);
+		return getNavMap().setVal(newX, tolerance, NormalPanelX.class, wheels, levers);
 	}
 
 	@Override

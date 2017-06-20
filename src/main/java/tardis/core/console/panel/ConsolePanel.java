@@ -27,6 +27,7 @@ import tardis.core.console.control.ControlHolder;
 import tardis.core.console.control.ControlScrews;
 import tardis.core.console.control.ControlScrews.ControlScrewsBuilder;
 import tardis.core.console.enums.ManualConstants;
+import tardis.core.console.screen.ScreenFunction;
 
 @NBTSerialisable
 public abstract class ConsolePanel implements ControlHolder
@@ -165,5 +166,10 @@ public abstract class ConsolePanel implements ControlHolder
 				getTardisInfo().getConsole().removePanel(this);
 			}
 		}
+	}
+
+	public ScreenFunction getScreenFunction()
+	{
+		return ScreenFunction.SCREENSAVER;
 	}
 }

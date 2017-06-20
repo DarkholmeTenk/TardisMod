@@ -10,7 +10,9 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 
+import io.darkcraft.darkcore.mod.datastore.Colour;
 import io.darkcraft.darkcore.mod.helpers.MathHelper;
+import io.darkcraft.darkcore.mod.helpers.RenderHelper;
 
 import tardis.client.renderer.gallifreyan.Letter.LinePoint;
 
@@ -18,6 +20,8 @@ public class Word
 {
 	private final Letter[] letters;
 	private final LineSet[] lines;
+
+	private Colour colour;
 
 	public Word(String word)
 	{
@@ -64,13 +68,28 @@ public class Word
 		lines = calculateLines(this.letters);
 	}
 
+	public Word setColour(Colour c)
+	{
+		colour = c;
+		return this;
+	}
+
 	public void render()
+	{
+		render(1,0,0);
+	}
+
+	public void render(float scale, float xo, float yo)
 	{
 		double part = 1 / Math.pow(letters.length, 0.3);
 
+		GL11.glPushMatrix();
+		GL11.glTranslatef(xo, yo, 0);
+		GL11.glScalef(scale, -scale, scale);
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glColor3f(0.2f, 0.3f, 1f);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		RenderHelper.colour(colour);
 		double segAngle = 360.0 / letters.length;
 		double offset = 180 + (segAngle * ((1 + part) / 2));
 		for(int i = 0 ; i < letters.length; i++)
@@ -89,6 +108,7 @@ public class Word
 		for(LineSet l : lines)
 			GallifreyanHelper.line(l.a.x, l.a.y, l.b.x, l.b.y);
 		GL11.glPopAttrib();
+		GL11.glPopMatrix();
 	}
 
 	private static LineSet[] calculateLines(Letter[] letters)

@@ -8,7 +8,7 @@ import tardis.core.console.control.models.ModelLever;
 @NBTSerialisable
 public class ControlLever extends AbstractControlInt
 {
-	private ControlLever(ControlLeverBuilder builder, ControlHolder holder)
+	protected ControlLever(AbstractControlLeverBuilder<?> builder, ControlHolder holder)
 	{
 		super(builder, holder);
 	}
@@ -36,12 +36,20 @@ public class ControlLever extends AbstractControlInt
 		return value;
 	}
 
-	public static class ControlLeverBuilder extends ControlIntBuilder<ControlLever>
+	protected static abstract class AbstractControlLeverBuilder<T extends ControlLever> extends ControlIntBuilder<T>
+	{
+		public AbstractControlLeverBuilder(int min, int max, int defaultVal)
+		{
+			super(min, max, defaultVal);
+			withModel(ModelLever.i);
+		}
+	}
+
+	public static class ControlLeverBuilder extends AbstractControlLeverBuilder<ControlLever>
 	{
 		public ControlLeverBuilder(int min, int max, int defaultVal)
 		{
 			super(min, max, defaultVal);
-			withModel(ModelLever.i);
 		}
 
 		@Override
