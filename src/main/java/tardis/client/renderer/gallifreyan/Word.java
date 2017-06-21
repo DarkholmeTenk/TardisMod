@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 
@@ -21,7 +19,7 @@ public class Word
 	private final Letter[] letters;
 	private final LineSet[] lines;
 
-	private Colour colour;
+	private Colour colour = Colour.white;
 
 	public Word(String word)
 	{
@@ -83,12 +81,7 @@ public class Word
 	{
 		double part = 1 / Math.pow(letters.length, 0.3);
 
-		GL11.glPushMatrix();
-		GL11.glTranslatef(xo, yo, 0);
-		GL11.glScalef(scale, -scale, scale);
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GallifreyanHelper.pre(scale, xo, yo);
 		RenderHelper.colour(colour);
 		double segAngle = 360.0 / letters.length;
 		double offset = 180 + (segAngle * ((1 + part) / 2));
@@ -107,8 +100,7 @@ public class Word
 		}
 		for(LineSet l : lines)
 			GallifreyanHelper.line(l.a.x, l.a.y, l.b.x, l.b.y);
-		GL11.glPopAttrib();
-		GL11.glPopMatrix();
+		GallifreyanHelper.post();
 	}
 
 	private static LineSet[] calculateLines(Letter[] letters)
@@ -157,10 +149,10 @@ public class Word
 
 	public static class LineSet
 	{
-		private final LinePoint a;
-		private final LinePoint b;
+		protected final LinePoint a;
+		protected final LinePoint b;
 
-		private LineSet(LinePoint a, LinePoint b)
+		LineSet(LinePoint a, LinePoint b)
 		{
 			this.a = a;
 			this.b = b;

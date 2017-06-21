@@ -170,6 +170,6 @@ public abstract class ConsolePanel implements ControlHolder
 
 	public ScreenFunction getScreenFunction()
 	{
-		return ScreenFunction.SCREENSAVER;
+		return ScreenFunction.NAVIGATION;
 	}
 }

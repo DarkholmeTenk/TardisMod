@@ -23,7 +23,7 @@ public class NormalPanelY extends ConsolePanel implements NavPanelY, OptPanelLan
 {
 	private final ControlLever[] levers = new ControlLever[4];
 	{
-		ControlBuilder<ControlLever> builder = new ControlLeverBuilder(0,4,0)
+		ControlBuilder<ControlLever> builder = new ControlLeverBuilder(0,3,0)
 				.isFlightControl()
 				.withScale(0.2, 0.3, 0.3)
 				.withAngle(90)
