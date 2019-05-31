@@ -97,6 +97,8 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 
 	private FluidStack drain(FluidStack[] tanks, int i, FluidStack resource, boolean doDrain)
 	{
+		if(tanks == null || tanks.length == 0)
+			return null;
 		if((tanks[i] != null) && tanks[i].equals(resource))
 		{
 			int toDrain = Math.min(tanks[i].amount,resource.amount);
@@ -132,7 +134,7 @@ public class ComponentFluid extends AbstractComponent implements IFluidHandler, 
 
 	private FluidStack drain(FluidStack[] tanks, ForgeDirection from, IFluidHandler other, int i, int maxDrain, boolean doDrain)
 	{
-		if(tanks == null)
+		if(tanks == null || tanks.length == 0)
 			return null;
 		if(tanks[i] != null)
 		{
