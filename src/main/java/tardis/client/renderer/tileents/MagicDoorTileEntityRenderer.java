@@ -66,7 +66,7 @@ public class MagicDoorTileEntityRenderer extends AbstractObjRenderer
 	}
 
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
 		if(te == null) return;
 		MagicDoorTileEntity mte = (MagicDoorTileEntity) te;

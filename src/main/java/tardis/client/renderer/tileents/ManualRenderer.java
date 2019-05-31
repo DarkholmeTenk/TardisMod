@@ -41,7 +41,7 @@ public class ManualRenderer extends AbstractObjRenderer
 	}
 
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
 		if(!(te instanceof ManualTileEntity)) return;
 		ManualTileEntity mte = (ManualTileEntity)te;

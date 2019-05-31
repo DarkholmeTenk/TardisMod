@@ -179,7 +179,7 @@ public class EngineRenderer extends AbstractObjRenderer
 	}
 
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
 		if(comps == null)
 			comps = new ControlRenderer(func_147498_b(),field_147501_a.field_147553_e);

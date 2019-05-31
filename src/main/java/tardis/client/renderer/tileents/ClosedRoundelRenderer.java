@@ -31,7 +31,7 @@ public class ClosedRoundelRenderer extends AbstractObjRenderer
 	}
 
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
 		bindTexture(tex);
 		GL11.glPushMatrix();
