@@ -7,3 +7,5 @@ This includes on websites such as Curse, as well as adding your own releases sec
 Build servers are accepted as long as this mod is not advertised as being available on those servers.
 
 Modified versions can be put in modpacks, however the modifications cannot be used to advertise the pack.
+
+Requires DarkCore v0.46
