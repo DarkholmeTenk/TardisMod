@@ -33,7 +33,7 @@ public class SummonerRenderer extends AbstractObjRenderer implements IItemRender
 	}
 
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
 		bindTexture(tex);
 		blob.renderAll();

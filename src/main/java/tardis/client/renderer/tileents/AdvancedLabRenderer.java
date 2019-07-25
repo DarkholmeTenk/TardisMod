@@ -148,7 +148,7 @@ public class AdvancedLabRenderer extends AbstractObjRenderer
 
 	private static IModelCustom model;
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
 		if(fr == null) fr = RenderHelper.getFontRenderer();
 		if(model == null) model = AdvancedModelLoader.loadModel(new ResourceLocation("tardismod","models/newlab.obj"));

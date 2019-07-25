@@ -102,7 +102,7 @@ public class BatteryRenderer extends AbstractObjRenderer implements IItemRendere
 	}
 
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
 		if(!(te instanceof BatteryTileEntity))
 			return;

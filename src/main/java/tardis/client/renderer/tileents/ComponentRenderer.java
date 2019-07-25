@@ -105,7 +105,7 @@ public class ComponentRenderer extends AbstractBlockRenderer
 	}
 
 	@Override
-	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tess, TileEntity te, int x, int y, int z, float ptt)
 	{
 		/*
 		int metadata = te.worldObj.getBlockMetadata(x, y, z);

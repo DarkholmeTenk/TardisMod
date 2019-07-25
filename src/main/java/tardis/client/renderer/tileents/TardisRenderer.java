@@ -30,7 +30,7 @@ public class TardisRenderer extends AbstractObjRenderer implements IItemRenderer
 	}
 
 	@Override
-	public void renderBlock(Tessellator tesselator, TileEntity te, int x, int y, int z)
+	public void renderBlock(Tessellator tesselator, TileEntity te, int x, int y, int z, float ptt)
 	{
 		World world = te.getWorldObj();
 		if((te == null) || !(te instanceof TardisTileEntity)) return;
@@ -49,7 +49,7 @@ public class TardisRenderer extends AbstractObjRenderer implements IItemRenderer
 			GL11.glPopMatrix();
 		}
 	}
-
+	
 	@Override
 	public AbstractBlock getBlock()
 	{
